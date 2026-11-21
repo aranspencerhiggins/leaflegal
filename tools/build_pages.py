@@ -133,9 +133,9 @@ def with_nav(h, page, header=None):
     h = re.sub(r'<nav class="ll-crumbs"[^>]*>.*?</nav>', '', h, flags=re.S)  # no visible breadcrumbs (owner); BreadcrumbList JSON-LD stays
     h = FOOT_RE.sub(lambda m: footer_html(strip=page not in ('apply.html', 'business-finance.html', 'partners.html'), minimal=header is not None and 'llb-lp' in header), h, count=1)  # form-only pages: no CTA strip
     if 'assets/masthead.css' in h:  # bump the version in place: stylesheet order matters (apply.css overrides the header on form pages)
-        h = re.sub(r'/assets/masthead\.css\?v=\d+', '/assets/masthead.css?v=25', h)
+        h = re.sub(r'/assets/masthead\.css\?v=\d+', '/assets/masthead.css?v=26', h)
     else:
-        h = h.replace('</head>', '<link href="/assets/masthead.css?v=25" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
     h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=39', h)
@@ -170,7 +170,7 @@ def page(path, title, desc, body, extra_head='', extra_js='', header=None, backu
     if '/partners' in path or name.startswith('partners'):
         h = h.replace('</body>', '<script src="/assets/partner-popup.js?v=1" defer></script></body>', 1)
     if '/partners' in path:  # partner (law firm) side of the site: dark, deep-green theme
-        h = h.replace('<body', '<body data-theme="partner"', 1).replace('</head>', '<link href="/assets/partners-dark.css?v=24" rel="stylesheet"/></head>', 1)
+        h = h.replace('<body', '<body data-theme="partner"', 1).replace('</head>', '<link href="/assets/partners-dark.css?v=25" rel="stylesheet"/></head>', 1)
     if header == 'PARTNERS_HEADER':
         header = header_b('partners.html')
     elif header == 'LEGAL_HEADER':

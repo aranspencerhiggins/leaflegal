@@ -214,11 +214,10 @@
 [data-theme=partner] .pe-stages li:is(.on,.done),.pe-stages li:is(.on,.done){background:#ffb020}
 /* animated Leaflegal / Partners logo (falls back to static logo + tag) */
 /* sized so the logo inside the video (1500 of 1920px wide) matches the static logo exactly */
-.llb-logo-vid{display:none;width:192px;height:64px;margin:-15.5px 0 -15.5px -21px;pointer-events:none}
+.llb-logo-vid{display:none;width:166.4px;height:55.47px;margin:-13.47px -18.2px -13.47px -18.2px;pointer-events:none}
 .llb-logo-p.anim{flex-direction:row;align-items:center}
 .llb-logo-p.anim .llb-logo-vid{display:block}
 .llb-logo-p.anim img,.llb-logo-p.anim .llb-logo-tag{display:none}
-@media (max-width:1240px){.llb-logo-vid{width:166px;height:55px;margin:-13.25px 0 -13.25px -18px}}
 /* before the video starts show the plain Leaflegal logo; the PARTNERS tag only appears if the video can't play */
 .llb-logo-p:not(.noanim) .llb-logo-tag{display:none}
 .llb-logo-p:not(.noanim):not(.anim){flex-direction:row}
