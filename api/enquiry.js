@@ -1,21 +1,33 @@
 import { promises as dns } from 'node:dns';
 import { createHash } from 'node:crypto';
-import { configured as platformOn, ingestLead, duplicateOf, allow, resendSlot, linkedinEvent, isStarter, countsAsLead } from './_lib/platform.js';
+import { configured as platformOn, allow, resendSlot } from './_lib/platform.js';
 import { checkPhone, checkEmail, problem } from './_lib/verify.js';
-import { chProfile, tradingBand, directorDob } from './_lib/ch.js';
 import { human } from './_lib/turnstile.js';
 
-// POST /api/enquiry: saves a business finance enquiry to the broker platform (emails admin only if that fails).
-// Meta Conversions API: META_CAPI_TOKEN (required to send), META_PIXEL_ID (default LoanLeaf dataset), META_TEST_EVENT_CODE (optional).
+// POST /api/enquiry: a legal enquiry from the form (assets/apply.js). Emailed to the team (ENQUIRY_TO), who pick one regulated
+// firm by hand; the person gets a short confirmation. No platform yet, so nothing is stored here beyond the email.
+// Matter details are special category or criminal offence data (UK GDPR Art. 9/10): they go in the team email only,
+// never to Meta or LinkedIn, and never in the confirmation to the person (a mistyped address must not leak them).
 // Env: RESEND_API_KEY (required), ENQUIRY_TO (default aran@verticalbrands.co), ENQUIRY_FROM (default onboarding@resend.dev).
+// Meta Conversions API (only with marketing consent): META_CAPI_TOKEN, META_PIXEL_ID, META_TEST_EVENT_CODE (optional).
+
+// Must match the form's options (assets/apply.js).
+export const AREAS = ['Buying or selling a home', 'Immigration', 'Family law', 'Recovering a business debt', 'A motoring offence', 'Licensing', 'Extending a lease', 'Not sure yet'];
+const URGENCY = ['Urgently', 'Within a month', 'In the next few months', 'Just looking into it'];
+const PAY = ['Yes', 'Yes, if the cost is right'];
+const EW_ONLY = ['Buying or selling a home', 'Family law', 'Recovering a business debt', 'A motoring offence', 'Licensing', 'Extending a lease'];
+const NOT_EW = /^(AB|DD|DG|EH|FK|G|HS|IV|KA|KW|KY|ML|PA|PH|ZE|BT)\d/i;
+const POSTCODE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
+
 const FIELDS = [
-  ['amount', 'Amount'], ['purpose', 'Purpose'], ['timeline', 'Needed'], ['structure', 'Structure'],
-  ['trading', 'Trading for'], ['turnover', 'Annual revenue'], ['property', 'Homeowner or tenant'], ['credit', 'Missed payments / CCJs (6 yrs)'], ['debt', 'Existing loans or finance'], ['debtLeft', 'Left to repay'], ['debtMonthly', 'Monthly repayments'], ['business', 'Business'], ['companyNumber', 'Company number'], ['directorMatch', 'Listed director'],
+  ['area', 'Help with'], ['matter', 'Matter'], ['audience', 'For'], ['debtor', 'Owed by'], ['urgency', 'Urgency'], ['postcode', 'Postcode'],
+  ['privatePay', 'Can pay privately'], ['business', 'Business'], ['summary', 'Summary'],
   ['fullName', 'Full name'], ['email', 'Email'], ['phone', 'Mobile'],
   ['consentAt', 'Consent given at'], ['consentVersion', 'Consent wording version'], ['consentText', 'Consent wording'],
   ['page', 'Page'], ['referrer', 'Referrer'],
 ];
 const esc = (s) => String(s ?? '').slice(0, 1000).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const t = (v, n) => (v == null ? '' : String(v).trim().slice(0, n));
 
 // True unless DNS clearly says the domain has no mail server. Timeouts and other DNS errors pass, so a DNS hiccup never blocks a real lead.
 async function canReceiveMail(domain) {
@@ -29,34 +41,7 @@ async function canReceiveMail(domain) {
   return Promise.race([check(), new Promise((r) => setTimeout(() => r(true), 2500))]);
 }
 
-// Enquiries in these revenue bands (from any page) also send CompleteRegistration (a standard event, so Meta doesn't hold it for custom-event review) for that campaign to optimise towards. Bands = the form's options (assets/apply.js).
-const REVENUE = ['Under £50k', '£50k to £100k', '£100k to £250k', '£250k to £500k', '£500k to £1m', '£1m to £5m', '£5m+']; // the form's options, in order
-export const PREMIUM_REVENUE = ['£500k to £1m', '£1m to £5m', '£5m+'];
-export function metaEvents(b) {
-  const premium = PREMIUM_REVENUE.includes(b.turnover);
-  // Every enquiry is a Lead, except smaller/newer businesses (under £50k revenue or under 6 months trading, sent to Aureum free):
-  // not counted as a Lead on Meta or LinkedIn, so ads don't optimise towards them. £500k+ revenue also CompleteRegistration.
-  // Custom revenue events for campaigns to optimise towards, only for businesses trading 1 year or more. They stack:
-  // TierCLead = £100k+ revenue, TierBLead = £250k+, TierALead = £500k+ (a £1m business sends all three). Neutral names: Meta's financial-services rules bar money figures in event names.
-  const lead = countsAsLead(b), i = REVENUE.indexOf(b.turnover), year = ['1 to 2 years', '2 to 5 years', '5+ years'].includes(b.trading);
-  const revenue = lead && year ? [[2, 'TierCLead'], [3, 'TierBLead'], [4, 'TierALead']].filter(([min]) => i >= min).map(([, n]) => n) : [];
-  return { premium, lead, qualified: premium, revenue };
-}
-
-// Send a Lead event to Meta's Conversions API for every genuine enquiry (owner's decision, with legal advice, 2026-11-04).
-// Personal data is SHA-256 hashed before it leaves our server, as Meta requires. Never throws or delays the response for long.
-const sha = (v) => (v ? createHash('sha256').update(String(v).trim().toLowerCase()).digest('hex') : undefined);
-// Same Lead (and £500k+ CompleteRegistration) to LinkedIn's Conversions API. Meta's result is what's reported back.
-async function sendLeadEvents(b, req, qualified, extra = []) {
-  const li = { email: b.email, first: b.firstName, last: b.lastName, company: b.business };
-  const [meta] = await Promise.all([sendMetaLead(b, req, qualified, extra), linkedinEvent('Lead', { ...li, eventId: b.eventId }),
-    qualified ? linkedinEvent('CompleteRegistration', { ...li, eventId: b.eventId ? `${b.eventId}-q` : undefined }) : null]);
-  return meta;
-}
-
-// Meta ad click ID. The browser keeps it for the visit (sessionStorage), but in-app browsers, reloads and new tabs lose it.
-// The ?fbclid= is nearly always still in the URL params, page, referrer or first landing page we were sent, so rebuild it
-// from those: without it Meta can't tie the lead to the ad click, and Ads Manager under-reports leads.
+// Meta ad click ID, rebuilt from the landing URL when the browser lost it (in-app browsers, reloads, new tabs).
 export function fbcOf(b) {
   if (b.fbc && /^fb\.1\.\d+\..+/.test(String(b.fbc))) return String(b.fbc);
   const direct = b.utm && typeof b.utm === 'object' ? b.utm.fbclid : null;
@@ -65,131 +50,130 @@ export function fbcOf(b) {
   const at = Number(new Date(b.first?.at || b.first?.t || 0)) || Date.now();
   return `fb.1.${at}.${String(found).slice(0, 250)}`;
 }
-async function sendMetaLead(b, req, qualified, extra = []) {
-  const token = process.env.META_CAPI_TOKEN;
-  if (!token) return 'skipped: no token';
-  const pixel = process.env.META_PIXEL_ID || '658905286613269';
+
+// A generic Lead for Meta, only when the person accepted marketing cookies. Hashed email and phone, nothing about the matter.
+const sha = (v) => (v ? createHash('sha256').update(String(v).trim().toLowerCase()).digest('hex') : undefined);
+export function metaLeadBody(b, req) {
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || undefined;
-  const user = {
-    em: [sha(b.email)], ph: [sha(String(b.phone).replace(/\D/g, ''))], fn: [sha(b.firstName)], ln: [sha(b.lastName)],
-    country: [sha('gb')], external_id: [sha(b.email)], client_ip_address: ip, client_user_agent: req.headers['user-agent'],
-    ...(fbcOf(b) ? { fbc: fbcOf(b) } : {}), ...(b.fbp ? { fbp: b.fbp } : {}),
-  };
-  const ev = (name, id) => ({
-    event_name: name, event_time: Math.floor(Date.now() / 1000), event_id: id, action_source: 'website',
-    event_source_url: b.page, user_data: user,
-    custom_data: { currency: 'GBP', content_name: 'Business finance enquiry', content_category: b.purpose, loan_amount: b.amount, lead_type: b.structure },
-  });
-  const body = {
-    data: [ev('Lead', b.eventId || undefined), ...(qualified ? [ev('CompleteRegistration', b.eventId ? `${b.eventId}-q` : undefined)] : []),
-      ...extra.map((n) => ev(n, b.eventId ? `${b.eventId}-${n}` : undefined))], // ids match the pixel's (apply.js done())
+  return {
+    data: [{
+      event_name: 'Lead', event_time: Math.floor(Date.now() / 1000), event_id: b.eventId || undefined, action_source: 'website',
+      event_source_url: String(b.page || '').split('?')[0], // no query string: it can carry the ?area= preselect
+      user_data: { em: [sha(b.email)], ph: [sha(String(b.phone).replace(/\D/g, ''))], country: [sha('gb')], client_ip_address: ip, client_user_agent: req.headers['user-agent'],
+        ...(fbcOf(b) ? { fbc: fbcOf(b) } : {}), ...(b.fbp ? { fbp: b.fbp } : {}) },
+      custom_data: { content_name: 'Enquiry' },
+    }],
     ...(process.env.META_TEST_EVENT_CODE ? { test_event_code: process.env.META_TEST_EVENT_CODE } : {}),
   };
+}
+async function sendMetaLead(b, req) {
+  const token = process.env.META_CAPI_TOKEN, pixel = process.env.META_PIXEL_ID;
+  if (!token || !pixel) return 'skipped: not set up';
   try {
     const r = await fetch(`https://graph.facebook.com/v21.0/${pixel}/events?access_token=${encodeURIComponent(token)}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(3000),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(metaLeadBody(b, req)), signal: AbortSignal.timeout(3000),
     });
-    const out = await r.text();
-    if (!r.ok) console.error('meta capi', r.status, out);
+    if (!r.ok) console.error('meta capi', r.status, await r.text());
     return r.ok ? 'sent' : `error ${r.status}`;
   } catch (err) { console.error('meta capi', err.message); return 'error'; }
 }
 
-// Only used when saving to the platform fails, so the enquiry still reaches a person.
-async function fallbackEmail(b, checkLine) {
+async function send(msg) {
   const key = process.env.RESEND_API_KEY;
-  if (!key) return;
-  const utm = Object.entries(b.utm || {}).map(([k, v]) => `${esc(k)}=${esc(v)}`).join(', ');
-  const rows = FIELDS.map(([k, l]) => `<tr><td style="padding:6px 12px;color:#579e84">${l}</td><td style="padding:6px 12px;font-weight:700;color:#244237">${esc(b[k]) || '–'}</td></tr>`).join('')
-    + (utm ? `<tr><td style="padding:6px 12px;color:#579e84">UTM</td><td style="padding:6px 12px">${utm}</td></tr>` : '')
-    + `<tr><td style="padding:6px 12px;color:#579e84">Checks</td><td style="padding:6px 12px">${esc(checkLine)}</td></tr>`;
+  if (!key) throw new Error('RESEND_API_KEY not set');
   await resendSlot();
   const r = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      from: `Loanleaf <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`,
-      to: (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(','),
-      reply_to: b.email,
-      subject: `[Not saved to platform] Finance enquiry: ${b.business} – ${b.amount || ''}`.slice(0, 200),
-      html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">Enquiry not saved to the platform</h2><p>Add it by hand.</p><table style="border-collapse:collapse">${rows}</table></div>`,
-    }),
-  }).catch((e) => ({ ok: false, status: e.message, text: async () => '' }));
-  if (!r.ok) console.error('fallback email', r.status, await r.text());
+    method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, ...msg }),
+  });
+  if (!r.ok) throw new Error(`resend ${r.status} ${await r.text()}`);
+}
+
+export function teamEmail(b, checkLine) {
+  const utm = Object.entries(b.utm || {}).map(([k, v]) => `${esc(k)}=${esc(v)}`).join(', ');
+  const rows = FIELDS.filter(([k]) => b[k]).map(([k, l]) => `<tr><td style="padding:6px 12px;color:#579e83;vertical-align:top">${l}</td><td style="padding:6px 12px;font-weight:700;color:#244237;white-space:pre-wrap">${esc(b[k])}</td></tr>`).join('')
+    + (utm ? `<tr><td style="padding:6px 12px;color:#579e83">UTM</td><td style="padding:6px 12px">${utm}</td></tr>` : '')
+    + `<tr><td style="padding:6px 12px;color:#579e83">Checks</td><td style="padding:6px 12px">${esc(checkLine)}</td></tr>`;
+  const notes = [b.area === 'Immigration' && 'Immigration: refer only to an SRA, CILEx or IAA regulated adviser.', 'Introduce to one regulated firm only. The firm must tell the client about the referral fee in writing.'].filter(Boolean);
+  return {
+    to: (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(','),
+    reply_to: b.email,
+    subject: `New enquiry: ${b.area}${b.matter ? ` (${b.matter})` : ''}, ${b.urgency}`.slice(0, 200),
+    html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">New Leaflegal enquiry</h2><table style="border-collapse:collapse">${rows}</table>`
+      + `<p style="color:#5a6f66;font-size:13px">${notes.join('<br>')}<br>This email contains special category or criminal offence data. Do not forward it beyond the firm you introduce.</p></div>`,
+  };
+}
+export function confirmEmail(b) {
+  return {
+    to: [b.email], reply_to: process.env.ENQUIRY_TO?.split(',')[0] || 'hello@leaflegal.co',
+    subject: 'We’ve got your enquiry',
+    html: `<div style="font-family:Arial,sans-serif;color:#244237;max-width:560px"><p>Hi ${esc(b.firstName)},</p>`
+      + '<p>Thanks for your enquiry. We’re now looking for one regulated law firm that handles this kind of matter in your area. The firm will contact you, usually by phone, to see if they can help. They will explain their fees before you agree to anything.</p>'
+      + '<p>If you didn’t make this enquiry, or you’d like us to stop, just reply to this email.</p>'
+      + '<p>The Leaflegal team</p><p style="color:#5a6f66;font-size:12px">Leaflegal is a trading name of Vertical Brands Ltd. We are not a law firm and do not give legal advice.</p></div>',
+  };
 }
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
-  const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
+  const raw = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
 
-  if (!b.firstName || !b.lastName || !b.business) return res.status(400).json({ error: 'Missing fields' }); // the form splits Full name into first/last
-  if (b.consentTerms !== true || b.consentShare !== true) return res.status(400).json({ error: 'Consent required' });
-  if (!/^\+447\d{9}$/.test(b.phone || '')) return res.status(400).json({ field: 'phone', error: 'Please enter a UK mobile number, e.g. 07700 900123' });
-  const email = String(b.email || '').trim();
-  if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(email)) return res.status(400).json({ field: 'email', error: 'Please enter a valid email address' });
-  if (!(await canReceiveMail(email.split('@')[1]))) return res.status(400).json({ field: 'email', error: "That email domain doesn't seem to accept mail. Please check it." });
+  // Only the fields we expect, trimmed and capped.
+  const b = {
+    area: t(raw.area, 60), matter: t(raw.matter, 80), audience: raw.audience === 'business' ? 'business' : 'individual', debtor: t(raw.debtor, 40),
+    urgency: t(raw.urgency, 40), postcode: t(raw.postcode, 10).toUpperCase(), privatePay: t(raw.privatePay, 40), summary: t(raw.summary, 500),
+    business: t(raw.business, 160), firstName: t(raw.firstName, 60), lastName: t(raw.lastName, 80), fullName: t(raw.fullName, 140),
+    email: t(raw.email, 200), phone: t(raw.phone, 20), phoneConfirmed: !!raw.phoneConfirmed, emailConfirmed: !!raw.emailConfirmed,
+    consentTerms: raw.consentTerms === true, consentShare: raw.consentShare === true, consentVersion: t(raw.consentVersion, 20), consentAt: t(raw.consentAt, 40), consentText: t(raw.consentText, 1000),
+    marketing: raw.marketing === true, fbc: t(raw.fbc, 300), fbp: t(raw.fbp, 120), eventId: t(raw.eventId, 80),
+    website: t(raw.website, 200), _ms: Number(raw._ms) || 0, page: t(raw.page, 500), referrer: t(raw.referrer, 500),
+    utm: raw.utm && typeof raw.utm === 'object' ? Object.fromEntries(Object.entries(raw.utm).slice(0, 20).map(([k, v]) => [t(k, 40), t(v, 200)])) : {}, first: raw.first && typeof raw.first === 'object' ? raw.first : null,
+  };
 
-  // Bot check first, before any paid lookups (Bird, Companies House).
-  const ip0 = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || undefined;
-  if (!(await human(b.turnstile, ip0))) return res.status(400).json({ error: 'Please tick the box to confirm you’re not a robot, then try again.' });
+  if (!b.firstName || !b.lastName) return res.status(400).json({ field: 'fullName', error: 'Please enter your first and last name' });
+  if (!b.consentTerms || !b.consentShare) return res.status(400).json({ error: 'Please tick both boxes so we can pass your enquiry to a law firm.' });
+  if (!AREAS.includes(b.area) || !URGENCY.includes(b.urgency)) return res.status(400).json({ error: 'Please go back and answer every question.' });
+  if (!POSTCODE.test(b.postcode)) return res.status(400).json({ error: 'Please go back and enter a full UK postcode.' });
+  // Out of scope: the form stops these first, so these only catch tampered requests.
+  if (b.area === 'Recovering a business debt' && (b.audience !== 'business' || b.debtor !== 'Another business')) return res.status(400).json({ error: 'We can only help businesses recover money owed by other businesses.' });
+  if (EW_ONLY.includes(b.area) && NOT_EW.test(b.postcode)) return res.status(400).json({ error: 'For this area of law we can only help with matters in England and Wales.' });
+  if (b.audience === 'individual' && !PAY.includes(b.privatePay)) return res.status(400).json({ error: 'The firms we work with charge privately for their work.' });
+  if (b.area === 'Not sure yet' && !b.summary) return res.status(400).json({ error: 'Please go back and tell us briefly what you need help with.' });
+  if (!/^\+447\d{9}$/.test(b.phone)) return res.status(400).json({ field: 'phone', error: 'Please enter a UK mobile number, e.g. 07700 900123' });
+  if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(b.email)) return res.status(400).json({ field: 'email', error: 'Please enter a valid email address' });
+  if (!(await canReceiveMail(b.email.split('@')[1]))) return res.status(400).json({ field: 'email', error: "That email domain doesn't seem to accept mail. Please check it." });
 
-  // Company picked from Companies House on the form (null when typed in by hand). Strings only, trimmed.
-  const t = (v, n) => (v == null ? null : String(v).slice(0, n));
-  const co = b.company && /^[A-Z0-9]{8}$/i.test(b.company.number || '') ? b.company : null;
-  b.company = co ? { number: co.number.toUpperCase(), status: t(co.status, 40), type: t(co.type, 60), incorporated: t(co.incorporated, 10), address: t(co.address, 300),
-    director: t(co.director, 120), directorListed: !!co.directorListed, ...(co.directorListed && co.role === 'Secretary' ? { role: 'Secretary' } : {}) } : null;
-  if (!b.company) return res.status(400).json({ error: 'We can only help limited companies and LLPs registered at Companies House.' });
-  // A director picked from the list only counts if the name given matches it (the name field can be changed or autofilled after).
-  const words = (v) => String(v || '').toLowerCase().normalize('NFKD').replace(/[^a-z\s'-]/g, '').split(/[\s-]+/).filter(Boolean);
-  if (b.company.directorListed && !words(b.lastName).some((w) => words(b.company.director).includes(w))) b.company.directorListed = false;
-  // The official record wins over what the browser sent: name, status, dates, address, plus industry and filing flags.
-  if (b.company) {
-    // Director picked from the list: their month/year of birth from the register (never from the browser).
-    const [p, dob] = await Promise.all([chProfile(b.company.number).catch((e) => { console.error('ch profile', e.message); return null; }),
-      b.company.directorListed && !b.company.role ? directorDob(b.company.number, b.company.director).catch((e) => { console.error('ch officers', e.message); return null; }) : null]);
-    if (dob) b.company.directorDob = dob;
-    if (p) {
-      Object.assign(b.company, { status: p.status, type: p.type, incorporated: p.incorporated, address: p.address, profile: p });
-      if (p.title) b.business = p.title;
-      const band = p.incorporated && tradingBand(p.incorporated);
-      if (band) b.trading = band;
-    }
-  }
-  b.companyNumber = b.company?.number || '';
-  b.variant = b.variant === '500k' ? '500k' : null;
-  const ev = metaEvents(b);
-  b.premium = ev.premium;
-  const metaOut = { lead: ev.lead, qualified: ev.qualified, revenue: ev.revenue }; // tells the browser which pixel events to fire
-  b.directorMatch = b.company ? (b.company.directorListed ? `Yes${b.company.role ? ' (company secretary)' : ''}: ${b.company.director}${b.company.directorDob ? ` (born ${b.company.directorDob})` : ''}` : (b.company.director ? `No: picked ${b.company.director} from the list, but gave a different name` : 'Not listed as a director')) : 'Company entered by hand';
-
+  // Bot check first, before any paid lookups (Bird).
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+  if (!(await human(raw.turnstile, ip))) return res.status(400).json({ error: 'Please tick the box to confirm you’re not a robot, then try again.' });
   if (platformOn() && !(await allow(`enquiry:${ip}`, 3600, 8))) return res.status(429).json({ error: 'Too many enquiries from this connection. Please try again later.' });
+
   // Flag, don't drop: a human can judge borderline cases.
   const flags = [];
   if (b.website) flags.push('honeypot filled');
-  if (Number(b._ms) < 5000) flags.push(`completed in ${b._ms}ms`);
-  // Our own tests: open any form page with ?test=1. Never saved, matched or sent to brokers; no paid checks or Conversions API (the pixel still fires).
-  if (b.utm && typeof b.utm === 'object' && 'test' in b.utm) flags.push('test submission');
+  if (b._ms < 5000) flags.push(`completed in ${b._ms}ms`);
+  // Our own tests: open any form page with ?test=1. No paid checks, no Conversions API, subject marked [TEST].
+  const test = 'test' in b.utm;
+  if (test) flags.push('test submission');
 
   // Live checks (Bird): is the mobile reachable, does the mailbox exist. Skipped for likely spam to save the cost.
-  const [pc, ec] = flags.length ? [null, null] : await Promise.all([checkPhone(b.phone), checkEmail(email)]);
+  const [pc, ec] = flags.length ? [null, null] : await Promise.all([checkPhone(b.phone), checkEmail(b.email)]);
   const ask = problem(pc, ec, b);
   if (ask) return res.status(400).json(ask);
-  b.checks = { at: new Date().toISOString(), phone: pc, email: ec, phoneConfirmed: !!b.phoneConfirmed, emailConfirmed: !!b.emailConfirmed };
   const checkLine = [pc ? `phone ${pc.reachable === true ? 'reachable' : pc.reachable === false ? 'NOT reachable (confirmed by applicant)' : 'unknown'}${pc.carrier ? ` (${pc.carrier})` : ''}` : 'phone not checked',
-    ec ? `email ${ec.result}${b.emailConfirmed ? ' (confirmed by applicant)' : ''}` : 'email not checked'].join('; ');
+    ec ? `email ${ec.result}${b.emailConfirmed ? ' (confirmed by applicant)' : ''}` : 'email not checked', flags.length ? `FLAGGED: ${flags.join('; ')}` : ''].filter(Boolean).join('; ');
 
-  // Lead conversion for Meta ads: sent for every enquiry regardless of cookie choice (server-side, sets no cookies),
-  // but never for flagged (possible spam) enquiries.
-  // Repeat enquiries (same phone or email, 90 days) were already counted, so they send no Meta events, server or pixel.
-  const repeat = !flags.length && platformOn() ? await duplicateOf(b).catch(() => null) : null;
-  if (repeat) Object.assign(metaOut, { lead: false, qualified: false, revenue: [] });
-  const meta = flags.length ? 'skipped: flagged' : repeat ? `skipped: repeat of ${repeat}` : !ev.lead ? 'skipped: smaller/newer business (not a Lead)' : await sendLeadEvents(b, req, ev.qualified, ev.revenue);
+  const meta = flags.length ? 'skipped: flagged' : !b.marketing ? 'skipped: no marketing consent' : await sendMetaLead(b, req);
   console.log('meta lead', meta);
-  // Leads live in the platform only (Admin → All leads); no email per lead. Flagged (possible spam) enquiries are never listed.
-  if (flags.length) { console.log('enquiry flagged, not listed', flags.join('; '), b.business); return res.status(200).json({ ok: true, meta: metaOut }); }
-  let match = null, again = null; // auto-bought: the broker's public profile, shown on the confirmation page
-  try { if (!platformOn()) throw new Error('platform not configured'); const r = await ingestLead(b); match = r.match || null; again = r.again ? { rematch: r.rematch } : null; delete r.match; delete r.rematch; console.log('platform lead', JSON.stringify(r)); }
-  catch (e) { console.error('platform ingest', e.message); await fallbackEmail(b, checkLine); } // never lose a lead: email only if the platform failed
-  return res.status(200).json({ ok: true, match, ...(again ? { again: true, rematch: again.rematch } : {}), meta: metaOut });
+
+  try {
+    const team = teamEmail(b, checkLine);
+    if (flags.length) team.subject = `[${test ? 'TEST' : 'CHECK'}] ${team.subject}`;
+    await send(team);
+  } catch (e) {
+    console.error('enquiry email', e.message);
+    return res.status(500).json({ error: 'Sorry, something went wrong sending your details.' });
+  }
+  if (!flags.length) await send(confirmEmail(b)).catch((e) => console.error('confirmation email', e.message));
+  return res.status(200).json({ ok: true, meta: { lead: !flags.length } });
 }

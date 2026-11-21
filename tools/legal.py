@@ -1,81 +1,88 @@
-# Writes the Loanleaf Privacy Policy and Terms of Service into the existing page shells.
-# Run from ~/loanleaf-site:  python3 tools/legal.py
+# Writes the Leaflegal Privacy Policy and Terms of Service into the existing page shells.
+# Run from the repo root:  python3 tools/legal.py
 import re
 
 EFFECTIVE = '4 November 2026'
 CO = ('<strong>Vertical Brands Ltd</strong>, registered in England and Wales, '
       'company number 14254961. Registered office: 20–22 Wenlock Road, London, N1 7GU, United Kingdom. '
-      'Email: <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a>.')
+      'Email: <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.')
 
 PRIVACY = f'''
 <p><strong>Last updated: {EFFECTIVE}</strong></p>
-<p>This policy explains how Loanleaf collects, uses and shares your personal information when you use loanleaf.co and our business finance enquiry form. Please read it together with our <a href="/terms-conditions">Terms of Service</a>.</p>
+<p>This policy explains how Leaflegal collects, uses and shares your personal information when you use leaflegal.co and our legal enquiry form. Please read it together with our <a href="/terms-conditions">Terms of Service</a>.</p>
 
 <h2>1. Who we are</h2>
-<p>Loanleaf is a trading name of {CO}</p>
+<p>Leaflegal is a trading name of {CO}</p>
 <p>We are the data controller for the personal information we collect through this website. This means we decide how and why it is used, and we are responsible for it under UK data protection law (the UK GDPR and the Data Protection Act 2018).</p>
-<p>Loanleaf is an introduction service. We are <strong>not</strong> a lender or a broker, we do <strong>not</strong> give financial advice, and we are <strong>not</strong> authorised or regulated by the Financial Conduct Authority (FCA). We pass your enquiry to a finance broker who may be able to help your business.</p>
+<p>Leaflegal is an introduction service. We are <strong>not</strong> a law firm, we do <strong>not</strong> give legal advice, and we are <strong>not</strong> regulated by the Solicitors Regulation Authority (SRA). With your permission, we pass your enquiry to one independent, regulated law firm that may be able to help you.</p>
 
 <h2>2. The information we collect</h2>
 <p>When you complete our enquiry form, we collect:</p>
 <ul>
-<li><strong>Contact details:</strong> your first and last name, business name, email address and mobile number.</li>
-<li><strong>Details about your funding needs:</strong> how much you want to borrow, what it is for and how soon you need it.</li>
-<li><strong>Details about your business:</strong> how it is set up, its annual revenue, how long it has been trading, whether there have been missed payments, defaults or County Court Judgments (CCJs) in the last 6 years, and whether it has existing loans or finance, including roughly how much is left to repay and the monthly repayments.</li>
-<li><strong>Records of your consent:</strong> the wording you agreed to (including any boxes you ticked) and when.</li>
+<li><strong>Contact details:</strong> your first and last name, email address and mobile number, and your business name if the enquiry is for a business.</li>
+<li><strong>Details about your matter:</strong> the area of law, the type of matter, how urgent it is, your postcode, whether you are able to pay privately for legal help, and a short summary if you choose to give one.</li>
+<li><strong>Records of your consent:</strong> the wording you agreed to (including the boxes you ticked) and when.</li>
 </ul>
 <p>When you visit the website, we and our service providers also collect:</p>
 <ul>
 <li><strong>Technical and usage information:</strong> your IP address, browser and device type, pages visited, the website or advert that referred you, and campaign tags in the web address.</li>
 <li><strong>Cookie information:</strong> see our <a href="/cookie-policy">Cookie Policy</a>.</li>
 </ul>
-<p>Some of the answers you give, such as credit history and existing borrowing, may relate to you personally as a director or member of the business. Please only give information that is accurate and that you are entitled to share.</p>
-<p>Our service is for businesses, not for children. We do not knowingly collect information from anyone under 18.</p>
+<p>We do not collect information from anyone under 18.</p>
 
-<h2>3. How we use your information</h2>
+<h2>3. Sensitive information</h2>
+<p>Some legal matters can reveal sensitive information. A family law enquiry may reveal details about your relationships, health or children. An immigration enquiry may reveal your nationality or ethnic origin. A motoring offence enquiry relates to an alleged criminal offence. UK data protection law gives this information extra protection, as "special category" data (Article 9 UK GDPR) and "criminal offence" data (Article 10 UK GDPR).</p>
 <ul>
-<li>To review your enquiry and decide which broker to introduce you to.</li>
-<li>To pass your enquiry to that broker so they can contact you about business finance.</li>
-<li>To contact you about your enquiry by email, text message or WhatsApp, for example to check your details or tell you which broker you've been matched with.</li>
+<li>We only use this information with your <strong>explicit consent</strong>, which you give by ticking the box on our form that lets us share your enquiry with a law firm. For criminal offence data we also rely on the condition in Schedule 1 of the Data Protection Act 2018 for processing with consent, and, where relevant, for the purpose of obtaining legal advice.</li>
+<li>We ask only for what a firm needs to decide whether it can help. Please keep any summary short and do not include anything you would not want a law firm to read.</li>
+<li>We <strong>never</strong> send details of your matter to advertising platforms such as Meta or LinkedIn.</li>
+<li>We keep this information for a shorter time than other records (see section 9).</li>
+</ul>
+
+<h2>4. How we use your information</h2>
+<ul>
+<li>To review your enquiry and decide which law firm to introduce you to.</li>
+<li>To pass your enquiry to that firm so it can contact you about your matter.</li>
+<li>To contact you about your enquiry by email, text message or phone, for example to check your details or tell you which firm you have been matched with.</li>
 <li>To check that enquiries are genuine and to prevent spam, fraud and misuse.</li>
 <li>To understand how people use our website and adverts, and to improve them.</li>
 <li>To keep records, deal with complaints and meet our legal obligations.</li>
 </ul>
 
-<h2>4. Our legal reasons for using your information</h2>
+<h2>5. Our legal reasons for using your information</h2>
 <ul>
-<li><strong>Contract:</strong> when you send an enquiry you are asking us to introduce you to a broker, so we pass it to the broker we match you with so they can contact you about it.</li>
-<li><strong>Consent:</strong> we only use the Meta Pixel and the LinkedIn Insight Tag in your browser if you accept marketing cookies. You can withdraw your consent at any time (see section 10, or use the Cookie settings link at the bottom of every page).</li>
-<li><strong>Legitimate interests:</strong> we use your information to run our service, check and improve the quality of enquiries, measure how well our advertising works (including through Meta’s Conversions API), prevent fraud, keep records and defend legal claims. We only do this where it doesn't override your rights.</li>
+<li><strong>Consent:</strong> we share your enquiry with a law firm only if you tick the box agreeing to it. We use the Meta Pixel and the LinkedIn Insight Tag in your browser only if you accept marketing cookies. You can withdraw your consent at any time (see section 11, or use the Cookie settings link at the bottom of every page).</li>
+<li><strong>Explicit consent:</strong> for special category and criminal offence data, as explained in section 3.</li>
+<li><strong>Legitimate interests:</strong> we use your contact details and technical information to run our service, check the quality of enquiries, measure how well our advertising works, prevent fraud, keep records and defend legal claims. We only do this where it does not override your rights.</li>
 <li><strong>Legal obligation:</strong> where the law requires us to keep or share information.</li>
 </ul>
 
-<h2>5. Who we share your information with</h2>
-<p><strong>The broker we match you with.</strong> If you agree, we share your contact details and form answers with a finance broker we select for your enquiry. The broker will usually contact you by phone, email or text message.</p>
+<h2>6. Who we share your information with</h2>
+<p><strong>The law firm we match you with.</strong> If you agree, we share your contact details and form answers with <strong>one</strong> law firm we select for your enquiry. The firm may contact you by phone, email or text message.</p>
 <ul>
-<li>The broker is an independent business, not part of Loanleaf. Once it receives your information, the broker is responsible for how it uses it, under its own privacy notice.</li>
-<li>The broker <strong>may or may not be authorised by the FCA</strong>. You can check a firm's status on the FCA Register at <a href="https://register.fca.org.uk" target="_blank" rel="noopener">register.fca.org.uk</a>.</li>
-<li>The broker may share your information with lenders and may carry out credit and identity checks on your business and its directors. It should tell you about this before doing so.</li>
+<li>The firm is an independent business, not part of Leaflegal. It is regulated by the SRA, CILEx Regulation, the Council for Licensed Conveyancers or, for immigration only, the Immigration Advice Authority. You can check a solicitor on the SRA's register at <a href="https://www.sra.org.uk/consumers/register/" target="_blank" rel="noopener">sra.org.uk</a>.</li>
+<li>Once it receives your information, the firm is a separate data controller and is responsible for how it uses it, under its own privacy notice.</li>
+<li>The firm decides whether it can take on your matter. If you instruct it, your relationship is with the firm, on its own terms of business.</li>
 </ul>
-<p><strong>Meta (advertising measurement).</strong> We share limited information with Meta Platforms Ireland Ltd (which runs Facebook and Instagram) to measure and improve our adverts. This includes events such as viewing or submitting a form, your IP address and browser details, any advert click ID and, when you submit an enquiry or application, a hashed (scrambled) version of your email address, phone number and name. We don’t share your answers about your business or its finances. Meta uses this information under its own terms and privacy policy.</p>
-<p><strong>LinkedIn (advertising measurement).</strong> If you accept marketing cookies, the LinkedIn Insight Tag tells LinkedIn Ireland Unlimited Company which pages you visit and when you submit an enquiry, along with your IP address and browser details, so we can measure and improve our LinkedIn adverts. We don’t send LinkedIn your name, contact details or your answers about your business. If you’re a broker who registers for or pays for a plan on Loanleaf Platform, we also tell LinkedIn about that from our server, with a hashed (scrambled) version of your email address, your name and your firm’s name, so we can measure our LinkedIn adverts. LinkedIn uses this information under its own terms and privacy policy.</p>
-<p><strong>Our service providers.</strong> These include website hosting, email delivery and analytics and advertising-tracking providers. They act on our instructions and are not allowed to use your information for their own purposes.</p>
-<p><strong>Others, where necessary.</strong> These include our professional advisers, police, regulators, courts or other authorities where the law requires it, or a buyer of our business if Loanleaf or Vertical Brands Ltd is ever sold or restructured.</p>
-<p>We do not sell your information to data brokers or list sellers.</p>
+<p><strong>Meta (advertising measurement).</strong> If you accept marketing cookies, we share limited information with Meta Platforms Ireland Ltd (which runs Facebook and Instagram) to measure our adverts. This is limited to the fact that a form was viewed or submitted, your IP address and browser details, any advert click ID and a hashed (scrambled) version of your email address and phone number. We <strong>never</strong> share the area of law, your matter or your answers.</p>
+<p><strong>LinkedIn (advertising measurement).</strong> If you accept marketing cookies, the LinkedIn Insight Tag tells LinkedIn Ireland Unlimited Company which pages you visit and when you submit an enquiry, along with your IP address and browser details. We don't send LinkedIn your name, contact details or anything about your matter.</p>
+<p><strong>Our service providers.</strong> These include website hosting, email delivery, phone and email checking services and advertising measurement providers. They act on our instructions and are not allowed to use your information for their own purposes.</p>
+<p><strong>Others, where necessary.</strong> These include our professional advisers, police, regulators, courts or other authorities where the law requires it, or a buyer of our business if Leaflegal or Vertical Brands Ltd is ever sold or restructured.</p>
+<p>We do not sell your information to data brokers or list sellers, and we never share one enquiry with more than one firm at a time.</p>
 
-<h2>6. How we are paid</h2>
-<p>Our service is free to use. We may be paid by the broker we introduce you to. Any fees or charges a broker or lender asks you to pay are set by them and should be explained to you before you agree to anything.</p>
+<h2>7. How we are paid</h2>
+<p>Our service is free to use. The law firm we introduce you to pays us a fee for the introduction. This does not change what the firm charges you. The firm must tell you about the fee in writing.</p>
 
-<h2>7. Transfers outside the UK</h2>
+<h2>8. Transfers outside the UK</h2>
 <p>Some of our service providers store or process information outside the UK, for example in the European Economic Area or the United States. Where this happens, we make sure appropriate safeguards are in place, such as UK adequacy regulations, the UK–US data bridge, or the UK International Data Transfer Agreement or Addendum.</p>
 
-<h2>8. How long we keep your information</h2>
-<p>We keep enquiry information for up to 24 months after you last contacted us. We keep records of your consent for up to 6 years, so that we can show what you agreed to if there is ever a dispute. We may keep information for longer where the law requires it. After that we securely delete it or make it anonymous.</p>
+<h2>9. How long we keep your information</h2>
+<p>We keep the details of your matter for up to 12 months after you last contacted us, and your contact details for up to 24 months. We keep records of your consent for up to 6 years, so that we can show what you agreed to if there is ever a dispute. We may keep information for longer where the law requires it. After that we securely delete it or make it anonymous.</p>
 
-<h2>9. Keeping your information secure</h2>
+<h2>10. Keeping your information secure</h2>
 <p>We use appropriate technical and organisational measures to protect your information, including encrypted connections (HTTPS) and limiting who can access it. No method of sending or storing data is completely secure, but we work to protect your information and to deal promptly with any security incident.</p>
 
-<h2>10. Your rights</h2>
+<h2>11. Your rights</h2>
 <p>Under UK data protection law you have the right to:</p>
 <ul>
 <li>ask for a copy of the information we hold about you;</li>
@@ -86,80 +93,80 @@ PRIVACY = f'''
 <li>ask us to send your information to you or another organisation in a reusable format; and</li>
 <li>withdraw your consent at any time.</li>
 </ul>
-<p>To use any of these rights, email <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a>. We will respond within one month. If you withdraw your consent after we have shared your enquiry, we will tell the broker you no longer want to be contacted. You should also contact the broker directly, because it controls its own copy of your information.</p>
+<p>To use any of these rights, email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>. We will respond within one month. If you withdraw your consent after we have shared your enquiry, we will tell the firm you no longer want to be contacted. You should also contact the firm directly, because it controls its own copy of your information.</p>
 <p>If you are unhappy with how we have handled your information, please tell us first. You also have the right to complain to the Information Commissioner's Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a> or on 0303 123 1113.</p>
 
-<h2>11. Changes to this policy</h2>
+<h2>12. Changes to this policy</h2>
 <p>We may update this policy from time to time. The latest version will always be on this page, with the date it was last updated.</p>
 
-<h2>12. Contact us</h2>
-<p>Loanleaf is a trading name of {CO}</p>
+<h2>13. Contact us</h2>
+<p>Leaflegal is a trading name of {CO}</p>
 '''
 
 TERMS = f'''
 <p><strong>Last updated: {EFFECTIVE}</strong></p>
-<p>These terms apply when you use loanleaf.co and our business finance enquiry service. By using the website or submitting an enquiry, you agree to these terms and to our <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, please do not use our website or service.</p>
+<p>These terms apply when you use leaflegal.co and our legal enquiry service. By using the website or submitting an enquiry, you agree to these terms and to our <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, please do not use our website or service.</p>
 
 <h2>1. About us</h2>
-<p>Loanleaf is a trading name of {CO}</p>
+<p>Leaflegal is a trading name of {CO}</p>
 
-<h2>2. What Loanleaf does</h2>
-<p>Loanleaf is a free introduction service for businesses looking for finance. You tell us about your business and what you need. If you agree, we pass your enquiry to a finance broker we think may be able to help, and the broker contacts you.</p>
-<p>Please be aware that Loanleaf:</p>
+<h2>2. What Leaflegal does</h2>
+<p>Leaflegal is a free introduction service for people and businesses looking for legal help. You tell us about your matter. If you agree, we pass your enquiry to one independent, regulated law firm we think may be able to help, and the firm contacts you.</p>
+<p>Please be aware that Leaflegal:</p>
 <ul>
-<li>is <strong>not</strong> a lender and does not provide finance;</li>
-<li>is <strong>not</strong> a broker and does not arrange, negotiate or apply for finance for you;</li>
-<li>does <strong>not</strong> give financial, legal, tax or other advice, and does not recommend any product, broker or lender;</li>
-<li>is <strong>not</strong> authorised or regulated by the Financial Conduct Authority (FCA); and</li>
-<li>does <strong>not</strong> guarantee that you will be contacted, offered finance or approved, or that any terms will be available.</li>
+<li>is <strong>not</strong> a law firm and does not provide legal services;</li>
+<li>does <strong>not</strong> give legal advice, and nothing on this website is legal advice;</li>
+<li>does <strong>not</strong> give immigration advice or services of any kind;</li>
+<li>is <strong>not</strong> regulated by the Solicitors Regulation Authority (SRA) or any other legal regulator; and</li>
+<li>does <strong>not</strong> guarantee that a firm will contact you, take on your matter, or achieve any particular result.</li>
 </ul>
 
 <h2>3. Who can use our service</h2>
-<p>Our service is only for UK businesses that are limited companies or limited liability partnerships (LLPs) and are looking for finance for business purposes. By submitting an enquiry you confirm that:</p>
+<p>Our service is for individuals and businesses. By submitting an enquiry you confirm that:</p>
 <ul>
 <li>you are at least 18 years old;</li>
-<li>you are a director, member or other person authorised to make the enquiry on behalf of the business; and</li>
-<li>the finance is wholly or mainly for the business, not for personal, family or household use.</li>
+<li>the enquiry is about your own matter, or you are authorised to make it on behalf of the business or person concerned; and</li>
+<li>for conveyancing, family law, motoring offences, licensing and lease extensions, the matter is governed by the law of England and Wales.</li>
 </ul>
-<p>We do not deal with enquiries from sole traders, ordinary partnerships or individuals, or for personal borrowing.</p>
+<p>Debt recovery enquiries are for businesses recovering money owed by other businesses only. We do not deal with personal injury, clinical negligence, housing disrepair or financial mis-selling claims, or with matters where you are looking only for legal aid.</p>
 
-<h2>4. The brokers we introduce you to</h2>
+<h2>4. The law firms we introduce you to</h2>
 <ul>
-<li>Brokers are independent businesses. They are not part of Loanleaf, and we do not act for them or for you.</li>
-<li>A broker we introduce you to <strong>may or may not be authorised by the FCA</strong>. You can check a firm's status on the FCA Register at <a href="https://register.fca.org.uk" target="_blank" rel="noopener">register.fca.org.uk</a>.</li>
-<li>Many types of lending to limited companies and LLPs are not regulated by the FCA. This means protections that apply to regulated finance, such as complaining to the Financial Ombudsman Service, may not be available to you.</li>
-<li>Any service a broker provides, and any finance a lender offers, is between you and them, on their own terms. Please read their terms carefully and take independent advice if you are unsure.</li>
-<li>Brokers and lenders make their own decisions. They may carry out credit and identity checks on your business and its directors, and may charge fees, which they should explain before you agree to anything.</li>
-<li>We are not responsible for what brokers or lenders say or do, or for any finance, advice or service they provide.</li>
+<li>Firms are independent businesses. They are not part of Leaflegal, and we do not act for them or for you.</li>
+<li>Every firm we work with is regulated by the SRA, CILEx Regulation or the Council for Licensed Conveyancers. Immigration enquiries go only to firms or advisers allowed to give immigration advice under the Immigration and Asylum Act 1999.</li>
+<li>Any legal service a firm provides is between you and the firm, on its own terms of business and client care letter. Please read them carefully.</li>
+<li>The firm decides whether it can help you and what it charges. It should explain its fees before you agree to anything.</li>
+<li>If you have a complaint about a firm, you should raise it with the firm first. If you are not happy with its answer, you can usually go to the <a href="https://www.legalombudsman.org.uk" target="_blank" rel="noopener">Legal Ombudsman</a>. Concerns about a solicitor's conduct can be reported to the <a href="https://www.sra.org.uk" target="_blank" rel="noopener">SRA</a>.</li>
+<li>We are not responsible for what firms say or do, or for any legal service or advice they provide.</li>
 </ul>
 
 <h2>5. Your information</h2>
 <ul>
-<li>You must make sure the information you give us is true, accurate and complete. Brokers and lenders rely on it.</li>
-<li>You must only give information about other people, such as fellow directors, if you are entitled to share it.</li>
-<li>By submitting our form, you agree to us sharing your details and answers with the broker we match you with, and to that broker contacting you by phone, email or text message about business finance.</li>
+<li>You must make sure the information you give us is true, accurate and complete. Firms rely on it.</li>
+<li>You must only give information about other people if you are entitled to share it.</li>
+<li>We will only share your enquiry with a firm if you tick the box agreeing to it. The firm may then contact you by phone, email or text message about your enquiry.</li>
 <li>We use your information as described in our <a href="/privacy-policy">Privacy Policy</a>.</li>
 </ul>
-<p>We may decide not to pass on an enquiry, for example if it does not meet a broker's criteria or appears to be false.</p>
+<p>We may decide not to pass on an enquiry, for example if it is outside the areas we cover or appears to be false.</p>
 
 <h2>6. Cost and how we are paid</h2>
-<p>Our service is free for you to use. We may be paid by the broker we introduce you to. Any fees charged by a broker or lender are set by them.</p>
+<p>Our service is free for you to use. The firm we introduce you to pays us a fee for the introduction. This does not change what the firm charges you, and the firm must tell you about it in writing.</p>
 
 <h2>7. Our responsibility to you</h2>
-<p>We provide our website and service "as is". We try to keep them available and accurate, but we do not promise they will always be available or error-free.</p>
+<p>We provide our website and service with reasonable care and skill. We try to keep them available and accurate, but we do not promise they will always be available or error-free.</p>
 <p>As far as the law allows, we are not liable for:</p>
 <ul>
-<li>any loss arising from a decision you or your business makes, or from any finance, advice or service provided by a broker or lender;</li>
-<li>any loss of profit, revenue, business, opportunity or goodwill; or</li>
-<li>any indirect or consequential loss.</li>
+<li>any loss arising from a decision you make, or from any legal service or advice provided by a firm;</li>
+<li>any loss of profit, revenue, business, opportunity or goodwill (this applies to business users only); or</li>
+<li>any loss that was not reasonably foreseeable.</li>
 </ul>
-<p>If we are found liable to you for any reason, our total liability will be limited to £100.</p>
-<p>Nothing in these terms limits or excludes liability that cannot be limited or excluded by law, including liability for death or personal injury caused by our negligence, or for fraud or fraudulent misrepresentation.</p>
+<p>Nothing in these terms limits or excludes liability that cannot be limited or excluded by law, including liability for death or personal injury caused by our negligence, for fraud or fraudulent misrepresentation, or your statutory rights as a consumer under the Consumer Rights Act 2015.</p>
 
 <h2>8. Using our website</h2>
 <ul>
 <li>You must not misuse our website. This includes submitting false or fake enquiries, trying to gain unauthorised access, introducing viruses, and collecting data from the site with automated tools.</li>
 <li>The content, design and branding of this website belong to us or our licensors. You may view it for your own use but must not copy or reuse it without our permission.</li>
+<li>General information on this website is not legal advice and may not apply to your situation.</li>
 <li>Links to other websites are provided for convenience. We are not responsible for their content.</li>
 </ul>
 
@@ -167,16 +174,16 @@ TERMS = f'''
 <p>We may update these terms from time to time. The version on this page when you submit an enquiry applies to that enquiry.</p>
 
 <h2>10. Law and disputes</h2>
-<p>These terms are governed by the law of England and Wales, and the courts of England and Wales have exclusive jurisdiction.</p>
+<p>These terms are governed by the law of England and Wales. If you are a consumer living in Scotland or Northern Ireland, you can also bring proceedings in your local courts.</p>
 
 <h2>11. Contact us</h2>
-<p>If you have any questions or a complaint, email <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a> or write to us at 20–22 Wenlock Road, London, N1 7GU.</p>
+<p>If you have any questions or a complaint about our service, email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a> or write to us at 20–22 Wenlock Road, London, N1 7GU.</p>
 '''
 
 
 COOKIES = f'''
 <p><strong>Last updated: {EFFECTIVE}</strong></p>
-<p>This policy explains how Loanleaf uses cookies and similar technologies on loanleaf.co. Loanleaf is a trading name of {CO}</p>
+<p>This policy explains how Leaflegal uses cookies and similar technologies on leaflegal.co. Leaflegal is a trading name of {CO}</p>
 
 <h2>1. What cookies are</h2>
 <p>Cookies are small files a website stores on your device. Similar technologies, such as your browser's local storage, work in the same way. In this policy, "cookies" covers all of them.</p>
@@ -207,7 +214,7 @@ COOKIES = f'''
 <p>We may update this policy from time to time. The latest version will always be on this page.</p>
 
 <h2>5. Contact us</h2>
-<p>If you have any questions, email <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a>. For more about how we use personal information, see our <a href="/privacy-policy">Privacy Policy</a>.</p>
+<p>If you have any questions, email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>. For more about how we use personal information, see our <a href="/privacy-policy">Privacy Policy</a>.</p>
 '''
 
 
@@ -223,10 +230,10 @@ def write(path, title, h1, body, desc):
     open(path, 'w').write(h)
 
 
-write('public/privacy-policy.html', 'Privacy Policy | Loanleaf', 'Privacy Policy', PRIVACY,
-      'How Loanleaf, a trading name of Vertical Brands Ltd, collects, uses and shares your information.')
-write('public/terms-conditions.html', 'Terms of Service | Loanleaf', 'Terms of Service', TERMS,
-      'The terms that apply when you use Loanleaf, a business finance introduction service from Vertical Brands Ltd.')
+write('public/privacy-policy.html', 'Privacy Policy | Leaflegal', 'Privacy Policy', PRIVACY,
+      'How Leaflegal, a trading name of Vertical Brands Ltd, collects, uses and shares your information.')
+write('public/terms-conditions.html', 'Terms of Service | Leaflegal', 'Terms of Service', TERMS,
+      'The terms that apply when you use Leaflegal, a legal introduction service from Vertical Brands Ltd.')
 print('ok')
-write('public/cookie-policy.html', 'Cookie Policy | Loanleaf', 'Cookie Policy', COOKIES,
-      'How Loanleaf uses cookies, and how to accept, reject or change your cookie choices.')
+write('public/cookie-policy.html', 'Cookie Policy | Leaflegal', 'Cookie Policy', COOKIES,
+      'How Leaflegal uses cookies, and how to accept, reject or change your cookie choices.')

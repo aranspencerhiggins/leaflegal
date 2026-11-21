@@ -138,8 +138,8 @@ console.log('£100k revenue floor ok');
   const { signWebhook } = await import('../api/_lib/platform.js');
   const { createHmac } = await import('node:crypto');
   const body = '{"event":"lead.test"}', h = signWebhook('whsec_test_secret_123', body, 1700000000);
-  assert.equal(h['X-Loanleaf-Timestamp'], '1700000000');
-  assert.equal(h['X-Loanleaf-Signature'], `t=1700000000,v1=${createHmac('sha256', 'whsec_test_secret_123').update(`1700000000.${body}`).digest('hex')}`);
+  assert.equal(h['X-Leaflegal-Timestamp'], '1700000000');
+  assert.equal(h['X-Leaflegal-Signature'], `t=1700000000,v1=${createHmac('sha256', 'whsec_test_secret_123').update(`1700000000.${body}`).digest('hex')}`);
   console.log('webhook signature ok');
 }
 
@@ -184,8 +184,8 @@ console.log('£100k revenue floor ok');
   const { fbcOf } = await import('../api/enquiry.js');
   assert.equal(fbcOf({ fbc: 'fb.1.1.KEEP' }), 'fb.1.1.KEEP', 'browser click ID kept');
   assert.match(fbcOf({ utm: { fbclid: 'Iw_A-1' } }), /^fb\.1\.\d+\.Iw_A-1$/, 'from URL params');
-  assert.match(fbcOf({ referrer: 'https://loanleaf.co/apply?fbclid=PAZ_9&utm_source=ig' }), /\.PAZ_9$/, 'from referrer');
-  assert.equal(fbcOf({ page: 'https://loanleaf.co/apply', referrer: 'https://google.com' }), '', 'none when not from an ad');
+  assert.match(fbcOf({ referrer: 'https://leaflegal.co/apply?fbclid=PAZ_9&utm_source=ig' }), /\.PAZ_9$/, 'from referrer');
+  assert.equal(fbcOf({ page: 'https://leaflegal.co/apply', referrer: 'https://google.com' }), '', 'none when not from an ad');
   console.log('meta click id fallback ok');
 }
 // Smaller/newer businesses (sent to Aureum free) are not counted as a Lead on Meta/LinkedIn.

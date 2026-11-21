@@ -1,4 +1,4 @@
-/* Loanleaf: sitewide nav + polish for the rebuilt pages. Theme tokens: --base-*, --primary-*, --sans-serif, --serif */
+/* Leaflegal: sitewide nav + polish for the rebuilt pages. Theme tokens: --base-*, --primary-*, --sans-serif, --serif */
 
 /* Subtitles: user doesn't want the theme's serif (Minipax). Everything that used it now uses LINE Seed Sans. */
 :root{--serif:"LINE Seed Sans",sans-serif}

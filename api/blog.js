@@ -4,7 +4,7 @@ import { db, allow } from './_lib/platform.js';
 import { gh, ghReady, checkKey, buildPost, LOANS, DIR } from './_lib/blog.js';
 
 const SPEC = {
-  how: 'POST JSON to this URL with header Authorization: Bearer <your key>. Existing posts: https://loanleaf.co/blog-posts.json',
+  how: 'POST JSON to this URL with header Authorization: Bearer <your key>. Existing posts: https://leaflegal.co/blog-posts.json',
   fields: { title: '15–110 chars', description: 'meta description, 70–170 chars', summary: 'card summary, 40–220 chars', category: '3–30 chars, e.g. Cash flow',
     body: 'array of blocks, intro paragraph first, 2+ h2, 400–2500 words: {"type":"p","text"} | {"type":"h2","text"} | {"type":"ul","items":[...]}',
     related_loans: `optional, up to 3 of: ${LOANS.join(', ')}`, slug: 'optional, made from the title', replace: 'optional true to update a post this API published' },
@@ -36,5 +36,5 @@ export default async function handler(req, res) {
   auth.k.last_used = new Date().toISOString(); auth.k.posts = (auth.k.posts || 0) + 1;
   await auth.save().catch(() => {});
   await db('audit_log', { method: 'POST', body: { admin: null, action: cur.ok ? 'blog-update' : 'blog-publish', target: post.slug, detail: { key: auth.k.name, title: post.title } } }).catch(() => {});
-  return res.status(cur.ok ? 200 : 201).json({ ok: true, slug: post.slug, url: `https://loanleaf.co/blog/${post.slug}`, live_in: 'about 2 minutes' });
+  return res.status(cur.ok ? 200 : 201).json({ ok: true, slug: post.slug, url: `https://leaflegal.co/blog/${post.slug}`, live_in: 'about 2 minutes' });
 }

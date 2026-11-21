@@ -1,4 +1,4 @@
-/* Broker CRM (platform.loanleaf.co/crm). Builds on platform.css variables and components. */
+/* Broker CRM (platform.leaflegal.co/crm). Builds on platform.css variables and components. */
 .crm-kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
 .crm-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
 .crm-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}

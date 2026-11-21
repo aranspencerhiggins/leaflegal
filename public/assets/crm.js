@@ -1,4 +1,4 @@
-// Broker CRM (platform.loanleaf.co/crm, admins only). Loaded by platform.js, which passes its shell helpers in.
+// Broker CRM (platform.leaflegal.co/crm, admins only). Loaded by platform.js, which passes its shell helpers in.
 // API: /api/crm (api/crm.js). Email goes through Resend, SMS through Bird; stage email flows run daily.
 window.LLCRM = async (X) => {
   const { view, h, I, toast, modal, drawer, confirmBox, when, ago, empty, initials, api } = X;
@@ -285,7 +285,7 @@ window.LLCRM = async (X) => {
           ['Found us', `${h(c.source)}${c.source_detail ? `<span>${h(c.source_detail)}</span>` : ''}`], ['Website', c.website ? `<a href="${h(/^https?:/.test(c.website) ? c.website : `https://${c.website}`)}" target="_blank" rel="noopener">${h(c.website.replace(/^https?:\/\//, ''))}</a>` : '–'],
           ...(c.tags?.length ? [['Tags', c.tags.map((t) => `<span class="crm-src">${h(t)}</span>`).join(' ')]] : []), ...(c.lost_reason ? [['Lost because', h(c.lost_reason)]] : [])]
           .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</div>
-      ${b ? `<div class="crm-broker"><span class="pf-avatar pf-avatar-s">${initials(b.company)}</span><div><b>On Loanleaf Platform</b><span>${b.suspended_at ? 'Suspended' : b.approved ? 'Approved' : 'Waiting for approval'} · ${Number(b.credits).toLocaleString('en-GB')} credits · ${b.stripe_customer ? 'paying' : 'no plan yet'}</span></div><a class="pf-btn pf-btn-sm" href="${X.P}/admin">Admin</a></div>` : ''}
+      ${b ? `<div class="crm-broker"><span class="pf-avatar pf-avatar-s">${initials(b.company)}</span><div><b>On Leaflegal Platform</b><span>${b.suspended_at ? 'Suspended' : b.approved ? 'Approved' : 'Waiting for approval'} · ${Number(b.credits).toLocaleString('en-GB')} credits · ${b.stripe_customer ? 'paying' : 'no plan yet'}</span></div><a class="pf-btn pf-btn-sm" href="${X.P}/admin">Admin</a></div>` : ''}
       <h3 class="pf-dsec">Email flow</h3>
       <div class="crm-flowbox">${c.unsubscribed_at ? '<p class="pf-hint">Stopped: unsubscribed.</p>' : c.flows_paused ? '<p class="pf-hint">Paused for this contact.</p>'
         : d.upcoming.length ? `<ul>${d.upcoming.map((s) => `<li><b>${h(s.subject)}</b><span>${s.overdue ? 'Due now, sends on the next weekday run' : `Day ${s.day} · ${day(s.due)}`}</span></li>`).join('')}</ul>` : `<p class="pf-hint">No more flow emails while they're in ${h(stageName(c.stage))}.</p>`}
@@ -330,7 +330,7 @@ window.LLCRM = async (X) => {
       if (kind === 'sms') {
         const live = D.sms;
         box.innerHTML = `<form class="crm-compose pf-form" data-cf><b>Text ${h(c.name || c.phone)}</b><span class="pf-hint">${h(d.e164 || c.phone)}${d.mobile ? '' : ' · this doesn’t look like a UK mobile'}</span>
-          <textarea name="body" rows="4" maxlength="640" required>Hi {first_name}, it's ${h((X.me.contact_name || '').split(' ')[0] || 'Aran')} from Loanleaf. </textarea><span class="pf-hint" data-n></span>
+          <textarea name="body" rows="4" maxlength="640" required>Hi {first_name}, it's ${h((X.me.contact_name || '').split(' ')[0] || 'Aran')} from Leaflegal. </textarea><span class="pf-hint" data-n></span>
           ${live ? '' : '<p class="pf-hint">SMS sending isn’t connected yet, so this opens the message on your phone and logs it here.</p>'}
           <div class="pf-row-l">${live ? '<button class="pf-btn pf-btn-primary">Send text</button>' : '<button class="pf-btn pf-btn-primary">Open on my phone and log it</button>'}<button type="button" class="pf-btn" data-cx>Cancel</button></div></form>`;
         const f = box.querySelector('[data-cf]'), n = f.querySelector('[data-n]'), count = () => { const l = f.body.value.length; n.textContent = `${l} characters · ${Math.max(1, Math.ceil(l / 153))} text${l > 160 ? 's' : ''}`; };

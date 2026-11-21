@@ -17,7 +17,7 @@ async function admin(req) {
   return b?.is_admin ? b : { status: 403 };
 }
 
-const page = (res, title, msg) => res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').setHeader('X-Robots-Tag', 'noindex').send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | Loanleaf</title>
+const page = (res, title, msg) => res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').setHeader('X-Robots-Tag', 'noindex').send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | Leaflegal</title>
 <style>body{margin:0;background:#eef3f1;font:16px/1.55 Arial,Helvetica,sans-serif;color:#1b3329}.c{max-width:520px;margin:48px auto;background:#fff;border-radius:18px;padding:32px}h1{margin:0 0 12px;font-size:22px}</style></head><body><div class="c"><h1>${esc(title)}</h1><p>${msg}</p></div></body></html>`);
 
 // The contact list carries enough for the board, table and filters; the full record (timeline etc.) loads per contact.
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
         await db(`crm_contacts?id=eq.${c.id}`, { method: 'PATCH', body: { unsubscribed_at: new Date().toISOString() } });
         await activity(c.id, 'system', { body: `Unsubscribed from emails${req.method === 'POST' ? ' (one-click)' : ''}` });
       }
-      return page(res, 'You’re unsubscribed', 'We won’t send you any more emails like this. If you have a Loanleaf Platform account, you’ll still get emails about your account and the leads you buy.');
+      return page(res, 'You’re unsubscribed', 'We won’t send you any more emails like this. If you have a Leaflegal Platform account, you’ll still get emails about your account and the leads you buy.');
     }
     // Daily (vercel.json crons). Each step is claimed in crm_flow_sends before sending, so reruns never double-send.
     if (action === 'cron') {

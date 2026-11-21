@@ -4,7 +4,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { db } from './platform.js';
 
-export const REPO = 'aranspencerhiggins/loanleaf-site', DIR = 'tools/blog_posts';
+export const REPO = 'aranspencerhiggins/leaflegal-site', DIR = 'tools/blog_posts';
 export const LOANS = ['unsecured-business-loans', 'secured-business-loans', 'asset-finance', 'invoice-finance', 'merchant-cash-advance',
   'revolving-credit-facility', 'commercial-mortgages', 'bridging-loans', 'vat-and-tax-loans'];
 export const IMGS = ['stock-home', 'stock-calc', 'stock-unsecured', 'stock-invoice', 'stock-rcf', 'stock-tax', 'stock-secured', 'stock-commercial',
@@ -14,7 +14,7 @@ const sha = (s) => createHash('sha256').update(String(s)).digest('hex');
 export const ghReady = () => !!process.env.BLOG_GITHUB_TOKEN;
 export async function gh(path, opts = {}) {
   const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, { method: opts.method || 'GET',
-    headers: { Authorization: `Bearer ${process.env.BLOG_GITHUB_TOKEN}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'loanleaf-blog' },
+    headers: { Authorization: `Bearer ${process.env.BLOG_GITHUB_TOKEN}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'leaflegal-blog' },
     body: opts.body ? JSON.stringify(opts.body) : undefined });
   return { ok: r.ok, status: r.status, data: await r.json().catch(() => null) };
 }
@@ -67,7 +67,7 @@ export function buildPost(b) {
   const slug = slugify(b.slug || b.title);
   if (slug.length < 8) return bad('slug is too short');
   const title = plain(b.title);
-  return { post: { slug, title, meta_title: plain(b.meta_title || `${String(b.title).trim()} | Loanleaf`).slice(0, 90), desc: plain(b.description), category: plain(b.category),
+  return { post: { slug, title, meta_title: plain(b.meta_title || `${String(b.title).trim()} | Leaflegal`).slice(0, 90), desc: plain(b.description), category: plain(b.category),
     date: today, read_mins: Math.max(2, Math.round(words / 220)), summary: plain(b.summary), body, related_loans: related,
     img: `/assets/${IMGS[parseInt(sha(slug).slice(0, 6), 16) % IMGS.length]}.webp`, source: 'api' } };
 }

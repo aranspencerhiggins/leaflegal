@@ -1,10 +1,11 @@
-// Meta + LinkedIn tracking for Loanleaf (both only with marketing-cookie consent).
+// Meta + LinkedIn tracking for Leaflegal (both only with marketing-cookie consent).
 // Pixel + Conversions API events share an event_id so Meta de-duplicates them.
-// Usage: llTrack('FormStep', { form: 'business', step: 3, step_name: 'timeline' })
+// Usage: llTrack('FormStep', { form: 'legal', step: 3, step_name: 'urgency' })
 (() => {
-  const PIXEL_ID = '658905286613269';
-  // LinkedIn Insight Tag (Campaign Manager account 560716965). Site events → LinkedIn conversion IDs (Measure → Conversion tracking).
-  const LI_PARTNER = '10412564';
+  // Leaflegal's own Meta dataset and LinkedIn Insight Tag partner ID go here. Empty = not loaded.
+  // (Never reuse LoanLeaf's: different business, different consent.)
+  const PIXEL_ID = '';
+  const LI_PARTNER = '';
   // Conversions go to LinkedIn from the server (api/_lib/platform.js LI_SERVER) for everyone, so the tag sends none itself (no double count).
   const STANDARD = new Set(['PageView', 'ViewContent', 'Lead', 'SubmitApplication', 'Contact', 'CompleteRegistration']);
   const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
@@ -18,7 +19,7 @@
   const fbp = () => (document.cookie.match(/(?:^|; )_fbp=([^;]+)/) || [])[1] || '';
 
   function loadPixel() {
-    if (window.fbq) return;
+    if (window.fbq || !PIXEL_ID) return;
     /* eslint-disable */
     !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
     if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;
@@ -32,7 +33,7 @@
   }
 
   function loadLinkedIn() {
-    if (window.lintrk) return;
+    if (window.lintrk || !LI_PARTNER) return;
     window._linkedin_data_partner_ids = [LI_PARTNER];
     window.lintrk = function (a, b) { window.lintrk.q.push([a, b]); }; window.lintrk.q = [];
     const t = document.createElement('script'); t.async = true; t.src = 'https://snap.licdn.com/li.lms-analytics/insight.min.js';
@@ -40,9 +41,10 @@
   }
 
   const early = []; // [event, data, eventId] fired before the pixel loaded on this page
-  const consented = () => !!window.loanleafCookies?.get()?.marketing;
+  const consented = () => !!window.leaflegalCookies?.get()?.marketing;
   const send = (event, data, eventId) => {
-    const body = JSON.stringify({ event, data, eventId, page: location.href, fbc: fbc(), fbp: fbp() });
+    if (!consented()) return; // legal enquiries: nothing goes to Meta without marketing consent
+    const body = JSON.stringify({ event, data, eventId, page: location.origin + location.pathname, consent: true, fbc: fbc(), fbp: fbp() });
     try { navigator.sendBeacon ? navigator.sendBeacon('/api/track', new Blob([body], { type: 'application/json' })) : fetch('/api/track', { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'application/json' } }); } catch {}
   };
   // Fire an event. opts.server=false skips the /api/track copy.
@@ -60,6 +62,6 @@
   window.llTrackIds = { fbc, fbp, uid };
   (window.__llq || []).splice(0).forEach((x) => window.llTrack(...x));
 
-  const start = () => window.loanleafCookies ? window.loanleafCookies.on('marketing', () => { loadPixel(); loadLinkedIn(); }) : null;
+  const start = () => window.leaflegalCookies ? window.leaflegalCookies.on('marketing', () => { loadPixel(); loadLinkedIn(); }) : null;
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
 })();

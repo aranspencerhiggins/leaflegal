@@ -20,7 +20,7 @@ const jwt = (sub, { key = good, exp = 3600, role = 'authenticated', kid = 'k1' }
 const ADMIN = 'aaaaaaaa-0000-4000-8000-000000000001', BROKER = 'bbbbbbbb-0000-4000-8000-000000000002', NEWB = 'cccccccc-0000-4000-8000-000000000003', UNV = 'eeeeeeee-0000-4000-8000-000000000005';
 const V = new Date().toISOString();
 const people = {
-  [ADMIN]: { id: ADMIN, email_verified_at: V, email: 'admin@test', company: 'Loanleaf', approved: true, is_admin: true, credits: 0, filters: {} },
+  [ADMIN]: { id: ADMIN, email_verified_at: V, email: 'admin@test', company: 'Leaflegal', approved: true, is_admin: true, credits: 0, filters: {} },
   [BROKER]: { id: BROKER, email_verified_at: V, email: 'jo@broker.test', company: 'Broker Ltd', approved: true, is_admin: false, credits: 500, mode: 'manual', notify: true, filters: {}, stripe_customer: 'cus_1' },
   [NEWB]: { id: NEWB, email_verified_at: V, email: 'new@broker.test', company: 'New Ltd', approved: false, is_admin: false, credits: 0, filters: {} },
   [UNV]: { id: UNV, email: 'unv@broker.test', company: 'Unconfirmed Ltd', approved: true, is_admin: false, credits: 900, filters: {} },
@@ -321,7 +321,7 @@ await t('chargeback pauses the broker automatically', async () => {
   await stripeEvent('charge.dispute.created', { amount: 240000, charge: { customer: 'cus_1' } });
   assert.ok(calls.some((c) => c.startsWith('PATCH') && c.includes(`brokers?id=eq.${BROKER}`)), 'not paused');
 });
-await t('promo codes not tagged loanleaf=true are refused', async () => {
+await t('promo codes not tagged leaflegal=true are refused', async () => {
   const r = await api('checkout', { method: 'POST', token: tok.broker, body: { pack: 'starter', coupon: 'HALFOFF' } });
   assert.equal(r.c, 400);
 });
@@ -521,7 +521,7 @@ await t('admin: LinkedIn leads get a cost per lead from LinkedIn spend for their
 });
 await t('admin: each lead shows where it came from (first page of the visit wins over the form page)', async () => {
   const keep = leads;
-  leads = [leadRow({ id: 1, source: { utm: { purpose: 'x' }, referrer: 'https://loanleaf.co/', first: { utm_source: 'linkedin', utm_campaign: 'c9', landing: '/' } } }),
+  leads = [leadRow({ id: 1, source: { utm: { purpose: 'x' }, referrer: 'https://leaflegal.co/', first: { utm_source: 'linkedin', utm_campaign: 'c9', landing: '/' } } }),
     leadRow({ id: 2, source: { utm: { fbclid: 'abc', utm_campaign: '123' }, referrer: 'https://facebook.com/' } }),
     leadRow({ id: 3, source: { utm: {}, referrer: 'https://www.google.com/' } }), leadRow({ id: 4, source: { utm: {}, referrer: '' } })];
   const r = await api('admin', { token: tok.admin }); leads = keep;
@@ -645,7 +645,7 @@ await t('auto-buy: budget tiers buy only within each tier\'s share of the monthl
   assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'bought over the tier budget');
   people[BROKER] = { ...people[BROKER], mode: 'manual', monthly_cap: 0, filters: {} }; leads = keep;
 });
-await t('commission clients: no manual buying and auto-buy rules stay as Loanleaf set them', async () => {
+await t('commission clients: no manual buying and auto-buy rules stay as Leaflegal set them', async () => {
   const before = people[BROKER];
   people[BROKER] = { ...before, plan: { name: 'Commission', credits: 0, commission: true }, mode: 'auto', monthly_cap: 900, filters: { turnovers: ['£5m+'] } };
   try {
@@ -829,7 +829,7 @@ await t('delete: refused for a broker who bought leads, needs the exact company 
   reset();
   assert.equal((await api('admin-delete', { method: 'POST', token: tok.admin, body: { broker: NEWB, confirm: 'new ltd' } })).c, 200);
   assert.ok(calls.some((c) => c === `DELETE https://tefpljuzuvdchczcfjlz.supabase.co/auth/v1/admin/users/${NEWB}`), 'login not deleted');
-  assert.equal((await api('admin-delete', { method: 'POST', token: tok.admin, body: { broker: ADMIN, confirm: 'Loanleaf' } })).c, 400);
+  assert.equal((await api('admin-delete', { method: 'POST', token: tok.admin, body: { broker: ADMIN, confirm: 'Leaflegal' } })).c, 400);
 });
 await t('invoiced plan: starting today adds the first credits once per due date, keyed so reruns do nothing', async () => {
   const r = await api('admin-plan', { method: 'POST', token: tok.admin, body: { broker: BROKER, name: 'Custom 10k', credits: '10000', price: '9500' } });
@@ -868,10 +868,10 @@ await t('sign-up hand-off token: round-trips, refuses tampering, readable only b
   const r = await api('handoff', { query: { h: tok } }); assert.equal(r.b.email, 'jo@acme.test');
   assert.deepEqual((await api('handoff', { query: { h: 'junk' } })).b, {});
 });
-await t('emails link to platform.loanleaf.co/<page>, never /platform/<page>', async () => {
-  assert.equal(P.PLATFORM_URL, 'https://platform.loanleaf.co');
+await t('emails link to platform.leaflegal.co/<page>, never /platform/<page>', async () => {
+  assert.equal(P.PLATFORM_URL, 'https://platform.leaflegal.co');
   const src = (await import('node:fs')).readFileSync(new URL('../api/platform.js', import.meta.url), 'utf8') + (await import('node:fs')).readFileSync(new URL('../api/_lib/platform.js', import.meta.url), 'utf8');
-  assert.ok(!/platform\.loanleaf\.co\/platform/.test(src));
+  assert.ok(!/platform\.leaflegal\.co\/platform/.test(src));
 });
 
 await t('scheduled invite: email id saved; can be cancelled before it sends, not after', async () => {
@@ -954,12 +954,12 @@ await t('meta: a platform sign-up sends PartnerInterest with hashed contact deta
 
 await t('website partner invite: lead emails on, mobile prefilled, signup confirms the email but still needs approval', async () => {
   const { partnerInvite } = await import('../api/platform.js'); reset();
-  const r = await partnerInvite({ email: 'Web@Broker.test', name: 'Wes Broker', company: 'Web Ltd', phone: '07700 900140', call: 'https://loanleaf.co/partners/apply?call=1' });
+  const r = await partnerInvite({ email: 'Web@Broker.test', name: 'Wes Broker', company: 'Web Ltd', phone: '07700 900140', call: 'https://leaflegal.co/partners/apply?call=1' });
   assert.ok(r?.token, JSON.stringify(r));
   const inv = storedInvites['web@broker.test']; assert.ok(inv && inv.alerts === true && inv.digest === false, 'invite row with every-new-lead emails');
   const theirs = mails.filter((m) => m.to.includes('web@broker.test'));
-  assert.ok(/Thanks for your enquiry/.test(theirs[0]?.subject) && /Book a call/.test(theirs[0].html) && /Join Loanleaf Platform/.test(theirs[0].html), 'thank-you email first, with both next steps');
-  const mail = theirs.find((m) => /invitation to Loanleaf Platform/.test(m.subject)); assert.ok(mail && !/approved/i.test(mail.subject) && !/Book a call/.test(mail.html), 'separate invite email, not an approved-supplier one');
+  assert.ok(/Thanks for your enquiry/.test(theirs[0]?.subject) && /Book a call/.test(theirs[0].html) && /Join Leaflegal Platform/.test(theirs[0].html), 'thank-you email first, with both next steps');
+  const mail = theirs.find((m) => /invitation to Leaflegal Platform/.test(m.subject)); assert.ok(mail && !/approved/i.test(mail.subject) && !/Book a call/.test(mail.html), 'separate invite email, not an approved-supplier one');
   const d = JSON.parse(Buffer.from(r.token.split('.')[0], 'base64url')); assert.equal(d.na, 1); assert.equal(d.m, '07700 900140');
   reset();
   assert.equal((await api('signup', { method: 'POST', body: { email: 'web@broker.test', password: 'Long-enough-123', company: 'Web Ltd', contactName: 'Wes Broker', phone: '07700 900140', invite: r.token } })).c, 200);
@@ -997,7 +997,7 @@ await t('admin edits a broker’s profile for them (?as=); brokers can’t, and 
   const saved = team; team = []; mails.length = 0;
   const inv = await api('team-invite', { method: 'POST', token: tok.admin, query: { as: BROKER }, body: { email: 'boss@team.test', perms: { buy: true, settings: true, billing: true, team: true } } });
   assert.equal(inv.c, 200, JSON.stringify(inv.b)); assert.equal(team[0].broker, BROKER, 'invited to the broker, not the admin');
-  assert.ok(mails.some((x) => String(x.html).includes('The Loanleaf team')), 'invite from Loanleaf');
+  assert.ok(mails.some((x) => String(x.html).includes('The Leaflegal team')), 'invite from Leaflegal');
   team = saved;
 });
 
@@ -1065,7 +1065,7 @@ await t('queued invites go to Resend near their send time, with the cold email a
   const r = await api('admin-invite-flush', { method: 'POST', token: tok.admin, body: {} });
   assert.equal(r.c, 200, JSON.stringify(r.b)); assert.equal(r.b.handed, 2);
   const m = mails.find((x) => x.to.includes('a@firm1.test'));
-  assert.ok(m.scheduled_at, 'not scheduled for its time'); assert.match(m.subject, /^Firm 1 is invited to join Loanleaf/);
+  assert.ok(m.scheduled_at, 'not scheduled for its time'); assert.match(m.subject, /^Firm 1 is invited to join Leaflegal/);
   assert.ok(/Inbound, genuine enquiries/.test(m.html) && /Accept invite/.test(m.html) && /invite-stop/.test(m.html), 'cold email content');
   assert.ok(m.headers?.['List-Unsubscribe'], 'one-click unsubscribe header');
   assert.notEqual(storedInvites['a@firm1.test'].email_id, 'queued');
@@ -1074,8 +1074,8 @@ await t('queued invites go to Resend near their send time, with the cold email a
 await t('warm single invite keeps the short email; cold single invite gets the full one', async () => {
   await api('admin-invite', { method: 'POST', token: tok.admin, body: { name: 'Wes Warm', email: 'wes@warm.test', kind: 'warm' } });
   await api('admin-invite', { method: 'POST', token: tok.admin, body: { name: 'Cal Cold', email: 'cal@cold.test', company: 'Cold Ltd', kind: 'cold' } });
-  assert.match(mails.find((x) => x.to.includes('wes@warm.test')).subject, /invited to join Loanleaf/);
-  assert.match(mails.find((x) => x.to.includes('cal@cold.test')).subject, /^Cold Ltd is invited to join Loanleaf/);
+  assert.match(mails.find((x) => x.to.includes('wes@warm.test')).subject, /invited to join Leaflegal/);
+  assert.match(mails.find((x) => x.to.includes('cal@cold.test')).subject, /^Cold Ltd is invited to join Leaflegal/);
   const cold = mails.find((x) => x.to.includes('cal@cold.test')).html;
   assert.ok(/Recent enquiries/.test(cold), 'recent enquiries missing');
   assert.ok(!/SECRET TRADING|Secret Person|secret@trading|7700900999/.test(cold), 'contact details leaked into a cold invite');
@@ -1128,11 +1128,11 @@ await t('matched WhatsApp, else SMS, else nothing', async () => {
     delete process.env.BIRD_API_KEY; assert.equal(await P.matchedMessage(b, l), null, 'sent with no Bird key');
     process.env.BIRD_API_KEY = 'bk_eu1_test'; delete process.env.BIRD_WA_FROM; delete process.env.BIRD_SMS_FROM;
     assert.equal(await P.matchedMessage(b, l), null, 'sent with nothing set up');
-    process.env.BIRD_WA_FROM = '+442000000000'; process.env.BIRD_SMS_FROM = 'Loanleaf';
+    process.env.BIRD_WA_FROM = '+442000000000'; process.env.BIRD_SMS_FROM = 'Leaflegal';
     assert.equal(await P.matchedMessage(b, l), 'whatsapp');
-    const wa = sent.at(-1).body; assert.equal(wa.template.slug, 'loanleaf_matched_v2'); assert.equal(wa.template.parameters.broker, 'Aureum Finance'); assert.equal(wa.template.parameters.first_name, 'Sam'); assert.equal(wa.template.parameters.business, 'your business'); assert.ok(!('whatsapp' in wa.template.parameters));
+    const wa = sent.at(-1).body; assert.equal(wa.template.slug, 'leaflegal_matched_v2'); assert.equal(wa.template.parameters.broker, 'Aureum Finance'); assert.equal(wa.template.parameters.first_name, 'Sam'); assert.equal(wa.template.parameters.business, 'your business'); assert.ok(!('whatsapp' in wa.template.parameters));
     await P.matchedMessage({ ...b, profile: { ...b.profile, whatsapp: '07700 900999' } }, { ...l, business: 'ACME TRADING LTD' });
-    const w2 = sent.at(-1).body.template; assert.equal(w2.slug, 'loanleaf_matched_wa'); assert.equal(w2.parameters.whatsapp, '07700 900999'); assert.equal(w2.parameters.business, 'Acme Trading Ltd');
+    const w2 = sent.at(-1).body.template; assert.equal(w2.slug, 'leaflegal_matched_wa'); assert.equal(w2.parameters.whatsapp, '07700 900999'); assert.equal(w2.parameters.business, 'Acme Trading Ltd');
     waOk = false; assert.equal(await P.matchedMessage(b, l), 'sms', 'no SMS fallback');
     const sms = sent.at(-1).body; assert.equal(sms.category, 'transactional'); assert.ok(/Hi Sam/.test(sms.text) && /Aureum Finance/.test(sms.text) && /Call: 0161 496 0000/.test(sms.text), sms.text);
     assert.equal(await P.matchedMessage(b, { ...l, phone: '' }), null, 'texted a lead with no number');
@@ -1191,12 +1191,12 @@ await t('pause stops an upload, resume re-times what is left at the new pace, le
 });
 
 await t('invites come from BULK_FROM when set; account emails stay on the main address', async () => {
-  const was = process.env.BULK_FROM; process.env.BULK_FROM = 'Loanleaf <invites@alerts.loanleaf.co>';
+  const was = process.env.BULK_FROM; process.env.BULK_FROM = 'Leaflegal <invites@alerts.leaflegal.co>';
   try {
     await api('admin-invite', { method: 'POST', token: tok.admin, body: { name: 'Bea Bulk', email: 'bea@bulk.test', kind: 'cold' } });
-    assert.equal(mails.find((m) => m.to.includes('bea@bulk.test')).from, 'Loanleaf <invites@alerts.loanleaf.co>');
+    assert.equal(mails.find((m) => m.to.includes('bea@bulk.test')).from, 'Leaflegal <invites@alerts.leaflegal.co>');
     reset(); await P.lowCredits(people[BROKER], 400, 60);
-    assert.ok(mails.length && !mails.some((m) => /alerts\.loanleaf/.test(m.from)), 'account email sent from the bulk address');
+    assert.ok(mails.length && !mails.some((m) => /alerts\.leaflegal/.test(m.from)), 'account email sent from the bulk address');
   } finally { if (was === undefined) delete process.env.BULK_FROM; else process.env.BULK_FROM = was; }
 });
 
@@ -1282,7 +1282,7 @@ await t('blog: no key or a wrong key is refused; a created key publishes to GitH
   const key = await B.createKey('Weekly run');
   assert.ok(!JSON.stringify(blogKeys).includes(key), 'only the hash is stored');
   const r = await callBlog(goodPost, key);
-  assert.equal(r.c, 201, JSON.stringify(r.b)); assert.equal(r.b.url, 'https://loanleaf.co/blog/how-to-plan-for-a-quiet-trading-month');
+  assert.equal(r.c, 201, JSON.stringify(r.b)); assert.equal(r.b.url, 'https://leaflegal.co/blog/how-to-plan-for-a-quiet-trading-month');
   assert.equal(ghPuts.at(-1).path, 'tools/blog_posts/how-to-plan-for-a-quiet-trading-month.json'); assert.equal(ghPuts.at(-1).body.branch, 'main');
   assert.equal(blogKeys.keys[0].posts, 1, 'usage recorded');
   assert.equal((await callBlog(goodPost, key)).c, 409, 'same slug refused');
@@ -1317,11 +1317,11 @@ await t('billing: first month offer can move to the full plan today; a normal pl
 
 await t('partner WhatsApp falls back to SMS when the template can\'t send (pending, error)', async () => {
   const real = globalThis.fetch, sent = [], env = { ...process.env };
-  Object.assign(process.env, { BIRD_API_KEY_WHATSAPPSMS: 'bk_eu1_test', BIRD_WA_FROM: '+447000000000', BIRD_SMS_FROM: 'Loanleaf' });
+  Object.assign(process.env, { BIRD_API_KEY_WHATSAPPSMS: 'bk_eu1_test', BIRD_WA_FROM: '+447000000000', BIRD_SMS_FROM: 'Leaflegal' });
   globalThis.fetch = async (u, o) => { const url = String(u); if (!url.includes('platform.bird.com')) return real(u, o); sent.push(url);
     return new Response(url.includes('/whatsapp/') ? '{"error":{"code":"E15002"}}' : '{"id":"sms_1"}', { status: url.includes('/whatsapp/') ? 422 : 200 }); };
   try {
-    assert.equal(await P.waOrSms('07700 900150', 'loanleaf_partner_welcome', {}, 'Hi', 'r1'), 'sms');
+    assert.equal(await P.waOrSms('07700 900150', 'leaflegal_partner_welcome', {}, 'Hi', 'r1'), 'sms');
     assert.ok(sent[0].includes('/whatsapp/') && sent[1].includes('/sms/'), 'WhatsApp tried first, then SMS');
   } finally { globalThis.fetch = real; for (const k of ['BIRD_API_KEY_WHATSAPPSMS', 'BIRD_WA_FROM', 'BIRD_SMS_FROM']) { if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k]; } }
 });

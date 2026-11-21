@@ -10,7 +10,7 @@ import glob, os, re
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PUB, ASSETS = os.path.join(ROOT, 'public'), os.path.join(ROOT, 'public', 'assets')
 
-DESC = 'Loanleaf helps UK limited companies and LLPs find business loans from £5,000 to £2m+ by matching them with a specialist finance broker.'
+DESC = 'Leaflegal helps UK limited companies and LLPs find business loans from £5,000 to £2m+ by matching them with a specialist finance broker.'
 
 # ---------------------------------------------------------------- 1. asset files
 DELETE = re.compile(r'(jquery-[\d.]+\.min|webflow\.(schunk|[0-9a-f]{8})\.|webflow-badge|_Webflow_Ebook|image-placeholder\.svg)', re.I)
@@ -55,10 +55,10 @@ def html_fix(h):
     h = re.sub(r'<script[^>]*>!function\(o,c\)\{var n=c\.documentElement,t=" w-mod-".*?</script>', '', h, flags=re.S)
     h = re.sub(r'<script src="[^"]*(?:jquery|webflow)[^"]*"[^>]*></script>', '', h)
     # template name in titles / meta
-    h = re.sub(r'\s*\|\s*Waystone - Webflow HTML Website Template', ' | Loanleaf', h)
+    h = re.sub(r'\s*\|\s*Waystone - Webflow HTML Website Template', ' | Leaflegal', h)
     h = re.sub(r'(<meta[^>]*content=")[^"]*Waystone[^"]*(")', lambda m: m.group(1) + DESC + m.group(2), h)
     h = re.sub(r'(content=")[^"]*Waystone[^"]*(")', lambda m: m.group(1) + DESC + m.group(2), h)
-    h = h.replace('Waystone offices', 'Loanleaf offices').replace('Waystone', 'Loanleaf')
+    h = h.replace('Waystone offices', 'Leaflegal offices').replace('Waystone', 'Leaflegal')
     # builder class / id prefixes
     def cls(m):
         toks = ['is-current' if c == 'w--current' else ('u-' + c[2:] if c.startswith('w-') else c) for c in m.group(2).split()]

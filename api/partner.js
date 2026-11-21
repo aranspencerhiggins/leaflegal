@@ -3,9 +3,10 @@ import { sealHandoff, db, metaEvent, waOrSms, PLATFORM_URL } from './_lib/platfo
 import { partnerInvite, partnerThanks } from './platform.js';
 import { capture, sourceFrom, describeSource, runFlows } from './_lib/crm.js';
 
-// POST /api/partner: emails a broker (/partners/apply) or law firm (/partners/legal/apply, form=legal) partner application via Resend. Same env as api/enquiry.js.
+// POST /api/partner: emails a law firm partner application (/partners/apply) to the team via Resend. Same env as api/enquiry.js.
+// Law firms only: the broker branches below (platform invite, WhatsApp) are left over from LoanLeaf and never run.
 const FIELDS = [
-  ['form', 'Type'], ['route', 'Route'], ['company', 'Company'], ['budget', 'Monthly budget for leads'], ['areas', 'Practice areas'], ['regulator', 'Regulator'], ['coverage', 'Coverage'], ['funds', 'Finance arranged'], ['sizes', 'Loan sizes'], ['fca', 'FCA status'], ['fcaRef', 'FCA / SRA / OISC ref'],
+  ['form', 'Type'], ['route', 'Route'], ['company', 'Company'], ['budget', 'Monthly budget for leads'], ['areas', 'Practice areas'], ['regulator', 'Regulator'], ['coverage', 'Coverage'], ['fcaRef', 'Regulator number'],
   ['volume', 'Plan / leads per month'], ['delivery', 'Delivery'], ['start', 'Start'],
   ['firstName', 'First name'], ['lastName', 'Last name'], ['role', 'Role'], ['email', 'Email'], ['phone', 'Phone'], ['site', 'Website'], ['notes', 'Notes'],
   ['consentText', 'Consent wording'], ['page', 'Page'], ['referrer', 'Referrer'],
@@ -19,7 +20,7 @@ const genv = (k) => String(process.env[k] || '').trim(); // pasted keys often ca
 const TZ = 'Europe/London', SLOT_MIN = 30, DAY_FROM = 12, DAY_TO = 17, DAYS_AHEAD = 14, NOTICE_MS = 2 * 36e5;
 const gOn = () => !!(genv("GOOGLE_CLIENT_ID") && genv("GOOGLE_CLIENT_SECRET") && genv("GOOGLE_REFRESH_TOKEN"));
 const CAL = () => encodeURIComponent(process.env.GOOGLE_CALENDAR_ID || 'primary');
-const REDIRECT = 'https://loanleaf.co/api/google-callback';
+const REDIRECT = 'https://leaflegal.co/api/google-callback';
 // Minutes London is ahead of UTC at a moment (0 in winter, 60 in summer).
 const tzOff = (ms) => {
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).formatToParts(new Date(ms)).map((x) => [x.type, x.value]));
@@ -60,7 +61,7 @@ async function busy(token, from, to) {
   return Object.values(j.calendars || {})[0]?.busy?.map((x) => [Date.parse(x.start), Date.parse(x.end)]) || [];
 }
 const freeOf = (slots, b) => slots.filter((t) => !b.some(([s, e]) => t < e && t + SLOT_MIN * 6e4 > s));
-const page = (res, code, body) => { res.setHeader('Content-Type', 'text/html; charset=utf-8'); return res.status(code).send(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Loanleaf calendar</title><body style="font:16px/1.5 system-ui;max-width:640px;margin:48px auto;padding:0 20px;color:#244237">${body}</body>`); };
+const page = (res, code, body) => { res.setHeader('Content-Type', 'text/html; charset=utf-8'); return res.status(code).send(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Leaflegal calendar</title><body style="font:16px/1.5 system-ui;max-width:640px;margin:48px auto;padding:0 20px;color:#244237">${body}</body>`); };
 
 async function booking(action, req, res, b) {
   // One-off setup: connect the Google Calendar and show the refresh token to paste into Vercel.
@@ -75,7 +76,7 @@ async function booking(action, req, res, b) {
     if (!code) return page(res, 400, '<h1>Google didn’t send a code. Try /api/google-auth again.</h1>');
     const r = await fetch('https://oauth2.googleapis.com/token', { method: 'POST', body: new URLSearchParams({ code, client_id: genv("GOOGLE_CLIENT_ID"), client_secret: genv("GOOGLE_CLIENT_SECRET"), redirect_uri: REDIRECT, grant_type: 'authorization_code' }) });
     const j = await r.json();
-    if (!j.refresh_token) return page(res, 400, `<h1>No refresh token came back</h1><p>${esc(j.error_description || j.error || 'Remove Loanleaf from your Google account’s third-party access, then try /api/google-auth again.')}</p>`);
+    if (!j.refresh_token) return page(res, 400, `<h1>No refresh token came back</h1><p>${esc(j.error_description || j.error || 'Remove Leaflegal from your Google account’s third-party access, then try /api/google-auth again.')}</p>`);
     return page(res, 200, `<h1>Calendar connected</h1><p>Copy this value into Vercel as <b>GOOGLE_REFRESH_TOKEN</b> (Production), then redeploy. Don't share it with anyone.</p><textarea readonly rows="4" style="width:100%;font:13px monospace" onclick="this.select()">${esc(j.refresh_token)}</textarea>`);
   }
   if (action === 'slots') {
@@ -100,8 +101,8 @@ async function booking(action, req, res, b) {
         .filter(([, v]) => v && (!Array.isArray(v) || v.length)).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join('\n');
       const r = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CAL()}/events?conferenceDataVersion=1&sendUpdates=all`, {
         method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(8000),
-        body: JSON.stringify({ summary: `Loanleaf partner call (${meet ? 'Google Meet' : 'phone'}): ${String(b.company).slice(0, 80)}`,
-          description: `${meet ? 'Google Meet call' : `Phone call: Loanleaf calls ${name} on ${b.phone}`}\nBooked from loanleaf.co/partners/apply\n\n${answers}`.slice(0, 7000),
+        body: JSON.stringify({ summary: `Leaflegal partner call (${meet ? 'Google Meet' : 'phone'}): ${String(b.company).slice(0, 80)}`,
+          description: `${meet ? 'Google Meet call' : `Phone call: Leaflegal calls ${name} on ${b.phone}`}\nBooked from leaflegal.co/partners/apply\n\n${answers}`.slice(0, 7000),
           ...(meet ? {} : { location: `Phone: ${String(b.phone || '').slice(0, 30)}` }),
           start: { dateTime: new Date(t).toISOString(), timeZone: TZ }, end: { dateTime: new Date(t + SLOT_MIN * 6e4).toISOString(), timeZone: TZ },
           attendees: [{ email: String(b.email).trim(), displayName: name.slice(0, 80) }],
@@ -127,6 +128,7 @@ export default async function handler(req, res) {
   const b = req.method === 'POST' ? (typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}) : {};
   if (action) return booking(action, req, res, b);
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
+  b.form = 'legal'; // every partner is a law firm
   if (!b.firstName || !b.lastName || !b.company || b.consent !== true
     || !/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(b.email || '') || !/^(?:0|\+?44)\d{9,10}$/.test(String(b.phone || '').replace(/[\s()-]/g, '')))
     return res.status(400).json({ error: 'Missing or invalid fields' });
@@ -147,7 +149,7 @@ export default async function handler(req, res) {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: `Loanleaf <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`,
+      from: `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`,
       to: (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(','),
       reply_to: b.email,
       subject: `${flags.length ? '[Check] ' : ''}${legal ? `Law firm application: ${b.company} (${b.volume || '?'} leads/month)` : `New partner interest: ${b.company}`}`.slice(0, 200),
@@ -164,7 +166,7 @@ export default async function handler(req, res) {
       custom_data: { content_name: kind, leads_per_month: b.volume } }],
       ...(process.env.META_TEST_EVENT_CODE ? { test_event_code: process.env.META_TEST_EVENT_CODE } : {}) };
     try {
-      const m = await fetch(`https://graph.facebook.com/v21.0/${process.env.META_PIXEL_ID || '658905286613269'}/events?access_token=${encodeURIComponent(process.env.META_CAPI_TOKEN)}`,
+      const m = await fetch(`https://graph.facebook.com/v21.0/${process.env.META_PIXEL_ID}/events?access_token=${encodeURIComponent(process.env.META_CAPI_TOKEN)}`,
         { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(ev), signal: AbortSignal.timeout(3000) });
       if (!m.ok) console.error('meta capi partner', m.status, await m.text());
     } catch (err) { console.error('meta capi partner', err.message); }
@@ -178,23 +180,23 @@ export default async function handler(req, res) {
       const src = b.source && typeof b.source === 'object' ? b.source : {}, call = b.route === 'Booked a call';
       const r = await capture({ email: b.email, name: `${b.firstName} ${b.lastName}`.trim(), company: b.company, phone: b.phone, leadsPerMonth: b.volume, budget: b.budget,
         source: call ? 'Booked a call' : sourceFrom(src), sourceDetail: describeSource(src), utm: Object.keys(src).length ? src : null,
-        stage: call ? 'call_booked' : 'new', tags: legal ? ['Law firm'] : [], note: `${legal ? 'Law firm' : 'Broker'} ${call ? 'booked a call' : 'sent an enquiry'} on loanleaf.co${b.volume ? ` · ${b.volume} leads a month` : ''}${b.budget ? ` · budget ${b.budget}` : ''}` });
+        stage: call ? 'call_booked' : 'new', tags: legal ? ['Law firm'] : [], note: `${legal ? 'Law firm' : 'Broker'} ${call ? 'booked a call' : 'sent an enquiry'} on leaflegal.co${b.volume ? ` · ${b.volume} leads a month` : ''}${b.budget ? ` · budget ${b.budget}` : ''}` });
       // Website brokers get the platform invite below instead of the CRM's own "thanks" email (step new:0); later steps still run.
       if (!legal && r?.contact) await db('crm_flow_sends', { method: 'POST', body: { contact_id: r.contact.id, step: 'new:0' }, prefer: 'resolution=ignore-duplicates' }).catch(() => {});
       else if (r?.contact?.stage === 'new') await runFlows({ contactIds: [r.contact.id] });
     } catch (e) { console.error('crm capture', e.message); }
   }
-  // Encrypted hand-off so platform.loanleaf.co/register can prefill these details (brokers only).
+  // Encrypted hand-off so platform.leaflegal.co/register can prefill these details (brokers only).
   let handoff; try { if (!legal) handoff = sealHandoff({ company: b.company, contactName: `${b.firstName} ${b.lastName}`.trim(), email: b.email, phone: b.phone, volume: b.volume }); } catch {}
-  // Brokers: an invite to Loanleaf Platform (with new-lead emails, not pre-approved) and WhatsApps to them and to the team.
+  // Brokers: an invite to Leaflegal Platform (with new-lead emails, not pre-approved) and WhatsApps to them and to the team.
   if (!legal && !flags.length) {
-    const name = `${b.firstName} ${b.lastName}`.trim(), call = handoff ? `https://loanleaf.co/partners/apply?call=1&h=${encodeURIComponent(handoff)}` : 'https://loanleaf.co/partners/apply';
+    const name = `${b.firstName} ${b.lastName}`.trim(), call = handoff ? `https://leaflegal.co/partners/apply?call=1&h=${encodeURIComponent(handoff)}` : 'https://leaflegal.co/partners/apply';
     const [inv] = await Promise.allSettled([
       partnerInvite({ email: b.email, name, company: b.company, phone: b.phone, call }),
-      waOrSms(b.phone, 'loanleaf_partner_welcome', { first_name: b.firstName, email: String(b.email).trim() },
-        `Hi ${b.firstName}, thanks for your interest in becoming a Loanleaf partner. Your platform invite is on its way to ${String(b.email).trim()}. Join from the email or book a call with the team. Loanleaf`, `partner-${Date.now()}`),
-      ...String(process.env.ADMIN_WHATSAPP || '').split(',').filter(Boolean).map((to) => waOrSms(to, 'loanleaf_partner_alert', { name, company: b.company, mobile: b.phone, email: String(b.email).trim() },
-        `New partner interest on Loanleaf: ${name}, ${b.company}, ${b.phone}, ${String(b.email).trim()}. Invite sent.`, `partner-alert-${Date.now()}`)),
+      waOrSms(b.phone, 'leaflegal_partner_welcome', { first_name: b.firstName, email: String(b.email).trim() },
+        `Hi ${b.firstName}, thanks for your interest in becoming a Leaflegal partner. Your platform invite is on its way to ${String(b.email).trim()}. Join from the email or book a call with the team. Leaflegal`, `partner-${Date.now()}`),
+      ...String(process.env.ADMIN_WHATSAPP || '').split(',').filter(Boolean).map((to) => waOrSms(to, 'leaflegal_partner_alert', { name, company: b.company, mobile: b.phone, email: String(b.email).trim() },
+        `New partner interest on Leaflegal: ${name}, ${b.company}, ${b.phone}, ${String(b.email).trim()}. Invite sent.`, `partner-alert-${Date.now()}`)),
     ]);
     const v = inv.value;
     if (v === 'has-account') await partnerThanks({ email: b.email, name, company: b.company, join: `${PLATFORM_URL}/signin`, call }).catch((e) => console.error('partner thanks', e.message));

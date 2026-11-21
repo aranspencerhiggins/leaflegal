@@ -1,11 +1,9 @@
-// "Apply to become a partner" multi-step form for brokers (/partners/apply) and law firms (/partners/legal/apply,
-// data-form="legal"). Same UI classes as the business
-// form (assets/apply.css). ponytail: kept separate from apply.js so edits here can't break the live lead form;
-// merge into one configurable script only if a third form appears.
+// "Become a partner firm" multi-step form for law firms (/partners/apply). Same UI classes as the client
+// form (assets/apply.css). Kept separate from apply.js so edits here can't break the live lead form.
 (() => {
   const root = document.getElementById('ap');
   if (!root) return;
-  const LEGAL = root.dataset.form === 'legal';
+  const LEGAL = true; // law firms only (the broker version was removed)
   const KEY = LEGAL ? 'll-legal-apply-v1' : 'll-partner-apply-v3';
   const FORM = LEGAL ? 'legal' : 'partner', NAME = LEGAL ? 'Law firm partner application' : 'Broker partner application';
   const I = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
@@ -43,10 +41,9 @@
   const LEGAL_STEPS = [
     VOLUME_STEP,
     { id: 'areas', q: 'Which practice areas would you like leads for?', type: 'multi', opts: [
-      'Immigration', 'Family and divorce', 'Wills, probate and LPAs', 'Employment', 'Motoring offences',
-      'Inheritance disputes', 'Landlord and possession', 'Business disputes',
+      'Conveyancing', 'Immigration', 'Family law', 'Debt recovery', 'Motoring offences', 'Licensing', 'Lease extensions',
     ]},
-    { id: 'regulator', q: 'How is your firm regulated?', type: 'chips', opts: ['SRA', 'CILEx Regulation', 'OISC (immigration)', 'Other'] },
+    { id: 'regulator', q: 'How is your firm regulated?', type: 'chips', opts: ['SRA', 'CILEx Regulation', 'Council for Licensed Conveyancers', 'Immigration Advice Authority'] },
     { id: 'coverage', q: 'Where do you take on clients?', type: 'chips', opts: ['Anywhere in England and Wales', 'Specific towns or regions'] },
     ...BROKER_STEPS.slice(-3), // delivery, start, details
   ];
@@ -64,7 +61,7 @@
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const nextBtn = (disabled) => `<div class="ap-actions"><button type="button" class="button ap-next" data-next${disabled ? ' disabled' : ''}>Continue ${ARROW}</button></div>`;
   const opt = (s, t, sel, role, inner) => `<button type="button" class="ap-opt${sel ? ' sel' : ''}" role="${role}" aria-checked="${sel}" data-v="${esc(t)}">${inner}<span class="ap-tick">${TICK}</span></button>`;
-  const CONSENT = 'I agree to Loanleaf contacting me about becoming a partner and to the <a href="/terms-conditions" target="_blank">Terms of Service</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a>.';
+  const CONSENT = 'I agree to Leaflegal contacting me about becoming a partner and to the <a href="/terms-conditions" target="_blank">Terms of Service</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a>.';
 
   function render(s) {
     let h = `<h2 class="ap-q" tabindex="-1">${s.q}</h2>`;
@@ -83,8 +80,8 @@
       const cur = a[s.id] || [];
       h += `<p class="ap-multi-hint">Choose all that apply.</p><div class="ap-opts" role="group" aria-label="${esc(s.q)}">${s.opts.map((t) => opt(s, t, cur.includes(t), 'checkbox', `<span><b>${t}</b></span>`)).join('')}</div>${nextBtn(!cur.length)}`;
     } else {
-      const showFca = LEGAL ? ['SRA', 'CILEx Regulation', 'OISC (immigration)'].includes(a.regulator) : a.fca === 'FCA authorised' || a.fca === 'Appointed representative';
-      const regLabel = LEGAL ? `${a.regulator === 'OISC (immigration)' ? 'OISC' : a.regulator === 'CILEx Regulation' ? 'CILEx' : 'SRA'} number` : 'FCA firm reference number';
+      const showFca = true;
+      const regLabel = `${{ 'CILEx Regulation': 'CILEx', 'Council for Licensed Conveyancers': 'CLC', 'Immigration Advice Authority': 'IAA' }[a.regulator] || 'SRA'} number`;
       const f = (n, l, type, ac, opts = {}) => `<div class="ap-field${opts.full ? ' full' : ''}"><label for="ap-${n}">${l}${opts.optional ? ' <small class="ap-opt-label">Optional</small>' : ''}</label><input id="ap-${n}" name="${n}" type="${type}" autocomplete="${ac}" value="${esc(a[n] || '')}"${opts.optional ? '' : ' required'}${opts.inputmode ? ` inputmode="${opts.inputmode}"` : ''}><span class="ap-err" id="ap-${n}-err"></span></div>`;
       h += `<form novalidate><div class="ap-grid">
         ${f('firstName', 'First name', 'text', 'given-name')}${f('lastName', 'Last name', 'text', 'family-name')}
@@ -194,7 +191,7 @@
       done(payload);
     } catch {
       btn.disabled = false; btn.firstChild.textContent = 'Send application ';
-      err.innerHTML = 'Sorry, something went wrong sending your application. Please try again, or email <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a>.';
+      err.innerHTML = 'Sorry, something went wrong sending your application. Please try again, or email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.';
       err.classList.add('on');
     }
   }
@@ -208,14 +205,7 @@
     body.innerHTML = `<div class="ap-step on ap-done"><div class="ap-badge">${TICK}</div>
       <h2 class="ap-q" tabindex="-1">Thanks, ${esc(p.firstName)}. Application received.</h2>
       <dl class="ap-summary">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v || '–')}</dd></div>`).join('')}</dl>
-      ${LEGAL ? '<ol class="ap-steps-next"><li>We review your application and criteria</li><li>We call you to agree volumes, delivery and pricing</li><li>You start receiving matched leads</li></ol>'
-        : `<p class="ap-done-lead">Someone from our partnerships team will be in touch shortly.</p>
-          <div class="ap-selfserve"><b>Rather get started now?</b><span>Set up your account on Loanleaf Platform in a few minutes. Choose a plan, set your lead criteria and start buying leads. We've filled in the details you just gave us.</span>
-          <a class="button ap-selfserve-btn" href="https://platform.loanleaf.co/register?from=apply"><div>Sign up on the platform</div></a></div>`}</div>`;
-    // Hand the answers to the self-serve platform (same site, so it can read them). Kept in this browser only.
-    if (!LEGAL) try {
-      localStorage.setItem('llp-prefill', JSON.stringify({ company: p.company, contactName: `${p.firstName} ${p.lastName}`.trim(), email: p.email, phone: p.phone, role: p.role, fca: p.fca, sizes: p.sizes, volume: p.volume, at: Date.now() }));
-    } catch {}
+      <ol class="ap-steps-next"><li>We review your application and check your firm on the regulator’s register</li><li>We call you to agree practice areas, volumes and pricing</li><li>You sign our referral agreement and start receiving enquiries</li></ol></div>`;
     body.querySelector('.ap-q').focus();
   }
 

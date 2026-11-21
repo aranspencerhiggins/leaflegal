@@ -13,14 +13,14 @@ const RANK = { new: 1, contacted: 2, call_booked: 3, proposal: 4, onboarding: 5,
 export const SOURCES = ['Website enquiry', 'Booked a call', 'Platform sign-up', 'Google search', 'Google Ads', 'Meta ads', 'LinkedIn', 'LinkedIn outreach', 'Cold email', 'Cold call',
   'Referral', 'Event', 'Invited to platform', 'Other'];
 
-const SITE = 'https://loanleaf.co';
+const SITE = 'https://leaflegal.co';
 export const LINKS = {
   signup_link: `${PLATFORM_URL}/register`,
   calculator_link: `${SITE}/partners/cost-per-lead-calculator`,
   booking_link: `${SITE}/partners/apply`,
   partners_link: `${SITE}/partners`,
 };
-const SENDER = () => 'The Loanleaf team'; // no personal name on emails
+const SENDER = () => 'The Leaflegal team'; // no personal name on emails
 const REPLY_TO = () => process.env.CRM_REPLY_TO || (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(',')[0].trim();
 
 // ---------------------------------------------------------------- where did they come from
@@ -119,10 +119,10 @@ export function renderEmail(body, c, unsubUrl) {
   const F = 'font-family:Arial,Helvetica,sans-serif;';
   const html = `<!doctype html><html><body style="margin:0;padding:0;background:#ffffff"><div style="${F}max-width:560px;padding:24px 20px;font-size:15px;line-height:1.6;color:#1f3029">
 ${paras.map((p) => `<p style="margin:0 0 16px">${linkify(esc(p)).replace(/\n/g, '<br>')}</p>`).join('\n')}
-<p style="margin:24px 0 0">${esc(SENDER())}<br><span style="color:#62786f">Loanleaf · <a href="${SITE}/partners" style="color:#62786f">loanleaf.co/partners</a></span></p>
-<p style="margin:32px 0 0;padding-top:14px;border-top:1px solid #e3eae6;font-size:12px;line-height:1.5;color:#86998f">Loanleaf is a trading name of Vertical Brands Ltd, company number 14254961, 20-22 Wenlock Road, London N1 7GU.${unsubUrl ? ` Don't want these emails? <a href="${unsubUrl}" style="color:#86998f">Unsubscribe</a>.` : ''}</p>
+<p style="margin:24px 0 0">${esc(SENDER())}<br><span style="color:#62786f">Leaflegal · <a href="${SITE}/partners" style="color:#62786f">leaflegal.co/partners</a></span></p>
+<p style="margin:32px 0 0;padding-top:14px;border-top:1px solid #e3eae6;font-size:12px;line-height:1.5;color:#86998f">Leaflegal is a trading name of Vertical Brands Ltd, company number 14254961, 20-22 Wenlock Road, London N1 7GU.${unsubUrl ? ` Don't want these emails? <a href="${unsubUrl}" style="color:#86998f">Unsubscribe</a>.` : ''}</p>
 </div></body></html>`;
-  const plain = `${text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1 ($2)')}\n\n${SENDER()}\nLoanleaf · loanleaf.co/partners${unsubUrl ? `\n\nUnsubscribe: ${unsubUrl}` : ''}`;
+  const plain = `${text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1 ($2)')}\n\n${SENDER()}\nLeaflegal · leaflegal.co/partners${unsubUrl ? `\n\nUnsubscribe: ${unsubUrl}` : ''}`;
   return { html, text: plain };
 }
 
@@ -134,13 +134,13 @@ export const unsubOk = (id, exp, s) => Number(exp) > Date.now() && typeof s === 
 export async function sendCrmEmail(c, subject, body, { by = null, flowStep = null } = {}) {
   if (!process.env.RESEND_API_KEY) throw new Error('Email isn’t set up (RESEND_API_KEY missing)');
   if (!c.email) throw new Error('This contact has no email address');
-  if ((await suppressedSet([c.email])).size) throw new Error(`${c.email} has unsubscribed from Loanleaf emails`);
+  if ((await suppressedSet([c.email])).size) throw new Error(`${c.email} has unsubscribed from Leaflegal emails`);
   const unsub = unsubUrl(c.id), subj = merge(subject, c).slice(0, 200);
   const { html, text } = renderEmail(body, c, unsub);
   await resendSlot();
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST', headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(8000),
-    body: JSON.stringify({ from: `Loanleaf <${process.env.CRM_FROM || process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, to: [c.email], reply_to: REPLY_TO(), subject: subj, html, text,
+    body: JSON.stringify({ from: `Leaflegal <${process.env.CRM_FROM || process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, to: [c.email], reply_to: REPLY_TO(), subject: subj, html, text,
       headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' }, tags: [{ name: 'kind', value: flowStep ? 'crm_flow' : 'crm' }] }),
   }).catch((e) => ({ ok: false, text: async () => e.message }));
   if (!r.ok) { const t = await r.text(); console.error('crm resend', r.status, t); throw new Error('The email couldn’t be sent. Please try again.'); }
@@ -176,14 +176,14 @@ export const FLOW_DEFAULTS = [
   { id: 'new:0', stage: 'new', day: 0, subject: 'Thanks for getting in touch, {first_name}',
     body: `Hi {first_name},
 
-Thanks for your interest in Loanleaf.
+Thanks for your interest in Leaflegal.
 
 In short: UK limited companies and LLPs tell us what funding they need, and we pass each enquiry to one broker only. You see the business's revenue, time trading, loan size and credit history before you buy, and leads arrive in your inbox or CRM the moment they come in.
 
 If you'd like to look around first, you can [create an account here]({signup_link}). We approve new accounts within one working day, and then you can see live leads straight away.
 
 Or just reply to this email with any questions.` },
-  { id: 'new:3', stage: 'new', day: 3, subject: 'What a Loanleaf lead costs',
+  { id: 'new:3', stage: 'new', day: 3, subject: 'What a Leaflegal lead costs',
     body: `Hi {first_name},
 
 A quick follow-up. Brokers usually ask what a lead will cost them, so we've put the pricing out in the open.
@@ -202,7 +202,7 @@ Just following up on our last message. Are you taking on new commercial finance 
 We send exclusive enquiries from UK limited companies and LLPs, each one to a single broker, with revenue, time trading and credit history checked before it reaches you.
 
 Worth a quick chat?` },
-  { id: 'contacted:8', stage: 'contacted', day: 8, subject: 'What’s in a Loanleaf lead',
+  { id: 'contacted:8', stage: 'contacted', day: 8, subject: 'What’s in a Leaflegal lead',
     body: `Hi {first_name},
 
 In case it's useful, here's what you'd get with every lead:
@@ -234,10 +234,10 @@ If it helps with the numbers, our [cost per lead calculator]({calculator_link}) 
 
 Let us know if you'd like to go through it together.` },
 
-  { id: 'onboarding:1', stage: 'onboarding', day: 1, subject: 'Finishing your Loanleaf setup',
+  { id: 'onboarding:1', stage: 'onboarding', day: 1, subject: 'Finishing your Leaflegal setup',
     body: `Hi {first_name},
 
-Thanks for signing up to Loanleaf Platform. There are three things to do before you can start buying leads:
+Thanks for signing up to Leaflegal Platform. There are three things to do before you can start buying leads:
 
 1. Tell us what you fund: loan sizes, purposes and the businesses you work with.
 2. Choose a monthly plan. Your first month can be £1,000 + VAT.
@@ -258,7 +258,7 @@ You've been with us for a month now, so we wanted to check in. How are you findi
 
 If there's anything we could do better, such as lead types, volumes or how they're delivered, we'd really like to hear it. Just reply to this email.` },
 
-  { id: 'nurture:30', stage: 'nurture', day: 30, subject: 'Checking in from Loanleaf',
+  { id: 'nurture:30', stage: 'nurture', day: 30, subject: 'Checking in from Leaflegal',
     body: `Hi {first_name},
 
 It's been a little while, so we thought we'd check in. We're seeing steady demand from businesses looking for funding, and there are leads live on the platform now.
@@ -267,7 +267,7 @@ If the timing's better now, you can [have a look here]({signup_link}).` },
   { id: 'nurture:90', stage: 'nurture', day: 90, subject: 'Still looking for business loan leads?',
     body: `Hi {first_name},
 
-Just a quick note to say the offer of a first month for £1,000 + VAT still stands, if you'd like to try Loanleaf.
+Just a quick note to say the offer of a first month for £1,000 + VAT still stands, if you'd like to try Leaflegal.
 
 Reply here if you'd like to talk it through.` },
 ];

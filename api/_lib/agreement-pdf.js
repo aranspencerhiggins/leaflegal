@@ -9,7 +9,7 @@ const clean = (s) => String(s ?? '').replace(/[‐‑]/g, '-').replace(/[^\x20-\
 
 export async function signedPdf(a) {
   const doc = await PDFDocument.create();
-  doc.setTitle(`Loanleaf Partner Agreement - ${clean(a.company)}`); doc.setAuthor('Vertical Brands Ltd (trading as Loanleaf)');
+  doc.setTitle(`Leaflegal Partner Agreement - ${clean(a.company)}`); doc.setAuthor('Vertical Brands Ltd (trading as Leaflegal)');
   const reg = await doc.embedFont(StandardFonts.Helvetica), bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const W = 595.28, H = 841.89, M = 56, width = W - 2 * M, ref = `LL-PA-${String(a.id).padStart(5, '0')}`;
   let page, y;
@@ -40,7 +40,7 @@ export async function signedPdf(a) {
   };
 
   newPage();
-  page.drawText('Loanleaf Partner Agreement', { x: M, y: y - 20, size: 20, font: bold, color: INK }); y -= 30;
+  page.drawText('Leaflegal Partner Agreement', { x: M, y: y - 20, size: 20, font: bold, color: INK }); y -= 30;
   para(`Version ${a.version} · Agreement reference ${ref}`, { size: 9.5, color: MUTED, gap: 14 });
 
   // Parties box
@@ -64,7 +64,7 @@ export async function signedPdf(a) {
   ensure(190);
   page.drawLine({ start: { x: M, y }, end: { x: W - M, y }, thickness: 1, color: LINE }); y -= 18;
   para('Accepted for and on behalf of the Partner', { size: 12, font: bold, gap: 6 });
-  para(`Accepted online by ticking “I am authorised to accept this agreement on behalf of ${a.company}” and “I have read and agree to the Loanleaf Partner Agreement”.`, { gap: 10 });
+  para(`Accepted online by ticking “I am authorised to accept this agreement on behalf of ${a.company}” and “I have read and agree to the Leaflegal Partner Agreement”.`, { gap: 10 });
   const when = new Date(a.created_at).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Europe/London' });
   for (const [k, v] of [['Name', a.signer_name], ['Position', a.signer_title], ['Company', a.company], ['Email', a.signer_email], ['Accepted', `${when} (UK time)`], ['IP address', a.ip || '–'], ['Document hash', a.terms_hash]]) {
     const lines = wrap(v || '–', k === 'Name' ? bold : reg, k === 'Document hash' ? 8 : 10, width - 110);
@@ -76,11 +76,11 @@ export async function signedPdf(a) {
     });
   }
   y -= 8;
-  para('The person accepting confirmed they have authority to bind the Partner. Accepted for and on behalf of Vertical Brands Ltd (trading as Loanleaf) on the same date.', { size: 9, color: MUTED });
+  para('The person accepting confirmed they have authority to bind the Partner. Accepted for and on behalf of Vertical Brands Ltd (trading as Leaflegal) on the same date.', { size: 9, color: MUTED });
 
   const pages = doc.getPages();
   pages.forEach((p, i) => {
-    const f = clean(`Loanleaf Partner Agreement · ${ref} · Page ${i + 1} of ${pages.length}`);
+    const f = clean(`Leaflegal Partner Agreement · ${ref} · Page ${i + 1} of ${pages.length}`);
     p.drawText(f, { x: M, y: 30, size: 8, font: reg, color: MUTED });
   });
   return doc.save();

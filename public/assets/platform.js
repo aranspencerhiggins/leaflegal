@@ -1,4 +1,4 @@
-// Loanleaf Platform: broker portal (dashboard, opportunities, lead pipeline, auto-buy, credits, account, admin).
+// Leaflegal Platform: broker portal (dashboard, opportunities, lead pipeline, auto-buy, credits, account, admin).
 // Auth is Supabase email + password over its REST API; everything else goes through /api/platform.
 (() => {
   const SB = 'https://tefpljuzuvdchczcfjlz.supabase.co', KEY = 'sb_publishable_xkOwkkbg3qYYJukThYnHDw_Q_oqo-hm', TK = 'llp-session';
@@ -31,7 +31,7 @@
   const ago = (d) => { const m = mins(d); return m < 1 ? 'just now' : m < 60 ? `${m | 0} min ago` : m < 1440 ? `${(m / 60) | 0} hr ago` : `${(m / 1440) | 0} day${m < 2880 ? '' : 's'} ago`; };
   const date = (d) => new Date(d).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   const toast = (msg, bad) => { toastEl.innerHTML = `${bad ? I.x : I.check}<span>${h(msg)}</span>`; toastEl.className = 'pf-toast on' + (bad ? ' bad' : ''); clearTimeout(toast.t); toast.t = setTimeout(() => (toastEl.className = 'pf-toast'), 4200); };
-  const LOGO = '<img class="pf-logo" src="/assets/Loanleaf_Logo_White_PNG_500x100_72DPI.png" alt="Loanleaf" width="120" height="24"/>';
+  const LOGO = '<img class="pf-logo" src="/assets/Leaflegal_Logo_White.svg" alt="Leaflegal" width="120" height="24"/>';
 
   // ------------------------------------------------ icons (24px stroke icons)
   const ic = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
@@ -81,7 +81,7 @@
   const qBadge = (q) => `<span class="pf-q pf-q-${qClass(q)}" title="Lead quality score">${I.star}${q}</span>`;
   const initials = (s) => String(s || '?').replace(/[^\p{L}\p{N}\s]/gu, '').split(/\s+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 2).toUpperCase() || '?';
 
-  // App routes sit at the root of platform.loanleaf.co; '/platform' only where the app is still served under that path (local previews).
+  // App routes sit at the root of platform.leaflegal.co; '/platform' only where the app is still served under that path (local previews).
   const P = /^\/platform(\/|$)/.test(location.pathname) ? '/platform' : '';
   const currentTab = () => location.pathname.slice(P.length).replace(/^\//, '').split('/')[0];
   function nav(tab) {
@@ -123,7 +123,7 @@
       try { await auth('refresh_token', { refresh_token: session.refresh }); return apiFetch(action, body, false, ep); } catch { saveSession(null); }
     }
     const d = await r.json().catch(() => null);
-    if (!d) throw Object.assign(new Error(location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'This is the local preview, which has no server. Use https://platform.loanleaf.co instead.' : "Can't reach the platform right now. Please try again in a moment."), { status: r.status });
+    if (!d) throw Object.assign(new Error(location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'This is the local preview, which has no server. Use https://platform.leaflegal.co instead.' : "Can't reach the platform right now. Please try again in a moment."), { status: r.status });
     if (r.status === 401) { saveSession(null); me = null; route(); throw new Error('Please sign in again'); }
     if (!r.ok) throw Object.assign(new Error(d.error || 'Something went wrong'), { status: r.status });
     return d;
@@ -134,7 +134,7 @@
   const invite = (() => { const t = new URLSearchParams(location.search).get('invite'); if (!t) return null;
     try { const b = atob(t.split('.')[0].replace(/-/g, '+').replace(/_/g, '/')), p = JSON.parse(new TextDecoder().decode(Uint8Array.from(b, (c) => c.charCodeAt(0)))); return p.x > Date.now() && p.e ? { ...p, t } : null; } catch { return null; } })();
   const prefill = (() => { try { const p = JSON.parse(localStorage.getItem('llp-prefill') || 'null'); return p && Date.now() - p.at < 30 * 864e5 ? p : null; } catch { return null; } })() || {};
-  // From the loanleaf.co partner form (?h=…, encrypted): fill in the sign-up form. Merged in before the first render.
+  // From the leaflegal.co partner form (?h=…, encrypted): fill in the sign-up form. Merged in before the first render.
   const handoff = new URLSearchParams(location.search).get('h');
   const handoffReady = handoff ? fetch(`/api/platform?action=handoff&h=${encodeURIComponent(handoff)}`).then((r) => r.json()).then((d) => { for (const [k, v] of Object.entries(d || {})) if (v && !prefill[k]) prefill[k] = v; }).catch(() => {}) : Promise.resolve();
   const SIZE_RANGE = { 'Under £25k': [0, 25000], '£25k to £100k': [25000, 100000], '£100k to £500k': [100000, 500000], '£500k to £2m': [500000, 2000000], '£2m+': [2000000, null] };
@@ -165,7 +165,7 @@
     const inv = invite, pre = inv ? { company: inv.c || '', contactName: inv.n || '', email: inv.e, phone: inv.m || '' } : prefill;
     obShell(`<form class="pf-onb-form" novalidate><span class="pf-eyebrow">Step 1 of ${ALL_STEPS.length}</span>
         <h1>${inv ? `You’re invited, ${h(String(inv.n || '').split(' ')[0])}` : 'Create a broker account'}</h1>
-        <p class="pf-sub">${inv?.na ? 'Your details are filled in. Choose a password to get started. We check every new firm, usually within one working day.' : inv ? 'Your account is already approved as a Loanleaf supplier. Check your details, choose a password and you’re in.' : 'It takes a minute. We review every firm before it can buy leads.'}</p>
+        <p class="pf-sub">${inv?.na ? 'Your details are filled in. Choose a password to get started. We check every new firm, usually within one working day.' : inv ? 'Your account is already approved as a Leaflegal supplier. Check your details, choose a password and you’re in.' : 'It takes a minute. We review every firm before it can buy leads.'}</p>
         ${inv ? `<p class="pf-prefilled">${I.check}${inv.na ? 'Invitation' : 'Approved supplier invitation'} for ${h(inv.e)}</p>` : pre.company ? `<p class="pf-prefilled">${I.check}We've filled this in from your partner application.</p>` : ''}
         <div class="pf-two"><label>Full name<input name="contactName" autocomplete="name" value="${h(pre.contactName || '')}" required></label>
           <label>Company name<input name="company" autocomplete="organization" value="${h(pre.company || '')}" required></label></div>
@@ -175,7 +175,7 @@
         <label>Password <span>(12+ characters with upper and lower case, a number and a symbol)</span><input name="password" type="password" autocomplete="new-password" required></label>
         <p class="pf-err" role="alert"></p><div class="pf-ts" id="pf-ts"></div>
         <div class="pf-onb-nav"><span class="pf-onb-alt">Already have an account? <a href="${P}/signin">Sign in</a></span><button class="pf-btn pf-btn-primary pf-btn-lg" type="submit">Create account${I.arrow}</button></div></form>`,
-      0, `<a href="${P}/signin" class="pf-onb-skip">Sign in</a>`, 'https://loanleaf.co');
+      0, `<a href="${P}/signin" class="pf-onb-skip">Sign in</a>`, 'https://leaflegal.co');
     const form = app.querySelector('form'), err = form.querySelector('.pf-err');
     form.addEventListener('submit', async (e) => {
       e.preventDefault(); err.textContent = '';
@@ -196,12 +196,12 @@
   async function joinView() {
     const t = new URLSearchParams(location.search).get('t') || '';
     app.className = 'pf-onb pf-signin';
-    const frame = (inner) => `<header class="pf-onb-top"><a href="https://loanleaf.co" class="pf-onb-logo" aria-label="Loanleaf">${LOGO}</a><a href="${P}/signin" class="pf-onb-skip">Sign in</a></header>
+    const frame = (inner) => `<header class="pf-onb-top"><a href="https://leaflegal.co" class="pf-onb-logo" aria-label="Leaflegal">${LOGO}</a><a href="${P}/signin" class="pf-onb-skip">Sign in</a></header>
       <main class="pf-onb-main"><div class="pf-onb-card pf-signin-card">${inner}</div></main>`;
     let inv;
     try { const r = await fetch(`/api/platform?action=join&t=${encodeURIComponent(t)}`); inv = await r.json(); if (!r.ok) throw new Error(inv.error || 'This invite isn’t valid'); }
     catch (ex) { app.innerHTML = frame(`<div class="pf-onb-form"><h1>Invite not found</h1><p class="pf-sub">${h(ex.message)}</p><a class="pf-btn pf-btn-primary" href="${P}/signin">Go to sign in</a></div>`); return; }
-    app.innerHTML = frame(`<form class="pf-onb-form" novalidate><h1>Join ${h(inv.company)}</h1><p class="pf-sub">You’ve been given a sign-in to ${h(inv.company)}’s Loanleaf Platform account.</p>
+    app.innerHTML = frame(`<form class="pf-onb-form" novalidate><h1>Join ${h(inv.company)}</h1><p class="pf-sub">You’ve been given a sign-in to ${h(inv.company)}’s Leaflegal Platform account.</p>
         <p class="pf-prefilled">${I.check}Invitation for ${h(inv.email)}</p>
         <label>Full name<input name="name" autocomplete="name" value="${h(inv.name || '')}" required></label>
         <label>Password <span>(12+ characters with upper and lower case, a number and a symbol)</span><input name="password" type="password" autocomplete="new-password" required></label>
@@ -222,15 +222,15 @@
     if (mode === 'up') return signupView();
     // Same frame as sign-up and onboarding: green top bar, white card on the light background.
     app.className = 'pf-onb pf-signin';
-    app.innerHTML = `<header class="pf-onb-top"><a href="https://loanleaf.co" class="pf-onb-logo" aria-label="Loanleaf">${LOGO}</a>
+    app.innerHTML = `<header class="pf-onb-top"><a href="https://leaflegal.co" class="pf-onb-logo" aria-label="Leaflegal">${LOGO}</a>
         <a href="${P}/register" class="pf-onb-skip">Create an account</a></header>
       <main class="pf-onb-main"><div class="pf-onb-card pf-signin-card"><form class="pf-onb-form" novalidate>
-        <h1>Sign in</h1><p class="pf-sub">Loanleaf Platform for finance brokers.</p>
+        <h1>Sign in</h1><p class="pf-sub">Leaflegal Platform for finance brokers.</p>
         <label>Work email<input name="email" type="email" autocomplete="email" required></label>
         <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
         <p class="pf-err" role="alert"></p>
         <button class="pf-btn pf-btn-primary pf-btn-lg" type="submit">Sign in${I.arrow}</button>
-        <p class="pf-switch">New to Loanleaf? <a href="${P}/register">Create an account</a></p>
+        <p class="pf-switch">New to Leaflegal? <a href="${P}/register">Create an account</a></p>
       </form></div>
       <ul class="pf-signin-points"><li>${I.target}Exclusive leads, sold to one broker only</li><li>${I.spark}Auto-buy leads that match set criteria</li><li>${I.webhook}Delivered to inbox and CRM instantly</li></ul></main>`;
     const form = app.querySelector('form'), err = form.querySelector('.pf-err');
@@ -256,7 +256,7 @@
     let grpOpen = tab === 'admin'; try { grpOpen = grpOpen || localStorage.getItem('pf-adm-open') === '1'; } catch {}
     const admGroup = me.is_admin ? `<div class="pf-navgrp ${grpOpen ? 'open' : ''}"><a href="${P}/admin" class="pf-navgrp-h ${tab === 'admin' ? 'on' : ''}" aria-expanded="${grpOpen}" aria-controls="pf-adm-nav" data-grp>${I.shield}<span>Admin</span><i class="pf-chev">${I.chev}</i></a>
       <div class="pf-navgrp-in" id="pf-adm-nav">${ADM.map(([k, l, i]) => `<a href="${P}/admin/${k}" class="${tab === 'admin' && adminTab === k ? 'on' : ''}" ${tab === 'admin' && adminTab === k ? 'aria-current="page"' : ''}>${I[i]}<span>${l}</span></a>`).join('')}</div></div>` : '';
-    app.innerHTML = `<aside class="pf-side"><a href="${P}/dashboard" class="pf-logo-link" aria-label="Loanleaf Platform dashboard">${LOGO}</a><nav>${items.map(([k, l, i]) => `<a href="${P}/${k}" class="${k === tab ? 'on' : ''}" ${k === tab ? 'aria-current="page"' : ''}>${I[i]}<span>${l}</span></a>`).join('')}${admGroup}<button class="pf-nav-out" data-out>${I.out}<span>Sign out</span></button></nav>
+    app.innerHTML = `<aside class="pf-side"><a href="${P}/dashboard" class="pf-logo-link" aria-label="Leaflegal Platform dashboard">${LOGO}</a><nav>${items.map(([k, l, i]) => `<a href="${P}/${k}" class="${k === tab ? 'on' : ''}" ${k === tab ? 'aria-current="page"' : ''}>${I[i]}<span>${l}</span></a>`).join('')}${admGroup}<button class="pf-nav-out" data-out>${I.out}<span>Sign out</span></button></nav>
       <div class="pf-side-credits"><span>Credit balance</span><b>${num(me.credits)}</b><a href="${P}/billing#plans" class="pf-btn pf-btn-orange pf-btn-sm">${I.arrow}Add credits</a></div>
       <div class="pf-side-foot"><span class="pf-avatar">${initials(me.company)}</span><div><b>${h(me.company)}</b><span>${h(me.email)}</span></div><button class="pf-iconbtn" data-out title="Sign out" aria-label="Sign out">${I.out}</button></div></aside>
       <main class="pf-main"><header class="pf-top"><h1>${TITLES[tab]}</h1>
@@ -266,7 +266,7 @@
         ${acting || me.agreementCurrent ? '' : `<div class="pf-banner pf-banner-go">${I.arrow}<div><b>Finish setting up your account.</b> Add your company details, choose a plan and sign the partner agreement to start buying leads.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/onboarding">Continue setup</a></div>`}
         ${tab === 'dashboard' && me.agreementCurrent && (!me.profile?.show || profValid(me.profile)) ? `<div class="pf-banner pf-banner-go">${I.user}<div><b>Set up your public profile.</b> When a business is matched with you, we show them your logo and contact details and email them a copy. Without a profile they only see your firm name.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/profile">Set up profile</a></div>` : ''}
         ${!acting && tab !== 'billing' && me.approved && !me.suspended_at && me.agreementCurrent && me.credits < low ? `<div class="pf-banner pf-banner-warn" data-upsell>${I.coins}<div><b>${me.credits > 0 ? `Only ${num(me.credits)} credits left.` : 'You’re out of credits.'}</b> Upgrade your plan to keep buying leads${me.mode === 'auto' ? ' and keep auto-buy running' : ''}. The new plan’s credits are added straight away.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/billing#plans">Upgrade plan</a></div>` : ''}
-        ${me.suspended_at ? `<div class="pf-banner pf-banner-warn">${I.clock}<div><b>This account is suspended.</b> Buying, auto-buy and new-lead emails are paused. Please contact <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a>.</div></div>` : ''}
+        ${me.suspended_at ? `<div class="pf-banner pf-banner-warn">${I.clock}<div><b>This account is suspended.</b> Buying, auto-buy and new-lead emails are paused. Please contact <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.</div></div>` : ''}
         ${me.approved || me.suspended_at ? '' : `<div class="pf-banner">${I.clock}<div><b>Your account is being reviewed.</b> Look around freely. You can buy credits and leads once we've approved your firm, usually within one working day.</div></div>`}
         <div class="pf-view">${inner}</div></main>`;
     app.querySelectorAll('[data-out]').forEach((b) => (b.onclick = signOut));
@@ -379,7 +379,7 @@
       <div class="pf-locked">${I.shield}<div><b>Business name and full contact details unlock when you buy.</b><span>Exclusive to you: once bought, it disappears for every other broker.</span></div></div>
       ${l.discounted ? `<div class="pf-dealnote"><b>50% off</b><span>This lead has been live for over 72 hours, so it’s half price: <s>${l.list_price}</s> ${l.price} credits.</span></div>` : ''}
       <div class="pf-dfoot"><div><span>Price</span><b>${priceTag(l, ' credits')}</b><span>You have ${num(me.credits)}</span></div>
-        ${me.restricted ? '<button class="pf-btn pf-btn-primary pf-btn-lg" disabled title="Leads for this account are assigned by Loanleaf">Assigned by Loanleaf</button>'
+        ${me.restricted ? '<button class="pf-btn pf-btn-primary pf-btn-lg" disabled title="Leads for this account are assigned by Leaflegal">Assigned by Leaflegal</button>'
           : !can('buy') ? '<button class="pf-btn pf-btn-primary pf-btn-lg" disabled title="Ask the account owner for buying permission">Buying not allowed</button>'
           : !me.approved ? '<button class="pf-btn pf-btn-primary pf-btn-lg" disabled>Awaiting approval</button>'
           : shortOf ? `<a class="pf-btn pf-btn-orange pf-btn-lg" href="${P}/billing">Upgrade plan to buy</a>`
@@ -559,7 +559,7 @@
         const cell = (v) => { const t = String(flat(v) ?? ''); return `"${(/^[=+\-@\t\r]/.test(t) ? `'${t}` : t).replace(/"/g, '""')}"`; }; // no spreadsheet formulas from form input
         const csv = [cols, ...list.map((l) => cols.map((c) => l[c]))].map((r) => r.map(cell).join(',')).join('\n');
         const tag = (leadPeriod === 'all' ? '' : `-${leadBasis}-${isoDay(from)}-to-${isoDay(to)}`) + (stageFilter ? `-${stageFilter}` : '');
-        Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv' })), download: `loanleaf-leads${tag}.csv` }).click();
+        Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv' })), download: `leaflegal-leads${tag}.csv` }).click();
         api('leads-exported', {}).then((r) => { me.leads_exported_at = r.at; draw(); }).catch(() => {});
       });
     };
@@ -569,7 +569,7 @@
 
   // Pre-filled first messages from the broker to the business (WhatsApp and email buttons).
   const firstName = (n) => String(n || '').trim().split(/\s+/)[0] || '';
-  const firstMsg = (l) => `Hi ${firstName(l.contact_name) || 'there'}, it’s ${firstName(me.contact_name) || 'the team'} from ${me.company}. You enquired through Loanleaf about ${gbp(l.amount)} for ${String(l.purpose || 'your business').toLowerCase()}. I’d love to help. When’s a good time for a quick call?`;
+  const firstMsg = (l) => `Hi ${firstName(l.contact_name) || 'there'}, it’s ${firstName(me.contact_name) || 'the team'} from ${me.company}. You enquired through Leaflegal about ${gbp(l.amount)} for ${String(l.purpose || 'your business').toLowerCase()}. I’d love to help. When’s a good time for a quick call?`;
   const waNum = (p) => { const d = String(p || '').replace(/[^\d+]/g, ''); return /^\+\d{8,15}$/.test(d) ? d.slice(1) : /^0\d{9,10}$/.test(d) ? '44' + d.slice(1) : /^44\d{9,10}$/.test(d) ? d : ''; };
   const waHref = (l) => (waNum(l.phone) ? `https://wa.me/${waNum(l.phone)}?text=${encodeURIComponent(firstMsg(l))}` : '');
   const mailHref = (l) => `mailto:${l.email}?subject=${encodeURIComponent(`Your ${gbp(l.amount)} finance enquiry`)}&body=${encodeURIComponent(firstMsg(l))}`;
@@ -598,7 +598,7 @@
             <p class="pf-hint" data-rnote hidden></p>
             <div data-rmore><label>Details <span data-ropt>(optional)</span><textarea name="details" rows="2"></textarea></label>
             <p class="pf-hint">We review requests within one working day. You have ${opts.returnHours} hours from purchase.</p><div><button class="pf-btn">Send request</button></div></div>
-            <p class="pf-hint" data-rcontact hidden>Want to talk it through? Email <a href="mailto:hello@loanleaf.co?subject=Lead%20%23${l.id}">hello@loanleaf.co</a>.</p></form></details>` : ''}`);
+            <p class="pf-hint" data-rcontact hidden>Want to talk it through? Email <a href="mailto:hello@leaflegal.co?subject=Lead%20%23${l.id}">hello@leaflegal.co</a>.</p></form></details>` : ''}`);
       modal.querySelectorAll('[data-set]').forEach((b) => (b.onclick = async () => {
         if (b.dataset.set === l.stage) return;
         try { const r = await api('stage', { id: l.id, stage: b.dataset.set }); l.stage = r.stage; render(); redraw?.(); toast(`Moved to ${STAGE_NAME[l.stage]}`); } catch (ex) { toast(ex.message, true); }
@@ -705,11 +705,11 @@
             ${listField('webhook_urls', me.webhook_urls?.length ? me.webhook_urls : me.webhook_url ? [me.webhook_url] : [], 'url', 'https://hooks.zapier.com/…', 'Add another webhook', 5)}
             <label class="pf-mt-s">Signing secret (optional)<input name="webhook_secret" type="password" autocomplete="off" spellcheck="false" value="${h(me.webhook_secret || '')}" placeholder="Paste a secret, or generate one"></label>
             <div class="pf-row-l"><button type="button" class="pf-btn pf-btn-sm" data-secret-gen>Generate</button><button type="button" class="pf-btn pf-btn-sm" data-secret-show>Show</button></div>
-            <p class="pf-hint">When set, each webhook carries X-Loanleaf-Timestamp and X-Loanleaf-Signature (t=timestamp,v1=HMAC-SHA256 of "timestamp.body") so the receiving end can check it came from Loanleaf.</p>
+            <p class="pf-hint">When set, each webhook carries X-Leaflegal-Timestamp and X-Leaflegal-Signature (t=timestamp,v1=HMAC-SHA256 of "timestamp.body") so the receiving end can check it came from Leaflegal.</p>
             <div class="pf-row-l"><button type="button" class="pf-btn" data-test>${I.webhook}Send a test lead</button></div></div>
           <div class="pf-opt"><label class="pf-switchrow"><input type="checkbox" role="switch" name="hubspot_on" ${me.hubspot?.on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Send to HubSpot</b><em>Each lead becomes a HubSpot contact through a HubSpot form. Works on every HubSpot plan, no Zapier needed</em></span></label>
             <label>HubSpot form embed code or link<textarea name="hubspot_form" rows="2" placeholder="Paste the form’s embed code or the link to its editor">${h(me.hubspot?.form ? `hbspt.forms.create({ region: "${me.hubspot.region || 'na1'}", portalId: "${me.hubspot.portal}", formId: "${me.hubspot.form}" })` : '')}</textarea></label>
-            <p class="pf-hint">${me.hubspot?.form ? `Connected to HubSpot account ${h(me.hubspot.portal)}. ` : ''}The form needs Email, First name, Last name, Phone number, Company name and Message fields. <a href="https://loanleaf.co/partners/hubspot-guide.pdf" target="_blank" rel="noopener">Setup guide (PDF)</a></p>
+            <p class="pf-hint">${me.hubspot?.form ? `Connected to HubSpot account ${h(me.hubspot.portal)}. ` : ''}The form needs Email, First name, Last name, Phone number, Company name and Message fields. <a href="https://leaflegal.co/partners/hubspot-guide.pdf" target="_blank" rel="noopener">Setup guide (PDF)</a></p>
             <div class="pf-row-l"><button type="button" class="pf-btn" data-test-hs>${I.webhook}Send a test lead to HubSpot</button></div></div>
           <div class="pf-opt"><label class="pf-switchrow"><input type="checkbox" role="switch" name="pipedrive_on" ${me.pipedrive?.on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Send to Pipedrive</b><em>Each lead becomes an organisation, a person and a deal with a note of everything they told us. No Zapier needed</em></span></label>
             <label>Pipedrive API token<input name="pipedrive_token" type="password" autocomplete="off" spellcheck="false" value="${h(me.pipedrive?.token || '')}" placeholder="40 letters and numbers"></label>
@@ -720,9 +720,9 @@
 </form>
       <div class="pf-savebar"><span>Changes apply to new leads as soon as you save.</span><button class="pf-btn pf-btn-primary pf-btn-lg" type="submit" form="pf-autoform">Save settings</button></div>`;
     const form = view().querySelector('form');
-    if (me.restricted && !acting) { // commission client: rules set by Loanleaf, delivery still editable
+    if (me.restricted && !acting) { // commission client: rules set by Leaflegal, delivery still editable
       form.querySelectorAll('.pf-auto-main > section.pf-card').forEach((sec) => { if (sec.querySelector('[name=deliver_on]')) return; sec.querySelectorAll('input,select,textarea,button').forEach((x) => (x.disabled = true)); sec.classList.add('is-locked'); });
-      form.querySelector('.pf-auto-main').insertAdjacentHTML('afterbegin', `<div class="pf-banner">${I.shield}<div><b>Loanleaf manages auto-buy for this account.</b> The criteria and budget below are set for you. To change them, email hello@loanleaf.co. Delivery settings can still be changed.</div></div>`);
+      form.querySelector('.pf-auto-main').insertAdjacentHTML('afterbegin', `<div class="pf-banner">${I.shield}<div><b>Leaflegal manages auto-buy for this account.</b> The criteria and budget below are set for you. To change them, email hello@leaflegal.co. Delivery settings can still be changed.</div></div>`);
     }
     const digits = (v) => +String(v || '').replace(/\D/g, '') || null;
     const read = () => {
@@ -937,7 +937,7 @@
   const HOW_CREDITS = `<div class="pf-how"><h3>How credits work</h3><ol>
     <li><b>1 credit = £1 of lead value.</b> Your plan adds credits every month.</li>
     <li><b>Each lead is priced from £20 to £300</b> (in credits) by how fundable it is: loan size, revenue, time trading, credit history and whether the ask is realistic.</li>
-    <li><b>Prices move.</b> Loanleaf is a marketplace, so lead prices change with demand and lead quality, at any time and without notice, including for auto-buy. Unsold leads also drop to half price after 72 hours.</li>
+    <li><b>Prices move.</b> Leaflegal is a marketplace, so lead prices change with demand and lead quality, at any time and without notice, including for auto-buy. Unsold leads also drop to half price after 72 hours.</li>
     <li><b>You stay in control.</b> You see the price before you buy manually, and auto-buy never pays more than the maximum price per lead you set.</li>
     <li><b>Every lead is exclusive</b> to the broker who buys it.</li>
     <li><b>Unused credits roll over</b> while you're subscribed. Leads with an invalid phone number or email address can be refunded if you ask within 72 hours.</li></ol></div>`;
@@ -965,7 +965,7 @@
           : cur ? `<span class="pf-eyebrow">Current plan</span><b>${h(cur.plan)} · ${gbp(cur.pounds)}<small> a month + VAT</small></b>
           <em>${num(cur.credits)} credits a month${cur.renews ? ` · ${cur.cancelling ? 'ends' : 'renews'} ${new Date(cur.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}${cur.status === 'past_due' ? ' · <strong>payment overdue</strong>' : ''}</em>`
           : me.plan ? `<span class="pf-eyebrow">Current plan</span><b>${h(me.plan.name)}${me.plan.price ? ` · ${gbp(me.plan.price)}<small> a month + VAT</small>` : ''}</b>
-            ${me.plan.credits ? `<em>${num(me.plan.credits)} credits a month${me.plan.price ? ' · invoiced' : ''} · next credits ${new Date(me.plan.next_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</em>` : '<em>Credits added by Loanleaf</em>'}`
+            ${me.plan.credits ? `<em>${num(me.plan.credits)} credits a month${me.plan.price ? ' · invoiced' : ''} · next credits ${new Date(me.plan.next_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</em>` : '<em>Credits added by Leaflegal</em>'}`
           : `<span class="pf-eyebrow">Current plan</span><b>No plan yet</b><em>Choose a monthly plan below to start buying leads.</em>`}
           ${me.billing ? `<button class="pf-btn pf-btn-ghost pf-btn-sm" data-billing>Manage billing</button>` : ''}</div></section>
       ${cur?.trial ? `<div class="pf-banner pf-banner-go pf-mt">${I.spark}<div><b>Ready for the full plan?</b> Upgrade to ${h(cur.plan)} today and get ${num(cur.credits)} credits straight away. Your monthly plan starts today, and the credits you have now stay in your balance.</div><button class="pf-btn pf-btn-primary pf-btn-sm" data-pack="${Object.keys(packs).find((k) => packs[k].pence === curPence) || 'starter'}" data-change="up">Upgrade to ${h(cur.plan)}</button></div>`
@@ -1009,7 +1009,7 @@
       view().querySelector('[data-ccredits]').textContent = num(cc);
       cr.value = Math.min(30000, customAmt); cr.style.setProperty('--p', `${((cr.value - custom.min) / (30000 - custom.min)) * 100}%`);
       if (!fromInput) ci.value = num(customAmt);
-      cb.innerHTML = big ? `<a class="pf-btn pf-btn-orange pf-btn-lg" href="mailto:${custom.contact}?subject=${encodeURIComponent(`Loanleaf Platform: custom plan around ${gbp(customAmt)} a month`)}">${I.mail}Contact us</a><p class="pf-hint">Plans over ${num(custom.maxCredits)} credits a month are set up with our team.</p>`
+      cb.innerHTML = big ? `<a class="pf-btn pf-btn-orange pf-btn-lg" href="mailto:${custom.contact}?subject=${encodeURIComponent(`Leaflegal Platform: custom plan around ${gbp(customAmt)} a month`)}">${I.mail}Contact us</a><p class="pf-hint">Plans over ${num(custom.maxCredits)} credits a month are set up with our team.</p>`
         : planBtn('custom', customAmt * 100);
       wirePlans();
     };
@@ -1055,7 +1055,7 @@
       modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>Cancel your subscription?</h2>
         <p>Your ${h(cur.plan)} plan stays active until <b>${end}</b>. You won't be charged again, and you can keep using your credits until then. You can change your mind any time before that date.</p>
         <fieldset class="pf-reasons"><legend>Why are you cancelling?</legend>${(opts.cancelReasons || []).map((x) => `<label class="pf-check"><input type="radio" name="reason" value="${h(x)}" required>${h(x)}</label>`).join('')}</fieldset>
-        <label>Anything we could have done better? <span>(optional)</span><textarea name="feedback" rows="3" maxlength="2000" placeholder="Your feedback goes straight to the Loanleaf team"></textarea></label>
+        <label>Anything we could have done better? <span>(optional)</span><textarea name="feedback" rows="3" maxlength="2000" placeholder="Your feedback goes straight to the Leaflegal team"></textarea></label>
         <div class="pf-row"><button class="pf-btn" value="cancel" formnovalidate>Keep subscription</button><button class="pf-btn pf-btn-danger-solid" value="ok">Cancel subscription</button></div></form>`;
       modal.onclose = async () => {
         modal.onclose = null; if (modal.returnValue !== 'ok') return;
@@ -1144,7 +1144,7 @@
   }
   let profTab = 'page', prevSeq = 0;
   const PSUB = { page: 'Shown straight after they send the form, when auto-buy matches them with you.',
-    email: 'Sent to the business whenever you get their lead: bought, auto-bought or given to you by Loanleaf.',
+    email: 'Sent to the business whenever you get their lead: bought, auto-bought or given to you by Leaflegal.',
     whatsapp: 'Sent to the business’s mobile at the same time as the email.',
     sms: 'Sent instead of the WhatsApp if their number isn’t on WhatsApp.' };
   function wireProfile(box, p, refresh) {
@@ -1258,7 +1258,7 @@
           : `<p class="pf-hint">You haven't signed the partner agreement yet. You need to sign it before you can subscribe or buy leads.</p><div class="pf-row-l"><a class="pf-btn pf-btn-primary" href="${P}/onboarding" data-sign>Review and sign</a></div>`}</section>
       <section class="pf-card pf-form"><div class="pf-card-h"><h3>Account status</h3></div>
         <div class="pf-status ${me.approved ? 'ok' : ''}">${me.approved ? I.check : I.clock}<div><b>${me.approved ? 'Approved' : 'Awaiting approval'}</b><span>${me.approved ? 'You can buy credits and leads.' : 'We review every firm before it can buy leads.'}</span></div></div>
-        <p class="pf-hint">To close your account or change your sign-in email, contact hello@loanleaf.co.</p>
+        <p class="pf-hint">To close your account or change your sign-in email, contact hello@leaflegal.co.</p>
         <div class="pf-row-l"><a class="pf-btn" href="${P}/billing">${I.coins}Billing and subscription</a></div>
         <div><button class="pf-btn" data-out2>${I.out}Sign out</button></div></section></div>`);
     view().querySelector('[data-out2]').onclick = signOut;
@@ -1416,7 +1416,7 @@
       const C = { half: [`Put ${n} lead${s} at 50% off?`, 'Half of each lead’s full price. The old price shows crossed out.', '50% off'],
         full: [`Put ${n} lead${s} back to full price?`, 'Removes any discount, including the automatic 72-hour one.', 'Full price'],
         relist: [`Take ${n} sold lead${s} back and put them in Opportunities?`, 'At full price. This doesn’t refund the brokers who bought them. Approve their refunds first if they’re owed one.', 'Put back'],
-        suppress: [`Suppress email for ${n} lead${s}?`, 'Adds their email addresses to the suppression list. Loanleaf and brokers’ CRMs won’t email them again, including match emails. Texts and WhatsApp aren’t affected.', 'Suppress'],
+        suppress: [`Suppress email for ${n} lead${s}?`, 'Adds their email addresses to the suppression list. Leaflegal and brokers’ CRMs won’t email them again, including match emails. Texts and WhatsApp aren’t affected.', 'Suppress'],
         unsuppress: [`Remove ${n} lead${s} from the suppression list?`, 'They can be emailed again. Only do this if they’ve asked to hear from us.', 'Remove'],
         hide: [`Hide ${n} lead${s}?`, 'They leave this list (find them under Status → Hidden) and come off Opportunities, so brokers can’t buy them. Sold leads stay with their buyer.', 'Hide'],
         unhide: [`Unhide ${n} lead${s}?`, 'They come back to this list, and unsold ones go back on Opportunities.', 'Unhide'],
@@ -1944,7 +1944,7 @@
       ${relistForm(l, d, brokers)}
       ${kv(l.consent).length ? `<h3 class="pf-dsec">Consent record</h3>${facts(kv(l.consent))}` : ''}
       <h3 class="pf-dsec">Source</h3>${facts([['Came from', h(l.channel || 'Direct or unknown')], ...(l.campaign_name ? [['Campaign', h(l.campaign_name)]] : []), ...(l.adset ? [['Ad set', h(l.adset)]] : []), ...(l.ad ? [['Ad', h(l.ad)]] : []), ...kv(l.source)])}
-      <h3 class="pf-dsec">Email suppression</h3><p class="pf-hint">${l.suppressed ? `On the suppression list since ${date(l.suppressed.created_at)} (${h(l.suppressed.reason || 'Unsubscribed')}). Loanleaf and brokers’ CRMs won’t email them.` : 'Suppressing stops all emails to them from Loanleaf and brokers’ CRMs, including match emails. Texts and WhatsApp aren’t affected.'}</p>
+      <h3 class="pf-dsec">Email suppression</h3><p class="pf-hint">${l.suppressed ? `On the suppression list since ${date(l.suppressed.created_at)} (${h(l.suppressed.reason || 'Unsubscribed')}). Leaflegal and brokers’ CRMs won’t email them.` : 'Suppressing stops all emails to them from Leaflegal and brokers’ CRMs, including match emails. Texts and WhatsApp aren’t affected.'}</p>
       <div class="pf-mb"><button class="pf-btn" data-lsup>${l.suppressed ? 'Remove from suppression list' : 'Suppress email'}</button></div>
       <h3 class="pf-dsec">Hide</h3><p class="pf-hint">${l.hidden_at ? `Hidden since ${date(l.hidden_at)}. It only shows under Status → Hidden${sold ? '' : ' and isn’t on Opportunities'}.` : `Takes it out of All leads${sold ? '' : ' and off Opportunities, so brokers can’t buy it'}. You can unhide it any time.`}</p>
       <div class="pf-mb"><button class="pf-btn" data-lhide>${l.hidden_at ? 'Unhide lead' : 'Hide lead'}</button></div>
@@ -1977,7 +1977,7 @@
     modal.querySelector('[data-lsup]').onclick = (e) => {
       const btn = e.currentTarget, off = !!l.suppressed;
       confirmBox(off ? { title: `Email ${h(l.email)} again?`, text: 'Only do this if they’ve asked to hear from us.', ok: 'Remove from list' }
-        : { title: `Suppress ${h(l.email)}?`, text: 'Loanleaf and brokers’ CRMs won’t email them again.', ok: 'Suppress email', input: 'Reason (optional)' })
+        : { title: `Suppress ${h(l.email)}?`, text: 'Leaflegal and brokers’ CRMs won’t email them again.', ok: 'Suppress email', input: 'Reason (optional)' })
         .then((r) => (r === null ? adminLeadDrawer(id) : run(off ? { op: 'unsuppress' } : { op: 'suppress', why: r || undefined }, off ? 'Removed from the suppression list' : 'Email suppressed', btn)));
     };
     modal.querySelector('[data-lhide]').onclick = (e) => run({ op: l.hidden_at ? 'unhide' : 'hide' }, l.hidden_at ? `Lead #${l.id} unhidden` : `Lead #${l.id} hidden`, e.currentTarget);
@@ -2060,7 +2060,7 @@
     const r = await fetch(`/api/platform?action=admin-agreement&id=${g.id}`, { headers: { Authorization: `Bearer ${session.access}` } });
     if (!r.ok) { w?.close(); throw new Error('Could not load the agreement'); }
     const url = URL.createObjectURL(new Blob([await r.arrayBuffer()], { type: 'application/pdf' }));
-    if (download) Object.assign(document.createElement('a'), { href: url, download: `${String(company || 'partner').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').toLowerCase()}-loanleaf-partner-agreement-v${g.version}.pdf` }).click();
+    if (download) Object.assign(document.createElement('a'), { href: url, download: `${String(company || 'partner').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').toLowerCase()}-leaflegal-partner-agreement-v${g.version}.pdf` }).click();
     else if (w) w.location = url; else location.href = url;
   }
   async function clientDrawer(id) {
@@ -2153,7 +2153,7 @@
       <label>Their name<input name="fullname" autocomplete="off" required></label>
       <label>Email<input name="email" type="email" autocomplete="off" required></label>
       <label>Firm <span>(optional)</span><input name="company" autocomplete="off"></label>
-      <label>Do they know us?<select name="kind"><option value="warm">Warm: they know us or expect this. Short invitation</option><option value="cold">Cold: first contact. Full introduction to Loanleaf, how it works and how to join</option></select></label>
+      <label>Do they know us?<select name="kind"><option value="warm">Warm: they know us or expect this. Short invitation</option><option value="cold">Cold: first contact. Full introduction to Leaflegal, how it works and how to join</option></select></label>
       <label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" name="alerts" checked><span class="pf-toggle-ui"></span><span><b>Email them new leads now</b><em>They get new-lead emails while they finish signing up, and keep getting them once they join</em></span></label>
       <label>Send at <span>(optional, leave blank to send now)</span><input name="at" type="datetime-local"></label>
       <div class="pf-row"><button class="pf-btn" value="cancel" formnovalidate>Cancel</button><button class="pf-btn pf-btn-primary" value="ok">${I.mail}Send invitation</button></div></form>`;
@@ -2298,7 +2298,7 @@
           ${pager}`
           : empty('mail', q ? 'No invites match' : 'No open invites', q ? 'Try a different search.' : 'Invite a firm, or upload a CSV to invite many at once. Accepted invites move to Clients.')}
         ${S.length ? `<div class="pf-card-h pf-mt"><h3>Unsubscribed</h3><span>${num(S.length)} · never emailed again unless they register an account themselves</span></div>
-          <div class="pf-card pf-flush"><table class="pf-table"><tbody>${S.filter((x) => !q || x.email.includes(q)).slice(0, 200).map((x) => `<tr><td><b>${h(x.email)}</b><span>${h(x.reason || 'Unsubscribed')} · ${x.source === 'admin' ? 'added by Loanleaf' : x.source === 'resend' ? 'from email delivery' : `from ${x.source === 'crm' ? 'a CRM email' : 'an invite'}`}</span></td><td class="pf-r"><span>${dayOnly(x.created_at)}</span></td></tr>`).join('') || '<tr><td class="pf-hint">No matches.</td></tr>'}</tbody></table></div>` : ''}`;
+          <div class="pf-card pf-flush"><table class="pf-table"><tbody>${S.filter((x) => !q || x.email.includes(q)).slice(0, 200).map((x) => `<tr><td><b>${h(x.email)}</b><span>${h(x.reason || 'Unsubscribed')} · ${x.source === 'admin' ? 'added by Leaflegal' : x.source === 'resend' ? 'from email delivery' : `from ${x.source === 'crm' ? 'a CRM email' : 'an invite'}`}</span></td><td class="pf-r"><span>${dayOnly(x.created_at)}</span></td></tr>`).join('') || '<tr><td class="pf-hint">No matches.</td></tr>'}</tbody></table></div>` : ''}`;
       box.querySelectorAll('[data-client]').forEach((b) => (b.onclick = () => clientDrawer(b.dataset.client)));
       box.querySelector('[data-invsort]').onchange = (e) => { invSort = e.target.value; invPage = 0; draw(); };
       box.querySelector('[data-invshow]').onchange = (e) => { invShow = e.target.value; invPage = 0; invSel = new Set(); draw(); };
@@ -2416,7 +2416,7 @@
         <h3 class="pf-dsec">Sending</h3>
         <div class="pf-two"><label>Start sending<input type="datetime-local" name="start" value="${local(P.length > 200 ? tomorrow9 : new Date(Date.now() + 5 * 6e4))}"></label>
           <label>Invites a day <span>(sent 8am–5pm, spread out)</span><input name="perDay" inputmode="numeric" value="${Math.min(100, P.length)}"></label></div>
-<label>Is this list warm or cold?<select name="kind"><option value="" selected disabled>Choose one</option><option value="warm">Warm: they know us or expect this. Short invitation</option><option value="cold">Cold: first contact. Full introduction to Loanleaf, how it works and how to join</option></select></label>
+<label>Is this list warm or cold?<select name="kind"><option value="" selected disabled>Choose one</option><option value="warm">Warm: they know us or expect this. Short invitation</option><option value="cold">Cold: first contact. Full introduction to Leaflegal, how it works and how to join</option></select></label>
         <label>Lead emails while they decide<select name="leads"><option value="weekly">Weekly round-up of the best new leads (recommended for big lists)</option><option value="instant">An email for every new lead</option><option value="off">None</option></select></label>
         <p class="pf-hint" data-plan></p>`}
         <div class="pf-row"><button type="button" class="pf-btn" data-back>Choose another file</button><button class="pf-btn pf-btn-primary" ${noEmail || !P.length ? 'disabled' : ''}>Send ${num(P.length)} invite${P.length === 1 ? '' : 's'}</button></div></form>`;
@@ -2474,13 +2474,13 @@
           <td class="pf-r"><button class="pf-btn pf-btn-sm" data-brev="${h(k.id)}">Revoke</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="pf-hint">No keys yet.</p>'}
       <div class="pf-card-h pf-mt"><h3>Published by scheduled runs</h3><span>hand-written posts aren’t listed here</span></div>
       ${d.posts.length ? `<div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th>Post</th><th class="pf-hide-s">Published</th><th></th></tr></thead><tbody>
-        ${d.posts.map((p) => `<tr><td><b><a href="https://loanleaf.co/blog/${h(p.slug)}" target="_blank" rel="noopener">${p.title}</a></b><span>${p.category}</span></td><td class="pf-hide-s">${dayOnly(p.date)}</td>
+        ${d.posts.map((p) => `<tr><td><b><a href="https://leaflegal.co/blog/${h(p.slug)}" target="_blank" rel="noopener">${p.title}</a></b><span>${p.category}</span></td><td class="pf-hide-s">${dayOnly(p.date)}</td>
           <td class="pf-r"><button class="pf-btn pf-btn-sm" data-bunpub="${h(p.slug)}">Unpublish</button></td></tr>`).join('')}</tbody></table></div>` : '<p class="pf-hint">Nothing published through the API yet.</p>'}`;
     box.querySelector('[data-bkey]').onclick = async () => {
       const name = await confirmBox({ title: 'Create a publishing key', text: 'Name it after the scheduled run that will use it, so you know which one to revoke later.', ok: 'Create key', input: 'Name' });
       if (!name) { modal.close(); return; }
       try { const r = await api('admin-blog-key', { name });
-        modal.innerHTML = `<div class="pf-modal-in"><h2>Copy this key now</h2><p>It won’t be shown again. Paste it into the scheduled run’s instructions where it says {{LOANLEAF_BLOG_KEY}}.</p>
+        modal.innerHTML = `<div class="pf-modal-in"><h2>Copy this key now</h2><p>It won’t be shown again. Paste it into the scheduled run’s instructions where it says {{LEAFLEGAL_BLOG_KEY}}.</p>
           <label>Key<input readonly value="${h(r.key)}" class="pf-mono"></label><div class="pf-row"><button type="button" class="pf-btn" data-close>Done</button><button type="button" class="pf-btn pf-btn-primary" data-copy>Copy key</button></div></div>`;
         modal.querySelector('[data-copy]').onclick = async () => { await navigator.clipboard.writeText(r.key).catch(() => {}); toast('Key copied'); };
         modal.querySelector('[data-close]').onclick = () => { modal.close(); blogTab(box); };
@@ -2503,7 +2503,7 @@
     box.innerHTML = `<p class="pf-hint pf-mb">${E.length} emails, built from the live code with test data on ${date(mailData.built)} (rebuilt every deploy). Nothing here is sent. CRM follow-ups show the default wording; edit the live versions in the CRM.</p>
       <div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th>Email</th><th>Subject</th><th class="pf-hide-s">Goes to</th></tr></thead><tbody>
       ${E.map((m, i) => `<tr class="pf-rowlink" data-mail="${i}" tabindex="0"><td><b>${h(m.label)}</b>${m.files?.length ? `<span>Attached: ${h(m.files.join(', '))}</span>` : ''}</td><td>${h(m.subject)}</td>
-        <td class="pf-hide-s"><span>${/loanleaf\.co$/.test(m.to) ? 'You (Loanleaf)' : /acmetrading/.test(m.to) ? 'The business' : 'The broker'}</span></td></tr>`).join('')}</tbody></table></div>`;
+        <td class="pf-hide-s"><span>${/leaflegal\.co$/.test(m.to) ? 'You (Leaflegal)' : /acmetrading/.test(m.to) ? 'The business' : 'The broker'}</span></td></tr>`).join('')}</tbody></table></div>`;
     box.querySelectorAll('[data-mail]').forEach((r) => { const go = () => { const m = E[+r.dataset.mail];
       drawer(`<div class="pf-dh"><div><span class="pf-eyebrow">${h(m.label)}</span><h2>${h(m.subject)}</h2></div></div><p class="pf-hint">To: ${h(m.to)} (test data)${m.files?.length ? ` · Attached: ${h(m.files.join(', '))}` : ''}</p>
         <iframe class="pf-mail-frame" title="${h(m.subject)}" sandbox></iframe>`);
@@ -2580,7 +2580,7 @@
   let ob = { step: 0, plan: null, amount: 0, coupon: '', couponLabel: '' };
   function obShell(inner, at = ob.step + 1, side = `<a href="${P}/dashboard" class="pf-onb-skip">Finish later</a>`, home = `${P}/dashboard`) {
     app.className = 'pf-onb';
-    app.innerHTML = `<header class="pf-onb-top"><a href="${home}" class="pf-onb-logo" aria-label="Loanleaf">${LOGO}</a>
+    app.innerHTML = `<header class="pf-onb-top"><a href="${home}" class="pf-onb-logo" aria-label="Leaflegal">${LOGO}</a>
       <ol class="pf-onb-steps">${ALL_STEPS.map(([, n], i) => `<li class="${i < at ? 'done' : i === at ? 'on' : ''}"${i === at ? ' aria-current="step"' : ''}><span>${i < at ? I.check : i + 1}</span>${n}</li>`).join('')}</ol>
       ${side}</header>
       <main class="pf-onb-main"><div class="pf-onb-card">${inner}</div></main>`;
@@ -2728,12 +2728,12 @@
       if (me.agreementWaived) return obGo(obAt('pay'));
       const { html: terms, version } = await api('terms');
       obShell(`<form class="pf-onb-form pf-onb-wide" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Partner agreement</h1>
-        <p class="pf-sub">Between ${h(me.company)} and Vertical Brands Ltd (trading as Loanleaf). Please read it in full. A signed copy is emailed to you and kept in your account.</p>
+        <p class="pf-sub">Between ${h(me.company)} and Vertical Brands Ltd (trading as Leaflegal). Please read it in full. A signed copy is emailed to you and kept in your account.</p>
         <div class="pf-terms" tabindex="0" aria-label="Partner agreement">${terms}</div>
         <div class="pf-two pf-mt-s"><label>Full name<input name="signer_name" value="${h(me.contact_name || '')}" autocomplete="name" required></label>
           <label>Position<input name="signer_title" value="${h(me.signer_title || '')}" required></label></div>
         <label class="pf-check"><input type="checkbox" name="authority"> I confirm I am authorised to accept this agreement on behalf of ${h(me.company)}.</label>
-        <label class="pf-check"><input type="checkbox" name="accept"> I have read and agree to the Loanleaf Partner Agreement (version ${h(version)}), and agree that accepting it online is legally binding.</label>
+        <label class="pf-check"><input type="checkbox" name="accept"> I have read and agree to the Leaflegal Partner Agreement (version ${h(version)}), and agree that accepting it online is legally binding.</label>
         <p class="pf-err" role="alert"></p>${obNav('Agree and continue')}</form>`);
       const form = app.querySelector('form'); wireBack();
       form.onsubmit = async (e) => {
@@ -2864,7 +2864,7 @@
         ? "Can't reach the platform right now. Please try again in a moment." : e.message;
     }
   }
-  // Clean URLs: platform.loanleaf.co/<tab>. Old #tab links are converted on load; /signup is now /register.
+  // Clean URLs: platform.leaflegal.co/<tab>. Old #tab links are converted on load; /signup is now /register.
   addEventListener('popstate', route);
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="/"]'), href = a?.getAttribute('href') || '';

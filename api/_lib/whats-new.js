@@ -4,7 +4,7 @@ import { PLATFORM_URL } from './platform.js';
 
 const F = 'font-family:Arial,Helvetica,sans-serif;';
 const G = '#244237', INK = '#14271f', TEXT = '#2b3f36', LINE = '#dde5e1';
-const IMG = 'https://loanleaf.co/assets/email';
+const IMG = 'https://leaflegal.co/assets/email';
 
 const p = (html, extra = '') => `<p style="${F}margin:0 0 16px;font-size:15px;line-height:1.65;color:${TEXT};${extra}">${html}</p>`;
 const h = (t) => `<p style="${F}margin:34px 0 8px;font-size:17px;line-height:1.35;font-weight:bold;color:${INK}">${t}</p>`;
@@ -21,11 +21,11 @@ export const whatsNew = (firstName, invite = null) => {
   const stop = invite ? `${PLATFORM_URL}/api/platform?action=invite-stop&t=${encodeURIComponent(invite.token)}` : null;
   const go = (path) => join || `${PLATFORM_URL}/${path}`;
   return {
-    title: 'What’s new on Loanleaf',
+    title: 'What’s new on Leaflegal',
     preheader: 'Enquiries up 21% this week, plus homeowner status, WhatsApp and a new My leads.',
     greeting: `Hi ${firstName || 'there'},`,
     html:
-      p(invite ? 'A quick update on what’s changed on Loanleaf Platform this week, in case you’re still deciding whether to join.'
+      p(invite ? 'A quick update on what’s changed on Leaflegal Platform this week, in case you’re still deciding whether to join.'
         : 'A quick update on a few things we’ve changed this week. Most of them came straight from brokers telling us what would help.') +
       p('Enquiries are up 21% on last week.') +
       img('wn-stats-3.jpg', 'This week: 21% more business enquiries than last week', 520) +
@@ -50,13 +50,13 @@ export const whatsNew = (firstName, invite = null) => {
       shot('wn-companies-house.jpg', 'Companies House details on a lead: company name, number, type, status, incorporation date and industry', 300) + '<div style="height:26px;line-height:26px">&nbsp;</div>',
     cta: invite ? { label: 'Accept your invite', url: join } : { label: 'See what’s live now', url: `${PLATFORM_URL}/opportunities` },
     after: p('If anything on the platform could work better for you, just reply and let us know.', 'margin:26px 0 22px') +
-      p(`Thanks,<br><b style="color:${INK}">Team Loanleaf</b>`, 'margin:0') +
+      p(`Thanks,<br><b style="color:${INK}">Team Leaflegal</b>`, 'margin:0') +
       (invite ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:30px 0 0"><tr><td align="center" style="${F}border-top:1px solid ${LINE};padding:22px 0 0;font-size:13px;line-height:1.6;color:#4f645b">
         Not for you? You can stop these emails in one click.<br>
         <a href="${stop}" style="display:inline-block;margin-top:12px;padding:10px 22px;border:1px solid #9fb2a9;color:${INK};font-weight:bold;text-decoration:none">Unsubscribe</a></td></tr></table>` : ''),
     signoff: false,
-    ...(invite ? { nav: false, replyTo: 'hello@loanleaf.co', unsub: stop,
-      footer: `You're receiving this because the Loanleaf team invited ${invite.email} to join Loanleaf Platform. <a href="${stop}" style="color:#86998f">Unsubscribe</a>.` } : {}),
+    ...(invite ? { nav: false, replyTo: 'hello@leaflegal.co', unsub: stop,
+      footer: `You're receiving this because the Leaflegal team invited ${invite.email} to join Leaflegal Platform. <a href="${stop}" style="color:#86998f">Unsubscribe</a>.` } : {}),
   };
 };
 
