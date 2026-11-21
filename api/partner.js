@@ -97,7 +97,7 @@ async function booking(action, req, res, b) {
       const token = await gToken();
       if (!freeOf([t], await busy(token, t, t + SLOT_MIN * 6e4)).length) return res.status(409).json({ error: 'Sorry, that time has just been taken. Please pick another.' });
       const answers = [['Company', b.company], ['Name', name], ['Position', b.role], ['Email', b.email], ['Phone', b.phone], ['Website', b.site], ['Leads per month', b.volume], ['Monthly budget', b.budget],
-        ['Finance types', b.funds], ['Loan sizes', b.sizes], ['FCA status', b.fca], ['FCA ref', b.fcaRef], ['Lead delivery', b.delivery], ['Start', b.start], ['Notes', b.notes]]
+        ['Practice areas', b.areas], ['Regulator', b.regulator], ['Lead delivery', b.delivery], ['Start', b.start], ['Notes', b.notes]]
         .filter(([, v]) => v && (!Array.isArray(v) || v.length)).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join('\n');
       const r = await fetch(`https://www.googleapis.com/calendar/v3/calendars/${CAL()}/events?conferenceDataVersion=1&sendUpdates=all`, {
         method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(8000),

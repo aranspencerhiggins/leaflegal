@@ -165,7 +165,9 @@ def page(path, title, desc, body, extra_head='', extra_js='', header=None, backu
     name = os.path.basename(path)
     if backup and os.path.exists(path) and not os.path.exists(f'backup/{name}'):
         os.rename(path, f'backup/{name}')
-    # No live chat or partner pop-up yet: LoanLeaf's Chatra account is not reused, and /partners/apply is a normal page.
+    # Partner pages: "Become a partner" links open the enquiry + book-a-call pop-up. No live chat (LoanLeaf's Chatra is not reused).
+    if '/partners' in path or name.startswith('partners'):
+        h = h.replace('</body>', '<script src="/assets/partner-popup.js?v=1" defer></script></body>', 1)
     if '/partners' in path:  # partner (law firm) side of the site: dark, deep-green theme
         h = h.replace('<body', '<body data-theme="partner"', 1).replace('</head>', '<link href="/assets/partners-dark.css?v=23" rel="stylesheet"/></head>', 1)
     if header == 'PARTNERS_HEADER':
@@ -582,15 +584,15 @@ partners_p = re.sub(r'<section class="section(?! legal-hero)(?! padding-btm-0)',
 page(f'{PUB}/partners.html', LC.TITLE, LC.DESC, partners_p, L_HEAD, '<script src="/assets/tabs.js?v=2"></script>', header='PARTNERS_HEADER', backup=False)
 
 os.makedirs(f'{PUB}/partners', exist_ok=True)
-# Law firm application: one question per step (assets/partner-apply.js). No platform sign-up yet.
-firm_apply = ('<section class="ap-section"><div class="ap-wrap"><h1 class="ap-page-title">Become a ' + BRAND + ' partner firm</h1>'
-              '<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>'
-              f'<div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'
+# Law firm enquiry: details, then book a call with Aran (assets/partner-enquiry.js). The same flow opens as a pop-up from any
+# "Become a partner" link (assets/partner-popup.js).
+firm_apply = ('<section class="ap-section"><div class="ap-wrap pe-wrap"><h1 class="ap-page-title">Get client enquiries for your firm</h1>'
+              f'<div id="pe"><noscript><p style="padding:32px">Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div>'
               '</div></section>')
-page(f'{PUB}/partners/apply.html', f'Become a Partner Firm | Client Enquiries for Solicitors | {BRAND}',
-     'Apply to receive exclusive, pre-screened client enquiries for your law firm. Tell us your practice areas and how many enquiries you want each month.',
-     firm_apply, APPLY_HEAD + '<meta name="robots" content="noindex"/>',
-     '<script src="/assets/partner-apply.js?v=12"></script>', header='PARTNERS_HEADER', backup=False)
+page(f'{PUB}/partners/apply.html', f'Become a Partner Firm | Leads for Solicitors | {BRAND}',
+     'Get exclusive, pre-screened client enquiries for your law firm. Leave your details, then book a 30-minute call with our founder.',
+     firm_apply, APPLY_HEAD + '<link href="/assets/partner-enquiry.css?v=1" rel="stylesheet"/><meta name="robots" content="noindex"/>',
+     '<script src="/assets/partner-enquiry.js?v=1"></script>', header='PARTNERS_HEADER', backup=False)
 
 # ---------------------------------------------------------------- about
 about = f'''
