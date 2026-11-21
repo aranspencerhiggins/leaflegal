@@ -177,3 +177,12 @@
   .llb-cta.llb-cta-pair{margin-left:8px}
   .llb-logo img{width:130px}
 }
+/* three-column left list (Near you: 26 cities) */
+.llb-mlist.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 6px}
+.llb-mega-in:has(.llb-mlist.three){grid-template-columns:minmax(0,9fr) minmax(0,5fr)}
+.llb-mlist.three .llb-mi{padding:9px 14px;font-size:15px}
+.llb-mega-in:has(.llb-mlist.three) .llb-mright{grid-template-columns:1fr}
+.llb-mega-in:has(.llb-mlist.three) .llb-mcard2{display:none}
+.llb-mega-in:has(.llb-mlist.three) .llb-mgrps{grid-template-columns:1fr}
+@media (max-width:1024px){.llb-mlist.three{grid-template-columns:1fr 1fr}}
+.llb-mlist.two .llb-mi{padding:10px 16px}

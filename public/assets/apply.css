@@ -224,3 +224,10 @@
 .ap-step.on.still{animation:none}
 /* Phones: once past the first question, only the logo and the form (questions sit at the top of the screen) */
 @media (max-width:767px){.ap-lp.ap-going .ap-lp-head{display:none}}
+/* Leaflegal: two separate, unticked consent boxes */
+.ap-consents{display:flex;flex-direction:column;gap:6px;margin:18px auto 0;max-width:560px}
+.ap-check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.5;color:var(--base-100);cursor:pointer;text-align:left}
+.ap-check input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:var(--base-100);cursor:pointer}
+.ap-check a{color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.ap-consents .ap-err{padding-left:30px}
+.ap-stop a{color:inherit;font-weight:600;text-decoration:underline}

@@ -17,10 +17,10 @@ export default async function handler(req, res) {
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: `Loanleaf <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`,
+      from: `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`,
       to: (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(','), reply_to: b.email,
       subject: `Contact form: ${String(b.topic || 'General').slice(0, 60)} from ${String(b.name).slice(0, 80)}`,
-      html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">New message from loanleaf.co</h2><table style="border-collapse:collapse">${rows}</table></div>`,
+      html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">New message from leaflegal.co</h2><table style="border-collapse:collapse">${rows}</table></div>`,
     }),
   });
   if (!r.ok) { console.error('resend contact', r.status, await r.text()); return res.status(502).json({ error: 'Send failed' }); }

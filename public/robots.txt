@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /api/
-Sitemap: https://loanleaf.co/sitemap.xml
+Sitemap: https://leaflegal.co/sitemap.xml

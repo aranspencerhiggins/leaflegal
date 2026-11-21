@@ -93,9 +93,9 @@ const NEED = { buy: 'buy', refund: 'buy', backlog: 'buy', settings: 'settings', 
   'enterprise-request': 'billing', sign: 'billing', onboard: 'billing', team: 'team', 'team-invite': 'team', 'team-update': 'team', 'team-remove': 'team' };
 const cleanPerms = (p = {}) => Object.fromEntries(Object.keys(PERMS).map((k) => [k, !!p[k]]));
 const INVITE_DAYS = 14;
-const teamInviteEmail = (m, owner, by) => notify([m.email], `${owner.company} has added you to Loanleaf Platform`, {
-  title: `Join ${owner.company} on Loanleaf`, preheader: `${by} has given you a sign-in to ${owner.company}’s Loanleaf Platform account.`,
-  intro: `${esc(by)} has added you to <b>${esc(owner.company)}</b>’s account on Loanleaf Platform, where the team buys and manages business finance leads. Choose a password to get started.`,
+const teamInviteEmail = (m, owner, by) => notify([m.email], `${owner.company} has added you to Leaflegal Platform`, {
+  title: `Join ${owner.company} on Leaflegal`, preheader: `${by} has given you a sign-in to ${owner.company}’s Leaflegal Platform account.`,
+  intro: `${esc(by)} has added you to <b>${esc(owner.company)}</b>’s account on Leaflegal Platform, where the team buys and manages business finance leads. Choose a password to get started.`,
   rows: Object.entries(PERMS).map(([k, label]) => [label, m.perms?.[k] ? 'Yes' : 'No']).concat([['See leads and update their stages', 'Yes']]), rowsTitle: 'What you can do',
   cta: { label: 'Accept and choose a password', url: `${PLATFORM_URL}/join?t=${m.token}` },
   note: `This link works for ${INVITE_DAYS} days. If you weren’t expecting it, you can ignore this email.` });
@@ -106,7 +106,7 @@ async function ukVat() {
   if (vatRate) return vatRate;
   const { data } = await stripe('tax_rates', { active: 'true', limit: '100' }, 'GET');
   const hit = data.find((t) => t.percentage === 20 && !t.inclusive && /vat/i.test(t.display_name) && (t.country || 'GB') === 'GB');
-  vatRate = hit?.id || (await stripe('tax_rates', { display_name: 'VAT', percentage: '20', inclusive: 'false', country: 'GB', description: 'UK VAT (Loanleaf Platform)' })).id;
+  vatRate = hit?.id || (await stripe('tax_rates', { display_name: 'VAT', percentage: '20', inclusive: 'false', country: 'GB', description: 'UK VAT (Leaflegal Platform)' })).id;
   return vatRate;
 }
 
@@ -152,15 +152,15 @@ async function metaSpend(since) {
 }
 // Where a lead came from: where the visit started (source.first, from nav.js) wins over the form page's own URL and referrer.
 // Query params of one of our own URLs (the ad's utm tags survive there when the page that submitted had lost them).
-const ownParams = (url) => { try { const x = new URL(url, 'https://loanleaf.co'); return /(^|\.)loanleaf\.co$/i.test(x.hostname) ? Object.fromEntries(x.searchParams) : {}; } catch { return {}; } };
+const ownParams = (url) => { try { const x = new URL(url, 'https://leaflegal.co'); return /(^|\.)leaflegal\.co$/i.test(x.hostname) ? Object.fromEntries(x.searchParams) : {}; } catch { return {}; } };
 function leadOrigin(src = {}) {
   const f = src.first || {}, u = src.utm || {}, ref = f.referrer || src.referrer || '';
   // Tags from the URL we were sent, else from our own referrer/landing page; an internal referrer isn't where they came from.
   const own = { ...ownParams(f.landing || f.page || ''), ...ownParams(src.referrer || '') };
-  const m = { ...own, ...u, ...f, referrer: Object.keys(ownParams(ref)).length || /loanleaf\.co/i.test(ref) ? '' : ref };
+  const m = { ...own, ...u, ...f, referrer: Object.keys(ownParams(ref)).length || /leaflegal\.co/i.test(ref) ? '' : ref };
   let channel = sourceFrom(m, '');
   if (!channel && /facebook\.|instagram\./i.test(m.referrer)) channel = 'Meta ads';
-  if (!channel) channel = /loanleaf\.co/i.test(m.referrer) || !m.referrer ? 'Direct or unknown' : 'Other website';
+  if (!channel) channel = /leaflegal\.co/i.test(m.referrer) || !m.referrer ? 'Direct or unknown' : 'Other website';
   // Meta tags campaign/ad set/ad IDs as utm_campaign/utm_term/utm_content; LinkedIn the campaign name, ad set id (utm_id) and ad (utm_content).
   const ad = { campaign_name: m.utm_campaign || null, adset: (channel === 'LinkedIn' ? m.utm_id : m.utm_term) || null, ad: m.utm_content || null };
   return { channel, campaign: (channel === 'LinkedIn' ? m.utm_id || m.utm_campaign : m.utm_campaign) || null, ...ad }; // LinkedIn tags links with the ad set as utm_id
@@ -234,7 +234,7 @@ const pendingBacklog = async (id) => { const [b] = await db(`brokers?id=eq.${id}
 // Stripe coupon for the first month offer: the Starter price less £1,000, off the first invoice (before VAT). Created once per
 // amount (the id carries it), so changing the Starter price never reuses a coupon with the wrong discount.
 async function trialCoupon() {
-  const id = `LOANLEAF_FIRST_MONTH_${(PACKS[TRIAL.then].pence - TRIAL.pence) / 100}`;
+  const id = `LEAFLEGAL_FIRST_MONTH_${(PACKS[TRIAL.then].pence - TRIAL.pence) / 100}`;
   try { await stripe(`coupons/${id}`, null, 'GET'); } catch {
     await stripe('coupons', { id, name: 'First month: £1,000 + VAT', amount_off: String((PACKS[TRIAL.then].pence - TRIAL.pence)), currency: 'gbp', duration: 'once' });
   }
@@ -247,12 +247,12 @@ async function findPromo(code) {
   const { data } = await stripe('promotion_codes', { code: c, active: 'true', limit: '1' }, 'GET');
   const p = data[0];
   if (!p) return null;
-  // Only codes made for Loanleaf: tag the promotion code or its coupon with metadata loanleaf = true in Stripe.
+  // Only codes made for Leaflegal: tag the promotion code or its coupon with metadata leaflegal = true in Stripe.
   // Stops an unrelated discount in the same Stripe account buying full credit packs at a fraction of the price.
-  if (p.metadata?.loanleaf === 'true') return p;
+  if (p.metadata?.leaflegal === 'true') return p;
   let coupon = p.coupon ?? p.promotion?.coupon; // older API versions inline the coupon; newer ones give its id
   if (typeof coupon === 'string') coupon = await stripe(`coupons/${encodeURIComponent(coupon)}`, null, 'GET').catch(() => null);
-  return coupon?.metadata?.loanleaf === 'true' ? p : null;
+  return coupon?.metadata?.leaflegal === 'true' ? p : null;
 }
 async function currentSub(customer) {
   if (!customer) return null;
@@ -348,9 +348,9 @@ async function setApproved(b, approved, by) {
   await db(`brokers?id=eq.${b.id}`, { method: 'PATCH', body: { approved } });
   await audit(by, 'broker', b.id, { approved });
   if (approved) await pendingBacklog(b.id).catch((e) => console.error('backlog', e.message));
-  await notify([b.email], approved ? 'Your Loanleaf Platform account is approved' : 'Your Loanleaf Platform account has been paused', approved ? {
-    title: 'You’re approved', preheader: `${b.company} can now buy exclusive leads on Loanleaf Platform.`,
-    intro: `Good news: ${esc(b.company)} is approved on Loanleaf Platform. You can now buy leads${b.mode === 'auto' ? ', and auto-buy will start picking up leads that match your criteria the moment they arrive' : ''}.`,
+  await notify([b.email], approved ? 'Your Leaflegal Platform account is approved' : 'Your Leaflegal Platform account has been paused', approved ? {
+    title: 'You’re approved', preheader: `${b.company} can now buy exclusive leads on Leaflegal Platform.`,
+    intro: `Good news: ${esc(b.company)} is approved on Leaflegal Platform. You can now buy leads${b.mode === 'auto' ? ', and auto-buy will start picking up leads that match your criteria the moment they arrive' : ''}.`,
     ...(b.credits ? { highlight: { value: `${b.credits.toLocaleString('en-GB')} credits`, label: 'ready to spend' } } : {}),
     stepsTitle: 'Start here',
     steps: [['Browse live opportunities', 'See every live lead with its amount, purpose, revenue, trading time and price before you buy.'],
@@ -358,8 +358,8 @@ async function setApproved(b, approved, by) {
       ['Call every lead quickly', 'Leads are delivered instantly by email and on the platform. The faster you call, the better they convert.']],
     cta: { label: 'Go to opportunities', url: `${PLATFORM_URL}/opportunities` } } : {
     title: 'Your account has been paused', preheader: 'Lead buying is paused on your account. Reply and we’ll help sort it out.',
-    intro: `We've paused lead buying for ${esc(b.company)} on Loanleaf Platform. You can still sign in and see the leads you've already bought, but auto-buy has stopped and you can't buy new leads for now.`,
-    note: 'This is usually something quick to sort out, like a missing detail or a billing question. Reply to this email and we’ll help.', replyTo: 'hello@loanleaf.co' });
+    intro: `We've paused lead buying for ${esc(b.company)} on Leaflegal Platform. You can still sign in and see the leads you've already bought, but auto-buy has stopped and you can't buy new leads for now.`,
+    note: 'This is usually something quick to sort out, like a missing detail or a billing question. Reply to this email and we’ll help.', replyTo: 'hello@leaflegal.co' });
   return true;
 }
 
@@ -394,13 +394,13 @@ const sendInvite = (p, link) => {
   const first = String(p.n || '').split(' ')[0], tok = link.split('invite=')[1] || '';
   const unsub = `${PLATFORM_URL}/api/platform?action=invite-stop&t=${encodeURIComponent(tok)}`;
   if (p.k === 'cold') return sendColdInvite(p, link, first, unsub);
-  if (p.k === 'partner') return notify([p.e], first ? `${first}, your invitation to Loanleaf Platform` : 'Your invitation to Loanleaf Platform', {
-    title: 'Your invitation to Loanleaf Platform',
+  if (p.k === 'partner') return notify([p.e], first ? `${first}, your invitation to Leaflegal Platform` : 'Your invitation to Leaflegal Platform', {
+    title: 'Your invitation to Leaflegal Platform',
     preheader: 'Your details are filled in. Setting up takes about five minutes.',
     greeting: first ? `Hi ${esc(first)},` : 'Hello,',
-    intro: `Here’s your invitation to Loanleaf Platform${p.c ? ` for <b>${esc(String(p.c).replace(/\.+$/, ''))}</b>` : ''}. Loanleaf brings you UK limited companies and LLPs that have asked to speak to a broker about business finance, and every lead goes to one firm only.`,
+    intro: `Here’s your invitation to Leaflegal Platform${p.c ? ` for <b>${esc(String(p.c).replace(/\.+$/, ''))}</b>` : ''}. Leaflegal brings you UK limited companies and LLPs that have asked to speak to a broker about business finance, and every lead goes to one firm only.`,
     highlight: { value: 'About five minutes', label: 'To set up. Your details are filled in, and we check every new account, usually within one working day.' },
-    cta: { label: 'Join Loanleaf Platform', url: link },
+    cta: { label: 'Join Leaflegal Platform', url: link },
     stepsTitle: 'What happens next',
     steps: [['Choose a password', 'Your name, company, email and mobile are already filled in.'],
       ['Tell us what you fund', 'The loan sizes, purposes and types of business you want to hear about.'],
@@ -410,12 +410,12 @@ const sendInvite = (p, link) => {
       '<b>Exclusive leads.</b> Each enquiry goes to one firm, never a shared list.',
       '<b>Full details before you buy.</b> Amount, purpose, revenue, trading time and Companies House checks.'],
     note: `This invitation is for ${esc(p.e)} and works until ${new Date(p.x).toLocaleDateString('en-GB', { dateStyle: 'long' })}. Questions? Just reply to this email.`,
-    footer: `You're receiving this because ${esc(p.e)} asked about becoming a Loanleaf partner on loanleaf.co. <a href="${unsub}" style="color:#86998f">Don't want these emails?</a>`, unsub, nav: false, replyTo: 'hello@loanleaf.co' }); // no account links yet: fewer links reads less like bulk mail
-  return notify([p.e], first ? `${first}, you're invited to join Loanleaf as an approved supplier` : 'You’re invited to join Loanleaf as an approved supplier', {
-    title: 'You’re invited to join Loanleaf',
+    footer: `You're receiving this because ${esc(p.e)} asked about becoming a Leaflegal partner on leaflegal.co. <a href="${unsub}" style="color:#86998f">Don't want these emails?</a>`, unsub, nav: false, replyTo: 'hello@leaflegal.co' }); // no account links yet: fewer links reads less like bulk mail
+  return notify([p.e], first ? `${first}, you're invited to join Leaflegal as an approved supplier` : 'You’re invited to join Leaflegal as an approved supplier', {
+    title: 'You’re invited to join Leaflegal',
     preheader: `Your account is already approved. Setting up takes about five minutes.`,
     greeting: first ? `Hi ${esc(first)},` : 'Hello,',
-    intro: `We'd like ${p.c ? `<b>${esc(p.c)}</b>` : 'you'} to join Loanleaf as an approved supplier. Loanleaf brings you UK limited companies and LLPs that have asked to speak to someone about business finance today, and every lead is sold to one firm only. When you buy it, it's yours.`,
+    intro: `We'd like ${p.c ? `<b>${esc(p.c)}</b>` : 'you'} to join Leaflegal as an approved supplier. Leaflegal brings you UK limited companies and LLPs that have asked to speak to someone about business finance today, and every lead is sold to one firm only. When you buy it, it's yours.`,
     highlight: { value: 'Already approved', label: 'No waiting for a review. You can start as soon as your account is set up.' },
     rowsTitle: 'Your invitation', rows: [...(p.n ? [['Name', p.n]] : []), ['Email', p.e], ...(p.c ? [['Firm', p.c]] : []), ['Valid until', new Date(p.x).toLocaleDateString('en-GB', { dateStyle: 'long' })]],
     cta: { label: 'Accept your invitation', url: link },
@@ -431,14 +431,14 @@ const sendInvite = (p, link) => {
       '<b>Straight into your workflow.</b> Leads land in your inbox, on the platform and in your CRM.',
       ...(p.alerts ? ['<b>See leads straight away.</b> We\'ll email you new leads as they come in, so you can see what\'s on offer while you set up.'] : [])],
     note: `This invitation is for ${esc(p.e)} and works until ${new Date(p.x).toLocaleDateString('en-GB', { dateStyle: 'long' })}. If you weren't expecting it, you can ignore this email.`,
-    footer: `You're receiving this because the Loanleaf team invited ${esc(p.e)} to join Loanleaf Platform. <a href="${unsub}" style="color:#86998f">Don't want these emails?</a>`, unsub, nav: false, from: BULK_FROM(), replyTo: 'hello@loanleaf.co', scheduledAt: p.at });
+    footer: `You're receiving this because the Leaflegal team invited ${esc(p.e)} to join Leaflegal Platform. <a href="${unsub}" style="color:#86998f">Don't want these emails?</a>`, unsub, nav: false, from: BULK_FROM(), replyTo: 'hello@leaflegal.co', scheduledAt: p.at });
 };
-// Cold invite: for firms who haven't heard of Loanleaf. Explains what it is, how it works and how to join.
-const sendColdInvite = async (p, link, first, unsub) => notify([p.e], p.c ? `${p.c} is invited to join Loanleaf` : 'You’re invited to join Loanleaf', {
-  title: p.c ? `${p.c} is invited to join Loanleaf` : 'You’re invited to join Loanleaf', // title is escaped by emailHtml
+// Cold invite: for firms who haven't heard of Leaflegal. Explains what it is, how it works and how to join.
+const sendColdInvite = async (p, link, first, unsub) => notify([p.e], p.c ? `${p.c} is invited to join Leaflegal` : 'You’re invited to join Leaflegal', {
+  title: p.c ? `${p.c} is invited to join Leaflegal` : 'You’re invited to join Leaflegal', // title is escaped by emailHtml
   preheader: 'Exclusive business finance leads, sold to one broker only. Your account is already approved.',
   greeting: first ? `Hi ${esc(first)},` : 'Hello,',
-  intro: 'You’ve been invited to join Loanleaf. UK businesses come to us looking for finance, and we pass each enquiry to one approved broker only.',
+  intro: 'You’ve been invited to join Leaflegal. UK businesses come to us looking for finance, and we pass each enquiry to one approved broker only.',
   tipsTitle: 'What you get', ticks: true,
   tips: ['<b>Inbound, genuine enquiries</b> from UK businesses looking for finance.',
     '<b>Verified details.</b> Every company is checked on Companies House, and phone numbers and email addresses are checked live.',
@@ -449,8 +449,8 @@ const sendColdInvite = async (p, link, first, unsub) => notify([p.e], p.c ? `${p
     '<b>One lead, one broker.</b> Never a shared list. When you buy a lead, it’s yours alone.'],
   cta: { label: 'Accept invite', url: link }, after: (await recentEnquiries()).replace('{{more}}', esc(link)), // their invite link: accepting it opens the live opportunities
   note: `Joining takes about five minutes, and your account is already approved. This invitation is for ${esc(p.e)} and works until ${new Date(p.x).toLocaleDateString('en-GB', { dateStyle: 'long' })}. Questions? Just reply to this email.`,
-  footer: `You're receiving this because we think Loanleaf could help ${esc(p.c || 'your firm')} find new clients. <a href="${unsub}" style="color:#86998f">Unsubscribe</a> and we won't email you again.`,
-  unsub, nav: false, from: BULK_FROM(), replyTo: 'hello@loanleaf.co', scheduledAt: p.at });
+  footer: `You're receiving this because we think Leaflegal could help ${esc(p.c || 'your firm')} find new clients. <a href="${unsub}" style="color:#86998f">Unsubscribe</a> and we won't email you again.`,
+  unsub, nav: false, from: BULK_FROM(), replyTo: 'hello@leaflegal.co', scheduledAt: p.at });
 
 // Bulk invites wait in the invites table (email_id 'queued') until they're within FLUSH_AHEAD of their send time, then go to
 // Resend scheduled for that time with a fresh 30-day link. Run after each upload and by the daily job, within a time budget.
@@ -463,19 +463,19 @@ async function saveBatch(batch, patch) {
   await db('settings', { method: 'POST', prefer: 'resolution=merge-duplicates', body: { key: 'invite_batches', value: all } });
 }
 const tokenData = (t) => { try { return JSON.parse(Buffer.from(String(t).split('.')[0], 'base64url')); } catch { return null; } };
-// Website partner form (api/partner.js): an invite to Loanleaf Platform that is NOT pre-approved (token na=1), with new-lead
+// Website partner form (api/partner.js): an invite to Leaflegal Platform that is NOT pre-approved (token na=1), with new-lead
 // emails switched on. Returns 'has-account', 'unsubscribed', or { sent, token } (the sign-up link token). Never throws.
 // Thank-you for a website partner enquiry: the two next steps. The platform invite follows as its own email.
 export function partnerThanks({ email, name, company, join, call }) {
   const first = String(name || '').trim().split(' ')[0], co = String(company || '').trim().replace(/\.+$/, '');
   return notify([String(email).trim()], first ? `Thanks for your enquiry, ${first}` : 'Thanks for your enquiry', {
-    title: 'Thanks for your enquiry', preheader: 'Join Loanleaf Platform now, or book a call with the team.',
+    title: 'Thanks for your enquiry', preheader: 'Join Leaflegal Platform now, or book a call with the team.',
     greeting: first ? `Hi ${esc(first)},` : 'Hello,',
-    intro: `Thanks for your interest in becoming a Loanleaf partner${co ? ` with <b>${esc(co)}</b>` : ''}. We’ve got your details, and there are two ways to get going.`,
-    tips: ['<b>Join Loanleaf Platform.</b> Your details are filled in, so setting up takes about five minutes.', '<b>Book a call.</b> Pick a time and the team will call your mobile, or meet on Google Meet.'],
-    cta: { label: 'Join Loanleaf Platform', url: join }, cta2: { label: 'Book a call', url: call },
+    intro: `Thanks for your interest in becoming a Leaflegal partner${co ? ` with <b>${esc(co)}</b>` : ''}. We’ve got your details, and there are two ways to get going.`,
+    tips: ['<b>Join Leaflegal Platform.</b> Your details are filled in, so setting up takes about five minutes.', '<b>Book a call.</b> Pick a time and the team will call your mobile, or meet on Google Meet.'],
+    cta: { label: 'Join Leaflegal Platform', url: join }, cta2: { label: 'Book a call', url: call },
     note: 'Your platform invitation is in a separate email, so you have the link to hand.',
-    footer: `You’re receiving this because ${esc(String(email).trim())} asked about becoming a Loanleaf partner on loanleaf.co.`, nav: false, replyTo: 'hello@loanleaf.co' });
+    footer: `You’re receiving this because ${esc(String(email).trim())} asked about becoming a Leaflegal partner on leaflegal.co.`, nav: false, replyTo: 'hello@leaflegal.co' });
 }
 export async function partnerInvite({ email, name, company, phone, call }) {
   try {
@@ -508,8 +508,8 @@ async function flushInvites(budgetMs = 40000) {
   return n;
 }
 // "Confirm your email" (sent at signup, and again on request).
-const sendVerify = (b, first = true) => notify([b.email], first ? 'Confirm your email to start using Loanleaf Platform' : 'Your Loanleaf confirmation link', {
-  title: first ? `Welcome to Loanleaf, ${esc(String(b.contact_name || '').split(' ')[0] || b.company)}` : 'Confirm your email address',
+const sendVerify = (b, first = true) => notify([b.email], first ? 'Confirm your email to start using Leaflegal Platform' : 'Your Leaflegal confirmation link', {
+  title: first ? `Welcome to Leaflegal, ${esc(String(b.contact_name || '').split(' ')[0] || b.company)}` : 'Confirm your email address',
   preheader: 'Confirm your email address to finish setting up your broker account.',
   intro: `${first ? `Thanks for signing up. ` : ''}Please confirm this is your email address so we know it's really you. Your broker account for <b>${esc(b.company)}</b> is ready once you do.`,
   cta: { label: 'Confirm my email address', url: verifyUrl(b.id) },
@@ -517,14 +517,14 @@ const sendVerify = (b, first = true) => notify([b.email], first ? 'Confirm your 
     steps: [['Tell us what you fund', 'Add your company details and the loan sizes, purposes and business types you want.'],
       ['Choose a monthly plan', 'Plans start at £2,500 + VAT a month. New partners can take their first month for £1,000 + VAT.'],
       ['Accept the partner agreement', 'Tick the boxes to accept online. We email you a copy and keep it in your account.']] } : {}),
-  note: `The link works for 7 days. If you didn't create a Loanleaf account, you can ignore this email.`, replyTo: 'hello@loanleaf.co' });
+  note: `The link works for 7 days. If you didn't create a Leaflegal account, you can ignore this email.`, replyTo: 'hello@leaflegal.co' });
 const page = (res, status, title, inner) => res.status(status).setHeader('Content-Type', 'text/html; charset=utf-8').setHeader('Cache-Control', 'no-store').setHeader('X-Robots-Tag', 'noindex')
-  .send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | Loanleaf</title>
+  .send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | Leaflegal</title>
 <style>body{margin:0;background:#eef3f1;font:16px/1.55 Arial,Helvetica,sans-serif;color:#1b3329}.w{max-width:560px;margin:32px auto;padding:0 16px}.c{background:#fff;border-radius:18px;overflow:hidden}
 .h{background:#244237;padding:20px 28px}.b{padding:28px}h1{margin:0 0 14px;font-size:23px;color:#14271f}table{width:100%;border-collapse:collapse;background:#f4f8f6;border-radius:12px;margin:6px 0 20px}
 td{padding:10px 14px;font-size:14px;vertical-align:top}td:first-child{color:#5d7a6e;width:40%}tr+tr td{border-top:1px solid #e2ebe7}a{color:#3d6656}
 button{border:0;border-radius:999px;background:#244237;color:#fff;font:700 16px Arial,sans-serif;padding:14px 30px;cursor:pointer}.ok{color:#1f8a55;font-weight:700}.m{color:#5d7a6e;font-size:14px}</style></head>
-<body><div class="w"><div class="c"><div class="h"><img src="https://loanleaf.co/assets/Loanleaf_Logo_White_PNG_500x100_72DPI.png" width="128" height="26" alt="Loanleaf"></div><div class="b">${inner}</div></div></div></body></html>`);
+<body><div class="w"><div class="c"><div class="h"><img src="https://leaflegal.co/assets/Leaflegal_Logo_White.svg" width="128" height="26" alt="Leaflegal"></div><div class="b">${inner}</div></div></div></body></html>`);
 const brokerRows = (b, agreed) => `<table>${[['Firm', esc(b.company)], ['Contact', esc(b.contact_name || '–')], ['Email', `<a href="mailto:${esc(b.email)}">${esc(b.email)}</a>`],
   ['Phone', esc(b.phone || '–')], ['FCA number', b.fca_number ? `${esc(b.fca_number)} · <a href="https://register.fca.org.uk/s/search?q=${encodeURIComponent(b.fca_number)}&type=Companies">check the FCA register</a>` : 'Not given'],
   ['Company number', b.company_number ? `<a href="https://find-and-update.company-information.service.gov.uk/company/${encodeURIComponent(b.company_number)}">${esc(b.company_number)}</a>` : `Not given yet · <a href="https://find-and-update.company-information.service.gov.uk/search/companies?q=${encodeURIComponent(b.company)}">search Companies House</a>`],
@@ -556,14 +556,14 @@ export default async function handler(req, res) {
     // Unsubscribe link (and Gmail/Outlook one-click POST) in new-lead emails to brokers: turns off "Email me when a matching lead arrives".
     if (action === 'alerts-off') {
       const q = new URL(req.url, 'http://x').searchParams, id = q.get('id');
-      if (!sigOk(id, q.get('exp'), q.get('sig'), 'alerts-off')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Sign in to <a href="${PLATFORM_URL}/autobuy">Loanleaf Platform</a> and switch off new-lead emails under Notifications.</p>`);
+      if (!sigOk(id, q.get('exp'), q.get('sig'), 'alerts-off')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Sign in to <a href="${PLATFORM_URL}/autobuy">Leaflegal Platform</a> and switch off new-lead emails under Notifications.</p>`);
       await db(`brokers?id=eq.${id}`, { method: 'PATCH', body: { notify: false } });
       await audit(id, 'alerts-off', id, { via: req.method === 'POST' ? 'one-click' : 'link' }).catch(() => {});
       return page(res, 200, 'Unsubscribed', `<h1>You're unsubscribed</h1><p>We won't email you about new leads any more. Leads you buy are still emailed to you, and new leads still appear on the platform.</p><p class="m">Changed your mind? Turn new-lead emails back on under <a href="${PLATFORM_URL}/notifications">Notifications</a>.</p>`);
     }
     if (action === 'suggest-off') {
       const q = new URL(req.url, 'http://x').searchParams, id = q.get('id');
-      if (!sigOk(id, q.get('exp'), q.get('sig'), 'suggest-off')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Sign in to <a href="${PLATFORM_URL}/notifications">Loanleaf Platform</a> and switch these emails off under Notifications.</p>`);
+      if (!sigOk(id, q.get('exp'), q.get('sig'), 'suggest-off')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Sign in to <a href="${PLATFORM_URL}/notifications">Leaflegal Platform</a> and switch these emails off under Notifications.</p>`);
       const [b] = await db(`brokers?id=eq.${id}&select=filters`);
       if (b) await db(`brokers?id=eq.${id}`, { method: 'PATCH', body: { filters: { ...b.filters, suggest: 'off' } } });
       await audit(id, 'suggest-off', id, { via: req.method === 'POST' ? 'one-click' : 'link' }).catch(() => {});
@@ -574,11 +574,11 @@ export default async function handler(req, res) {
     // GET = confirmation page; only its button (a POST) re-matches, so email scanners that open links can't.
     if (action === 'rematch') {
       const q = new URL(req.url, 'http://x').searchParams, id = q.get('id');
-      if (!sigOk(id, q.get('exp'), q.get('sig'), 'rematch')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Email <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a> and we'll match you with a different broker.</p>`);
+      if (!sigOk(id, q.get('exp'), q.get('sig'), 'rematch')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a> and we'll match you with a different broker.</p>`);
       if (req.method !== 'POST') return page(res, 200, 'A different broker', `<h1>Match me with a different broker</h1><p>We'll pass your enquiry to another of our brokers, using the details you gave us. Your current broker won't be sent it again.</p><form method="post"><button type="submit">Match me with someone else</button></form><p class="m">No obligation, as before.</p>`);
       const r = await rematchLead(Number(id));
-      if (r.error === 'done') return page(res, 200, 'Already done', `<h1>We're already on it</h1><p>You've already asked for a different broker. If nobody has been in touch, email <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a>.</p>`);
-      if (r.error || r.duplicateOf) return page(res, 200, 'Something went wrong', `<h1>We couldn't do that automatically</h1><p>Please email <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a> and we'll match you with a different broker.</p>`);
+      if (r.error === 'done') return page(res, 200, 'Already done', `<h1>We're already on it</h1><p>You've already asked for a different broker. If nobody has been in touch, email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.</p>`);
+      if (r.error || r.duplicateOf) return page(res, 200, 'Something went wrong', `<h1>We couldn't do that automatically</h1><p>Please email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a> and we'll match you with a different broker.</p>`);
       await audit(null, 'lead-rematch', String(id), { lead: r.id, buyer: r.buyer || undefined }).catch(() => {});
       return page(res, 200, 'Done', r.match
         ? `<h1>You've been matched with ${esc(r.match.company)}</h1><p>${esc(r.match.person || 'They')} will be in touch shortly, usually by phone. We've emailed you their details.</p>`
@@ -586,7 +586,7 @@ export default async function handler(req, res) {
     }
     if (action === 'missed-off') {
       const q = new URL(req.url, 'http://x').searchParams, id = q.get('id');
-      if (!sigOk(id, q.get('exp'), q.get('sig'), 'missed-off')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Sign in to <a href="${PLATFORM_URL}/notifications">Loanleaf Platform</a> and switch these emails off under Notifications.</p>`);
+      if (!sigOk(id, q.get('exp'), q.get('sig'), 'missed-off')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Sign in to <a href="${PLATFORM_URL}/notifications">Leaflegal Platform</a> and switch these emails off under Notifications.</p>`);
       const [b] = await db(`brokers?id=eq.${id}&select=filters`);
       if (b) await db(`brokers?id=eq.${id}`, { method: 'PATCH', body: { filters: { ...b.filters, missed: 'off' } } });
       await audit(id, 'missed-off', id, { via: req.method === 'POST' ? 'one-click' : 'link' }).catch(() => {});
@@ -619,14 +619,14 @@ export default async function handler(req, res) {
       if (v) await db(`invites?token=eq.${encodeURIComponent(t)}`, { method: 'PATCH', body: { alerts: false } });
       if (email) { await suppress(email, req.method === 'POST' ? 'One-click unsubscribe' : 'Unsubscribe link', 'invite'); await audit(null, 'unsubscribe', email, { from: 'invite' });
         await markNotInterested(email).catch((x) => console.error('crm not interested', x.message)); }
-      return page(res, email ? 200 : 404, 'Unsubscribed', email ? '<h1>You’re unsubscribed</h1><p>We won’t email you again. If you ever decide to join Loanleaf, you’re welcome to sign up at <a href="https://platform.loanleaf.co/register">platform.loanleaf.co</a>.</p>'
+      return page(res, email ? 200 : 404, 'Unsubscribed', email ? '<h1>You’re unsubscribed</h1><p>We won’t email you again. If you ever decide to join Leaflegal, you’re welcome to sign up at <a href="https://platform.leaflegal.co/register">platform.leaflegal.co</a>.</p>'
         : '<h1>We couldn\'t find that invitation</h1><p>If you\'re still getting emails, reply to one and we\'ll stop them.</p>');
     }
 
     // Confirm-your-email link: marks the address as confirmed, then opens the platform.
     if (action === 'verify-email') {
       const q = new URL(req.url, 'http://x').searchParams, id = q.get('id');
-      if (!sigOk(id, q.get('exp'), q.get('sig'), 'verify-email')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Sign in to <a href="${PLATFORM_URL}/signin">Loanleaf Platform</a> and we'll send you a new one.</p>`);
+      if (!sigOk(id, q.get('exp'), q.get('sig'), 'verify-email')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Sign in to <a href="${PLATFORM_URL}/signin">Leaflegal Platform</a> and we'll send you a new one.</p>`);
       await db(`brokers?id=eq.${id}&email_verified_at=is.null`, { method: 'PATCH', body: { email_verified_at: new Date().toISOString() } });
       res.setHeader('Cache-Control', 'no-store');
       return res.status(302).setHeader('Location', `${PLATFORM_URL}/onboarding?verified=1`).end();
@@ -634,7 +634,7 @@ export default async function handler(req, res) {
 
     if (action === 'approve') {
       const q = new URL(req.url, 'http://x').searchParams, id = q.get('id'), exp = q.get('exp'), sig = q.get('sig');
-      if (!sigOk(id, exp, sig)) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Approve the firm from Admin → Clients on <a href="${PLATFORM_URL}/admin">Loanleaf Platform</a> instead.</p>`);
+      if (!sigOk(id, exp, sig)) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Approve the firm from Admin → Clients on <a href="${PLATFORM_URL}/admin">Leaflegal Platform</a> instead.</p>`);
       const [b] = await db(`brokers?id=eq.${id}&select=*`);
       if (!b) return page(res, 404, 'Not found', '<h1>Firm not found</h1><p>This account may have been deleted.</p>');
       const agreed = await signed(id).catch(() => false);
@@ -689,7 +689,7 @@ export default async function handler(req, res) {
             if (first) { const [fn, ...ln] = String(b.contact_name || '').trim().split(/\s+/);
               await metaEvent('Subscribe', { email: b.email, company: b.company, phone: b.phone, first: fn, last: ln.join(' '), page: `${PLATFORM_URL}/billing`, eventId: `sub-${o.id}`,
                 custom: { value: (o.amount_paid - tax) / 100, currency: 'GBP', content_name: m.trial_credits ? 'First month offer' : m.pack } }); }
-            await notify([b.email], kind === 'first' ? `Welcome to Loanleaf: ${credits.toLocaleString('en-GB')} credits added` : kind === 'change' ? `Plan updated: ${credits.toLocaleString('en-GB')} credits added` : `Your Loanleaf plan has renewed: ${credits.toLocaleString('en-GB')} credits added`, {
+            await notify([b.email], kind === 'first' ? `Welcome to Leaflegal: ${credits.toLocaleString('en-GB')} credits added` : kind === 'change' ? `Plan updated: ${credits.toLocaleString('en-GB')} credits added` : `Your Leaflegal plan has renewed: ${credits.toLocaleString('en-GB')} credits added`, {
               title: kind === 'first' ? 'Payment received: you’re ready to buy leads' : kind === 'change' ? 'Your plan change is complete' : 'Your plan has renewed',
               preheader: `${credits.toLocaleString('en-GB')} credits added. Your new balance is ${b.credits.toLocaleString('en-GB')} credits.`,
               intro: kind === 'first' ? `Thanks for your payment. Your credits are on ${esc(b.company)}'s account and you can start buying leads as soon as your firm is approved, usually within one working day.`
@@ -712,7 +712,7 @@ export default async function handler(req, res) {
       // Card declined at renewal or upgrade.
       if (ev.type === 'invoice.payment_failed') {
         const [b] = o.customer ? await db(`brokers?stripe_customer=eq.${encodeURIComponent(o.customer)}&select=email,company`) : [];
-        if (b) await notify([b.email], 'Action needed: your Loanleaf payment failed', {
+        if (b) await notify([b.email], 'Action needed: your Leaflegal payment failed', {
           title: 'We couldn’t take your payment',
           preheader: `Your payment of ${pounds2(o.amount_due)} didn't go through. Update your card to keep receiving leads.`,
           intro: `Your monthly payment for ${esc(b.company)} didn't go through, so this month's credits haven't been added yet. This usually happens when a card has expired, been replaced or hit its limit.`,
@@ -729,7 +729,7 @@ export default async function handler(req, res) {
         const b = await byCustomer(o.customer, 'id,email,company,credits,contact_name,phone');
         const end = (o.current_period_end || o.items?.data?.[0]?.current_period_end) ? new Date((o.current_period_end || o.items.data[0].current_period_end) * 1000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'the end of your billing month';
         if (b) {
-          await notify([b.email], o.cancel_at_period_end ? 'Your Loanleaf subscription has been cancelled' : 'Your Loanleaf subscription will continue', o.cancel_at_period_end
+          await notify([b.email], o.cancel_at_period_end ? 'Your Leaflegal subscription has been cancelled' : 'Your Leaflegal subscription will continue', o.cancel_at_period_end
             ? { title: 'Your subscription has been cancelled', preheader: `Your plan stays active until ${end}. You won't be charged again.`,
                 intro: `We're sorry to see ${esc(b.company)} go. Your plan stays active until the end of the current period, so you can keep buying leads with your remaining credits until then.`,
                 highlight: { value: end, label: 'your plan ends on this date' },
@@ -743,9 +743,9 @@ export default async function handler(req, res) {
           // Their reason, if they cancelled from our Billing page in the last hour (none from Stripe's portal).
           const [fb] = o.cancel_at_period_end ? await db(`audit_log?action=eq.cancel-feedback&target=eq.${b.id}&at=gte.${new Date(Date.now() - 36e5).toISOString()}&select=detail&order=at.desc&limit=1`).catch(() => []) : [];
           const why = fb?.detail?.reason ? `${fb.detail.reason}${fb.detail.feedback ? `. ${fb.detail.feedback}` : ''}` : 'Not given (cancelled outside the platform)';
-          if (o.cancel_at_period_end) await Promise.allSettled(String(process.env.ADMIN_WHATSAPP || '').split(',').filter(Boolean).map((to) => waOrSms(to, 'loanleaf_cancel_alert',
+          if (o.cancel_at_period_end) await Promise.allSettled(String(process.env.ADMIN_WHATSAPP || '').split(',').filter(Boolean).map((to) => waOrSms(to, 'leaflegal_cancel_alert',
             { name: b.contact_name || '–', company: b.company, mobile: b.phone || '–', email: b.email, ends: end, reason: why.slice(0, 500) },
-            `Loanleaf: ${b.company} cancelled their subscription. ${b.contact_name || ''} ${b.phone || ''} ${b.email}. Ends ${end}. Reason: ${why}`.replace(/\s+/g, ' ').slice(0, 600), `cancel-${b.id}-${Date.now()}`)));
+            `Leaflegal: ${b.company} cancelled their subscription. ${b.contact_name || ''} ${b.phone || ''} ${b.email}. Ends ${end}. Reason: ${why}`.replace(/\s+/g, ' ').slice(0, 600), `cancel-${b.id}-${Date.now()}`)));
           await notify(ADMIN_TO(), `Subscription ${o.cancel_at_period_end ? 'cancelled' : 'resumed'}: ${b.company}`, {
             title: `${b.company} ${o.cancel_at_period_end ? 'cancelled their plan' : 'resumed their plan'}`, signoff: false,
             intro: o.cancel_at_period_end ? 'They cancelled from Billing or the Stripe customer portal. Their plan stays active until the end of the paid period.' : 'They took back their cancellation, so their plan will renew as normal.',
@@ -758,7 +758,7 @@ export default async function handler(req, res) {
       // Bank needs extra approval (3D Secure) for a renewal or upgrade.
       if (ev.type === 'invoice.payment_action_required') {
         const b = await byCustomer(o.customer);
-        if (b) await notify([b.email], 'Action needed: approve your Loanleaf payment', {
+        if (b) await notify([b.email], 'Action needed: approve your Leaflegal payment', {
           title: 'Your bank needs you to approve this payment', preheader: `Approve your ${pounds2(o.amount_due)} payment so your credits can be added.`,
           intro: `Your bank has asked you to confirm the latest payment for ${esc(b.company)}. This is a standard security check (sometimes called 3D Secure) and only takes a moment.`,
           highlight: { value: pounds2(o.amount_due), label: 'waiting for your approval' },
@@ -787,8 +787,8 @@ export default async function handler(req, res) {
         const [b] = o.customer ? await db(`brokers?stripe_customer=eq.${encodeURIComponent(o.customer)}&select=id,email,company,credits`) : [];
         if (b) {
           if (b.credits > 0) await rpc('add_credits', { p_broker: b.id, p_delta: -b.credits, p_reason: 'Unused credits expired: plan ended', p_ref: `expire-${o.id}` });
-          await notify([b.email], 'Your Loanleaf subscription has ended', {
-            title: 'Your subscription has ended', preheader: `Your Loanleaf plan has ended. You can restart any time.`,
+          await notify([b.email], 'Your Leaflegal subscription has ended', {
+            title: 'Your subscription has ended', preheader: `Your Leaflegal plan has ended. You can restart any time.`,
             intro: `The ${esc(o.metadata?.pack || '')} plan for ${esc(b.company)} has now ended${b.credits > 0 ? ` and the ${b.credits.toLocaleString('en-GB')} unused credits have expired` : ''}. You won't be charged again, and auto-buy has stopped.`,
             tipsTitle: 'What we’ve kept for you', tips: ['Every lead you bought, with contact details, notes and stages.', 'Your lead criteria, auto-buy limits and CRM settings.', 'Your partner agreement and invoices.'],
             cta: { label: 'Restart your plan', url: `${PLATFORM_URL}/billing` },
@@ -815,7 +815,7 @@ export default async function handler(req, res) {
       const r = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, { method: 'POST', headers: { apikey: secretKey(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: m.email, password: body.password, email_confirm: true }) });
       const u = await r.json();
-      if (!r.ok) return fail(res, 400, /already/i.test(u.msg || u.message || '') ? 'This email already has a Loanleaf sign-in. Ask for the invite to go to a different email.' : 'Could not create the sign-in');
+      if (!r.ok) return fail(res, 400, /already/i.test(u.msg || u.message || '') ? 'This email already has a Leaflegal sign-in. Ask for the invite to go to a different email.' : 'Could not create the sign-in');
       await db(`team_members?id=eq.${m.id}`, { method: 'PATCH', body: { user_id: u.id, joined_at: new Date().toISOString(), token: null, name: String(body.name || m.name || '').trim().slice(0, 120) || null } });
       await audit(null, 'team-joined', m.broker, { email: m.email });
       return res.json({ ok: true, email: m.email });
@@ -842,9 +842,9 @@ export default async function handler(req, res) {
       if (!r.ok) return fail(res, 400, /already/i.test(u.msg || u.message || '') ? 'An account with this email already exists. Please sign in.' : 'Could not create the account');
       await unsuppress(email); // registering overrides an earlier unsubscribe
       const [fn, ...ln] = String(body.contactName || '').trim().split(/\s+/);
-      await metaEvent('PartnerInterest', { req, email, phone: body.phone, first: fn, last: ln.join(' '), page: 'https://platform.loanleaf.co/register', fbp: body.fbp,
+      await metaEvent('PartnerInterest', { req, email, phone: body.phone, first: fn, last: ln.join(' '), page: 'https://platform.leaflegal.co/register', fbp: body.fbp,
         custom: { content_name: invited ? 'Platform signup (invited)' : 'Platform signup' } });
-      await metaEvent('PartnerRegistered', { req, email, company, phone: body.phone, first: fn, last: ln.join(' '), page: 'https://platform.loanleaf.co/register', fbp: body.fbp, eventId: `reg-${u.id}`,
+      await metaEvent('PartnerRegistered', { req, email, company, phone: body.phone, first: fn, last: ln.join(' '), page: 'https://platform.leaflegal.co/register', fbp: body.fbp, eventId: `reg-${u.id}`,
         custom: { content_name: invited ? 'Platform signup (invited)' : 'Platform signup' } });
       await db('brokers', { method: 'POST', body: {
         id: u.id, email, company, contact_name: String(body.contactName || '').slice(0, 120), phone: String(body.phone || '').slice(0, 40),
@@ -852,7 +852,7 @@ export default async function handler(req, res) {
       } });
       const fca = String(body.fca || '').slice(0, 20), contact = String(body.contactName || '').slice(0, 120), phone = String(body.phone || '').slice(0, 40);
       await crmCapture({ email, name: contact, company, phone, brokerId: u.id, stage: 'onboarding', source: invited ? 'Invited to platform' : 'Platform sign-up',
-        note: invited ? 'Accepted their platform invite and created an account' : 'Created a Loanleaf Platform account' }).catch((e) => console.error('crm signup', e.message));
+        note: invited ? 'Accepted their platform invite and created an account' : 'Created a Leaflegal Platform account' }).catch((e) => console.error('crm signup', e.message));
       if (invited) {
         await audit(null, 'invite-accepted', u.id, { email });
         await db(`invites?email=eq.${encodeURIComponent(email)}`, { method: 'PATCH', body: { email_id: 'accepted', alerts: false } }).catch(() => {}); // kept so Admin → Invites can track who joined
@@ -865,7 +865,7 @@ export default async function handler(req, res) {
       }
       await notify(ADMIN_TO(), `New broker signup to approve: ${company}`, {
         title: `${company} has signed up`, preheader: `${contact || email} · ${fca ? `FCA ${fca}` : 'no FCA number'} · waiting for your approval`,
-        intro: 'A new broker firm has created a Loanleaf Platform account. Check them over, then approve them so they can buy leads.',
+        intro: 'A new broker firm has created a Leaflegal Platform account. Check them over, then approve them so they can buy leads.',
         rowsTitle: 'Their details',
         rows: [['Firm', company], ['Contact', contact || '–'], ['Email', email], ['Phone', phone || '–'], ['FCA number', fca || 'Not given'],
           ['Signed up', new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/London' })]],
@@ -902,7 +902,7 @@ export default async function handler(req, res) {
       me = target;
     }
     const uid = me.id;
-    // Commission clients: Loanleaf assigns their leads and sets their auto-buy rules. Admins editing for them (?as=) are not restricted.
+    // Commission clients: Leaflegal assigns their leads and sets their auto-buy rules. Admins editing for them (?as=) are not restricted.
     const restricted = !!me.plan?.commission && !asId;
     if (!me.email_verified_at && action !== 'me') {
       if (action === 'resend-verify' && req.method === 'POST') {
@@ -1042,8 +1042,8 @@ export default async function handler(req, res) {
 
     if (action === 'buy' && req.method === 'POST') {
       const id = Number(body.id);
-      if (restricted) return fail(res, 403, 'Leads for this account are assigned by Loanleaf. Contact hello@loanleaf.co if one here looks right for you.');
-      if (me.suspended_at) return fail(res, 403, 'Your account is suspended. Please contact hello@loanleaf.co.');
+      if (restricted) return fail(res, 403, 'Leads for this account are assigned by Leaflegal. Contact hello@leaflegal.co if one here looks right for you.');
+      if (me.suspended_at) return fail(res, 403, 'Your account is suspended. Please contact hello@leaflegal.co.');
       if (!me.approved) return fail(res, 403, 'Your account is waiting for approval');
       if (!(await signed(uid))) return fail(res, 403, 'Please sign the partner agreement first (Account → Partner agreement)');
       const [hid] = await db(`leads?id=eq.${id}&select=hidden_at,exclude_brokers`);
@@ -1062,7 +1062,7 @@ export default async function handler(req, res) {
 
     // Matching leads already waiting (asked after changing auto-buy, or during onboarding).
     if (action === 'backlog') {
-      if (restricted) return fail(res, 403, 'Leads for this account are assigned by Loanleaf.');
+      if (restricted) return fail(res, 403, 'Leads for this account are assigned by Leaflegal.');
       if (req.method !== 'POST') { const list = await backlogOf(me);
         return res.json({ count: list.length, credits: list.reduce((a, x) => a + x.price, 0), have: me.credits, now: (await canBuy(me)) && me.credits > 0 }); }
       if (!body.want) { await db(`brokers?id=eq.${uid}`, { method: 'PATCH', body: { backlog_at: null } }); return res.json({ ok: true }); }
@@ -1107,15 +1107,15 @@ export default async function handler(req, res) {
       const email = String(body.email || '').trim().toLowerCase(), name = String(body.name || '').trim().slice(0, 120) || null;
       if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) return fail(res, 400, 'Please enter a valid email address');
       if (email === String(me.email).toLowerCase()) return fail(res, 400, 'That’s the account owner’s email');
-      if ((await db(`brokers?email=eq.${encodeURIComponent(email)}&select=id`)).length) return fail(res, 400, 'That email has its own Loanleaf account. Use a different email.');
+      if ((await db(`brokers?email=eq.${encodeURIComponent(email)}&select=id`)).length) return fail(res, 400, 'That email has its own Leaflegal account. Use a different email.');
       const live = await db(`team_members?broker=eq.${uid}&removed_at=is.null&select=id,email,joined_at`);
       const same = live.find((m) => m.email.toLowerCase() === email);
       if (same?.joined_at) return fail(res, 400, 'That person is already on the team');
-      if (!same && live.length >= 25) return fail(res, 400, 'Up to 25 users per account. Contact hello@loanleaf.co for more.');
+      if (!same && live.length >= 25) return fail(res, 400, 'Up to 25 users per account. Contact hello@leaflegal.co for more.');
       const row = { email, name, perms: cleanPerms(body.perms), token: randomBytes(24).toString('hex'), invited_at: new Date().toISOString() };
       const [m] = same ? await db(`team_members?id=eq.${same.id}`, { method: 'PATCH', body: row, prefer: 'return=representation' })
         : await db('team_members', { method: 'POST', body: { ...row, broker: uid }, prefer: 'return=representation' });
-      await teamInviteEmail(m, me, asId ? 'The Loanleaf team' : member?.name || me.contact_name || me.company);
+      await teamInviteEmail(m, me, asId ? 'The Leaflegal team' : member?.name || me.contact_name || me.company);
       await audit(member ? null : uid, 'team-invite', uid, { email, by: member?.email || me.email, perms: m.perms });
       return res.json({ ok: true });
     }
@@ -1138,7 +1138,7 @@ export default async function handler(req, res) {
     }
 
     if (action === 'settings' && req.method === 'POST') {
-      if (restricted) { // keep the rules Loanleaf set; delivery and email choices still save
+      if (restricted) { // keep the rules Leaflegal set; delivery and email choices still save
         body.mode = me.mode; body.monthly_cap = me.monthly_cap;
         body.filters = { ...(me.filters || {}), suggest: body.filters?.suggest ?? body.suggest, missed: body.filters?.missed ?? body.missed };
       }
@@ -1232,7 +1232,7 @@ export default async function handler(req, res) {
     }
 
     if (action === 'checkout' && req.method === 'POST') {
-      if (me.suspended_at) return fail(res, 403, 'Your account is suspended. Please contact hello@loanleaf.co.');
+      if (me.suspended_at) return fail(res, 403, 'Your account is suspended. Please contact hello@leaflegal.co.');
       const trial = body.pack === 'trial';
       const pack = trial ? PACKS[TRIAL.then] : body.pack === 'custom' ? customPack(body.amount) : PACKS[body.pack];
       if (!pack) return fail(res, 400, body.pack === 'custom' ? `Custom plans run from £${CUSTOM.min.toLocaleString('en-GB')} a month in £1,000 steps, up to ${CUSTOM.maxCredits.toLocaleString('en-GB')} credits. For more, contact ${CUSTOM.contact}.` : 'Unknown plan');
@@ -1240,7 +1240,7 @@ export default async function handler(req, res) {
       if (trial && (me.trial_used || await currentSub(me.stripe_customer))) return fail(res, 400, 'The first month offer is only for new partners');
       if (!process.env.STRIPE_SECRET_KEY) return fail(res, 503, 'Payments are not switched on yet');
       if (await currentSub(me.stripe_customer)) return fail(res, 409, 'You already have a subscription. Change your plan instead.');
-      const host = String(req.headers.host || ''), here = /(^|\.)loanleaf\.co$/.test(host) ? PLATFORM_URL : `https://${host}/platform`; // previews keep the /platform path
+      const host = String(req.headers.host || ''), here = /(^|\.)leaflegal\.co$/.test(host) ? PLATFORM_URL : `https://${host}/platform`; // previews keep the /platform path
       const meta = { broker: uid, credits: String(pack.credits), pack: pack.name, ...(trial ? { trial: '1', trial_credits: String(TRIAL.credits) } : {}) };
       // One discount per checkout: a promotion code the partner entered, else the first month offer.
       let discount = {};
@@ -1258,7 +1258,7 @@ export default async function handler(req, res) {
         'line_items[0][quantity]': '1',
         'line_items[0][price_data][currency]': 'gbp',
         'line_items[0][price_data][unit_amount]': String(pack.pence),
-        'line_items[0][price_data][product_data][name]': `Loanleaf ${pack.name}: ${pack.credits.toLocaleString('en-GB')} credits a month`,
+        'line_items[0][price_data][product_data][name]': `Leaflegal ${pack.name}: ${pack.credits.toLocaleString('en-GB')} credits a month`,
         'line_items[0][price_data][recurring][interval]': 'month',
         'line_items[0][tax_rates][0]': await ukVat(),
         billing_address_collection: 'required',
@@ -1308,7 +1308,7 @@ export default async function handler(req, res) {
         intro: `Thanks for your interest in a larger plan for ${esc(me.company)}. A member of our team will contact you shortly to talk through your volumes and switch on your credits. There's nothing to pay until we've agreed the details.`,
         rowsTitle: 'What you asked for', rows: [['Monthly amount', `£${pounds.toLocaleString('en-GB')} + VAT`], ['Credits a month', credits.toLocaleString('en-GB')]],
         steps: [['We call you', 'Usually within one working day, to understand the lead types and volumes you want.'], ['We agree your plan', 'We confirm the monthly amount, credits and any lead criteria.'], ['Your credits go live', 'We set up billing and add your credits, and you can start buying straight away.']],
-        replyTo: 'hello@loanleaf.co' });
+        replyTo: 'hello@leaflegal.co' });
       return res.json({ ok: true });
     }
 
@@ -1336,13 +1336,13 @@ export default async function handler(req, res) {
       await db(`brokers?id=eq.${uid}`, { method: 'PATCH', body: { onboarded_at: new Date().toISOString(), signer_title: title } });
       await pendingBacklog(uid).catch((e) => console.error('backlog', e.message));
       const copy = Buffer.from(await signedPdf(a)), ref = `LL-PA-${String(a.id).padStart(5, '0')}`;
-      await notify([me.email], `Your Loanleaf Partner Agreement (${ref})`, { // admins see signed agreements in Admin → Agreements, not by email
-        title: 'Your partner agreement', preheader: `Your copy of the Loanleaf Partner Agreement (${ref}) is attached.`,
-        intro: `Thanks, ${esc(name.split(' ')[0])}. Your copy of the Loanleaf Partner Agreement for <b>${esc(fresh.company)}</b> is attached. Please keep it for your records. You can also view it any time under Account on the platform.`,
+      await notify([me.email], `Your Leaflegal Partner Agreement (${ref})`, { // admins see signed agreements in Admin → Agreements, not by email
+        title: 'Your partner agreement', preheader: `Your copy of the Leaflegal Partner Agreement (${ref}) is attached.`,
+        intro: `Thanks, ${esc(name.split(' ')[0])}. Your copy of the Leaflegal Partner Agreement for <b>${esc(fresh.company)}</b> is attached. Please keep it for your records. You can also view it any time under Account on the platform.`,
         rowsTitle: 'Acceptance record',
         rows: [['Reference', ref], ['Version', TERMS_VERSION], ['Accepted by', `${name}, ${title}`], ['Date', new Date(a.created_at).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Europe/London' })]],
-        cta: { label: 'Open Loanleaf Platform', url: `${PLATFORM_URL}/account` } },
-        [{ filename: `${ref}-loanleaf-partner-agreement.pdf`, content: copy.toString('base64') }]);
+        cta: { label: 'Open Leaflegal Platform', url: `${PLATFORM_URL}/account` } },
+        [{ filename: `${ref}-leaflegal-partner-agreement.pdf`, content: copy.toString('base64') }]);
       return res.json({ ok: true, agreement: { id: a.id, version: a.version, created_at: a.created_at } });
     }
 
@@ -1351,7 +1351,7 @@ export default async function handler(req, res) {
       const [a] = await db(`agreements?broker=eq.${uid}${id ? `&id=eq.${id}` : ''}&select=*&order=created_at.desc&limit=1`);
       if (!a) return fail(res, 404, 'No signed agreement yet');
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="LL-PA-${String(a.id).padStart(5, '0')}-loanleaf-partner-agreement.pdf"`);
+      res.setHeader('Content-Disposition', `inline; filename="LL-PA-${String(a.id).padStart(5, '0')}-leaflegal-partner-agreement.pdf"`);
       return res.status(200).send(Buffer.from(await signedPdf(a)));
     }
 
@@ -1379,7 +1379,7 @@ export default async function handler(req, res) {
       };
       const productId = p['items[0][price_data][product]'];
       try {
-        await stripe(`products/${productId}`, { name: `Loanleaf ${pack.name}: ${pack.credits.toLocaleString('en-GB')} credits a month` }).catch(() => {});
+        await stripe(`products/${productId}`, { name: `Leaflegal ${pack.name}: ${pack.credits.toLocaleString('en-GB')} credits a month` }).catch(() => {});
         await stripe(`subscriptions/${sub.id}`, p);
       } catch (e) {
         console.error('change-plan', e.message);
@@ -1588,7 +1588,7 @@ export default async function handler(req, res) {
         const [a] = await db(`agreements?id=eq.${id || 0}&select=*`);
         if (!a) return fail(res, 404, 'Not found');
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="LL-PA-${String(a.id).padStart(5, '0')}-loanleaf-partner-agreement.pdf"`);
+        res.setHeader('Content-Disposition', `inline; filename="LL-PA-${String(a.id).padStart(5, '0')}-leaflegal-partner-agreement.pdf"`);
         return res.status(200).send(Buffer.from(await signedPdf(a)));
       }
 
@@ -1653,7 +1653,7 @@ export default async function handler(req, res) {
         if (body.remove) { await db(`brokers?id=eq.${b.id}`, { method: 'PATCH', body: { plan: null } }); await audit(uid, 'plan-remove', b.id, { plan: b.plan?.name }); return res.json({ ok: true }); }
         const name = String(body.name || '').trim().slice(0, 60), credits = Math.round(Number(body.credits)), price = Math.round(Number(body.price || 0) * 100) / 100;
         if (!name) return fail(res, 400, 'Give the plan a name');
-        const commission = body.commission === true; // commission client: pays Loanleaf commission, not a plan price
+        const commission = body.commission === true; // commission client: pays Leaflegal commission, not a plan price
         // Commission clients can have 0 monthly credits: flagged only, credits added by hand (worth £0 in Finance either way).
         if (!((commission ? credits >= 0 : credits > 0) && credits <= 1e6)) return fail(res, 400, 'Monthly credits must be a positive number');
         if (!(price >= 0 && price <= 1e7)) return fail(res, 400, 'Enter the monthly price in pounds');
@@ -1723,10 +1723,10 @@ export default async function handler(req, res) {
         if (st.cancelled_at) return fail(res, 409, 'This send was cancelled');
         const from = st.next || 0, chunk = list.slice(from, from + 120), ids = st.ids || [];
         const first = (n) => esc(String(n || '').trim().split(/\s+/)[0] || '');
-        const subject = 'What’s new on Loanleaf';
+        const subject = 'What’s new on Leaflegal';
         let scheduled = st.scheduled || 0;
         for (const x of chunk) {
-          const opts = x.kind === 'invite' ? whatsNew(first(x.name), { token: x.token, email: x.email }) : { ...whatsNew(first(x.name)), replyTo: 'hello@loanleaf.co' };
+          const opts = x.kind === 'invite' ? whatsNew(first(x.name), { token: x.token, email: x.email }) : { ...whatsNew(first(x.name)), replyTo: 'hello@leaflegal.co' };
           const id = await sendEmail([x.email], subject, emailHtml(opts), opts.replyTo, null, opts.unsub, when.toISOString(), true, x.kind === 'invite' ? BULK_FROM() : null);
           if (id && id !== 'suppressed') { scheduled++; if (typeof id === 'string') ids.push(id); }
         }
@@ -1811,7 +1811,7 @@ export default async function handler(req, res) {
         if (add.length) await db('invites', { method: 'POST', body: add });
         out.queued = add.length;
         for (const v of add) await crmCapture({ email: v.email, name: v.name, company: v.company, source: 'Invited to platform', stage: 'contacted', tags: ['Platform invite', 'CSV upload', cold ? 'Cold invite' : 'Warm invite'], flowsPaused: true,
-          note: `Invited to Loanleaf Platform from a CSV upload (${cold ? 'cold' : 'warm'}), sending ${new Date(v.send_at).toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'medium', timeStyle: 'short' })}` }).catch((err) => console.error('crm invite', err.message));
+          note: `Invited to Leaflegal Platform from a CSV upload (${cold ? 'cold' : 'warm'}), sending ${new Date(v.send_at).toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'medium', timeStyle: 'short' })}` }).catch((err) => console.error('crm invite', err.message));
         if (!offset) await saveBatch(batch, { perDay, kind: cold ? 'cold' : 'warm', leads: body.leads || 'weekly', paused: false });
         await audit(uid, 'invite-bulk', batch, { queued: out.queued, skipped: out.skipped, invalid: out.invalid, kind: cold ? 'cold' : 'warm', perDay });
         return res.json({ ok: true, ...out, next: i });
@@ -1960,7 +1960,7 @@ export default async function handler(req, res) {
           const [had] = await db(`brokers?email=eq.${encodeURIComponent(e)}&select=company`);
           if (had) return fail(res, 400, `${e} already has an account (${had.company})`);
           if ((await db(`invites?email=eq.${encodeURIComponent(e)}&select=email`)).length) return fail(res, 400, `${e} already has an invite`);
-          if ((await suppressedSet([e])).size) return fail(res, 400, `${e} has unsubscribed from Loanleaf emails, so they can’t be invited`);
+          if ((await suppressedSet([e])).size) return fail(res, 400, `${e} has unsubscribed from Leaflegal emails, so they can’t be invited`);
         }
         const k = tokenData(v.token)?.k, P = { e, n, ...(c ? { c } : {}), ...(k ? { k } : {}) };
         const waiting = ['queued', 'paused'].includes(v.email_id);
@@ -1990,7 +1990,7 @@ export default async function handler(req, res) {
         if (!n) return fail(res, 400, 'Please enter their name');
         const [had] = await db(`brokers?email=eq.${encodeURIComponent(e)}&select=company`);
         if (had) return fail(res, 400, `${e} already has an account (${had.company})`);
-        if ((await suppressedSet([e])).size) return fail(res, 400, `${e} has unsubscribed from Loanleaf emails, so they can’t be invited. They can still sign up themselves.`);
+        if ((await suppressedSet([e])).size) return fail(res, 400, `${e} has unsubscribed from Leaflegal emails, so they can’t be invited. They can still sign up themselves.`);
         const p = { e, n, ...(c ? { c } : {}), ...(body.kind === 'cold' ? { k: 'cold' } : {}) }, t = inviteToken(p);
         const x = JSON.parse(Buffer.from(t.split('.')[0], 'base64url')).x, alerts = body.alerts !== false;
         // Optional later send: Resend holds the email until then, and lead alerts wait for it too.
@@ -2000,7 +2000,7 @@ export default async function handler(req, res) {
         if (!sent && at) return fail(res, 502, 'Couldn’t schedule the email. Please try again.');
         // Kept so new-lead emails reach them while they finish signing up. Deleted when they accept.
         await db('invites', { method: 'POST', prefer: 'resolution=merge-duplicates', body: { email: e, name: n, company: c || null, token: t, expires_at: new Date(x).toISOString(), alerts, send_at: at?.toISOString() || null, email_id: typeof sent === 'string' ? sent : null } });
-        await crmCapture({ email: e, name: n, company: c, source: 'Invited to platform', stage: 'contacted', tags: ['Platform invite', body.kind === 'cold' ? 'Cold invite' : 'Warm invite'], flowsPaused: true, note: `Invited to Loanleaf Platform (${body.kind === 'cold' ? 'cold' : 'warm'})${at ? ` (sending ${at.toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'medium', timeStyle: 'short' })})` : ''}` }).catch((err) => console.error('crm invite', err.message));
+        await crmCapture({ email: e, name: n, company: c, source: 'Invited to platform', stage: 'contacted', tags: ['Platform invite', body.kind === 'cold' ? 'Cold invite' : 'Warm invite'], flowsPaused: true, note: `Invited to Leaflegal Platform (${body.kind === 'cold' ? 'cold' : 'warm'})${at ? ` (sending ${at.toLocaleString('en-GB', { timeZone: 'Europe/London', dateStyle: 'medium', timeStyle: 'short' })})` : ''}` }).catch((err) => console.error('crm invite', err.message));
         await audit(uid, at ? 'invite-scheduled' : 'invite', e, { name: n, company: c || undefined, ...(at ? { at: at.toISOString() } : {}) });
         return res.json({ ok: true, at: at?.toISOString() || null });
       }
@@ -2019,7 +2019,7 @@ export default async function handler(req, res) {
         await audit(uid, 'broker', b.id, { approved: body.approved, credits: delta || undefined, reason: body.reason, invoiced: Number(body.invoiced) || undefined });
         if (delta) {
           if (b.credits + delta < 0) return fail(res, 400, `They only have ${b.credits} credits`);
-          const why = String(body.reason || (delta > 0 ? 'Credits added by Loanleaf' : 'Credits removed by Loanleaf')).slice(0, 120);
+          const why = String(body.reason || (delta > 0 ? 'Credits added by Leaflegal' : 'Credits removed by Leaflegal')).slice(0, 120);
           const ref = `admin-${Date.now()}-${b.id}`, invoiced = Math.round(Number(body.invoiced || 0) * 100) / 100;
           await rpc('add_credits', { p_broker: b.id, p_delta: delta, p_reason: why, p_ref: ref });
           if (delta > 0) await pendingBacklog(b.id).catch((e) => console.error('backlog', e.message));
@@ -2048,8 +2048,8 @@ export default async function handler(req, res) {
           intro: approve ? `We've looked into lead #${r.lead_id} and agree it should be refunded. Sorry about that. The credits are back on your balance and ready to use.`
             : `We've looked into your refund request for lead #${r.lead_id} and can't refund it this time.<br><br>${esc(why).replace(/\n/g, '<br>')}<br><br>If you think we've got this wrong, just reply to this email and we'll take another look.`,
           ...(approve ? { highlight: { value: `+${r.leads.price} credits`, label: 'returned to your balance' } } : {
-            tipsTitle: 'Tips for hard-to-reach leads', tips: ['Try calling at a different time of day, and leave a short voicemail saying you’re following up their Loanleaf enquiry.', 'Send a text and an email as well. Many business owners reply in writing first.', 'Make three or four attempts over a few days before marking the lead as lost.'] }),
-          cta: { label: 'Go to My leads', url: `${PLATFORM_URL}/leads` }, replyTo: 'hello@loanleaf.co' });
+            tipsTitle: 'Tips for hard-to-reach leads', tips: ['Try calling at a different time of day, and leave a short voicemail saying you’re following up their Leaflegal enquiry.', 'Send a text and an email as well. Many business owners reply in writing first.', 'Make three or four attempts over a few days before marking the lead as lost.'] }),
+          cta: { label: 'Go to My leads', url: `${PLATFORM_URL}/leads` }, replyTo: 'hello@leaflegal.co' });
         return res.json({ ok: true, lead: r.lead_id });
       }
 
@@ -2109,7 +2109,7 @@ export default async function handler(req, res) {
                 title: 'Refund approved', preheader: `${refunded} credits are back on your balance.`,
                 intro: `We've refunded lead #${id}. The credits are back on your balance and ready to use.`,
                 highlight: { value: `+${refunded} credits`, label: 'returned to your balance' },
-                cta: { label: 'Go to My leads', url: `${PLATFORM_URL}/leads` }, replyTo: 'hello@loanleaf.co' }).catch((e) => console.error('refund email', e.message));
+                cta: { label: 'Go to My leads', url: `${PLATFORM_URL}/leads` }, replyTo: 'hello@leaflegal.co' }).catch((e) => console.error('refund email', e.message));
             } else refunded = 0;
           }
           await db(`leads?id=eq.${id}`, { method: 'PATCH', body: patch });
@@ -2132,7 +2132,7 @@ export default async function handler(req, res) {
           } else {
             const done = await db(`leads?id=eq.${id}&buyer=is.null`, { method: 'PATCH', body: { buyer: b.id, bought_at: new Date().toISOString(), auto: false }, prefer: 'return=representation' });
             if (!done?.length) return fail(res, 409, 'This lead has just been taken');
-            await db('ledger', { method: 'POST', body: { broker: b.id, delta: 0, reason: 'Lead assigned by Loanleaf (no charge)', lead_id: id } });
+            await db('ledger', { method: 'POST', body: { broker: b.id, delta: 0, reason: 'Lead assigned by Leaflegal (no charge)', lead_id: id } });
           }
           const [sold] = await db(`leads?id=eq.${id}&select=${FULL}`);
           await audit(uid, 'lead-assign', String(id), { broker: b.id, company: b.company, charged: !!body.charge, price: body.charge ? sold.price : 0 });
@@ -2161,15 +2161,15 @@ export default async function handler(req, res) {
             title: 'Refund approved', preheader: `${credits} credits are back on your balance.`,
             intro: `${body.note ? `${esc(String(body.note).trim().slice(0, 2000)).replace(/\n/g, '<br>')}<br><br>` : ''}We've refunded lead${one ? '' : 's'} ${names}. The credits are back on your balance and ready to use.`,
             highlight: { value: `+${credits} credits`, label: 'returned to your balance' },
-            cta: { label: 'Go to My leads', url: `${PLATFORM_URL}/leads` }, replyTo: 'hello@loanleaf.co' });
+            cta: { label: 'Go to My leads', url: `${PLATFORM_URL}/leads` }, replyTo: 'hello@leaflegal.co' });
           await audit(uid, 'refund-notice', String(id), { broker: body.broker, credits, note: !!body.note });
           return res.json({ ok: true });
         }
 
-        // Suppression list: no more emails to this business from Loanleaf or any broker's CRM. Takes effect on the next send.
+        // Suppression list: no more emails to this business from Leaflegal or any broker's CRM. Takes effect on the next send.
         if (body.op === 'suppress') {
           if (!l.email) return fail(res, 400, 'This lead has no email address');
-          if (!(await suppress(l.email, String(body.why || 'Suppressed by Loanleaf').slice(0, 200), 'admin'))) return fail(res, 400, `${l.email} belongs to a broker account, so it can’t be suppressed`);
+          if (!(await suppress(l.email, String(body.why || 'Suppressed by Leaflegal').slice(0, 200), 'admin'))) return fail(res, 400, `${l.email} belongs to a broker account, so it can’t be suppressed`);
           await audit(uid, 'lead-suppress', String(id), { email: l.email });
           return res.json({ ok: true });
         }

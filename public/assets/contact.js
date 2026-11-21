@@ -14,7 +14,7 @@
       f.innerHTML = '<div class="ll-cf-done" role="status"><h2>Thanks, message sent.</h2><p>We reply to every message within one working day.</p></div>';
     } catch {
       btn.disabled = false; btn.textContent = 'Send message';
-      out.className = 'll-cf-msg on'; out.innerHTML = 'Sorry, that didn’t send. Please try again or email <a href="mailto:hello@loanleaf.co">hello@loanleaf.co</a>.';
+      out.className = 'll-cf-msg on'; out.innerHTML = 'Sorry, that didn’t send. Please try again or email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.';
     }
   });
 })();

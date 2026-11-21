@@ -1,4 +1,4 @@
-/* Loanleaf: sitewide nav + polish for the rebuilt pages. Theme tokens: --base-*, --primary-*, --sans-serif, --serif */
+/* Leaflegal: sitewide nav + polish for the rebuilt pages. Theme tokens: --base-*, --primary-*, --sans-serif, --serif */
 
 /* Subtitles: user doesn't want the theme's serif (Minipax). Everything that used it now uses LINE Seed Sans. */
 :root{--serif:"LINE Seed Sans",sans-serif}
@@ -514,3 +514,17 @@ body:not(:has(.ap-lp)) .llc button:not(.llc-alt){background:#ffb020;border-color
 body:not(:has(.ap-lp)) .llb-top a[aria-current=page]{text-decoration-color:#ffb020}
 body:not(:has(.ap-lp)) :is(.button:not(.bg-white):not(.bg-base-50),.cfb-btn:not(.line)) svg{color:#132a22}
 body:not(:has(.ap-lp)) :is(.button:not(.bg-white):not(.bg-base-50),.cfb-btn:not(.line)) *{color:#132a22}
+/* SEO pages (matter, location, guides) */
+.ll-two{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:1160px;margin:0 auto}
+.ll-two .ll-section-title,.ll-two .section-title{text-align:left;margin-left:0}
+@media (max-width:767px){.ll-two{grid-template-columns:1fr;gap:32px}}
+.ll-linkgrid{list-style:none;padding:0;margin:0 auto;max-width:1160px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ll-linkgrid a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-radius:14px;background:#fff;border:1px solid #dbe8e3;color:var(--base-100);font-weight:600;text-decoration:none;transition:border-color .15s,transform .15s}
+.ll-linkgrid a:hover{border-color:#3b725e;transform:translateY(-1px)}
+.ll-linkgrid svg{flex:none;opacity:.6}
+@media (max-width:991px){.ll-linkgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:479px){.ll-linkgrid{grid-template-columns:1fr}}
+.ll-doc-wrap:has(.ll-doc-aside){max-width:1160px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:56px;align-items:start}
+.ll-doc-aside{display:flex;flex-direction:column;gap:20px;position:sticky;top:110px}
+@media (max-width:991px){.ll-doc-wrap:has(.ll-doc-aside){grid-template-columns:1fr}.ll-doc-aside{position:static}}
+[data-theme="partner"] .ll-linkgrid a{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#fff}

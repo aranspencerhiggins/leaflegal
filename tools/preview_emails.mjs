@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import { createHmac, generateKeyPairSync, createPrivateKey, sign } from 'node:crypto';
 
 process.env.SUPABASE_SECRET_KEY = 'preview'; process.env.RESEND_API_KEY = 'preview'; process.env.STRIPE_WEBHOOK_SECRET = 'whsec_preview';
-process.env.STRIPE_SECRET_KEY = 'sk_test_preview'; process.env.ENQUIRY_TO = 'you@loanleaf.co';
+process.env.STRIPE_SECRET_KEY = 'sk_test_preview'; process.env.ENQUIRY_TO = 'you@leaflegal.co';
 
 // Throwaway signing key so the handler accepts our test broker's sign-in token.
 const { publicKey, privateKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
@@ -17,7 +17,7 @@ const token = `${head}.${body}.${sign('sha256', Buffer.from(`${head}.${body}`), 
 
 const now = Date.now();
 const broker = { id: UID, email: 'jo@acmefinance.co.uk', company: 'Acme Commercial Finance', contact_name: 'Jo Patel', phone: '07700 900123', fca_number: '912345',
-  approved: true, is_admin: true, profile: { name: 'Acme Commercial Finance', person: 'Jo Patel', role: 'Director', about: 'Asset and working-capital finance for UK SMEs since 2009.', phone: '0161 496 0000', whatsapp: '07700 900123', email: 'jo@acmefinance.co.uk', website: 'https://acmefinance.co.uk/', logo: 'https://loanleaf.co/assets/Loanleaf_Logo_Deep_Green_PNG_500x100_72DPI.png', show: { person: true, phone: true, whatsapp: true, email: true, website: true } }, email_verified_at: new Date().toISOString(), mode: 'manual', notify: true, credits: 2340, filters: {}, stripe_customer: 'cus_preview', created_at: new Date(now - 864e5).toISOString() };
+  approved: true, is_admin: true, profile: { name: 'Acme Commercial Finance', person: 'Jo Patel', role: 'Director', about: 'Asset and working-capital finance for UK SMEs since 2009.', phone: '0161 496 0000', whatsapp: '07700 900123', email: 'jo@acmefinance.co.uk', website: 'https://acmefinance.co.uk/', logo: 'https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green.svg', show: { person: true, phone: true, whatsapp: true, email: true, website: true } }, email_verified_at: new Date().toISOString(), mode: 'manual', notify: true, credits: 2340, filters: {}, stripe_customer: 'cus_preview', created_at: new Date(now - 864e5).toISOString() };
 const lead = { id: 52, created_at: new Date(now - 36e5).toISOString(), bought_at: new Date(now - 18e5).toISOString(), buyer: UID, amount: 150000, purpose: 'Equipment or vehicles',
   timeline: 'Within 2 weeks', structure: 'Limited company', turnover: '£500k to £1m', trading: '5+ years', credit: 'No', debt: 'No', business: 'ACME TRADING LTD',
   full_name: 'John David Smith', email: 'john@acmetrading.co.uk', phone: '+447700900123', price: 120, checks: { phone: { reachable: true, carrier: 'EE' }, email: { result: 'valid' } },
@@ -113,14 +113,14 @@ await run('Resent confirmation link', async () => { const v = broker.email_verif
 
 // CRM follow-up sequence to prospective brokers (sent from Admin → CRM flows; the live copy can be edited there).
 { const C = await import('../api/_lib/crm.js'), c = { id: 1, name: 'Sam Lee', email: 'sam@newfirm.co.uk', company: 'New Firm Ltd' };
-  for (const f of C.FLOW_DEFAULTS) mails.push({ label: `CRM follow-up: ${C.stageName(f.stage)}, day ${f.day}`, to: c.email, subject: C.merge(f.subject, c), html: C.renderEmail(f.body, c, 'https://platform.loanleaf.co/unsubscribe').html, files: [] }); }
+  for (const f of C.FLOW_DEFAULTS) mails.push({ label: `CRM follow-up: ${C.stageName(f.stage)}, day ${f.day}`, to: c.email, subject: C.merge(f.subject, c), html: C.renderEmail(f.body, c, 'https://platform.leaflegal.co/unsubscribe').html, files: [] }); }
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const page = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Loanleaf email previews</title>
+const page = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Leaflegal email previews</title>
 <style>body{margin:0;font:15px/1.5 Arial,sans-serif;background:#e8ecea;color:#14271f}header{padding:28px 24px 8px;max-width:760px;margin:auto}h1{margin:0 0 6px;font-size:24px}
 nav{max-width:760px;margin:0 auto 8px;padding:0 24px;columns:2;font-size:14px}nav a{color:#244237;display:block;padding:2px 0}section{max-width:760px;margin:28px auto;padding:0 24px}
 .m{background:#fff;border:1px solid #d3ddd8;padding:14px 16px;font-size:13px}.m b{font-size:15px}.m span{color:#5d7a6e;display:block}iframe{width:100%;height:900px;border:1px solid #d3ddd8;border-top:0;background:#f3f5f4}</style></head><body>
-<header><h1>Loanleaf email previews</h1><p>${mails.length} emails, built by the live platform code on ${new Date().toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Europe/London' })} with test data. Nothing was sent.</p></header>
+<header><h1>Leaflegal email previews</h1><p>${mails.length} emails, built by the live platform code on ${new Date().toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Europe/London' })} with test data. Nothing was sent.</p></header>
 <nav>${mails.map((m, i) => `<a href="#m${i}">${i + 1}. ${esc(m.label)}${mails.filter((x) => x.label === m.label).length > 1 ? ` (to ${esc(m.to)})` : ''}</a>`).join('')}</nav>
 ${mails.map((m, i) => `<section id="m${i}"><div class="m"><b>${i + 1}. ${esc(m.label)}</b><span>Subject: ${esc(m.subject)}</span><span>To: ${esc(m.to)}${m.files.length ? ` · Attached: ${esc(m.files.join(', '))}` : ''}</span></div>
 <iframe loading="lazy" title="${esc(m.subject)}" srcdoc="${esc(m.html)}"></iframe></section>`).join('')}</body></html>`;

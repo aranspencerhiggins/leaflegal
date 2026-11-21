@@ -107,7 +107,7 @@
 [data-theme=partner] .cfb-faq .ll-tab[aria-selected=true]{background:#132a22;color:#fff}
 [data-theme=partner] .cfb-fundsec .cfb-fund span{background:#e4f1ed;color:#244237}
 
-/* platform feature pages: Loanleaf leaf + feature name in the logo style, title below */
+/* platform feature pages: Leaflegal leaf + feature name in the logo style, title below */
 .pf-lock{display:flex;align-items:center;gap:14px;margin-bottom:22px;font-family:"LINE Seed Sans",var(--sans-serif);font-weight:800;font-size:clamp(34px,3.4vw,46px);letter-spacing:-.035em;line-height:1;color:#fff}
 .pf-lock img{width:1.05em;height:1.05em;display:block}
 .pf-title{display:block;font-size:clamp(34px,3.6vw,54px);line-height:1.08}
@@ -212,12 +212,12 @@
 [data-theme=partner] .ll-calc-sec :is(h1,h2){color:#132a22}
 [data-theme=partner] .ll-calc-sec .ll-lead{color:#3d6656}
 [data-theme=partner] .pe-stages li:is(.on,.done),.pe-stages li:is(.on,.done){background:#ffb020}
-/* animated Loanleaf / Partners logo (falls back to static logo + tag) */
+/* animated Leaflegal / Partners logo (falls back to static logo + tag) */
 .llb-logo-vid{display:none;width:180px;height:60px;margin:-15px 0 -15px -15px;pointer-events:none}
 .llb-logo-p.anim{flex-direction:row;align-items:center}
 .llb-logo-p.anim .llb-logo-vid{display:block}
 .llb-logo-p.anim img,.llb-logo-p.anim .llb-logo-tag{display:none}
 @media (max-width:1024px){.llb-logo-vid{width:156px;height:52px;margin:-13px 0 -13px -13px}}
-/* before the video starts show the plain Loanleaf logo; the PARTNERS tag only appears if the video can't play */
+/* before the video starts show the plain Leaflegal logo; the PARTNERS tag only appears if the video can't play */
 .llb-logo-p:not(.noanim) .llb-logo-tag{display:none}
 .llb-logo-p:not(.noanim):not(.anim){flex-direction:row}

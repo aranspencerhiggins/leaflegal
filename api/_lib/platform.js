@@ -1,13 +1,13 @@
 import { createHmac, createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { typeLabel, chUrl, dobLabel } from './ch.js';
-// Shared logic for the broker platform (platform.loanleaf.co): database access, lead pricing,
+// Shared logic for the broker platform (platform.leaflegal.co): database access, lead pricing,
 // auto-buy matching and lead delivery. Files under api/_lib are not deployed as endpoints.
 // Env: SUPABASE_SECRET_KEY (required; the project's secret or service_role key), SUPABASE_URL (optional),
 //      RESEND_API_KEY, ENQUIRY_FROM, ENQUIRY_TO (admin alerts).
 export const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tefpljuzuvdchczcfjlz.supabase.co';
 export const PUBLISHABLE_KEY = 'sb_publishable_xkOwkkbg3qYYJukThYnHDw_Q_oqo-hm';
-export const PLATFORM_URL = (process.env.PLATFORM_URL || 'https://platform.loanleaf.co').replace(/\/platform\/?$/, '');
-// Sign-up hand-off from the loanleaf.co partner form to platform.loanleaf.co/register (different origins, so no shared
+export const PLATFORM_URL = (process.env.PLATFORM_URL || 'https://platform.leaflegal.co').replace(/\/platform\/?$/, '');
+// Sign-up hand-off from the leaflegal.co partner form to platform.leaflegal.co/register (different origins, so no shared
 // browser storage). The details travel encrypted and expire after 30 days; nothing readable goes in the URL.
 const handKey = () => createHash('sha256').update(`handoff:${key()}`).digest();
 export const sealHandoff = (data) => {
@@ -26,7 +26,7 @@ const key = () => (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVI
 export const secretKey = key;
 // Signed links (approve, confirm email, unsubscribe): HMAC with the server key, with an expiry.
 export const linkSig = (kind, id, exp) => createHmac('sha256', key()).update(`${kind}:${id}:${exp}`).digest('hex').slice(0, 40);
-export const signedUrl = (kind, id, days) => { const exp = Date.now() + days * 864e5; return `https://platform.loanleaf.co/api/platform?action=${kind}&id=${id}&exp=${exp}&sig=${linkSig(kind, id, exp)}`; };
+export const signedUrl = (kind, id, days) => { const exp = Date.now() + days * 864e5; return `https://platform.leaflegal.co/api/platform?action=${kind}&id=${id}&exp=${exp}&sig=${linkSig(kind, id, exp)}`; };
 export const configured = () => !!key();
 
 // PostgREST call with the server key. Throws on HTTP errors.
@@ -180,7 +180,7 @@ export const TRIAL = { pence: 100000, credits: 1000, then: 'starter' };
 export const isUuid = (v) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
 // Custom plans: more than £5,000 a month in £1,000 steps (e.g. £50,000), 1 credit per £1.
 // Above maxCredits a month we talk to the broker instead of selling online.
-export const CUSTOM = { min: 6000, max: 250000, step: 1000, bonus: 0, maxCredits: 20000, contact: 'hello@loanleaf.co' };
+export const CUSTOM = { min: 6000, max: 250000, step: 1000, bonus: 0, maxCredits: 20000, contact: 'hello@leaflegal.co' };
 export function customPack(pounds) {
   const n = Math.round(Number(pounds));
   if (!(n >= CUSTOM.min && n <= CUSTOM.max && n % CUSTOM.step === 0)) return null;
@@ -394,7 +394,7 @@ export async function metaEvent(name, { req, email, phone, first, last, page, ev
   const body = { data: [{ event_name: name, event_time: Math.floor(Date.now() / 1000), event_id: eventId || undefined, action_source: 'website', event_source_url: page || undefined, user_data: user, custom_data: custom }],
     ...(process.env.META_TEST_EVENT_CODE ? { test_event_code: process.env.META_TEST_EVENT_CODE } : {}) };
   try {
-    const r = await fetch(`https://graph.facebook.com/v21.0/${process.env.META_PIXEL_ID || '658905286613269'}/events?access_token=${encodeURIComponent(token)}`,
+    const r = await fetch(`https://graph.facebook.com/v21.0/${process.env.META_PIXEL_ID}/events?access_token=${encodeURIComponent(token)}`,
       { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(3000) });
     if (!r.ok) console.error('meta', name, r.status, await r.text());
     await li;
@@ -419,8 +419,8 @@ export async function suppress(email, reason, source) {
 }
 export const unsuppress = (email) => db(`email_suppressions?email=eq.${encodeURIComponent(String(email || '').trim().toLowerCase())}`, { method: 'DELETE' }).catch(() => {});
 
-// Invites, round-ups and lead emails to invited firms go from BULK_FROM (alerts.loanleaf.co) when it's set, so cold-email
-// complaints don't touch the reputation of loanleaf.co, which carries account and lead emails. Otherwise the usual address.
+// Invites, round-ups and lead emails to invited firms go from BULK_FROM (alerts.leaflegal.co) when it's set, so cold-email
+// complaints don't touch the reputation of leaflegal.co, which carries account and lead emails. Otherwise the usual address.
 export const BULK_FROM = () => process.env.BULK_FROM || null;
 export async function sendEmail(to, subject, html, replyTo, attachments, unsub, scheduledAt, retry = true, from = null) {
   if (!process.env.RESEND_API_KEY || !to?.length) return false;
@@ -429,7 +429,7 @@ export async function sendEmail(to, subject, html, replyTo, attachments, unsub, 
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: from || `Loanleaf <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}), ...(attachments ? { attachments } : {}), ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
+    body: JSON.stringify({ from: from || `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}), ...(attachments ? { attachments } : {}), ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
       // One-click unsubscribe (RFC 8058): Gmail and Outlook show an Unsubscribe button and POST to this link.
       ...(unsub ? { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } } : {}) }),
     signal: AbortSignal.timeout(6000),
@@ -471,7 +471,7 @@ ${cta ? `<tr><td colspan="2" style="padding:22px 24px 24px;border-top:1px solid 
 ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${esc(preheader)}${'&#8203;&nbsp;'.repeat(40)}</div>` : ''}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f5f4"><tr><td align="center" style="padding:36px 12px 40px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px">
-<tr><td align="center" style="padding:0 0 28px">${showNav ? `<a href="${PLATFORM_URL}/dashboard"><img src="https://loanleaf.co/assets/Loanleaf_Logo_Deep_Green_PNG_500x100_72DPI.png" width="140" height="28" alt="Loanleaf" style="display:block;border:0"></a>` : `<img src="https://loanleaf.co/assets/Loanleaf_Logo_Deep_Green_PNG_500x100_72DPI.png" width="140" height="28" alt="Loanleaf" style="display:block;border:0">`}</td></tr>
+<tr><td align="center" style="padding:0 0 28px">${showNav ? `<a href="${PLATFORM_URL}/dashboard"><img src="https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green.svg" width="140" height="28" alt="Leaflegal" style="display:block;border:0"></a>` : `<img src="https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green.svg" width="140" height="28" alt="Leaflegal" style="display:block;border:0">`}</td></tr>
 <tr><td class="ll-body" style="background:#ffffff;border:1px solid ${LINE};padding:44px 40px 34px">
 <h1 style="${F}margin:0 0 22px;font-size:26px;line-height:1.25;font-weight:bold;color:${INK}">${esc(title)}</h1>
 ${greeting ? p(greeting) : ''}${intro ? p(intro) : ''}${html}
@@ -481,14 +481,14 @@ ${tips.length ? `${tipsTitle ? h2(tipsTitle) : ''}<table role="presentation" wid
 ${cta && !panel ? button(cta, false) : ''}${after}
 ${link ? p(`<a href="${esc(link.url)}" style="color:${G};font-weight:bold">${esc(link.label)}</a>`, 'margin:-4px 0 24px;font-size:14px') : ''}
 ${note ? `<p style="${F}margin:0 0 24px;padding:15px 18px;background:${SOFT};border:1px solid ${LINE};font-size:13px;line-height:1.6;color:${MUTED}">${note}</p>` : ''}
-${signoff ? p(`${signoff === true ? 'Best regards,' : signoff}<br><b style="color:${INK}">The Loanleaf team</b>`, 'margin:8px 0 0') : ''}
-<div style="border-top:1px solid ${LINE};margin:30px 0 0;padding:20px 0 0;${F}font-size:14px;line-height:1.6;color:${MUTED}"><b style="color:${INK}">Need a hand?</b> Reply to this email${showNav ? ` or write to <a href="mailto:hello@loanleaf.co" style="color:${G}">hello@loanleaf.co</a>` : ''} and the team will get back to you.</div>
+${signoff ? p(`${signoff === true ? 'Best regards,' : signoff}<br><b style="color:${INK}">The Leaflegal team</b>`, 'margin:8px 0 0') : ''}
+<div style="border-top:1px solid ${LINE};margin:30px 0 0;padding:20px 0 0;${F}font-size:14px;line-height:1.6;color:${MUTED}"><b style="color:${INK}">Need a hand?</b> Reply to this email${showNav ? ` or write to <a href="mailto:hello@leaflegal.co" style="color:${G}">hello@leaflegal.co</a>` : ''} and the team will get back to you.</div>
 </td></tr>
 ${showNav ? `<tr><td align="center" style="${F}padding:26px 24px 6px;font-size:13px;color:${MUTED}">${nav}</td></tr>` : '<tr><td style="padding:16px 0 0"></td></tr>'}
 <tr><td align="center" style="padding:14px 24px 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px"><tr><td align="center" style="${F}font-size:12px;line-height:1.6;color:#86998f">
-<p style="margin:0 0 12px">${footer || `You're receiving this because your firm has a Loanleaf Platform account. Change which emails you get under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.`}</p>
-<p style="margin:0 0 12px">Loanleaf is a trading name of Vertical Brands Ltd, company number 14254961<br>20-22 Wenlock Road, London N1 7GU</p>
-${showNav ? `<p style="margin:0"><a href="https://loanleaf.co/privacy-policy" style="color:${G};text-decoration:none;font-weight:bold">Privacy Policy</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://loanleaf.co/terms-conditions" style="color:${G};text-decoration:none;font-weight:bold">Terms of Service</a></p>` : ''}
+<p style="margin:0 0 12px">${footer || `You're receiving this because your firm has a Leaflegal Platform account. Change which emails you get under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.`}</p>
+<p style="margin:0 0 12px">Leaflegal is a trading name of Vertical Brands Ltd, company number 14254961<br>20-22 Wenlock Road, London N1 7GU</p>
+${showNav ? `<p style="margin:0"><a href="https://leaflegal.co/privacy-policy" style="color:${G};text-decoration:none;font-weight:bold">Privacy Policy</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://leaflegal.co/terms-conditions" style="color:${G};text-decoration:none;font-weight:bold">Terms of Service</a></p>` : ''}
 </td></tr></table></td></tr>
 </table></td></tr></table></body></html>`;
 }
@@ -499,7 +499,7 @@ export async function sendBatch(items, fromOverride = null) {
   const blocked = await suppressedSet(items.flatMap((x) => x.to));
   items = items.filter((x) => !x.to.some((e) => blocked.has(String(e).trim().toLowerCase())));
   if (!items.length) return 0;
-  const from = fromOverride || `Loanleaf <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`;
+  const from = fromOverride || `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`;
   let ok = 0;
   for (let i = 0; i < items.length; i += 100) {
     const chunk = items.slice(i, i + 100).map(({ to, subject, opts }) => ({ from, to, subject, html: emailHtml(opts), ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
@@ -520,7 +520,7 @@ export const LOW_CREDITS = 200;
 // Warn once when a balance drops below LOW_CREDITS.
 export async function lowCredits(b, before, after) {
   if (!(before >= LOW_CREDITS && after < LOW_CREDITS)) return;
-  await notify([b.email], `Your Loanleaf credits are running low (${after} left)`, {
+  await notify([b.email], `Your Leaflegal credits are running low (${after} left)`, {
     title: 'Your credits are running low',
     preheader: `${after} credits left. Top up your plan so you don't miss matching leads.`,
     intro: `${esc(b.company)} has dropped below ${LOW_CREDITS} credits. Leads cost between ${onTiers(b) ? `${DEFAULT_TIER_PRICES.Bronze} and ${DEFAULT_TIER_PRICES['Platinum+']}` : `${DEFAULT_PRICING.min} and ${DEFAULT_PRICING.max}`} credits each, so some of the leads that match your criteria may now be out of reach${b.mode === 'auto' ? ', and auto-buy will skip any lead you can’t afford' : ''}.`,
@@ -561,13 +561,13 @@ export async function safeWebhookUrl(raw) {
     return addrs.length > 0 && !addrs.some((a) => PRIVATE.some((re) => re.test(a.replace(/^::ffff:/, ''))));
   } catch { return false; }
 }
-// With a signing secret: X-Loanleaf-Timestamp (unix seconds) and X-Loanleaf-Signature: t=<timestamp>,v1=<hex HMAC-SHA256 of "<timestamp>.<raw body>">.
-export const signWebhook = (secret, body, t = Math.floor(Date.now() / 1000)) => ({ 'X-Loanleaf-Timestamp': String(t), 'X-Loanleaf-Signature': `t=${t},v1=${createHmac('sha256', secret).update(`${t}.${body}`).digest('hex')}` });
+// With a signing secret: X-Leaflegal-Timestamp (unix seconds) and X-Leaflegal-Signature: t=<timestamp>,v1=<hex HMAC-SHA256 of "<timestamp>.<raw body>">.
+export const signWebhook = (secret, body, t = Math.floor(Date.now() / 1000)) => ({ 'X-Leaflegal-Timestamp': String(t), 'X-Leaflegal-Signature': `t=${t},v1=${createHmac('sha256', secret).update(`${t}.${body}`).digest('hex')}` });
 export async function postWebhook(url, payload, secret) {
   if (!(await safeWebhookUrl(url))) return 'blocked: not a public https address';
   try {
     const body = JSON.stringify(payload);
-    const r = await fetch(url, { method: 'POST', redirect: 'error', headers: { 'Content-Type': 'application/json', 'User-Agent': 'Loanleaf-Platform', ...(secret ? signWebhook(secret, body) : {}) }, body, signal: AbortSignal.timeout(5000) });
+    const r = await fetch(url, { method: 'POST', redirect: 'error', headers: { 'Content-Type': 'application/json', 'User-Agent': 'Leaflegal-Platform', ...(secret ? signWebhook(secret, body) : {}) }, body, signal: AbortSignal.timeout(5000) });
     return r.ok ? 'ok' : `HTTP ${r.status}`;
   } catch (e) { return e.name === 'TimeoutError' ? 'timed out' : 'failed'; }
 }
@@ -582,7 +582,7 @@ export function parseHubspot(text) {
   return portal && form ? { portal, form: form.toLowerCase(), ...(region && region !== 'na1' ? { region } : {}) } : null;
 }
 // o = leadOut(l). Standard HubSpot contact properties only, so any form with these fields works; the rest goes in "message".
-const leadLines = (o) => [['Loanleaf lead', `#${o.id}${o.test ? ' (test)' : ''}`], ['Loan amount', o.amount != null ? gbp(o.amount) : ''], ['Purpose', o.purpose], ['Needed', o.timeline], ['Business type', o.structure],
+const leadLines = (o) => [['Leaflegal lead', `#${o.id}${o.test ? ' (test)' : ''}`], ['Loan amount', o.amount != null ? gbp(o.amount) : ''], ['Purpose', o.purpose], ['Needed', o.timeline], ['Business type', o.structure],
     ['Company number', o.company_number], ['Annual revenue', o.annual_revenue], ['Trading for', o.trading_for], ['Homeowner or tenant', o.property], ['Missed payments / CCJs', creditShown(o.adverse_credit)],
     ['Existing finance', o.existing_finance], ['Left to repay', o.left_to_repay], ['Monthly repayments', o.monthly_repayments], ['Quality score', o.quality], ['Credits used', o.price_credits]].filter(([, v]) => v != null && v !== '');
 export const hubspotFields = (o) => {
@@ -596,7 +596,7 @@ export async function postHubspot(h, o) {
   const host = h.region ? `api-${h.region}.hsforms.com` : 'api.hsforms.com';
   try {
     const r = await fetch(`https://${host}/submissions/v3/integration/submit/${h.portal}/${h.form}`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fields: hubspotFields(o), context: { pageName: 'Loanleaf lead', pageUri: 'https://platform.loanleaf.co/leads' } }), signal: AbortSignal.timeout(8000) });
+      body: JSON.stringify({ fields: hubspotFields(o), context: { pageName: 'Leaflegal lead', pageUri: 'https://platform.leaflegal.co/leads' } }), signal: AbortSignal.timeout(8000) });
     if (r.ok) return 'ok';
     const j = await r.json().catch(() => ({}));
     return (j.errors || []).map((e) => e.message).filter(Boolean).join('; ').slice(0, 300) || j.message || `HTTP ${r.status}`;
@@ -616,7 +616,7 @@ export async function postPipedrive(p, o) {
   };
   try {
     const org_id = o.business ? await call('organizations', { name: o.business }) : undefined;
-    const person_id = await call('persons', { name: o.contact_name || o.email || 'Loanleaf lead', org_id,
+    const person_id = await call('persons', { name: o.contact_name || o.email || 'Leaflegal lead', org_id,
       ...(o.email ? { email: [{ value: o.email, primary: true, label: 'work' }] } : {}), ...(o.phone ? { phone: [{ value: o.phone, primary: true, label: 'work' }] } : {}) });
     const deal_id = await call('deals', { title: `${o.business || o.contact_name} – ${gbp(o.amount)}${o.test ? ' (test)' : ''}`, value: o.amount || 0, currency: 'GBP', person_id, org_id });
     await call('notes', { deal_id, content: leadLines(o).map(([k, v]) => `<b>${esc(k)}:</b> ${esc(v)}`).join('<br>') });
@@ -704,7 +704,7 @@ export async function followUp(id, b) {
         title: `${l.business} has been in touch again`,
         preheader: `${l.full_name} sent another enquiry. A good moment to call.`,
         greeting: `Hello ${esc(x.company)},`,
-        intro: `<b>${esc(l.full_name)}</b> at ${esc(l.business)}, lead #${l.id} which you have from ${new Date(l.bought_at || l.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/London' })}, has just sent another enquiry through Loanleaf. We've reminded them that you're their broker and sent them your details again. They're still looking, so now is a good time to call.`,
+        intro: `<b>${esc(l.full_name)}</b> at ${esc(l.business)}, lead #${l.id} which you have from ${new Date(l.bought_at || l.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/London' })}, has just sent another enquiry through Leaflegal. We've reminded them that you're their broker and sent them your details again. They're still looking, so now is a good time to call.`,
         rowsTitle: 'Contact details', rows: [['Business', l.business], ['Name', l.full_name], ['Mobile', l.phone], ['Email', l.email], ...bits],
         cta: { label: 'Open lead on the platform', url: `${PLATFORM_URL}/leads` },
         note: `This doesn't use any credits. Reply to this email to contact ${esc(l.full_name)} directly.`, replyTo: l.email }),
@@ -760,7 +760,7 @@ export async function ingestLead(b) {
     const [d] = await db(`brokers?id=eq.${STARTER_BROKER}&approved=eq.true&suspended_at=is.null&select=*`).catch(() => []);
     const done = d && await db(`leads?id=eq.${lead.id}&buyer=is.null`, { method: 'PATCH', body: { buyer: d.id, bought_at: new Date().toISOString(), auto: true }, prefer: 'return=representation' }).catch(() => null);
     if (done?.length) {
-      await db('ledger', { method: 'POST', body: { broker: d.id, delta: 0, reason: 'Lead assigned by Loanleaf (no charge)', lead_id: lead.id } }).catch(() => {});
+      await db('ledger', { method: 'POST', body: { broker: d.id, delta: 0, reason: 'Lead assigned by Leaflegal (no charge)', lead_id: lead.id } }).catch(() => {});
       await Promise.allSettled([deliver(d, done[0])]);
       return { id: lead.id, price: 0, buyer: d.id, match: publicProfile(d) };
     }
@@ -811,7 +811,7 @@ export async function ingestLead(b) {
     tipsTitle: 'Checked for you', tips: checkTips(lead),
     cta: { label: 'View this lead', url: `${PLATFORM_URL}/opportunities` },
     note: `Full contact details and the company name unlock the moment you buy.${ch ? ' Company details come from Companies House.' : ''} Want leads like this bought for you automatically? <a href="${PLATFORM_URL}/autobuy" style="color:#244237">Set up auto-buy</a>.`,
-    unsub, footer: `You're receiving this because ${esc(x.company)} has new-lead emails switched on in Loanleaf Platform. <a href="${unsub}" style="color:#86998f">Unsubscribe from new-lead emails</a> or change them under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.` }); }));
+    unsub, footer: `You're receiving this because ${esc(x.company)} has new-lead emails switched on in Leaflegal Platform. <a href="${unsub}" style="color:#86998f">Unsubscribe from new-lead emails</a> or change them under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.` }); }));
   // Leads outside a broker's criteria: suggested anyway, saying so, to brokers who want them straight away.
   await Promise.allSettled(brokers.filter((x) => suggestMode(x) === 'instant' && cost(x) != null && !matches(critOf(x), lead)).map((x) => suggest(x, [lead])));
   // Invited firms who haven't signed up yet: same lead, but the button finishes their signup.
@@ -848,19 +848,19 @@ export async function inviteLeadAlerts(lead, matched) {
       greeting: `Hi ${esc(String(v.name || '').split(' ')[0] || 'there')},`,
       intro: matched
         ? `A business has just asked for ${esc(what)}. It fitted a broker’s auto-buy criteria, so it went to them straight away, before anyone else saw it. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is already approved: finish setting up and set your own criteria, and leads like this come to you instead.`
-        : `A business has just asked for finance on Loanleaf. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is already approved: finish setting up and you can buy leads like this one. Each lead is sold to one broker only.`,
+        : `A business has just asked for finance on Leaflegal. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is already approved: finish setting up and you can buy leads like this one. Each lead is sold to one broker only.`,
       highlight: { value: what, label: matched ? `Received ${when} · matched to a broker within seconds` : `Received ${when} · ${lead.price} credits` },
       rows: leadRows(lead).filter(([k, val]) => val != null && val !== '' && k !== 'Amount' && k !== 'Purpose'),
       tipsTitle: 'Checked for you', ticks: true, tips: inviteCheckTips(lead).map((t) => t.replace(/^<b[^>]*>&#10003;<\/b> /, '')),
       cta: { label: matched ? 'Set up auto-buy' : 'Finish setting up', url: `${PLATFORM_URL}/signup?invite=${v.token}` },
       note: matched ? 'This lead is no longer available. Brokers with auto-buy switched on get first pick of every lead that fits their criteria.' : 'Contact details and the company name unlock when a broker buys the lead.',
-      nav: false, replyTo: 'hello@loanleaf.co', unsub: `https://platform.loanleaf.co/api/platform?action=invite-stop&t=${encodeURIComponent(v.token)}`, footer: inviteFooter(v) } })), BULK_FROM());
+      nav: false, replyTo: 'hello@leaflegal.co', unsub: `https://platform.leaflegal.co/api/platform?action=invite-stop&t=${encodeURIComponent(v.token)}`, footer: inviteFooter(v) } })), BULK_FROM());
     if (sent) await db('rate_events', { method: 'POST', body: due.map((v) => ({ key: `invlead:${v.email}` })) });
     return sent;
   } catch (e) { console.error('invite alerts', e.message); return 0; }
 }
 
-const inviteFooter = (v) => `You're receiving this because the Loanleaf team invited ${esc(v.email)} to join Loanleaf Platform. <a href="https://platform.loanleaf.co/api/platform?action=invite-stop&amp;t=${encodeURIComponent(v.token)}" style="color:#86998f">Unsubscribe from these emails</a>.`;
+const inviteFooter = (v) => `You're receiving this because the Leaflegal team invited ${esc(v.email)} to join Leaflegal Platform. <a href="https://platform.leaflegal.co/api/platform?action=invite-stop&amp;t=${encodeURIComponent(v.token)}" style="color:#86998f">Unsubscribe from these emails</a>.`;
 
 // Weekly round-up for firms invited in bulk: the best unsold leads from the last 7 days, one email each, sent in batches.
 // Runs from the daily job on Mondays; the settings row makes it once a week however often the job runs.
@@ -878,13 +878,13 @@ export async function inviteDigest(now = new Date()) {
   await db('settings', { method: 'POST', prefer: 'resolution=merge-duplicates', body: { key: 'invite_digest', value: { week, people: people.length, leads: fresh.length } } });
   if (!people.length || !fresh.length) return 0;
   const cards = fresh.map((l) => leadCard(l)).join('');
-  return sendBatch(people.map((v) => ({ to: [v.email], subject: `${fresh.length} new lead${fresh.length === 1 ? '' : 's'} on Loanleaf this week`, opts: {
-    title: 'This week’s leads on Loanleaf', preheader: `${fresh.length} lead${fresh.length === 1 ? ' is' : 's are'} still available. Finish setting up to buy.`,
+  return sendBatch(people.map((v) => ({ to: [v.email], subject: `${fresh.length} new lead${fresh.length === 1 ? '' : 's'} on Leaflegal this week`, opts: {
+    title: 'This week’s leads on Leaflegal', preheader: `${fresh.length} lead${fresh.length === 1 ? ' is' : 's are'} still available. Finish setting up to buy.`,
     greeting: `Hi ${esc(String(v.name || '').split(' ')[0] || 'there')},`,
-    intro: `Here are the best leads that came in on Loanleaf over the last week and are still available. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is already approved: finish setting up and you can buy them. Each lead is sold to one broker only.`,
+    intro: `Here are the best leads that came in on Leaflegal over the last week and are still available. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is already approved: finish setting up and you can buy them. Each lead is sold to one broker only.`,
     html: cards, cta: { label: 'Finish setting up', url: `${PLATFORM_URL}/signup?invite=${v.token}` },
-    note: 'Contact details and the company name unlock when a broker buys the lead.', replyTo: 'hello@loanleaf.co',
-    nav: false, unsub: `https://platform.loanleaf.co/api/platform?action=invite-stop&t=${encodeURIComponent(v.token)}`, footer: inviteFooter(v) } })), BULK_FROM());
+    note: 'Contact details and the company name unlock when a broker buys the lead.', replyTo: 'hello@leaflegal.co',
+    nav: false, unsub: `https://platform.leaflegal.co/api/platform?action=invite-stop&t=${encodeURIComponent(v.token)}`, footer: inviteFooter(v) } })), BULK_FROM());
 }
 
 // Email version of an Opportunities card: purpose, time, amount, four facts, why it's outside the criteria, price.
@@ -931,7 +931,7 @@ export async function recentEnquiries() {
 ${tick(v.ch, 'Companies House', '&#9679;&#9679;&#9679;&#9679;&#9679;&#9679; LTD')}${tick(v.phone, 'Phone verified', '07&#9679;&#9679;&#9679; &#9679;&#9679;&#9679;&#9679;&#9679;&#9679;')}${tick(v.email, 'Email verified', '&#9679;&#9679;&#9679;&#9679;@&#9679;&#9679;&#9679;&#9679;&#9679;')}
 </table></td></tr></table></div><!--[if mso]></td><![endif]-->`; };
   const html = pick.length ? `<h2 style="${F}margin:32px 0 4px;font-size:17px;line-height:1.3;font-weight:bold;color:#14271f">Recent enquiries</h2>
-<p style="${F}margin:0 0 14px;font-size:14px;line-height:1.6;color:#62786f">Businesses that asked for finance on Loanleaf in the last few weeks. Contact details unlock when a broker buys the lead.</p>
+<p style="${F}margin:0 0 14px;font-size:14px;line-height:1.6;color:#62786f">Businesses that asked for finance on Leaflegal in the last few weeks. Contact details unlock when a broker buys the lead.</p>
 <div class="ll-cards" style="text-align:center;font-size:0;margin:0 -3px"><!--[if mso]><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><![endif]-->${pick.map(card).join('')}<!--[if mso]></tr></table><![endif]--></div>
 <p style="${F}margin:6px 0 26px;text-align:center;font-size:15px"><a href="{{more}}" style="color:#244237;font-weight:bold;text-decoration:underline">View more opportunities &rarr;</a></p>` : ''; // {{more}}: each email fills in its own link
   recentCache = { t: Date.now(), html };
@@ -990,7 +990,7 @@ export function missedEmail(b, leads) {
     preheader: 'Brokers with wider auto-buy criteria get first pick of more leads.',
     greeting: `Hello ${esc(b.company)},`,
     intro: `Over the last day, ${n === 1 ? 'a lead' : `${n} leads`} came in just outside the auto-buy criteria for <b>${esc(b.company)}</b>, so auto-buy let ${n === 1 ? 'it' : 'them'} pass.`,
-    html: `<p style="${F}margin:0 0 18px;font-size:15px;line-height:1.65;color:#2b3f36">The brokers who do best on Loanleaf keep their auto-buy criteria wide. They get first pick of more leads, and because each lead goes to one broker only, the first to auto-buy it is the one who gets to call. Often a single setting makes the difference.</p>`,
+    html: `<p style="${F}margin:0 0 18px;font-size:15px;line-height:1.65;color:#2b3f36">The brokers who do best on Leaflegal keep their auto-buy criteria wide. They get first pick of more leads, and because each lead goes to one broker only, the first to auto-buy it is the one who gets to call. Often a single setting makes the difference.</p>`,
     tipsTitle: 'What held them back', ticks: false,
     tips: S.groups.slice(0, 6).map((g) => `${esc(g.label)}: <b>${g.n} lead${g.n === 1 ? '' : 's'}</b>${g.only ? ` (allowing this alone would have picked up ${g.only === g.n ? (g.n === 1 ? 'it' : 'all of them') : g.only})` : ''}`),
     cta: { label: 'Widen auto-buy criteria', url: `${PLATFORM_URL}/autobuy` },
@@ -1044,7 +1044,7 @@ const siteLabel = (u) => String(u).replace(/^https?:\/\/(www\.)?/, '').replace(/
 // Keep in step with matchMessage() in public/assets/apply.js.
 export function matchMessage(m, l) {
   const hi = String(m.person || '').split(' ')[0] || m.company, amt = typeof l.amount === 'number' ? gbp(l.amount) : l.amount;
-  const lines = [`Hi ${hi}, I found you through Loanleaf and was matched with you for business finance. Here's a quick summary:`, '',
+  const lines = [`Hi ${hi}, I found you through Leaflegal and was matched with you for business finance. Here's a quick summary:`, '',
     l.business && `Business: ${l.business}`, amt && `Looking for: ${amt}${l.purpose ? ` for ${String(l.purpose).toLowerCase()}` : ''}`,
     l.timeline && `Needed: ${l.timeline}`, l.turnover && `Annual revenue: ${l.turnover}`, l.trading && `Trading for: ${l.trading}`, '', `Thanks, ${l.full_name || ''}`.trim()];
   return lines.filter((x) => x !== false && x !== null && x !== undefined).join('\n');
@@ -1056,18 +1056,18 @@ export function contactActions(m, l) {
   return [m.phone && { k: 'call', label: 'Call', sub: m.phone, href: telLink(m.phone) },
     m.whatsapp && { k: 'whatsapp', label: 'WhatsApp', sub: 'Message on WhatsApp', href: `${waLink(m.whatsapp)}?text=${enc(msg)}` },
     text && { k: 'sms', label: 'Text', sub: text, href: `sms:${String(text).replace(/[^\d+]/g, '')}?&body=${enc(msg)}` },
-    m.email && { k: 'email', label: 'Email', sub: m.email, href: `mailto:${m.email}?subject=${enc(`Business finance enquiry from ${l.business || l.full_name || 'Loanleaf'} (via Loanleaf)`)}&body=${enc(msg)}` },
+    m.email && { k: 'email', label: 'Email', sub: m.email, href: `mailto:${m.email}?subject=${enc(`Business finance enquiry from ${l.business || l.full_name || 'Leaflegal'} (via Leaflegal)`)}&body=${enc(msg)}` },
     m.website && { k: 'web', label: 'Website', sub: siteLabel(m.website), href: m.website }].filter(Boolean);
 }
 
 // "You've been matched" email to the business, sent whenever a broker buys (or is given) its lead. Never throws.
 // Logo shown at most 180×64 in emails; explicit width/height so Outlook doesn't blow it up to full size.
 const logoFit = (p, W = 180, H = 64) => { const w = p.logoW || W, h = p.logoH || H, k = Math.min(W / w, H / h, 1); return [Math.round(w * k), Math.round(h * k)]; };
-// "You've been matched" message to the business's phone, alongside the email. WhatsApp first (template loanleaf_matched,
+// "You've been matched" message to the business's phone, alongside the email. WhatsApp first (template leaflegal_matched,
 // from BIRD_WA_FROM, once Meta approves it), otherwise a text from BIRD_SMS_FROM. Does nothing until one is set up. Never throws.
 // Two templates: one for brokers whose profile shows a WhatsApp number (adds that line), one without. Meta templates can't
 // have optional lines, so the choice is made per send.
-export const MATCH_WA_TEMPLATE = 'loanleaf_matched_v2', MATCH_WA_TEMPLATE_WA = 'loanleaf_matched_wa';
+export const MATCH_WA_TEMPLATE = 'leaflegal_matched_v2', MATCH_WA_TEMPLATE_WA = 'leaflegal_matched_wa';
 // Companies House names arrive in capitals ("AUTOMOVER LOGISTICS LTD"): show them as "Automover Logistics Ltd".
 export const niceBusiness = (n) => { const v = String(n || '').trim(); if (!v || v !== v.toUpperCase()) return v;
   return v.toLowerCase().replace(/\b([a-z])/g, (c) => c.toUpperCase()).replace(/\b(Llp|Plc|Uk|Cic)\b/g, (w) => w.toUpperCase()).replace(/\b(T\/a|And|Of|The)\b/g, (w, x, i) => (i ? w.toLowerCase() : w)); };
@@ -1075,7 +1075,7 @@ export function matchedText(b, l) {
   const m = publicProfile(b), first = String(l.full_name || '').trim().split(/\s+/)[0] || 'there', who = m.person ? m.person.split(' ')[0] : m.company;
   const reach = [m.phone && `Call: ${m.phone}`, m.whatsapp && `WhatsApp: ${m.whatsapp}`, m.email && `Email: ${m.email}`].filter(Boolean), biz = niceBusiness(l.business);
   return {
-    sms: `Hi ${first}, thanks for your business finance enquiry with Loanleaf${biz ? ` for ${biz}` : ''}. We've matched you with ${m.company}, one of our recommended brokers, and ${who} will be in touch shortly about your ${gbp(l.amount)} request.${reach.length ? `\n\n${reach.join('\n')}` : ''}\n\nNo obligation to go ahead. Loanleaf`,
+    sms: `Hi ${first}, thanks for your business finance enquiry with Leaflegal${biz ? ` for ${biz}` : ''}. We've matched you with ${m.company}, one of our recommended brokers, and ${who} will be in touch shortly about your ${gbp(l.amount)} request.${reach.length ? `\n\n${reach.join('\n')}` : ''}\n\nNo obligation to go ahead. Leaflegal`,
     template: m.whatsapp ? MATCH_WA_TEMPLATE_WA : MATCH_WA_TEMPLATE,
     wa: { first_name: first, business: biz || 'your business', broker: m.company, contact: m.person || 'Their team', amount: gbp(l.amount), phone: m.phone || m.whatsapp || 'in your email', email: m.email || 'in your email', ...(m.whatsapp ? { whatsapp: m.whatsapp } : {}) },
   };
@@ -1153,7 +1153,7 @@ ${m.about ? `<div style="margin-top:10px;font-size:14px;line-height:1.6;color:#2
     stepsTitle: 'What happens next', steps: [['They contact you', `Expect a call from ${esc(who)}${m.phone ? ` on ${esc(m.phone)}` : ''}. Save their number so you know it's them.`],
       ['Talk through your options', "They'll ask a few questions about your business and what you need the money for."],
       ['You decide', "You choose whether to go ahead. There's no obligation."]],
-    footer: `Loanleaf introduces businesses to finance brokers. Any arrangement is between you and your broker, and Loanleaf isn't involved in it. Your broker will explain how they work and any fees before you go ahead.</p><p style="margin:0 0 12px">You're receiving this because you asked Loanleaf to match ${esc(l.business)} with a business finance broker.`, nav: false, replyTo: 'hello@loanleaf.co' };
+    footer: `Leaflegal introduces businesses to finance brokers. Any arrangement is between you and your broker, and Leaflegal isn't involved in it. Your broker will explain how they work and any fees before you go ahead.</p><p style="margin:0 0 12px">You're receiving this because you asked Leaflegal to match ${esc(l.business)} with a business finance broker.`, nav: false, replyTo: 'hello@leaflegal.co' };
 }
 
 // Previews for the Profile tab: the real email, and the form's thank-you page as the business sees it.
@@ -1179,10 +1179,10 @@ ${m.person ? `<span class="ap-match-who">${esc(m.person)}${m.role ? `, ${esc(m.r
 </div></div></div></body></html>`;
   return { email: emailHtml(matchedOpts(b, l)), subject: `You've been matched with ${m.company}`, page, ...phonePreviews(b, l) };
 }
-// The approved Meta wording of the two matched templates (Bird: loanleaf_matched_v2 / loanleaf_matched_wa). Keep in step if a template is edited.
+// The approved Meta wording of the two matched templates (Bird: leaflegal_matched_v2 / leaflegal_matched_wa). Keep in step if a template is edited.
 const MATCH_WA_BODY = {
-  [MATCH_WA_TEMPLATE]: "Hi {{first_name}}, thanks for your business finance enquiry with Loanleaf for {{business}} ✅\n\nWe've matched you with *{{broker}}*, one of our recommended brokers. {{contact}} will be in touch shortly about your {{amount}} request.\n\n📞 {{phone}}\n✉️ {{email}}\n\nSave their number so you know it's them when they call. There's no obligation to go ahead.",
-  [MATCH_WA_TEMPLATE_WA]: "Hi {{first_name}}, thanks for your business finance enquiry with Loanleaf for {{business}} ✅\n\nWe've matched you with *{{broker}}*, one of our recommended brokers. {{contact}} will be in touch shortly about your {{amount}} request.\n\n📞 {{phone}}\n💬 WhatsApp: {{whatsapp}}\n✉️ {{email}}\n\nSave their number so you know it's them when they get in touch. There's no obligation to go ahead.",
+  [MATCH_WA_TEMPLATE]: "Hi {{first_name}}, thanks for your business finance enquiry with Leaflegal for {{business}} ✅\n\nWe've matched you with *{{broker}}*, one of our recommended brokers. {{contact}} will be in touch shortly about your {{amount}} request.\n\n📞 {{phone}}\n✉️ {{email}}\n\nSave their number so you know it's them when they call. There's no obligation to go ahead.",
+  [MATCH_WA_TEMPLATE_WA]: "Hi {{first_name}}, thanks for your business finance enquiry with Leaflegal for {{business}} ✅\n\nWe've matched you with *{{broker}}*, one of our recommended brokers. {{contact}} will be in touch shortly about your {{amount}} request.\n\n📞 {{phone}}\n💬 WhatsApp: {{whatsapp}}\n✉️ {{email}}\n\nSave their number so you know it's them when they get in touch. There's no obligation to go ahead.",
 };
 // WhatsApp and text previews for Profile: the same matchedText the real send uses, drawn as a phone chat.
 function phonePreviews(b, l) {
@@ -1196,8 +1196,8 @@ body{margin:0;font:15px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,
 .b{max-width:82%;padding:9px 12px 8px;border-radius:12px;border-top-left-radius:3px;background:${bubble};box-shadow:0 1px 1px rgba(0,0,0,.12);word-wrap:break-word}
 .f{margin-top:8px;font-size:12.5px;color:#667781}.tm{display:block;text-align:right;font-size:11px;color:#667781;margin-top:4px}</style></head><body>${body}</body></html>`;
   return {
-    whatsapp: doc('#efeae2', '#fff', '#075e54', `<div class="top"><i></i><div>Loanleaf<span>Business account</span></div></div><div class="c"><div class="b">${fmt(wa)}<div class="f">Loanleaf · loanleaf.co</div><span class="tm">09:41</span></div></div>`),
-    sms: doc('#fff', '#e9e9eb', '#3a3a3c', `<div class="top"><i></i><div>Loanleaf<span>Text message</span></div></div><div class="c"><div class="b" style="border-radius:18px;border-bottom-left-radius:4px">${fmt(t.sms)}</div></div>`),
+    whatsapp: doc('#efeae2', '#fff', '#075e54', `<div class="top"><i></i><div>Leaflegal<span>Business account</span></div></div><div class="c"><div class="b">${fmt(wa)}<div class="f">Leaflegal · leaflegal.co</div><span class="tm">09:41</span></div></div>`),
+    sms: doc('#fff', '#e9e9eb', '#3a3a3c', `<div class="top"><i></i><div>Leaflegal<span>Text message</span></div></div><div class="c"><div class="b" style="border-radius:18px;border-bottom-left-radius:4px">${fmt(t.sms)}</div></div>`),
   };
 }
 
@@ -1206,7 +1206,7 @@ async function fetchPublic(url, max) {
   let u = url;
   for (let i = 0; i < 4; i++) {
     if (!(await safeWebhookUrl(u))) return null;
-    const r = await fetch(u, { redirect: 'manual', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LoanleafBot/1.0; +https://loanleaf.co)', Accept: 'text/html,image/*;q=0.9,*/*;q=0.5' }, signal: AbortSignal.timeout(6000) }).catch(() => null);
+    const r = await fetch(u, { redirect: 'manual', headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LeaflegalBot/1.0; +https://leaflegal.co)', Accept: 'text/html,image/*;q=0.9,*/*;q=0.5' }, signal: AbortSignal.timeout(6000) }).catch(() => null);
     if (!r) return null;
     if (r.status >= 300 && r.status < 400 && r.headers.get('location')) { u = new URL(r.headers.get('location'), u).href; continue; }
     if (!r.ok || Number(r.headers.get('content-length')) > max) return null;

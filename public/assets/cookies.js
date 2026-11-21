@@ -1,13 +1,13 @@
 // Cookie consent banner. Nothing non-essential runs until the visitor opts in.
 // Choice lives in localStorage 'll-cookies' = {v, analytics, marketing, at}.
-// To add a tracker later, gate it:  loanleafCookies.on('analytics', () => { /* load script */ })
+// To add a tracker later, gate it:  leaflegalCookies.on('analytics', () => { /* load script */ })
 (() => {
   const KEY = 'll-cookies', V = 1;
   let c = null;
   try { c = JSON.parse(localStorage.getItem(KEY)); if (c?.v !== V) c = null; } catch {}
   const waiting = [];
   const run = () => waiting.forEach((w) => { if (!w.done && c?.[w.cat]) { w.done = true; w.fn(); } });
-  window.loanleafCookies = { get: () => c, on: (cat, fn) => { waiting.push({ cat, fn }); run(); }, open: () => show(true) };
+  window.leaflegalCookies = { get: () => c, on: (cat, fn) => { waiting.push({ cat, fn }); run(); }, open: () => show(true) };
 
   const css = `
 .llc{position:fixed;z-index:9999;left:16px;bottom:16px;max-width:420px;background:#1f3a30;color:#fff;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:20px;box-shadow:0 20px 50px -20px rgba(0,0,0,.6);font-family:"LINE Seed Sans",sans-serif;font-size:14px;line-height:1.5}
@@ -32,7 +32,7 @@
     const el = document.createElement('div');
     el.className = 'llc'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-labelledby', 'llc-t'); el.setAttribute('aria-live', 'polite');
     const opt = (k, t, d) => `<label class="llc-opt"><input type="checkbox" name="${k}" ${c?.[k] ? 'checked' : ''}><span><b>${t}</b><small>${d}</small></span></label>`;
-    el.innerHTML = `<h2 id="llc-t">Cookies on Loanleaf</h2>
+    el.innerHTML = `<h2 id="llc-t">Cookies on Leaflegal</h2>
       <p>We use essential cookies to make this site work. With your permission we'd also like to use analytics and marketing cookies. <a href="/cookie-policy">Cookie Policy</a></p>
       ${manage ? `<div class="llc-opts">
         <label class="llc-opt"><input type="checkbox" checked disabled><span><b>Essential</b><small>Needed for the site and form to work. Always on.</small></span></label>
