@@ -58,3 +58,72 @@ GUIDES = [
       ('h2', 'On the day'), ('p', 'Arrive early. Your case will be called, you will be asked to confirm your details and enter a plea. If you plead guilty, the court may sentence you the same day.'),
       ('h2', 'How a solicitor helps'), ('ul', ['Checking the evidence and procedure', 'Advising on plea', 'Putting forward mitigation or an exceptional hardship argument'])]),
 ]
+
+# Extra depth for each guide (owner, 2026-11-21: "more text"). 'key' shows as a summary box at the top, 'more' is added
+# after the original sections. Block kinds: h2, p, ul, tip.
+EXTRA = {
+    'how-conveyancing-works': {
+        'key': ['Most purchases take around three to four months from offer to completion', 'Exchange is the point of no return, completion is when you get the keys', 'Replying quickly to your conveyancer is the best way to avoid delays'],
+        'more': [
+            ('h2', 'How long it takes'), ('p', 'A straightforward purchase with no chain often takes eight to twelve weeks. Leasehold flats, new builds and long chains usually take longer, because there are more people to hear back from and more documents to check.'),
+            ('h2', 'What can slow things down'), ('ul', ['Waiting for searches from the local council', 'Missing documents, such as building regulation certificates', 'Questions about the lease or the management company', 'Someone further up or down the chain not being ready']),
+            ('h2', 'What it costs'), ('p', 'You pay a legal fee to the conveyancer plus disbursements, such as searches and Land Registry fees. If you are buying, Stamp Duty Land Tax may also be due. Ask for a written quote that lists everything, so you can compare firms properly.'),
+            ('tip', 'Instruct your conveyancer as soon as your offer is accepted. Starting the paperwork early is one of the simplest ways to keep your move on track.'),
+        ]},
+    'conveyancing-searches-explained': {
+        'key': ['Searches are checks on the property and the area around it', 'Most lenders insist on them', 'They usually take a few weeks to come back'],
+        'more': [
+            ('h2', 'How long searches take'), ('p', 'Many searches come back within a couple of weeks, but some councils take longer. Your conveyancer will usually order them as soon as you instruct them and pay the search fees, so it helps to instruct a firm early.'),
+            ('h2', 'Do I need searches if I am a cash buyer?'), ('p', 'There is no legal requirement for a cash buyer to have searches, but skipping them means you could buy a property with problems you didn’t know about. Most conveyancers strongly recommend them.'),
+            ('h2', 'Search indemnity insurance'), ('p', 'Sometimes a seller or conveyancer suggests insurance instead of a local authority search, to save time. It can help in some cases, but it does not tell you anything about the property. Ask your conveyancer what it covers before you agree.'),
+            ('tip', 'Read the summary your conveyancer sends you after the searches come back, and ask about anything you don’t understand.'),
+        ]},
+    'leasehold-vs-freehold': {
+        'key': ['Freehold means you own the building and the land', 'Leasehold means you own the right to live there for a set number of years', 'Lease length affects value and whether lenders will lend'],
+        'more': [
+            ('h2', 'Ground rent and service charges'), ('p', 'Leaseholders usually pay ground rent to the freeholder and a service charge towards the upkeep of shared areas, such as the roof, stairs and gardens. Your lease says how these are worked out and when they can go up.'),
+            ('h2', 'Share of freehold'), ('p', 'In some buildings the flat owners own the freehold together, often through a company. This is called a share of freehold. It gives you more control over how the building is run, but you also share the responsibilities.'),
+            ('h2', 'Buying a leasehold property'), ('ul', ['Check how many years are left on the lease', 'Ask for the latest service charge accounts and any planned major works', 'Check the ground rent and how it can increase', 'Ask your conveyancer to explain any restrictions in the lease']),
+            ('tip', 'If the lease has fewer than about 90 years left, speak to a solicitor about extending it before you sell or remortgage.'),
+        ]},
+    'how-to-extend-a-lease': {
+        'key': ['There is a formal statutory route and an informal route', 'You will usually need a solicitor and a surveyor', 'Starting early gives you more options'],
+        'more': [
+            ('h2', 'The statutory route in more detail'), ('p', 'You usually need to have owned the flat for at least two years to use the statutory route. Your solicitor serves a formal notice on the freeholder setting out your proposed premium, and the freeholder replies with a counter notice. If you can’t agree, a tribunal can decide.'),
+            ('h2', 'The informal route in more detail'), ('p', 'An informal deal can be quicker and is sometimes the only option if you have owned the flat for less than two years. The freeholder can set their own terms, though, so a solicitor should check the new lease carefully before you sign.'),
+            ('h2', 'What affects the premium'), ('ul', ['How many years are left on the lease', 'The value of the flat', 'The ground rent', 'Whether the lease is below 80 years, which can make extending more expensive']),
+            ('tip', 'The rules on leasehold are changing. Ask your solicitor which rules apply to your lease right now.'),
+        ]},
+    'how-divorce-works': {
+        'key': ['No fault divorce means nobody has to be blamed', 'It takes at least 26 weeks from application to final order', 'Money and children are dealt with separately from the divorce itself'],
+        'more': [
+            ('h2', 'Applying alone or together'), ('p', 'You can apply on your own, as a sole applicant, or together with your spouse as joint applicants. A joint application can feel less confrontational, but both of you need to agree to go ahead at each stage.'),
+            ('h2', 'Why finances matter'), ('p', 'A divorce does not end financial claims between you. Without a financial order, either of you could make a claim in the future. A consent order records what you have agreed and makes it legally binding, and a solicitor can help you prepare one.'),
+            ('h2', 'Arrangements for children'), ('p', 'Many parents agree arrangements for their children between themselves or through mediation. If you can’t agree, the court can make a child arrangements order. Courts usually expect you to consider mediation first.'),
+            ('tip', 'Speak to a family solicitor before you apply for the final order if your finances are not yet sorted.'),
+        ]},
+    'choosing-an-immigration-adviser': {
+        'key': ['Only regulated advisers can give immigration advice', 'You can check an adviser on their regulator’s register', 'Always ask for fees and what they cover in writing'],
+        'more': [
+            ('h2', 'How to check an adviser'), ('p', 'Solicitors’ firms can be checked on the Solicitors Regulation Authority register. Advisers registered with the Immigration Advice Authority can be checked on its online register, which also shows the level of work they are allowed to do.'),
+            ('h2', 'Warning signs'), ('ul', ['They won’t tell you who regulates them', 'They promise a particular result', 'They ask for large cash payments without a written agreement', 'They pressure you to decide quickly']),
+            ('h2', 'Fees'), ('p', 'Advisers often charge a fixed fee for each application. Home Office fees are separate and are paid to the Home Office. A regulated adviser should explain their costs clearly before you agree to anything.'),
+            ('tip', 'Keep copies of everything you sign and everything you send to your adviser or the Home Office.'),
+        ]},
+    'preparing-for-an-immigration-consultation': {
+        'key': ['Bring your documents and any letters from the Home Office', 'Tell the adviser about any deadlines straight away', 'Write down your questions before the call'],
+        'more': [
+            ('h2', 'Questions you might want to ask'), ('ul', ['What will it cost, and what does that include?', 'Who will handle my case day to day?', 'How long might it take?', 'What do you need from me next?']),
+            ('h2', 'If you need an interpreter'), ('p', 'Tell the adviser before your appointment if you would like an interpreter or would feel more comfortable with someone with you. Many advisers can arrange this.'),
+            ('h2', 'After the consultation'), ('p', 'The adviser should confirm in writing what they will do, what it costs and what they need from you. Read it carefully and ask about anything that is unclear before you agree.'),
+            ('tip', 'Leaflegal does not give immigration advice. We introduce you to a regulated adviser who can.'),
+        ]},
+    'what-happens-at-a-motoring-hearing': {
+        'key': ['Get advice before the hearing, especially if a ban is possible', 'Arrive early and bring your paperwork', 'The court may sentence you on the same day'],
+        'more': [
+            ('h2', 'What to bring'), ('ul', ['Your court papers and any letters from the police', 'Your driving licence', 'Details of your income and outgoings, as fines are linked to income', 'Any letters supporting an exceptional hardship argument']),
+            ('h2', 'Possible outcomes'), ('p', 'Depending on the offence, the court can impose a fine, add penalty points or disqualify you from driving. For more serious offences other sentences are possible. A solicitor can explain what is likely in your case and how to put forward your side.'),
+            ('h2', 'Exceptional hardship'), ('p', 'If you reach 12 points, the court will usually ban you for at least six months. You can argue that a ban would cause exceptional hardship, for example to people who rely on you. These arguments need careful preparation and evidence.'),
+            ('tip', 'If you can’t attend on the date given, contact the court and your solicitor as soon as possible.'),
+        ]},
+}

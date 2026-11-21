@@ -145,8 +145,19 @@ for gd in CG.GUIDES:
     aside = (f'<aside class="ll-doc-aside"><div class="ll-gside ll-gside-cta"><h2>Need {a["name"].lower()} help?</h2><p>Answer a few quick questions and we will introduce you to {"a regulated adviser" if gd["area"] == "immigration" else "a specialist firm"}.</p>'
              f'<a href="/apply?area={quote(a["form"])}" class="button">Get matched</a></div>'
              f'<div class="ll-gside"><h2>{a["name"]}</h2><ul>' + ''.join(f'<li><a href="{M_URL(gd["area"], m["slug"])}">{m["name"]}</a></li>' for m in MAT[gd['area']][:6]) + '</ul></div></aside>')
-    blocks = gd['blocks'] + ([('p', IMM_NOTE[19:-4])] if gd['area'] == 'immigration' else []) + [('p', 'This guide is general information, not legal advice. A solicitor can advise on your situation.')]
-    doc_page(f'{PUB}/guides/{gd["slug"]}.html', gd['title'], gd['desc'], gd['h1'], gd['lead'], blocks, aside=aside)
+    ex = CG.EXTRA[gd['slug']]
+    blocks = gd['blocks'] + ex['more'] + ([('p', IMM_NOTE[19:-4])] if gd['area'] == 'immigration' else []) + [('p', 'This guide is general information, not legal advice. A solicitor can advise on your situation.')]
+    key = '<div class="cs-key"><p class="cs-glance-h">Key points</p><ul>' + ''.join(f'<li><span class="cs-tick">{_CHECK}</span>{k}</li>' for k in ex['key']) + '</ul></div>'
+    gq = f'/apply?area={quote(a["form"])}'
+    ghead = hero_split(gd['h1'], gd['lead'], ['Plain English', 'General information, not advice', f'About {a["name"].lower()}'],
+                       f'<a href="{gq}" class="button"><div>Get matched</div></a><a href="/guides" class="ll-ghost-light">All guides</a>', area_img(gd['area'], CG.GUIDES.index(gd)),
+                       crumbs='<nav class="ll-crumbs" aria-label="Breadcrumb"><a href="/guides">Guides</a><span>/</span><span>' + a['name'] + '</span></nav>')
+    more_g = [x for x in CG.GUIDES if x['slug'] != gd['slug']][:3]
+    page(f'{PUB}/guides/{gd["slug"]}.html', gd['title'], gd['desc'],
+         ghead + f'<section class="ll-docsec"><div class="ll-doc-wrap">{key[:0]}<div class="cs-docmain">{key}{blocks_html(blocks)}</div>{aside}</div></section>'
+         + cs_steps('Need help with your own matter?', a['how'], gq, lead='We introduce you to one regulated firm. Free to use, with no obligation.')
+         + section('<h2 class="cs-h2 cs-center">More guides</h2><div class="ll-ggrid cs-gg">' + ''.join(f'<a class="ll-pcard" href="/guides/{x["slug"]}"><img src="{area_img(x["area"], i)}" alt="" loading="lazy"/><div><span class="ll-gcat">{AREA[x["area"]]["name"]}</span><b>{x["h1"]}</b><p>{x["lead"]}</p></div></a>' for i, x in enumerate(more_g)) + '</div>', cls='section cs-sec'),
+         f'<link rel="canonical" href="{SITE}/guides/{gd["slug"]}"/>', backup=False)
     _count['guide'] += 1
 _gcards = ''.join(f'<a class="ll-pcard" href="/guides/{gd["slug"]}"><img src="{area_img(gd["area"], i)}" alt="" loading="lazy"/><div><span class="ll-gcat">{AREA[gd["area"]]["name"]}</span><b>{gd["h1"]}</b><p>{gd["lead"]}</p></div></a>' for i, gd in enumerate(CG.GUIDES))
 page(f'{PUB}/guides.html', f'Legal Guides for Property, Family, Immigration and More | {BRAND}',
@@ -176,18 +187,23 @@ P_SIDE_CTA = ('<div class="ll-gside ll-gside-cta"><h2>Start receiving enquiries<
               '<a href="/partners/apply" class="button">Become a partner firm</a></div>')
 
 
-def partner_page(url, d, side_title, side_links, crumbs, extra_top='', img=None):
+import cfb_legal as _cfb
+CFB = _cfb.parts(ICON, TICK, LC)
+
+
+def partner_page(url, d, side_title, side_links, crumbs, extra_top='', img=None, lead_page=False):
     cur = ' aria-current="page"'
     side = ''.join(f'<li><a href="{h}"{cur if h == url else ""}>{t}</a></li>' for h, t in side_links)
-    body = (ph_hero(d['h1'], re.split(r'(?<=[.])\s', d['summary'], maxsplit=1)[0], img=img) + extra_top
+    body = (ph_hero(d['h1'], re.split(r'(?<=[.])\s', d['summary'], maxsplit=1)[0], img=img) + CFB['factbar'] + extra_top
             + '<section class="ll-docsec"><div class="ll-guide-wrap"><article><div class="ll-doc">'
             + f'<p><b>{d["summary"]}</b></p>' + ''.join(f'<h2>{h2}</h2>{seo_blocks(bl)}' for h2, bl in d['sections']) + '</div>' + P_DISC
             + f'</article><aside>{P_SIDE_CTA}<div class="ll-gside"><h2>{side_title}</h2><ul>{side}</ul></div></aside></div></section>'
+            + (CFB['anatomy'] if lead_page else '') + CFB['how']
             + faq(d['faqs'], 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
             + cta(d['cta_h2'], 'Book a 30-minute call and see a sample lead.', '/partners/apply', 'Become a partner firm'))
     os.makedirs(os.path.dirname(f'{PUB}{url}.html'), exist_ok=True)
     page(f'{PUB}{url}.html', d['title'], d['description'], body,
-         f'<link rel="canonical" href="{SITE}{url}"/>' + ld(org_ld, svc_ld(d['h1'], url, d['description']), faq_ld(d['faqs']), crumb_ld(('Law firms', '/partners'), *crumbs, (d['h1'], url))),
+         '<link href="/assets/cfb.css?v=17" rel="stylesheet"/>' + f'<link rel="canonical" href="{SITE}{url}"/>' + ld(org_ld, svc_ld(d['h1'], url, d['description']), faq_ld(d['faqs']), crumb_ld(('Law firms', '/partners'), *crumbs, (d['h1'], url))),
          header='PARTNERS_HEADER', backup=False)
     _count['partner'] += 1
 
@@ -219,7 +235,7 @@ for a in AC.AREAS:
          'faqs': [(f'Are {nm.lower()} leads exclusive?', 'Yes. Each enquiry goes to one firm only and is never resold.'),
                   (f'Can I choose locations for {nm.lower()} leads?', 'Yes. Tell us the towns, counties or regions you cover, or national.')] + _lead_faq[6:9],
          'cta_h2': f'Ready for exclusive {nm.lower()} leads?'}
-    partner_page(base, d, 'Leads by practice area', [(f'/partners/{AL[x["slug"]]["slug"]}', AL[x['slug']]['kw']) for x in AC.AREAS], [('Leads', '/partners/lead-generation-for-law-firms')], img=PH.photo(PH.AREA[s][0]))
+    partner_page(base, d, 'Leads by practice area', [(f'/partners/{AL[x["slug"]]["slug"]}', AL[x['slug']]['kw']) for x in AC.AREAS], [('Leads', '/partners/lead-generation-for-law-firms')], img=PH.photo(PH.AREA[s][0]), lead_page=True)
     for m in MAT[s]:
         u = f'{base}/{m["slug"]}'
         md = {'h1': f'{m["name"]} leads for {"advisers and law firms" if s == "immigration" else "solicitors"}',
@@ -235,7 +251,7 @@ for a in AC.AREAS:
                        ('Are these leads shared?', 'No. Each enquiry goes to one firm only.'),
                        ('How quickly do leads arrive?', 'As soon as the enquiry is checked, so you can call while it is fresh.')],
               'cta_h2': f'Get {m["name"].lower()} leads for your firm'}
-        partner_page(u, md, f'{al["kw"]} by matter', mlinks, [('Leads', '/partners/lead-generation-for-law-firms'), (al['kw'], base)], img=PH.photo(PH.AREA[s][len(mlinks) and [x for x, _ in mlinks].index(u) % 2]))
+        partner_page(u, md, f'{al["kw"]} by matter', mlinks, [('Leads', '/partners/lead-generation-for-law-firms'), (al['kw'], base)], lead_page=True, img=PH.photo(PH.AREA[s][len(mlinks) and [x for x, _ in mlinks].index(u) % 2]))
 
 # partner guides hub and FAQ
 _pg = ''.join(f'<a class="ll-pcard" href="/partners/{d["slug"]}"><img src="{PH_POOL[i % len(PH_POOL)]}" alt="" loading="lazy"/><div><span class="ll-gcat">Guide for law firms</span><b>{d["h1"]}</b><p>{d["summary"]}</p></div></a>' for i, d in enumerate(PS.GUIDES))
