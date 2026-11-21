@@ -62,7 +62,7 @@ def build(ICON, TICK, faq_html, faq_h2, LC, AREA_LEADS, hero_img):
 <p>Referral disclosure, consent and data protection are part of every lead. <a href="/partners/sra-referral-rules">How we work with the SRA rules</a>.</p></div>
 <div class="cfb-crm-grid">{comp}</div></div></section>'''
 
-    steps = [('Book a call', 'Leave your details and pick a time for a 30-minute call with Aran, our founder.'),
+    steps = [('Book a call', 'Leave your details and pick a time for a 30-minute call with our team.'),
              ('Agree your criteria', 'Practice areas, matter types, locations, monthly volume and your price per lead. See a sample lead first.'),
              ('Sign your agreement', 'Pricing, billing, delivery and invalid lead rules, all in writing before you start.'),
              ('Call your clients', 'Leads arrive by email or CRM the moment they are checked. Call while the enquiry is fresh.')]
@@ -73,7 +73,7 @@ def build(ICON, TICK, faq_html, faq_h2, LC, AREA_LEADS, hero_img):
 <p>Choose a topic to see the questions firms ask us most.</p></div>{faq_html}</div></section>'''
 
     final = f'''<section class="cfb-final"><div class="cfb-wrap cfb-final-in"><div><h2>Your next client could be filling in the form right now</h2>
-<p>Tell us what you do. Book a call with Aran and see a sample lead.</p></div>
+<p>Tell us what you do. Book a call and see a sample lead.</p></div>
 <div class="cfb-ctas"><a class="cfb-btn dark" href="{APPLY}">Become a partner firm{arrow}</a><a class="cfb-link" href="/partners/how-it-works">How it works</a></div></div></section>'''
 
     return hero + factbar + anatomy + fund + filt + modes + cost + compliance + how + faq + final

@@ -170,7 +170,7 @@ def page(path, title, desc, body, extra_head='', extra_js='', header=None, backu
     if '/partners' in path or name.startswith('partners'):
         h = h.replace('</body>', '<script src="/assets/partner-popup.js?v=1" defer></script></body>', 1)
     if '/partners' in path:  # partner (law firm) side of the site: dark, deep-green theme
-        h = h.replace('<body', '<body data-theme="partner"', 1).replace('</head>', '<link href="/assets/partners-dark.css?v=23" rel="stylesheet"/></head>', 1)
+        h = h.replace('<body', '<body data-theme="partner"', 1).replace('</head>', '<link href="/assets/partners-dark.css?v=24" rel="stylesheet"/></head>', 1)
     if header == 'PARTNERS_HEADER':
         header = header_b('partners.html')
     elif header == 'LEGAL_HEADER':
@@ -571,9 +571,9 @@ firm_apply = ('<section class="ap-section"><div class="ap-wrap pe-wrap"><h1 clas
               f'<div id="pe"><noscript><p style="padding:32px">Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div>'
               '</div></section>')
 page(f'{PUB}/partners/apply.html', f'Become a Partner Firm | Leads for Solicitors | {BRAND}',
-     'Get exclusive, pre-screened client enquiries for your law firm. Leave your details, then book a 30-minute call with our founder.',
+     'Get exclusive, pre-screened client enquiries for your law firm. Leave your details, then book a 30-minute call with our team.',
      firm_apply, APPLY_HEAD + '<link href="/assets/partner-enquiry.css?v=1" rel="stylesheet"/><meta name="robots" content="noindex"/>',
-     '<script src="/assets/partner-enquiry.js?v=1"></script>', header='PARTNERS_HEADER', backup=False)
+     '<script src="/assets/partner-enquiry.js?v=91"></script>', header='PARTNERS_HEADER', backup=False)
 
 # ---------------------------------------------------------------- about
 about = f'''

@@ -59,10 +59,10 @@ CLIENT_MENU = property_dd + family_dd + immig_dd + motoring_dd + business_dd + n
 # ---------------------------------------------------------------- law firm side
 PPAGES = {d['slug']: d for d in PS.PILLARS + PS.INFO + PS.GUIDES}
 _pp = lambda slugs: [(f'/partners/{s}', PPAGES[s]['nav'], 's') for s in slugs]
-P_START = ('Get started', [('/partners/apply', 'Book a call with Aran'), ('/partners/pricing', 'How pricing works'), ('/partners/faq', 'Questions and answers'), ('/contact', 'Contact the team')])
+P_START = ('Get started', [('/partners/apply', 'Book a call'), ('/partners/pricing', 'How pricing works'), ('/partners/faq', 'Questions and answers'), ('/contact', 'Contact the team')])
 P_INFO = ['how-it-works', 'getting-started', 'lead-verification', 'lead-delivery', 'lead-quality', 'pricing']
 p_how = mega('How it works', _pp(P_INFO), {'s': P_START},
-             _card('partner-call', 'Exclusive enquiries, sent while fresh', 'Each lead goes to one firm only, with every answer and the consent record.', '/partners/apply', 'Book a call'), foot=('/partners/apply', 'Book a call with Aran'))
+             _card('partner-call', 'Exclusive enquiries, sent while fresh', 'Each lead goes to one firm only, with every answer and the consent record.', '/partners/apply', 'Book a call'), foot=('/partners/apply', 'Book a call'))
 AL = PS.AREA_LEADS
 p_leads = mega('Leads', [(f'/partners/{AL[a["slug"]]["slug"]}', AL[a['slug']]['kw'], a['slug']) for a in AC.AREAS],
                {a['slug']: {'head': (f'/partners/{AL[a["slug"]]["slug"]}', f'{AL[a["slug"]]["kw"]}: overview'),

@@ -1,5 +1,5 @@
 // Law firm partner enquiry (/partners/apply, and the pop-up from partner-popup.js). Step 1: name, firm, email, phone and consent,
-// emailed to the team by api/partner.js. Step 2: book a call with Aran (Google Calendar slots from api/partner.js).
+// emailed to the team by api/partner.js. Step 2: book a call (Google Calendar slots from api/partner.js).
 (() => {
  // mount(root, { modal }) renders the flow into any element: the /partners/apply page, or the pop-up (partner-popup.js).
  function mount(root, opts = {}) {
@@ -36,7 +36,7 @@
     const s = at();
     if (s === 'time') return timeView();
     return `<h2 class="pe-h" tabindex="-1">${opts.modal ? 'Get law firm leads' : 'Get started'}</h2>
-      <p class="pe-lead">Tell us who you are, then pick a time for a 30-minute call with Aran, our founder.</p>
+      <p class="pe-lead">Tell us who you are, then pick a time for a 30-minute call with our team.</p>
       <form novalidate><div class="pe-grid pe-grid-1">
         ${field('fullName', 'Full name', 'text', 'name')}${field('company', 'Firm name', 'text', 'organization')}
         ${field('email', 'Work email', 'email', 'email')}${field('phone', 'Phone number', 'tel', 'tel')}
@@ -49,10 +49,10 @@
 
   function timeView() {
     const opt = (k, ic, t, d) => `<button type="button" class="pe-how${how === k ? ' on' : ''}" role="radio" aria-checked="${how === k}" data-how="${k}"><span class="pe-ic">${ic}</span><span><b>${t}</b><small>${d}</small></span></button>`;
-    const head = `<h2 class="pe-h" tabindex="-1">Book a call with Aran</h2><p class="pe-lead">30 minutes to go through your practice areas, lead volumes, pricing and any questions.</p>
+    const head = `<h2 class="pe-h" tabindex="-1">Book a call</h2><p class="pe-lead">30 minutes to go through your practice areas, lead volumes, pricing and any questions.</p>
       <div class="pe-hows" role="radiogroup" aria-label="Type of call">${opt('phone', ICON.phone, 'Phone call', `We call you on ${esc(sent?.phone || 'your number')}`)}${opt('meet', ICON.video, 'Google Meet', 'Video call, link in your invite')}</div>`;
     if (slots === null) return `${head}<div class="pe-cal-load" aria-busy="true"><span></span><span></span><span></span></div>`;
-    if (!slots.length) return `${head}<div class="pe-note"><b>Online booking isn't available right now.</b> We have your details, so Aran will call you within one working day to find a time.</div>`;
+    if (!slots.length) return `${head}<div class="pe-note"><b>Online booking isn't available right now.</b> We have your details, so we will call you within one working day to find a time.</div>`;
     const days = [...new Map(slots.map((x) => [dayKey(x), x])).values()];
     if (!days.some((x) => dayKey(x) === day)) day = dayKey(days[0]);
     return `${head}
@@ -142,7 +142,7 @@
     const row = (ic, k, v) => `<li><span class="pe-ic">${ic}</span><div><small>${k}</small><b>${v}</b></div></li>`;
     root.querySelector('.pe-body').innerHTML = `<div class="pe-step pe-done"><div class="ap-badge">${TICK}</div>
       <h2 class="pe-h" tabindex="-1">Your call is booked</h2>
-      <p class="pe-lead">${phone ? `Aran will call you on ${esc(sent.phone)}.` : 'Join from the Google Meet link in your calendar invite.'}</p>
+      <p class="pe-lead">${phone ? `We will call you on ${esc(sent.phone)}.` : 'Join from the Google Meet link in your calendar invite.'}</p>
       <ul class="pe-booked">
         ${row(ICON.cal, 'When', `${UK(b.start, { weekday: 'long', day: 'numeric', month: 'long' })}, ${hm(b.start)} UK time`)}
         ${row(phone ? ICON.phone : ICON.video, 'How', phone ? `Phone call to ${esc(sent.phone)}` : 'Google Meet video call')}

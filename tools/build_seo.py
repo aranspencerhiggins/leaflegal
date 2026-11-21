@@ -145,12 +145,12 @@ page(f'{PUB}/guides.html', f'Legal Guides: Property, Family, Immigration and Mor
      + cta('Need help with your matter?', 'Answer a few quick questions and we will introduce you to a specialist.', '/apply', 'Get matched'), backup=False)
 
 # ---------------------------------------------------------------- law firm pages
-PH_POOL = [PH.photo(k) for k in PH.PARTNER] + [f'/assets/stock-p-{k}.webp' for k in ('desk-review', 'present-screen', 'cafe-meeting', 'window-desk', 'tablet-chat', 'coffee-project', 'two-women', 'city-window', 'round-table', 'reports', 'brick-meeting', 'boardroom')]
+PH_POOL = [PH.photo(k) for k in PH.PARTNER]  # generic law firm pages; practice area lead pages use their area's own photos (owner 2026-11-21)
 _ph = [0]
 
 
-def ph_hero(h1, lead, ticks=None, btns=None):
-    img = PH_POOL[_ph[0] % len(PH_POOL)]
+def ph_hero(h1, lead, ticks=None, btns=None, img=None):
+    img = img or PH_POOL[_ph[0] % len(PH_POOL)]
     _ph[0] += 1
     return hero_split(h1, lead, ticks or ['Exclusive: each enquiry goes to one firm', 'Pre-screened, with paid help confirmed', 'Sent to your inbox or CRM while fresh'],
                       btns or '<a href="/partners/apply" class="button"><div>Become a partner firm</div></a><a href="/partners/how-it-works" class="ll-ghost-light">How it works</a>', img)
@@ -162,19 +162,19 @@ def seo_blocks(blocks):
 
 P_DISC = ('<p class="ll-disclaimer">Leaflegal is a trading name of Vertical Brands Ltd and an introducer, not a law firm. It is not regulated by the SRA and does not '
           'give legal or immigration advice. Partner firms are responsible for their own regulatory position.</p>')
-P_SIDE_CTA = ('<div class="ll-gside ll-gside-cta"><h2>Start receiving enquiries</h2><p>Book a 30-minute call with Aran, our founder. See a sample lead before you commit.</p>'
+P_SIDE_CTA = ('<div class="ll-gside ll-gside-cta"><h2>Start receiving enquiries</h2><p>Book a 30-minute call with our team. See a sample lead before you commit.</p>'
               '<a href="/partners/apply" class="button">Become a partner firm</a></div>')
 
 
-def partner_page(url, d, side_title, side_links, crumbs, extra_top=''):
+def partner_page(url, d, side_title, side_links, crumbs, extra_top='', img=None):
     cur = ' aria-current="page"'
     side = ''.join(f'<li><a href="{h}"{cur if h == url else ""}>{t}</a></li>' for h, t in side_links)
-    body = (ph_hero(d['h1'], re.split(r'(?<=[.])\s', d['summary'], maxsplit=1)[0]) + extra_top
+    body = (ph_hero(d['h1'], re.split(r'(?<=[.])\s', d['summary'], maxsplit=1)[0], img=img) + extra_top
             + '<section class="ll-docsec"><div class="ll-guide-wrap"><article><div class="ll-doc">'
             + f'<p><b>{d["summary"]}</b></p>' + ''.join(f'<h2>{h2}</h2>{seo_blocks(bl)}' for h2, bl in d['sections']) + '</div>' + P_DISC
             + f'</article><aside>{P_SIDE_CTA}<div class="ll-gside"><h2>{side_title}</h2><ul>{side}</ul></div></aside></div></section>'
-            + faq(d['faqs'], 'Prefer to talk first?', 'Book a call with Aran, our founder.', '/partners/apply', 'Book a call')
-            + cta(d['cta_h2'], 'Book a 30-minute call with Aran and see a sample lead.', '/partners/apply', 'Become a partner firm'))
+            + faq(d['faqs'], 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
+            + cta(d['cta_h2'], 'Book a 30-minute call and see a sample lead.', '/partners/apply', 'Become a partner firm'))
     os.makedirs(os.path.dirname(f'{PUB}{url}.html'), exist_ok=True)
     page(f'{PUB}{url}.html', d['title'], d['description'], body,
          f'<link rel="canonical" href="{SITE}{url}"/>' + ld(org_ld, svc_ld(d['h1'], url, d['description']), faq_ld(d['faqs']), crumb_ld(('Law firms', '/partners'), *crumbs, (d['h1'], url))),
@@ -209,7 +209,7 @@ for a in AC.AREAS:
          'faqs': [(f'Are {nm.lower()} leads exclusive?', 'Yes. Each enquiry goes to one firm only and is never resold.'),
                   (f'Can I choose locations for {nm.lower()} leads?', 'Yes. Tell us the towns, counties or regions you cover, or national.')] + _lead_faq[6:9],
          'cta_h2': f'Ready for exclusive {nm.lower()} leads?'}
-    partner_page(base, d, 'Leads by practice area', [(f'/partners/{AL[x["slug"]]["slug"]}', AL[x['slug']]['kw']) for x in AC.AREAS], [('Leads', '/partners/lead-generation-for-law-firms')])
+    partner_page(base, d, 'Leads by practice area', [(f'/partners/{AL[x["slug"]]["slug"]}', AL[x['slug']]['kw']) for x in AC.AREAS], [('Leads', '/partners/lead-generation-for-law-firms')], img=PH.photo(PH.AREA[s][0]))
     for m in MAT[s]:
         u = f'{base}/{m["slug"]}'
         md = {'h1': f'{m["name"]} leads for {"advisers and law firms" if s == "immigration" else "solicitors"}',
@@ -225,18 +225,18 @@ for a in AC.AREAS:
                        ('Are these leads shared?', 'No. Each enquiry goes to one firm only.'),
                        ('How quickly do leads arrive?', 'As soon as the enquiry is checked, so you can call while it is fresh.')],
               'cta_h2': f'Get {m["name"].lower()} leads for your firm'}
-        partner_page(u, md, f'{al["kw"]} by matter', mlinks, [('Leads', '/partners/lead-generation-for-law-firms'), (al['kw'], base)])
+        partner_page(u, md, f'{al["kw"]} by matter', mlinks, [('Leads', '/partners/lead-generation-for-law-firms'), (al['kw'], base)], img=PH.photo(PH.AREA[s][len(mlinks) and [x for x, _ in mlinks].index(u) % 2]))
 
 # partner guides hub and FAQ
 _pg = ''.join(f'<a class="ll-pcard" href="/partners/{d["slug"]}"><img src="{PH_POOL[i % len(PH_POOL)]}" alt="" loading="lazy"/><div><span class="ll-gcat">Guide for law firms</span><b>{d["h1"]}</b><p>{d["summary"]}</p></div></a>' for i, d in enumerate(PS.GUIDES))
 page(f'{PUB}/partners/guides.html', f'Guides for Law Firms: Converting Legal Enquiries | {BRAND}',
      'Practical guides for solicitors: speed to lead, first call scripts, converting and following up legal enquiries, and marketing by practice area.',
      page_head('Guides for law firms', 'Practical help for turning legal enquiries into instructions.') + f'<section class="ll-docsec"><div class="ll-guides"><div class="ll-ggrid">{_pg}</div></div></section>'
-     + cta('Ready for exclusive enquiries?', 'Book a call with Aran and see a sample lead.', '/partners/apply', 'Become a partner firm'),
+     + cta('Ready for exclusive enquiries?', 'Book a call and see a sample lead.', '/partners/apply', 'Become a partner firm'),
      f'<link rel="canonical" href="{SITE}/partners/guides"/>', header='PARTNERS_HEADER', backup=False)
 page(f'{PUB}/partners/faq.html', f'Questions and Answers for Law Firms | {BRAND}',
      'Answers for solicitors about Leaflegal leads: exclusivity, matching, pricing, delivery, compliance and lead quality.',
      page_head('Questions and answers', 'Everything firms ask about Leaflegal leads.') + section(faq_tabs(LC.FAQ_GROUPS), cls='section ll-compact')
-     + cta('Still have a question?', 'Book a call with Aran, our founder.', '/partners/apply', 'Book a call'),
+     + cta('Still have a question?', 'Book a call with our team.', '/partners/apply', 'Book a call'),
      f'<link rel="canonical" href="{SITE}/partners/faq"/>' + ld(faq_ld(LC.FAQ)), '<script src="/assets/tabs.js?v=2"></script>', header='PARTNERS_HEADER', backup=False)
 print('seo pages', _count)
