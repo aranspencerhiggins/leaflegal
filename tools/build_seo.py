@@ -43,21 +43,22 @@ for a_slug, matters in MAT.items():
         head = hero_split(h1, mt['short'] + ' ' + ('Tell us a little about it and we will introduce you to a regulated adviser.' if imm else 'Tell us a little about it and we will introduce you to a specialist firm.'),
                           ticks, f'<a href="{q}" class="button"><div>Get matched</div></a><a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, i + 1), alt='')
         related = [x for x in matters if x['slug'] != mt['slug']]
-        near = ''
-        if a_slug in MC.LOCAL_AREAS:
-            near = section(title_block(f'{LOCAL_NAME[a_slug]} near you') + link_list([(LOC_URL(c[0], a_slug), c[1]) for c in MC.CITIES]))
         faqs = mt['faqs'] + a['faqs'][:3]
+        who = 'regulated adviser' if imm else 'firm'
+        glance = [('Area of law', f'<a href="{AREA_URL(a_slug)}">{a["name"]}</a>'), ('Who it is for', AREA_EXTRA[a_slug]['who']),
+                  ('Who contacts you', 'One regulated immigration firm or adviser' if imm else 'One regulated law firm'),
+                  ('Where', 'Across the UK' if imm else 'England and Wales'), ('Cost to use Leaflegal', 'Free, with no obligation')]
         body = ''.join([
             head, TRUST_STRIP,
-            section(title_block(f'About {mt["name"].lower()}') + prose(mt['intro']) + (IMM_NOTE if imm else '')),
-            section(f'<div class="ll-two"><div>{title_block("How the " + ("adviser" if imm else "firm") + " can help")}{checks(mt["help"])}</div>'
-                    f'<div>{title_block("What to have ready")}{checks(mt["ready"])}</div></div>'),
-            '<div id="how"></div>',
-            section(title_block('How it works') + accordion(a['how'], numbered=True), cls='section ll-tight'),
-            section(title_block('Things to know') + tabs('cons', [(t, f'<h3>{t}</h3><p>{d}</p>') for t, d in a['considerations']])),
+            cs_intro(f'About {mt["name"].lower()}', mt['intro'] + [AREA_EXTRA[a_slug]['more']], glance, IMM_NOTE if imm else ''),
+            cs_help(f'How the {who} can help', mt['help'], 'What to have ready', mt['ready'], 'Don’t worry if you don’t have everything yet. The ' + who + ' will tell you what else they need.'),
+            cs_steps('How it works', a['how'], q, lead='Three simple steps, and nothing to pay us.'),
+            cs_fees(a_slug, a['name']),
+            cs_things(a['considerations']),
             faq(faqs, 'Ready to get started?', 'One short form. One specialist contacts you.', q, 'Get matched', title=f'{mt["name"]} questions and answers'),
-            section(title_block(f'More {a["name"].lower()} help') + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in related[:6]], 'three', more_label='Learn more')),
-            near,
+            section(f'<h2 class="cs-h2 cs-center">More {a["name"].lower()} help</h2>' + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in related[:6]], 'three', more_label='Learn more'), cls='section cs-sec'),
+            cs_guides(a_slug, AREA_GUIDES.get(a_slug, [])),
+            cs_links(f'{LOCAL_NAME[a_slug]} near you', [(LOC_URL(c[0], a_slug), c[1]) for c in MC.CITIES]) if a_slug in MC.LOCAL_AREAS else '',
         ])
         title = f'{mt["name"]} {"Solicitors" if not imm else "Advisers"} | {a["name"]} | {BRAND}'
         if len(title) > 70:
@@ -87,17 +88,20 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         faqs = [(f'Do you only introduce firms based in {c_name}?', f'We introduce you to a firm that covers {c_name}. Some have offices nearby, and others work remotely across England and Wales. The firm will tell you how they work when they contact you.'),
                 (f'Does it cost anything to use {BRAND} in {c_name}?', f'No. {BRAND} is free to use. The firm explains its own fees before you agree to anything.'),
                 (f'Do you cover {nearby[0]} and {nearby[1]}?', f'Yes. We cover {c_name} and the surrounding area, including {", ".join(nearby[:-1])} and {nearby[-1]}.')] + a['faqs'][:3]
+        glance = [('Area of law', f'<a href="{AREA_URL(a_slug)}">{a["name"]}</a>'), ('Who it is for', AREA_EXTRA[a_slug]['who']),
+                  ('Covering', f'{c_name}, {", ".join(nearby[:-1])} and {nearby[-1]}'), ('Who contacts you', 'One regulated law firm'),
+                  ('Cost to use Leaflegal', 'Free, with no obligation')]
         body = ''.join([
             hero_split(h1, lead, ['Free to use, no obligation', 'One regulated firm, not a list', f'Covering {c_name} and {region}'],
                        f'<a href="{q}" class="button"><div>Get matched</div></a><a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, ci + ai)),
             TRUST_STRIP,
-            section(title_block(f'{a["name"]} in {c_name}') + prose(intro)),
-            section(title_block('What the firms help with') + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in MAT[a_slug]], 'three', more_label='Learn more')),
-            '<div id="how"></div>',
-            section(title_block('How it works') + accordion(a['how'], numbered=True), cls='section ll-tight'),
+            cs_intro(f'{a["name"]} in {c_name}', intro + [AREA_EXTRA[a_slug]['more']], glance),
+            section(f'<h2 class="cs-h2 cs-center">What the firms help with</h2>' + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in MAT[a_slug]], 'three', more_label='Learn more'), cls='section cs-sec'),
+            cs_steps('How it works', a['how'], q, lead=f'Three simple steps, wherever you are in {c_name}.'),
+            cs_fees(a_slug, a['name']),
             faq(faqs, 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched', title=f'{a["name"]} in {c_name}, questions and answers'),
-            section(title_block(f'{LOCAL_NAME[a_slug]} in other places') + link_list([(LOC_URL(c[0], a_slug), c[1]) for c in others])),
-            section(title_block(f'Other legal help in {c_name}') + link_list([(LOC_URL(c_slug, x), LOCAL_NAME[x]) for x in MC.LOCAL_AREAS if x != a_slug] + [(AREA_URL('immigration'), 'Immigration advisers (UK wide)')])),
+            cs_links(f'{LOCAL_NAME[a_slug]} in other places', [(LOC_URL(c[0], a_slug), c[1]) for c in others]),
+            cs_links(f'Other legal help in {c_name}', [(LOC_URL(c_slug, x), LOCAL_NAME[x]) for x in MC.LOCAL_AREAS if x != a_slug] + [(AREA_URL('immigration'), 'Immigration advisers (UK wide)')]),
         ])
         page(f'{PUB}{url}.html', f'{LOCAL_NAME[a_slug]} in {c_name} | {BRAND}',
              f'{LOCAL_NAME[a_slug]} in {c_name}. Answer a few quick questions and we will introduce you to a regulated firm covering {c_name} and {region}. Free, no obligation.',
@@ -110,10 +114,16 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
                    ['Free to use, no obligation', 'One regulated firm, not a list', 'Seven areas of law'],
                    '<a href="/apply" class="button"><div>Get matched</div></a>', PH.photo('golden-street' if ci % 2 else 'street')),
         TRUST_STRIP,
-        section(title_block(f'Legal help in {c_name}', 'Pick the kind of help you need.')
+        cs_intro(f'Legal help in {c_name}', [
+            f'Whether you are moving home in {c_name}, going through a separation, facing a motoring charge, chasing an unpaid invoice or sorting out a licence, {BRAND} can introduce you to a regulated law firm that handles your kind of matter.',
+            f'We cover {c_name}, {", ".join(nearby[:-1])}, {nearby[-1]} and the rest of {region}. Many of the firms we work with have offices in the area, and most can also work with you by phone, email or video, so you don’t need to travel.',
+            'You answer a few quick questions once, instead of ringing round. We pass your enquiry to one firm, never a list, and the firm contacts you to talk through your matter and explain their fees. It is free to use and there is no obligation.'],
+            [('Covering', f'{c_name} and {region}'), ('Areas of law', 'Seven, including conveyancing, family law and motoring offences'), ('Who contacts you', 'One regulated law firm'), ('Cost to use Leaflegal', 'Free, with no obligation')]),
+        section(f'<h2 class="cs-h2 cs-center">Pick the help you need</h2>'
                 + cards([(AREA[x]['icon'], LOCAL_NAME[x], AREA[x]['short'], LOC_URL(c_slug, x)) for x in MC.LOCAL_AREAS]
-                        + [('globe', 'Immigration advisers', 'Introductions to regulated immigration advisers, wherever you are in the UK.', AREA_URL('immigration'))], 'three', more_label='Learn more')),
-        section(title_block('Other places we cover') + link_list([(CITY_URL(c[0]), c[1]) for c in others])),
+                        + [('globe', 'Immigration advisers', 'Introductions to regulated immigration advisers, wherever you are in the UK.', AREA_URL('immigration'))], 'three', more_label='Learn more'), cls='section cs-sec'),
+        cs_steps('How it works', [('Tell us what you need', 'Answer a few quick questions about your matter. It takes about two minutes.'), ('We introduce one firm', f'We pass your enquiry to one regulated firm that covers {c_name} and handles your kind of matter.'), ('The firm contacts you', 'They talk through your matter and explain their fees. You decide whether to go ahead.')], '/apply', lead='Free to use, with no obligation.'),
+        cs_links('Other places we cover', [(CITY_URL(c[0]), c[1]) for c in others]),
         cta(f'Find a solicitor in {c_name}', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched'),
     ])
     page(f'{PUB}/solicitors/{c_slug}.html', f'Free Introductions to Solicitors in {c_name} | {BRAND}',

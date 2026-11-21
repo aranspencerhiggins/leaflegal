@@ -138,9 +138,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=39', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=40', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=39" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=40" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -335,6 +335,7 @@ def footer_html(strip=True, minimal=False):
 
 # ---------------------------------------------------------------- header (two tiers: audience bar + main menu)
 exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build_menus.py')).read())  # CLIENT_MENU, PARTNER_MENU, matter/location data
+exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'client_sections.py')).read())  # richer client page sections
 
 
 PLOGO_ANIM = ('<span class="llb-logo-tag">Partners</span><video class="llb-logo-vid" muted loop playsinline preload="auto" aria-hidden="true"></video>'
@@ -466,17 +467,21 @@ for a in AC.AREAS:
     notice = ('<p class="ll-note">Leaflegal is not regulated to give immigration advice and does not do so. Any advice about your situation comes from the regulated firm we introduce you to.</p>'
               if a.get('referral_only') else '')
     others = [x for x in AC.AREAS if x['slug'] != a['slug']][:6]
+    imm_a = bool(a.get('referral_only'))
+    glance = [('Who it is for', AREA_EXTRA[a['slug']]['who']), ('Who contacts you', 'One regulated immigration firm or adviser' if imm_a else 'One regulated law firm'),
+              ('Where', 'Across the UK' if imm_a else ('Businesses in England and Wales' if a.get('business_only') else 'England and Wales')),
+              ('Matters covered', f'{len(MAT[a["slug"]])} types, from {MAT[a["slug"]][0]["name"].lower()} to {MAT[a["slug"]][-1]["name"].lower()}'), ('Cost to use Leaflegal', 'Free, with no obligation')]
     body = ''.join([
         head, TRUST_STRIP,
-        section(title_block(f'About {a["name"].lower()}') + prose(a['intro']) + notice),
-        section('<div id="matters"></div>' + title_block('What the firms help with', 'Pick your matter to find out more.') + cards([(a['icon'], m['name'], m['short'], M_URL(a['slug'], m['slug'])) for m in MAT[a['slug']]], 'three', more_label='Learn more')),
-        '<div id="how"></div>',
-        section(title_block('How it works') + accordion(a['how'], numbered=True), cls='section ll-tight'),
-        section(title_block('Things to know') + tabs('cons', [(t, f'<h3>{t}</h3><p>{d}</p>') for t, d in a['considerations']])),
+        cs_intro(f'About {a["name"].lower()}', a['intro'] + [AREA_EXTRA[a['slug']]['more']], glance, notice),
+        section('<div id="matters"></div><h2 class="cs-h2 cs-center">What the firms help with</h2>' + cards([(a['icon'], m['name'], m['short'], M_URL(a['slug'], m['slug'])) for m in MAT[a['slug']]], 'three', more_label='Learn more'), cls='section cs-sec'),
+        cs_steps('How it works', a['how'], q, lead='Three simple steps, and nothing to pay us.'),
+        cs_fees(a['slug'], a['name']),
+        cs_things(a['considerations']),
         faq(a['faqs'], 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched', title=f'{a["name"]} questions and answers'),
-        section(title_block(f'{LOCAL_NAME[a["slug"]]} near you') + ''.join(f'<ul class="ll-linkgrid">' + ''.join(f'<li><a href="{LOC_URL(c[0], a["slug"])}">{c[1]}{ARR}</a></li>' for c in MC.CITIES) + '</ul>')) if a['slug'] in MC.LOCAL_AREAS else '',
-        section(title_block('Guides') + ''.join(f'<ul class="ll-linkgrid">' + ''.join(f'<li><a href="/guides/{g["slug"]}">{g["h1"]}{ARR}</a></li>' for g in AREA_GUIDES[a['slug']]) + '</ul>')) if a['slug'] in AREA_GUIDES else '',
-        section(title_block('Other legal services') + area_cards(others)),
+        cs_guides(a['slug'], AREA_GUIDES.get(a['slug'], [])),
+        cs_links(f'{LOCAL_NAME[a["slug"]]} near you', [(LOC_URL(c[0], a['slug']), c[1]) for c in MC.CITIES]) if a['slug'] in MC.LOCAL_AREAS else '',
+        section('<h2 class="cs-h2 cs-center">Other legal services</h2>' + area_cards(others), cls='section cs-sec'),
     ])
     page(f'{PUB}/legal-services/{a["slug"]}.html', a['title'], a['desc'], compact(body), ld(faq_ld(a['faqs']), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>', backup=False)
 
