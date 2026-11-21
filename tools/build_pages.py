@@ -340,13 +340,13 @@ exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build_menus.
 PLOGO_ANIM = ('<span class="llb-logo-tag">Partners</span><video class="llb-logo-vid" muted loop playsinline preload="auto" aria-hidden="true"></video>'
   '<script>(function(){var a=document.currentScript.parentNode;if(matchMedia("(prefers-reduced-motion: reduce)").matches){a.classList.add("noanim");return}'
   'var v=a.querySelector("video"),u=navigator.userAgent,h=/iP(hone|ad|od)/.test(u)||(/Safari/.test(u)&&!/Chrome|Chromium|Edg|Firefox|OPR/.test(u));'
-  'if(h){a.classList.add("noanim");return}v.src="/assets/logo-anim/leaflegal-partners-dark.webm";'
+  'v.src="/assets/logo-anim/leaflegal-partners-dark"+(h?"-hevc.mov":".webm");'
   'var want="L",first=1,seen=performance.now(),busy=0;function go(){var p=v.play();p&&p.catch(function(e){if(e.name!="AbortError"&&!a.classList.contains("anim"))a.classList.add("noanim")})}'
   'function tick(){var t=v.currentTime,n=performance.now();if(!busy&&!v.paused&&(want=="L"?t<.62||t>=2.65:t>=1.05&&t<2.22)){'
   'var rem=want=="P"?2.22-t:(t>=2.65?3.6-t+.62:.62-t),ms=Math.max(0,(want=="P"?4000:first?2000:4500)-(n-seen)-rem*1000);'
   'busy=1;v.pause();first=0;setTimeout(function(){var c=v.currentTime;seen=performance.now()+1000*(want=="L"?(c<.62?1.05-c:3.6-c+1.05):2.65-c);want=want=="L"?"P":"L";busy=0;go()},ms)}requestAnimationFrame(tick)}'
   'v.addEventListener("playing",function(){a.classList.add("anim")},{once:true});v.addEventListener("error",function(){a.classList.add("noanim")});go();requestAnimationFrame(tick)})()</script>')
-# Safari gets the static logo until a HEVC-with-alpha .mov exists (then swap the noanim line for the -hevc.mov source, as LoanLeaf does).
+# Safari plays the HEVC-with-alpha .mov, everything else the webm.
 
 
 def header_b(page=''):
