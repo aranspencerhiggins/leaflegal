@@ -304,7 +304,7 @@ NOTE = (f'{BRAND} is a trading name of Vertical Brands Ltd. We are not a law fir
         'We receive a fee from the firm we introduce you to, which does not change what the firm charges you, and the firm will tell you about it in writing. '
         'We do not give immigration advice or provide immigration services. Immigration enquiries are only passed to firms and advisers regulated to give immigration advice. '
         'We do not handle personal injury, clinical negligence, housing disrepair or financial claims.')
-COPY = f'© 2026 Vertical Brands Ltd. {BRAND} is a trading name of Vertical Brands Ltd, registered in England and Wales, company number 14254961. VAT number GB425344608. Registered office: 20–22 Wenlock Road, London, N1 7GU.'
+COPY = f'© 2026 Vertical Brands Ltd. {BRAND} is a trading name of Vertical Brands Ltd, registered in England and Wales, company number 14254961. VAT number GB425344608. Registered office at 20–22 Wenlock Road, London, N1 7GU.'
 
 
 def footer_html(strip=True, minimal=False):
@@ -484,7 +484,7 @@ hub = (page_head('Legal services', 'The areas of law we introduce people and bus
        + TRUST_STRIP + section(area_cards())
        + section(title_block('Not sure which you need?', 'You don’t have to know. Tell us what is happening and we will introduce you to a firm that can help.')
                  + '<div class="ll-actions" style="justify-content:center"><a href="/apply" class="button"><div>Get matched</div></a><a href="/how-it-works" class="button bg-base-50"><div>How it works</div></a></div>'))
-page(f'{PUB}/legal-services.html', f'Legal Services: Find a Specialist Solicitor | {BRAND}',
+page(f'{PUB}/legal-services.html', f'Legal Services from Specialist Solicitors | {BRAND}',
      'Conveyancing, family law, debt recovery, motoring offences, licensing, lease extensions and introductions to regulated immigration lawyers. Free to use.', hub, backup=False)
 
 # ---------------------------------------------------------------- how it works
@@ -527,8 +527,8 @@ hiw = ''.join([
 ])
 howto_ld = {'@context': 'https://schema.org', '@type': 'HowTo', 'name': f'How to find a solicitor with {BRAND}', 'totalTime': 'PT2M',
             'step': [{'@type': 'HowToStep', 'position': i, 'name': t, 'text': d} for i, (t, d) in enumerate(HIW_STEPS, 1)]}
-page(f'{PUB}/how-it-works.html', f'How It Works: Find a Solicitor in 3 Steps | {BRAND}',
-     f'How {BRAND} works: answer a few quick questions, get introduced to one regulated law firm and talk through your matter. Free, no obligation.',
+page(f'{PUB}/how-it-works.html', f'How It Works, Find a Solicitor in 3 Steps | {BRAND}',
+     f'How {BRAND} works. Answer a few quick questions, get introduced to one regulated law firm and talk through your matter. Free, no obligation.',
      compact(hiw), ld(howto_ld, faq_ld(HIW_FAQ)), backup=False)
 
 # ---------------------------------------------------------------- partners (law firms): /partners and /partners/apply
@@ -654,13 +654,13 @@ doc_page(f'{PUB}/accessibility.html', f'Accessibility Statement | {BRAND}',
 ])
 
 doc_page(f'{PUB}/press.html', f'Press and Media | {BRAND}',
-    f'Press and media information for {BRAND}: company boilerplate, brand assets and contact details for journalists and partners.',
+    f'Press and media information for {BRAND}, with company boilerplate, brand assets and contact details for journalists and partners.',
     'Press and media', f'Information for journalists, partners and anyone writing about {BRAND}.', [
     ('h2', f'About {BRAND}'),
     ('p', f'{BRAND} is a legal introduction service for people and businesses in England and Wales. People answer a short set of questions about their matter, and {BRAND} introduces each enquiry to one regulated law firm that handles that kind of work. The service is free for clients. {BRAND} is a trading name of Vertical Brands Ltd.'),
     ('h2', 'Brand assets'),
     ('ul', [f'<a href="{LOGO_DARK}" download>Logo, deep green (SVG)</a>', f'<a href="{LOGO_LIGHT}" download>Logo, white (SVG)</a>']),
-    ('p', f'Please write the name as one word: <strong>{BRAND}</strong>. Don’t alter, recolour or stretch the logo.'),
+    ('p', f'Please write the name as one word, <strong>{BRAND}</strong>. Don’t alter, recolour or stretch the logo.'),
     ('h2', 'Media enquiries'),
     ('p', f'Email <a href="mailto:{EMAIL}?subject=Media%20enquiry">{EMAIL}</a> with “Media enquiry” in the subject and we will get back to you within one working day.'),
 ])

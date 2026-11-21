@@ -36,7 +36,7 @@ for a_slug, matters in MAT.items():
     for i, mt in enumerate(matters):
         url = M_URL(a_slug, mt['slug'])
         q = f'/apply?area={quote(a["form"])}'
-        h1 = mt['name'] + (': introductions to regulated advisers' if imm else ' solicitors' if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not mt['name'].endswith('s') else '')
+        h1 = mt['name'] + (', with introductions to regulated advisers' if imm else ' solicitors' if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not mt['name'].endswith('s') else '')
         h1 = mt['name'] if a_slug in ('conveyancing', 'lease-extensions') else h1
         ticks = ['Free to use, no obligation', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
                  'For businesses in England and Wales' if a.get('business_only') else 'Across the UK' if imm else 'For matters in England and Wales']
@@ -95,12 +95,12 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
             section(title_block('What the firms help with') + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in MAT[a_slug]], 'three', more_label='Learn more')),
             '<div id="how"></div>',
             section(title_block('How it works') + accordion(a['how'], numbered=True), cls='section ll-tight'),
-            faq(faqs, 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched', title=f'{a["name"]} in {c_name}: questions and answers'),
+            faq(faqs, 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched', title=f'{a["name"]} in {c_name}, questions and answers'),
             section(title_block(f'{LOCAL_NAME[a_slug]} in other places') + link_list([(LOC_URL(c[0], a_slug), c[1]) for c in others])),
             section(title_block(f'Other legal help in {c_name}') + link_list([(LOC_URL(c_slug, x), LOCAL_NAME[x]) for x in MC.LOCAL_AREAS if x != a_slug] + [(AREA_URL('immigration'), 'Immigration advisers (UK wide)')])),
         ])
         page(f'{PUB}{url}.html', f'{LOCAL_NAME[a_slug]} in {c_name} | {BRAND}',
-             f'{LOCAL_NAME[a_slug]} in {c_name}: answer a few quick questions and we will introduce you to a regulated firm covering {c_name} and {region}. Free, no obligation.',
+             f'{LOCAL_NAME[a_slug]} in {c_name}. Answer a few quick questions and we will introduce you to a regulated firm covering {c_name} and {region}. Free, no obligation.',
              compact(body), f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld(faqs), crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)), (a['name'], url))),
              '<script src="/assets/tabs.js?v=2"></script>', backup=False)
         _count['local'] += 1
@@ -116,8 +116,8 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         section(title_block('Other places we cover') + link_list([(CITY_URL(c[0]), c[1]) for c in others])),
         cta(f'Find a solicitor in {c_name}', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched'),
     ])
-    page(f'{PUB}/solicitors/{c_slug}.html', f'Solicitors in {c_name}: Free Introductions | {BRAND}',
-         f'Find a solicitor in {c_name}: conveyancing, family law, motoring offences, licensing, debt recovery and lease extensions. Free introductions to regulated firms.',
+    page(f'{PUB}/solicitors/{c_slug}.html', f'Free Introductions to Solicitors in {c_name} | {BRAND}',
+         f'Find a solicitor in {c_name} for conveyancing, family law, motoring offences, licensing, debt recovery and lease extensions. Free introductions to regulated firms.',
          compact(hub), f'<link rel="canonical" href="{SITE}{CITY_URL(c_slug)}"/>' + ld(crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)))), backup=False)
     _count['hub'] += 1
 
@@ -139,7 +139,7 @@ for gd in CG.GUIDES:
     doc_page(f'{PUB}/guides/{gd["slug"]}.html', gd['title'], gd['desc'], gd['h1'], gd['lead'], blocks, aside=aside)
     _count['guide'] += 1
 _gcards = ''.join(f'<a class="ll-pcard" href="/guides/{gd["slug"]}"><img src="{area_img(gd["area"], i)}" alt="" loading="lazy"/><div><span class="ll-gcat">{AREA[gd["area"]]["name"]}</span><b>{gd["h1"]}</b><p>{gd["lead"]}</p></div></a>' for i, gd in enumerate(CG.GUIDES))
-page(f'{PUB}/guides.html', f'Legal Guides: Property, Family, Immigration and More | {BRAND}',
+page(f'{PUB}/guides.html', f'Legal Guides for Property, Family, Immigration and More | {BRAND}',
      'Plain English guides to conveyancing, leasehold, divorce, choosing an immigration adviser and motoring hearings. General information, not legal advice.',
      page_head('Guides', 'Plain English guides to common legal questions. General information, not legal advice.') + f'<section class="ll-docsec"><div class="ll-guides"><div class="ll-ggrid">{_gcards}</div></div></section>'
      + cta('Need help with your matter?', 'Answer a few quick questions and we will introduce you to a specialist.', '/apply', 'Get matched'), backup=False)
@@ -152,7 +152,7 @@ _ph = [0]
 def ph_hero(h1, lead, ticks=None, btns=None, img=None):
     img = img or PH_POOL[_ph[0] % len(PH_POOL)]
     _ph[0] += 1
-    return hero_split(h1, lead, ticks or ['Exclusive: each enquiry goes to one firm', 'Pre-screened, with paid help confirmed', 'Sent to your inbox or CRM while fresh'],
+    return hero_split(h1, lead, ticks or ['Exclusive, with each enquiry sent to one firm', 'Pre-screened, with paid help confirmed', 'Sent to your inbox or CRM while fresh'],
                       btns or '<a href="/partners/apply" class="button"><div>Become a partner firm</div></a><a href="/partners/how-it-works" class="ll-ghost-light">How it works</a>', img)
 
 
@@ -199,7 +199,7 @@ for a in AC.AREAS:
     base = f'/partners/{al["slug"]}'
     mlinks = [(f'{base}/{m["slug"]}', f'{m["name"]} leads') for m in MAT[s]]
     d = {'h1': al['h1'], 'title': f'{al["kw"]} for Solicitors | Exclusive, Pay Per Lead | {BRAND}',
-         'description': f'{al["kw"]} for UK law firms: exclusive, pre-screened {nm.lower()} enquiries, sent to one firm only. Pay per lead, minimum 10 a month.',
+         'description': f'{al["kw"]} for UK law firms. Exclusive, pre-screened {nm.lower()} enquiries, sent to one firm only. Pay per lead, minimum 10 a month.',
          'summary': f'{BRAND} generates exclusive {nm.lower()} enquiries from people and businesses who have asked to speak to a solicitor. {short}',
          'sections': [(f'What {nm.lower()} enquiries look like', [detail]),
                       ('What’s in every lead', [{'list': al['fields'] + ['Verified UK mobile and email', 'Recorded consent to be contacted']}]),
@@ -229,13 +229,13 @@ for a in AC.AREAS:
 
 # partner guides hub and FAQ
 _pg = ''.join(f'<a class="ll-pcard" href="/partners/{d["slug"]}"><img src="{PH_POOL[i % len(PH_POOL)]}" alt="" loading="lazy"/><div><span class="ll-gcat">Guide for law firms</span><b>{d["h1"]}</b><p>{d["summary"]}</p></div></a>' for i, d in enumerate(PS.GUIDES))
-page(f'{PUB}/partners/guides.html', f'Guides for Law Firms: Converting Legal Enquiries | {BRAND}',
-     'Practical guides for solicitors: speed to lead, first call scripts, converting and following up legal enquiries, and marketing by practice area.',
+page(f'{PUB}/partners/guides.html', f'Guides for Law Firms on Converting Legal Enquiries | {BRAND}',
+     'Practical guides for solicitors on speed to lead, first call scripts, converting and following up legal enquiries, and marketing by practice area.',
      page_head('Guides for law firms', 'Practical help for turning legal enquiries into instructions.') + f'<section class="ll-docsec"><div class="ll-guides"><div class="ll-ggrid">{_pg}</div></div></section>'
      + cta('Ready for exclusive enquiries?', 'Book a call and see a sample lead.', '/partners/apply', 'Become a partner firm'),
      f'<link rel="canonical" href="{SITE}/partners/guides"/>', header='PARTNERS_HEADER', backup=False)
 page(f'{PUB}/partners/faq.html', f'Questions and Answers for Law Firms | {BRAND}',
-     'Answers for solicitors about Leaflegal leads: exclusivity, matching, pricing, delivery, compliance and lead quality.',
+     'Answers for solicitors about Leaflegal leads, covering exclusivity, matching, pricing, delivery, compliance and lead quality.',
      page_head('Questions and answers', 'Everything firms ask about Leaflegal leads.') + section(faq_tabs(LC.FAQ_GROUPS), cls='section ll-compact')
      + cta('Still have a question?', 'Book a call with our team.', '/partners/apply', 'Book a call'),
      f'<link rel="canonical" href="{SITE}/partners/faq"/>' + ld(faq_ld(LC.FAQ)), '<script src="/assets/tabs.js?v=2"></script>', header='PARTNERS_HEADER', backup=False)
