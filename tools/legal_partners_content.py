@@ -4,13 +4,13 @@
 # housing disrepair and financial mis-selling / car finance claims (FCA-regulated claims management).
 
 TITLE = 'Legal Leads for Solicitors & Law Firms | Pay Per Lead | Leaflegal'
-DESC = ('Exclusive, pre-screened client enquiries for solicitors and law firms: conveyancing, family law, debt recovery, motoring offences, '
+DESC = ('Exclusive, pre-screened client enquiries for solicitors and law firms in conveyancing, family law, debt recovery, motoring offences, '
         'licensing, lease extensions and immigration. Pay per lead, sent to you while the enquiry is fresh.')
 
 HERO_H1 = 'Client enquiries for solicitors and law firms'
 HERO_LEAD = 'Exclusive, pre-screened leads from people and businesses looking for paid legal help. Pay per lead, sent to you while the enquiry is fresh.'
 HERO_TICKS = [
-    'Exclusive: each enquiry goes to one firm',
+    'Exclusive, with each enquiry sent to one firm',
     'Seven practice areas, matched to what you do',
     'Verified UK mobile number and email address',
     'Recorded consent to be contacted by your firm',
@@ -19,7 +19,7 @@ HERO_TICKS = [
 INTRO_H2 = 'New client enquiries, without running the ads yourself'
 INTRO = [
     'Winning new private clients is expensive. Legal keywords are among the costliest in paid search, directory listings send the same enquiry to several firms, and most people don’t know which kind of solicitor they need until someone asks them the right questions. Leaflegal runs the campaigns, asks those questions and sends you finished enquiries from people who have asked to speak to a solicitor about their matter.',
-    'Our campaigns run on social media, search and content, aimed at the moments people need legal help: a house move, a relationship ending, a visa running out, a court summons, an invoice that hasn’t been paid, a licence review or a lease getting short. Each person answers a short series of questions about their situation, how urgent it is and where they are, and confirms they are looking for paid legal help rather than free advice.',
+    'Our campaigns run on social media, search and content, aimed at the moments people need legal help, like a house move, a relationship ending, a visa running out, a court summons, an invoice that hasn’t been paid, a licence review or a lease getting short. Each person answers a short series of questions about their situation, how urgent it is and where they are, and confirms they are looking for paid legal help rather than free advice.',
     'When an enquiry matches the practice areas and locations you cover, we send it to you, and only you, as soon as it is submitted. You get every answer, checked contact details and a record of the consent they gave, so your first call can be about their matter, not about who you are or why you are calling.',
 ]
 
@@ -28,16 +28,16 @@ AREAS_LEAD = 'Choose the areas your firm handles. We only send you enquiries tha
 # (icon, name, short card text, detail paragraph, typical matters)
 AREAS = [
     ('property', 'Conveyancing', 'Purchases, sales, remortgages and transfers of equity.',
-     'Conveyancing enquiries come from people at a clear point of decision: an offer accepted, a sale agreed or a remortgage due. They want a quote and a firm that answers the phone. Our enquiries tell you whether it is a purchase, sale or both, the rough property value and whether it is leasehold, so you can quote on the first call.',
+     'Conveyancing enquiries come from people at a clear point of decision, such as an offer accepted, a sale agreed or a remortgage due. They want a quote and a firm that answers the phone. Our enquiries tell you whether it is a purchase, sale or both, the rough property value and whether it is leasehold, so you can quote on the first call.',
      ['Purchases and sales', 'Sale and purchase together', 'Remortgages', 'Transfers of equity', 'Leasehold purchases']),
-    ('globe', 'Immigration', 'Introductions only: family visas, settlement, citizenship, work visas and appeals.',
-     'Immigration clients are often working to a deadline and pay privately. Leaflegal does not give immigration advice: our form asks only for the type of matter, urgency and contact details, and every enquiry goes to a firm or adviser regulated to give immigration advice. Everything about eligibility and routes comes from you.',
+    ('globe', 'Immigration', 'Introductions only, for family visas, settlement, citizenship, work visas and appeals.',
+     'Immigration clients are often working to a deadline and pay privately. Leaflegal does not give immigration advice. Our form asks only for the type of matter, urgency and contact details, and every enquiry goes to a firm or adviser regulated to give immigration advice. Everything about eligibility and routes comes from you.',
      ['Family and partner visas', 'Settlement and indefinite leave to remain', 'British citizenship', 'Work and business visas', 'Refusals and appeals']),
     ('heart', 'Family law', 'Divorce, finances on separation and child arrangements.',
      'People going through a separation want to understand their options quickly and usually want to speak to someone the same day. Since legal aid for most private family matters was withdrawn, most clients pay privately, which makes family enquiries some of the most valuable we generate.',
      ['Divorce and dissolution', 'Financial settlements and consent orders', 'Child arrangements', 'Cohabitation disputes', 'Prenuptial and postnuptial agreements']),
     ('cash', 'Debt recovery', 'Unpaid invoices and commercial debts owed to businesses.',
-     'Business owners chasing unpaid invoices want a firm that acts quickly and charges clearly. Every debt recovery enquiry is business to business: we don’t send consumer debts. You get the rough amount owed, how old the debt is and whether it is disputed.',
+     'Business owners chasing unpaid invoices want a firm that acts quickly and charges clearly. Every debt recovery enquiry is business to business. We don’t send consumer debts. You get the rough amount owed, how old the debt is and whether it is disputed.',
      ['Letters before action', 'County Court and High Court claims', 'Statutory demands', 'Winding up petitions', 'Enforcement']),
     ('car', 'Motoring offences', 'Drink driving, speeding, totting up and driving bans.',
      'People facing a driving ban are highly motivated. Their job or business often depends on keeping their licence, they have a court date and they are prepared to pay privately for representation. These enquiries tend to convert quickly because the deadline is fixed.',
@@ -51,7 +51,7 @@ AREAS = [
 ]
 
 LEAD_CONTENTS_TEXT = ('Each lead is the complete record of what the client told us, in the order they told us. There is no scraped data and no '
-                      'guesswork: just the answers someone gave when they asked to speak to a solicitor.')
+                      'guesswork, just the answers someone gave when they asked to speak to a solicitor.')
 LEAD_CONTENTS = [
     ('target', 'Practice area and matter', 'The area of law, the type of matter and a short description in the client’s own words.'),
     ('clock', 'Urgency', 'How soon they need help, including any deadline, hearing or court date they know about.'),
@@ -92,7 +92,7 @@ PRICING_H2 = 'How pay per lead works'
 PRICING = [
     'You pay for each lead we deliver to you, at a price agreed with you before you start. There are no shared or recycled enquiries. You know exactly what each lead costs, so you can measure your return against the instructions you win.',
     'Pricing depends on the practice areas and locations you choose. A contested family finances enquiry is worth more to a firm than a simple remortgage, and a narrow area around one office produces fewer matches than national coverage, so each is priced accordingly. We will talk this through with you and put a proposal together.',
-    'You stay in control of volume. The minimum is 10 leads per month; above that, tell us how many leads your team can handle each month and we will match to that number, so you are never flooded with enquiries you can’t call back quickly. If you want more, or need to pause, just let us know.',
+    'You stay in control of volume. The minimum is 10 leads per month. Above that, tell us how many leads your team can handle each month and we will match to that number, so you are never flooded with enquiries you can’t call back quickly. If you want more, or need to pause, just let us know.',
     'Billing, volumes and any rules about invalid leads are set out in your partner agreement before your first lead is delivered, so there are no surprises.',
 ]
 

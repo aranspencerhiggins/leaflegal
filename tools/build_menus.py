@@ -24,7 +24,7 @@ def _area_sub(a):
         groups.append(('Across the UK', [(AREA_URL(a) + '#how', 'How introductions work'), ('/guides/choosing-an-immigration-adviser', 'Choosing a regulated adviser')]))
     gl = [(f'/guides/{g["slug"]}', g['h1']) for g in AREA_GUIDES.get(a, [])]
     groups.append(('Guides' if gl else 'Get started', gl or [('/apply', 'Answer a few questions'), ('/how-it-works', 'How it works')]))
-    return {'head': (AREA_URL(a), f'{AREA[a]["name"]}: overview'), 'groups': groups}
+    return {'head': (AREA_URL(a), f'{AREA[a]["name"]} overview'), 'groups': groups}
 
 
 def area_mega(label, slugs, card):
@@ -65,7 +65,7 @@ p_how = mega('How it works', _pp(P_INFO), {'s': P_START},
              _card('partner-call', 'Exclusive enquiries, sent while fresh', 'Each lead goes to one firm only, with every answer and the consent record.', '/partners/apply', 'Book a call'), foot=('/partners/apply', 'Book a call'))
 AL = PS.AREA_LEADS
 p_leads = mega('Leads', [(f'/partners/{AL[a["slug"]]["slug"]}', AL[a['slug']]['kw'], a['slug']) for a in AC.AREAS],
-               {a['slug']: {'head': (f'/partners/{AL[a["slug"]]["slug"]}', f'{AL[a["slug"]]["kw"]}: overview'),
+               {a['slug']: {'head': (f'/partners/{AL[a["slug"]]["slug"]}', f'{AL[a["slug"]]["kw"]} overview'),
                             'groups': [('By matter type', [(f'/partners/{AL[a["slug"]]["slug"]}/{m["slug"]}', f'{m["name"]} leads') for m in MAT[a['slug']]])]} for a in AC.AREAS},
                None, foot=('/partners/apply', 'Become a partner firm'))
 P_PILLARS = [d['slug'] for d in PS.PILLARS]

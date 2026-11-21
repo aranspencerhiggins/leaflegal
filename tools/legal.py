@@ -4,11 +4,11 @@ import re
 
 EFFECTIVE = '4 November 2026'
 CO = ('<strong>Vertical Brands Ltd</strong>, registered in England and Wales, '
-      'company number 14254961. Registered office: 20–22 Wenlock Road, London, N1 7GU, United Kingdom. '
-      'Email: <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.')
+      'company number 14254961. Registered office at 20–22 Wenlock Road, London, N1 7GU, United Kingdom. '
+      'Email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.')
 
 PRIVACY = f'''
-<p><strong>Last updated: {EFFECTIVE}</strong></p>
+<p><strong>Last updated {EFFECTIVE}</strong></p>
 <p>This policy explains how Leaflegal collects, uses and shares your personal information when you use leaflegal.co and our legal enquiry form. Please read it together with our <a href="/terms-conditions">Terms of Service</a>.</p>
 
 <h2>1. Who we are</h2>
@@ -17,16 +17,16 @@ PRIVACY = f'''
 <p>Leaflegal is an introduction service. We are <strong>not</strong> a law firm, we do <strong>not</strong> give legal advice, and we are <strong>not</strong> regulated by the Solicitors Regulation Authority (SRA). With your permission, we pass your enquiry to one independent, regulated law firm that may be able to help you.</p>
 
 <h2>2. The information we collect</h2>
-<p>When you complete our enquiry form, we collect:</p>
+<p>When you complete our enquiry form, we collect the following information.</p>
 <ul>
-<li><strong>Contact details:</strong> your first and last name, email address and mobile number, and your business name if the enquiry is for a business.</li>
-<li><strong>Details about your matter:</strong> the area of law, the type of matter, how urgent it is, your postcode, whether you are able to pay privately for legal help, and a short summary if you choose to give one.</li>
-<li><strong>Records of your consent:</strong> the wording you agreed to (including the boxes you ticked) and when.</li>
+<li><strong>Contact details.</strong> your first and last name, email address and mobile number, and your business name if the enquiry is for a business.</li>
+<li><strong>Details about your matter.</strong> the area of law, the type of matter, how urgent it is, your postcode, whether you are able to pay privately for legal help, and a short summary if you choose to give one.</li>
+<li><strong>Records of your consent.</strong> the wording you agreed to (including the boxes you ticked) and when.</li>
 </ul>
-<p>When you visit the website, we and our service providers also collect:</p>
+<p>When you visit the website, we and our service providers also collect the following information.</p>
 <ul>
-<li><strong>Technical and usage information:</strong> your IP address, browser and device type, pages visited, the website or advert that referred you, and campaign tags in the web address.</li>
-<li><strong>Cookie information:</strong> see our <a href="/cookie-policy">Cookie Policy</a>.</li>
+<li><strong>Technical and usage information.</strong> your IP address, browser and device type, pages visited, the website or advert that referred you, and campaign tags in the web address.</li>
+<li><strong>Cookie information.</strong> see our <a href="/cookie-policy">Cookie Policy</a>.</li>
 </ul>
 <p>We do not collect information from anyone under 18.</p>
 
@@ -51,10 +51,10 @@ PRIVACY = f'''
 
 <h2>5. Our legal reasons for using your information</h2>
 <ul>
-<li><strong>Consent:</strong> we share your enquiry with a law firm only if you tick the box agreeing to it. We use the Meta Pixel and the LinkedIn Insight Tag in your browser only if you accept marketing cookies. You can withdraw your consent at any time (see section 11, or use the Cookie settings link at the bottom of every page).</li>
-<li><strong>Explicit consent:</strong> for special category and criminal offence data, as explained in section 3.</li>
-<li><strong>Legitimate interests:</strong> we use your contact details and technical information to run our service, check the quality of enquiries, measure how well our advertising works, prevent fraud, keep records and defend legal claims. We only do this where it does not override your rights.</li>
-<li><strong>Legal obligation:</strong> where the law requires us to keep or share information.</li>
+<li><strong>Consent.</strong> we share your enquiry with a law firm only if you tick the box agreeing to it. We use the Meta Pixel and the LinkedIn Insight Tag in your browser only if you accept marketing cookies. You can withdraw your consent at any time (see section 11, or use the Cookie settings link at the bottom of every page).</li>
+<li><strong>Explicit consent.</strong> for special category and criminal offence data, as explained in section 3.</li>
+<li><strong>Legitimate interests.</strong> we use your contact details and technical information to run our service, check the quality of enquiries, measure how well our advertising works, prevent fraud, keep records and defend legal claims. We only do this where it does not override your rights.</li>
+<li><strong>Legal obligation.</strong> where the law requires us to keep or share information.</li>
 </ul>
 
 <h2>6. Who we share your information with</h2>
@@ -83,15 +83,15 @@ PRIVACY = f'''
 <p>We use appropriate technical and organisational measures to protect your information, including encrypted connections (HTTPS) and limiting who can access it. No method of sending or storing data is completely secure, but we work to protect your information and to deal promptly with any security incident.</p>
 
 <h2>11. Your rights</h2>
-<p>Under UK data protection law you have the right to:</p>
+<p>Under UK data protection law you have the following rights.</p>
 <ul>
-<li>ask for a copy of the information we hold about you;</li>
-<li>ask us to correct information that is wrong or incomplete;</li>
-<li>ask us to delete your information;</li>
-<li>ask us to restrict or stop using your information;</li>
-<li>object to us using your information for our legitimate interests, or for direct marketing;</li>
-<li>ask us to send your information to you or another organisation in a reusable format; and</li>
-<li>withdraw your consent at any time.</li>
+<li>Ask for a copy of the information we hold about you.</li>
+<li>Ask us to correct information that is wrong or incomplete.</li>
+<li>Ask us to delete your information.</li>
+<li>Ask us to restrict or stop using your information.</li>
+<li>Object to us using your information for our legitimate interests, or for direct marketing.</li>
+<li>Ask us to send your information to you or another organisation in a reusable format.</li>
+<li>Withdraw your consent at any time.</li>
 </ul>
 <p>To use any of these rights, email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>. We will respond within one month. If you withdraw your consent after we have shared your enquiry, we will tell the firm you no longer want to be contacted. You should also contact the firm directly, because it controls its own copy of your information.</p>
 <p>If you are unhappy with how we have handled your information, please tell us first. You also have the right to complain to the Information Commissioner's Office (ICO) at <a href="https://ico.org.uk" target="_blank" rel="noopener">ico.org.uk</a> or on 0303 123 1113.</p>
@@ -104,7 +104,7 @@ PRIVACY = f'''
 '''
 
 TERMS = f'''
-<p><strong>Last updated: {EFFECTIVE}</strong></p>
+<p><strong>Last updated {EFFECTIVE}</strong></p>
 <p>These terms apply when you use leaflegal.co and our legal enquiry service. By using the website or submitting an enquiry, you agree to these terms and to our <a href="/privacy-policy">Privacy Policy</a>. If you do not agree, please do not use our website or service.</p>
 
 <h2>1. About us</h2>
@@ -112,21 +112,21 @@ TERMS = f'''
 
 <h2>2. What Leaflegal does</h2>
 <p>Leaflegal is a free introduction service for people and businesses looking for legal help. You tell us about your matter. If you agree, we pass your enquiry to one independent, regulated law firm we think may be able to help, and the firm contacts you.</p>
-<p>Please be aware that Leaflegal:</p>
+<p>Please be aware of the following points.</p>
 <ul>
-<li>is <strong>not</strong> a law firm and does not provide legal services;</li>
-<li>does <strong>not</strong> give legal advice, and nothing on this website is legal advice;</li>
-<li>does <strong>not</strong> give immigration advice or services of any kind;</li>
-<li>is <strong>not</strong> regulated by the Solicitors Regulation Authority (SRA) or any other legal regulator; and</li>
-<li>does <strong>not</strong> guarantee that a firm will contact you, take on your matter, or achieve any particular result.</li>
+<li>Leaflegal is <strong>not</strong> a law firm and does not provide legal services.</li>
+<li>Leaflegal does <strong>not</strong> give legal advice, and nothing on this website is legal advice.</li>
+<li>Leaflegal does <strong>not</strong> give immigration advice or services of any kind.</li>
+<li>Leaflegal is <strong>not</strong> regulated by the Solicitors Regulation Authority (SRA) or any other legal regulator.</li>
+<li>Leaflegal does <strong>not</strong> guarantee that a firm will contact you, take on your matter, or achieve any particular result.</li>
 </ul>
 
 <h2>3. Who can use our service</h2>
-<p>Our service is for individuals and businesses. By submitting an enquiry you confirm that:</p>
+<p>Our service is for individuals and businesses. By submitting an enquiry you confirm all of the following.</p>
 <ul>
-<li>you are at least 18 years old;</li>
-<li>the enquiry is about your own matter, or you are authorised to make it on behalf of the business or person concerned; and</li>
-<li>for conveyancing, family law, motoring offences, licensing and lease extensions, the matter is governed by the law of England and Wales.</li>
+<li>You are at least 18 years old.</li>
+<li>The enquiry is about your own matter, or you are authorised to make it on behalf of the business or person concerned.</li>
+<li>For conveyancing, family law, motoring offences, licensing and lease extensions, the matter is governed by the law of England and Wales.</li>
 </ul>
 <p>Debt recovery enquiries are for businesses recovering money owed by other businesses only. We do not deal with personal injury, clinical negligence, housing disrepair or financial mis-selling claims, or with matters where you are looking only for legal aid.</p>
 
@@ -154,11 +154,11 @@ TERMS = f'''
 
 <h2>7. Our responsibility to you</h2>
 <p>We provide our website and service with reasonable care and skill. We try to keep them available and accurate, but we do not promise they will always be available or error-free.</p>
-<p>As far as the law allows, we are not liable for:</p>
+<p>As far as the law allows, we are not liable for the following.</p>
 <ul>
-<li>any loss arising from a decision you make, or from any legal service or advice provided by a firm;</li>
-<li>any loss of profit, revenue, business, opportunity or goodwill (this applies to business users only); or</li>
-<li>any loss that was not reasonably foreseeable.</li>
+<li>Any loss arising from a decision you make, or from any legal service or advice provided by a firm.</li>
+<li>Any loss of profit, revenue, business, opportunity or goodwill (this applies to business users only).</li>
+<li>Any loss that was not reasonably foreseeable.</li>
 </ul>
 <p>Nothing in these terms limits or excludes liability that cannot be limited or excluded by law, including liability for death or personal injury caused by our negligence, for fraud or fraudulent misrepresentation, or your statutory rights as a consumer under the Consumer Rights Act 2015.</p>
 
@@ -182,7 +182,7 @@ TERMS = f'''
 
 
 COOKIES = f'''
-<p><strong>Last updated: {EFFECTIVE}</strong></p>
+<p><strong>Last updated {EFFECTIVE}</strong></p>
 <p>This policy explains how Leaflegal uses cookies and similar technologies on leaflegal.co. Leaflegal is a trading name of {CO}</p>
 
 <h2>1. What cookies are</h2>
@@ -193,20 +193,20 @@ COOKIES = f'''
 <p>You can change your mind at any time using the <a href="#" data-cookie-settings>Cookie settings</a> link at the bottom of every page. You can also delete cookies in your browser settings.</p>
 
 <h2>3. The cookies we use</h2>
-<p><strong>Essential (always on).</strong> These are needed for the site and enquiry form to work, so they don't need your consent:</p>
+<p><strong>Essential (always on).</strong> These are needed for the site and enquiry form to work, so they don't need your consent.</p>
 <ul>
-<li><strong>ll-cookies</strong>: remembers your cookie choices. Kept until you change them or clear your browser.</li>
-<li><strong>ll-apply-v2</strong> and <strong>lg-partner-enquiry-v1</strong>: save your answers while you fill in a form, so you don't lose them if the page reloads. Cleared when you submit.</li>
+<li><strong>ll-cookies</strong> remembers your cookie choices. Kept until you change them or clear your browser.</li>
+<li><strong>ll-apply-v2</strong> and <strong>lg-partner-enquiry-v1</strong> save your answers while you fill in a form, so you don't lose them if the page reloads. Cleared when you submit.</li>
 </ul>
-<p><strong>Advertising measurement.</strong> Used to link your enquiry to the advert you clicked:</p>
+<p><strong>Advertising measurement.</strong> Used to link your enquiry to the advert you clicked.</p>
 <ul>
-<li><strong>ll-fbc</strong>: if you arrive from one of our Facebook or Instagram adverts, remembers the advert click ID for your visit so your enquiry can be linked to that advert. Cleared when you close your browser.</li>
+<li><strong>ll-fbc</strong> if you arrive from one of our Facebook or Instagram adverts, remembers the advert click ID for your visit so your enquiry can be linked to that advert. Cleared when you close your browser.</li>
 </ul>
 <p><strong>Analytics (only with your consent).</strong> These help us understand how people use the site, such as which pages they visit, so we can improve it.</p>
 <p><strong>Marketing (only with your consent).</strong> These help us measure how well our adverts work and show you relevant adverts on other websites.</p>
 <ul>
-<li><strong>Meta Pixel (_fbp, _fbc)</strong>: set by Meta when you accept marketing cookies. Lets Meta measure visits and enquiries from our Facebook and Instagram adverts and show you relevant adverts. Kept for up to 90 days.</li>
-<li><strong>LinkedIn Insight Tag (li_fat_id, li_sugr, bcookie, lidc, UserMatchHistory, AnalyticsSyncHistory)</strong>: set by LinkedIn when you accept marketing cookies. Lets LinkedIn measure visits and enquiries from our LinkedIn adverts and show you relevant adverts. Kept for up to 2 years.</li>
+<li><strong>Meta Pixel (_fbp, _fbc)</strong> set by Meta when you accept marketing cookies. Lets Meta measure visits and enquiries from our Facebook and Instagram adverts and show you relevant adverts. Kept for up to 90 days.</li>
+<li><strong>LinkedIn Insight Tag (li_fat_id, li_sugr, bcookie, lidc, UserMatchHistory, AnalyticsSyncHistory)</strong> set by LinkedIn when you accept marketing cookies. Lets LinkedIn measure visits and enquiries from our LinkedIn adverts and show you relevant adverts. Kept for up to 2 years.</li>
 </ul>
 <p>We don't currently use any analytics cookies. See our <a href="/privacy-policy">Privacy Policy</a> for how we use your information.</p>
 

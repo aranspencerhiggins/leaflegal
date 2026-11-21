@@ -5,7 +5,7 @@ def g(slug, area, title, desc, h1, lead, blocks):
     return {'slug': slug, 'area': area, 'title': title, 'desc': desc, 'h1': h1, 'lead': lead, 'blocks': blocks}
 
 GUIDES = [
-    g('how-conveyancing-works', 'conveyancing', 'How Conveyancing Works: A Step by Step Guide | Leaflegal',
+    g('how-conveyancing-works', 'conveyancing', 'How Conveyancing Works, A Step by Step Guide | Leaflegal',
       'How conveyancing works in England and Wales, from offer accepted to completion, and what your conveyancer does at each stage.',
       'How conveyancing works', 'What happens between your offer being accepted and getting the keys.', [
       ('h2', 'Instructing a conveyancer'), ('p', 'Once an offer is accepted, both buyer and seller instruct a conveyancer. The seller’s conveyancer prepares the contract pack and the buyer’s conveyancer checks it.'),
@@ -17,9 +17,9 @@ GUIDES = [
       'What conveyancing searches are, which ones are usually ordered and why they matter when you buy a property.',
       'Conveyancing searches explained', 'The checks your conveyancer carries out on a property before you buy it.', [
       ('p', 'Searches are enquiries made to councils and other bodies about a property and its surroundings. Lenders usually require them, and they help you avoid surprises.'),
-      ('h2', 'Common searches'), ('ul', ['Local authority search: planning, building control, roads and local charges', 'Water and drainage search: whether the property is connected to mains services', 'Environmental search: contaminated land and flood risk', 'Other searches depending on location, such as mining']),
+      ('h2', 'Common searches'), ('ul', ['Local authority search, covering planning, building control, roads and local charges', 'Water and drainage search, showing whether the property is connected to mains services', 'Environmental search, covering contaminated land and flood risk', 'Other searches depending on location, such as mining']),
       ('h2', 'What if a search shows a problem?'), ('p', 'Your conveyancer will explain what it means and what your options are, which might include asking questions, negotiating or reconsidering the purchase.')]),
-    g('leasehold-vs-freehold', 'lease-extensions', 'Leasehold vs Freehold: What’s the Difference? | Leaflegal',
+    g('leasehold-vs-freehold', 'lease-extensions', 'Leasehold vs Freehold, What’s the Difference? | Leaflegal',
       'The difference between leasehold and freehold property in England and Wales, and what it means for owners of flats and houses.',
       'Leasehold vs freehold', 'What you actually own, and why it matters.', [
       ('h2', 'Freehold'), ('p', 'If you own the freehold, you own the building and the land it stands on, with no time limit.'),
@@ -29,11 +29,11 @@ GUIDES = [
     g('how-to-extend-a-lease', 'lease-extensions', 'How to Extend a Lease on a Flat | Leaflegal',
       'The main ways to extend the lease on your flat, how the process works and who you need to help you.',
       'How to extend a lease', 'Your options when the lease on your flat is getting shorter.', [
-      ('h2', 'Two main routes'), ('ul', ['The statutory route: a formal process using your legal right, with set steps and deadlines', 'The informal route: agreeing terms directly with your freeholder']),
+      ('h2', 'Two main routes'), ('ul', ['The statutory route, a formal process using your legal right, with set steps and deadlines', 'The informal route, agreeing terms directly with your freeholder']),
       ('h2', 'Who you need'), ('p', 'A solicitor who deals with leasehold, and a surveyor to value the premium. They usually work together.'),
       ('h2', 'Timing'), ('p', 'Start well before you plan to sell or remortgage. A statutory extension can take several months.')]),
     g('how-divorce-works', 'family-law', 'How Divorce Works in England and Wales | Leaflegal',
-      'How no fault divorce works in England and Wales: the application, the conditional order, the final order and sorting out finances.',
+      'How no fault divorce works in England and Wales, from the application to the conditional order, the final order and sorting out finances.',
       'How divorce works', 'The steps in a no fault divorce, and what it does and doesn’t cover.', [
       ('h2', 'No fault divorce'), ('p', 'Since April 2022, you only need to state that the marriage has broken down irretrievably. You can apply alone or jointly.'),
       ('h2', 'The timeline'), ('ul', ['Application', 'At least 20 weeks, then the conditional order', 'At least six weeks and one day more, then the final order']),
