@@ -138,9 +138,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=40', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=41', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=40" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=41" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -271,6 +271,7 @@ def blocks_html(blocks):
         if kind == 'h2': out.append(f'<h2>{v}</h2>')
         elif kind == 'p': out.append(f'<p>{v}</p>')
         elif kind == 'ul': out.append('<ul>' + ''.join(f'<li>{x}</li>' for x in v) + '</ul>')
+        elif kind == 'tip': out.append(f'<div class="cs-tip"><b>Tip</b><p>{v}</p></div>')
     return '<div class="ll-doc">' + ''.join(out) + '</div>'
 
 
@@ -396,6 +397,19 @@ HOME_FAQ = [
 STEPS3 = ('Tell us what you need help with', 'We introduce you to one specialist firm', 'The firm contacts you to talk it through')
 
 
+def _gpick():
+    seen, out = set(), []
+    for x in CG.GUIDES:
+        if x['area'] not in seen:
+            seen.add(x['area']); out.append(x)
+    return out[:3]
+
+
+def cs_guides_home():
+    g = ''.join(f'<a class="ll-pcard" href="/guides/{x["slug"]}"><img src="{PH.photo(PH.AREA[x["area"]][0], 700)}" alt="" loading="lazy"/><div><span class="ll-gcat">Guide</span><b>{x["h1"]}</b><p>{x["lead"]}</p></div></a>' for x in _gpick())
+    return section(f'<h2 class="cs-h2 cs-center">Helpful guides</h2><div class="ll-ggrid cs-gg">{g}</div><div class="ll-actions" style="justify-content:center;margin-top:28px"><a href="/guides" class="button"><div>All guides</div></a></div>', cls='section cs-sec')
+
+
 # ---------------------------------------------------------------- homepage
 home = f'''
 <section class="ll-hero" id="quote">
@@ -419,6 +433,23 @@ home = f'''
 {photo_box(PH.photo('golden-street'), f"""<div class="section-title"><h2 class="heading-two">Who we can help</h2><div class="large-text serif-typeface">People and businesses looking for paid legal help.</div><div class="horizontal-line"></div></div>
 {checks(['Homeowners, buyers and sellers in England and Wales', 'People going through a separation', 'Drivers facing points, a ban or a court date', 'Businesses owed money or needing a licence'], white=True)}
 <a href="#quote" class="button w-inline-block"><div>Get matched</div></a>""", cls='section padding-btm-0', photo=True, alt='A woman at a desk')}
+
+{cs_intro('Why people use Leaflegal', [
+  'Finding a solicitor usually means a search, a list of names and an afternoon of phone calls. Many firms only handle some kinds of work, some are not taking on new clients, and it is hard to know who will be a good fit until you have already explained everything twice.',
+  'Leaflegal does the first part for you. You tell us what is going on in a short form, in your own words. We read it, check which kind of matter it is, and introduce you to one regulated firm that handles that type of work and covers your area.',
+  'The firm gets in touch, usually the same working day. They already know the basics, so the first call is about your situation, what they can do and what it will cost. You are free to decide whether to go ahead.'],
+  [('Cost to you', 'Free'), ('Time to fill in', 'About two minutes'), ('Who contacts you', 'One regulated firm'), ('Areas covered', 'England and Wales'), ('Obligation', 'None')])}
+
+{cs_things([
+  ('Have your paperwork ready', 'Letters, contracts, court papers or a sale memo all help the firm understand your matter quickly. A photo on your phone is fine for the first call.'),
+  ('Note any deadlines', 'Court dates, completion dates and reply-by dates matter. Mention them in the form so the firm knows how fast to move.'),
+  ('Ask about fees early', 'A good firm will explain how it charges before any work starts and confirm it in writing. Fixed fees are common for many matters.'),
+  ('Check they are regulated', 'Every firm we introduce is regulated. You can check a solicitor on the SRA register or a licensed conveyancer with the CLC.'),
+  ('You stay in control', 'Speaking to a firm does not commit you to anything. Take your time, ask questions and only instruct them if it feels right.'),
+  ('Your details stay private', 'We only share your enquiry with the one firm we introduce, and never with advertisers or data brokers.'),
+])}
+
+{cs_guides_home()}
 
 {faq(HOME_FAQ, 'Ready to get started?', 'It only takes a couple of minutes.', '#quote', 'Get matched')}
 
@@ -590,6 +621,12 @@ about = f'''
 
 {section(f"""<div class="ll-section-title"><h2 class="heading-two">Finding a solicitor shouldn't be hard</h2>
 <div class="large-text serif-typeface">Most people only need a lawyer a few times in their life, and don't know where to start. {BRAND} turns that into one short form. We use your answers to introduce you to a regulated firm that handles your kind of matter, so the first conversation is a useful one.</div></div>""")}
+
+{cs_intro('Why we started Leaflegal', [
+  'Legal problems tend to arrive at stressful moments. A house sale, a separation, a court letter or an unpaid invoice all come with deadlines, and the last thing anyone wants is to spend days working out which firm to call.',
+  'We built Leaflegal to make that first step simple. We focus on seven areas of law where people often need a specialist, and we work with regulated firms that handle that work every day.',
+  'We are open about how we are paid. The firm pays us a fee for each introduction, it never changes what you pay them, and they will tell you about it in writing.'],
+  [('Who we are', 'Vertical Brands Ltd'), ('What we do', 'Free introductions'), ('Areas of law', 'Seven'), ('Where', 'England and Wales'), ('Paid by', 'The law firm, not you')])}
 
 {section(f"""<div class="ll-section-title"><h2 class="heading-two">How we work</h2></div>
 {cards([
