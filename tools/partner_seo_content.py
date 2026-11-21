@@ -25,7 +25,7 @@ PILLARS = [
         ('Practice areas', [
            'We generate enquiries in seven areas where paying for introductions is permitted: conveyancing, family law, immigration (introductions to regulated advisers only), debt recovery for businesses, motoring offences, licensing and lease extensions. We don’t generate personal injury, clinical negligence or claims management work.']),
         ('Getting started', [
-           'Book a 30-minute call with Aran, our founder. We will talk through your practice areas, locations, volumes and pricing, and show you a sample lead before you commit to anything.'])],
+           'Book a 30-minute call with our team. We will talk through your practice areas, locations, volumes and pricing, and show you a sample lead before you commit to anything.'])],
        [('How is lead generation priced for law firms?', 'Pay per lead, at a price agreed with you before you start. Pricing depends on the practice areas, matter types and locations you choose.'),
         ('Is there a minimum?', 'Yes, the minimum is 10 leads per month. Above that, you set your monthly volume.'),
         ('Are the leads shared with other firms?', 'No. Each enquiry goes to one firm only and is never resold.'),
@@ -95,7 +95,7 @@ INFO = [
        'How Leaflegal works for law firms: book a call, agree your criteria and pricing, sign the partner agreement and receive exclusive client enquiries.',
        'How it works for law firms',
        'Four steps from first call to first lead: talk to us, agree your criteria and pricing, sign your partner agreement, then receive exclusive enquiries as they come in.',
-       [('1. Book a call', ['Leave your details and pick a time for a 30-minute call with Aran, our founder. We will talk about your practice areas, locations, team and goals.']),
+       [('1. Book a call', ['Leave your details and pick a time for a 30-minute call with our team. We will talk about your practice areas, locations, team and goals.']),
         ('2. Agree your criteria and pricing', ['We set up your matching: practice areas, matter types, locations and monthly volume. Then we put together a proposal with your price per lead and show you a sample lead.']),
         ('3. Sign your partner agreement', ['Your agreement sets out pricing, billing, volumes, delivery and how invalid leads are handled, so there are no surprises.']),
         ('4. Receive leads', ['Matching enquiries are sent to you as soon as they are checked, by email or into your CRM. Call quickly, use what the client has told you and let us know which leads convert.'])],
