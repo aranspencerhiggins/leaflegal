@@ -1,0 +1,19 @@
+# dependencies and Vercel's local link
+node_modules
+.vercel
+
+# never commit credentials or anything that contains them
+.env*
+platform-test-account.txt
+
+# generated or scratch files
+email-previews.html
+*.diff
+.DS_Store
+
+# local tool settings
+.claude
+.impeccable
+partner-photo-review.jpg
+partner-photo-review-2.jpg
+colour-options.jpg

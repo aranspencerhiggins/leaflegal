@@ -1,0 +1,107 @@
+{
+ "slug": "guides/handling-lead-data",
+ "nav": "Handling lead data",
+ "title": "Handling Business Finance Lead Data | Loanleaf",
+ "description": "How brokers can handle introduced business finance lead data responsibly: the consent record, using data only for the enquiry, retention and opt-outs.",
+ "h1": "Handling introduced lead data responsibly",
+ "summary": "Each Loanleaf lead arrives with a record of the consent the business owner gave. This guide covers using that data only for the enquiry, keeping it for no longer than you need, and honouring opt-outs. It is general information, not legal advice, and you are responsible for your own compliance.",
+ "sections": [
+  {
+   "h2": "A note on responsibility",
+   "blocks": [
+    "This guide is practical information, not legal advice. Loanleaf is an introducer. It is not a lender or a broker, does not give advice and is not authorised by the FCA.",
+    "Once a lead is delivered to you, you hold your own copy of the data and you are responsible for handling it in line with UK data protection law and your own privacy notice. You are also responsible for your own regulatory position, including FCA authorisation where your activities require it.",
+    "If you are unsure about a point, take advice from a qualified professional. Nothing here replaces that."
+   ]
+  },
+  {
+   "h2": "What you receive with each lead",
+   "blocks": [
+    "A lead includes the business owner's name, business name, UK mobile and email, and the answers they gave about the loan, the business and its finances. It also includes the source page, a timestamp and the consent record.",
+    "The consent record matters. Before submitting, the owner ticked two separate boxes: one accepting the terms and privacy policy and confirming that Loanleaf is an introducer, and one consenting to their details being shared with a matched broker who may contact them by phone, email or text about business finance. The exact wording and timestamp are supplied with the lead.",
+    "Keep that record with the lead. If a question ever arises about why you contacted someone, it is your first piece of evidence.",
+    "The checks on the form mean the mobile is a valid UK mobile number and the email domain can receive email. They do not change your duties, but they do mean you are working from contact details the owner chose to give."
+   ]
+  },
+  {
+   "h2": "Use the data only for the enquiry",
+   "blocks": [
+    "The owner agreed to be contacted about their business finance enquiry. Use their details for that purpose.",
+    "That means calling, emailing or texting about the finance they asked about, and handling any application that follows. It does not mean adding them to a general marketing list or passing their details to another firm.",
+    "Wider marketing needs its own lawful basis and, for electronic marketing, the right permissions. If you are unsure, ask the owner directly and record the answer. Our <a href=\"/partners/guides/following-up-quiet-leads\">follow-up guide</a> keeps contact tied to the enquiry."
+   ]
+  },
+  {
+   "h2": "Keeping data secure",
+   "blocks": [
+    "Treat lead data as personal and sensitive. Keep it in systems with sensible access controls, and limit it to the people who need it.",
+    {
+     "list": [
+      "Use named user accounts rather than shared logins.",
+      "Be careful with exports. A CSV from the platform contains personal data, so store and share it with care.",
+      "Check where webhooks send data and that the receiving system is one you control.",
+      "Remove access promptly when someone leaves your team."
+     ]
+    },
+    "If your CRM is connected by webhook, treat the receiving system as part of your data protection arrangements.",
+    "Train anyone who touches the data. A short note on what the lead data may be used for, how to log a contact and what to do with an opt-out is enough for most teams."
+   ]
+  },
+  {
+   "h2": "Retention",
+   "blocks": [
+    "Keep data only as long as you need it for the purpose. That is a decision for your firm, based on your regulatory obligations, your own policies and the stage of the enquiry.",
+    "Think about different outcomes. A funded deal may have record keeping duties that a declined or lost enquiry does not. Write a simple retention schedule for each outcome and apply it.",
+    "Review old Lost leads on a regular basis, and delete or anonymise data you no longer have a reason to hold.",
+    "Whatever you decide, apply it consistently and be able to explain it. If you hold data in more than one place, such as the platform, your CRM and exported files, include all of them in the schedule."
+   ]
+  },
+  {
+   "h2": "Opt-outs and requests from owners",
+   "blocks": [
+    "If an owner asks you to stop contacting them, stop, and update your records straight away. Do not make it hard for them to say no.",
+    "Business owners may also ask what data you hold, ask you to correct it or ask you to delete it. Have a simple process to deal with those requests promptly, and know who in your firm owns it.",
+    "If an owner contacts Loanleaf rather than you, Loanleaf will let you know so you can do the same. Keep a suppression list so a lead you have been asked to stop contacting does not get contacted again."
+   ]
+  },
+  {
+   "h2": "Good habits that make this easy",
+   "blocks": [
+    "Build the basics into your workflow rather than treating them as paperwork.",
+    {
+     "list": [
+      "Store the consent record with each lead.",
+      "Record the date and outcome of every contact.",
+      "Use the pipeline stages and notes to keep one clear history.",
+      "Check your privacy notice describes how you handle introduced leads."
+     ]
+    },
+    "For how the pipeline fits your day to day work, see <a href=\"/partners/guides/converting-business-finance-leads\">converting business finance leads</a>. If you want to start receiving exclusive leads, <a href=\"/partners/apply\">apply to become a partner</a>."
+   ]
+  }
+ ],
+ "faqs": [
+  {
+   "q": "Who is the data controller once I receive a lead?",
+   "a": "You are responsible for your copy of the data and for handling it in line with UK data protection law and your own privacy notice. This is general information, not legal advice."
+  },
+  {
+   "q": "Can I add leads to my marketing list?",
+   "a": "The owner consented to contact about their enquiry. Wider marketing needs its own lawful basis and permissions, so ask the owner directly if in doubt and take advice."
+  },
+  {
+   "q": "What does the consent record show?",
+   "a": "It shows the exact wording the owner agreed to and the time they agreed. It covers consent to share their details with a matched broker who may contact them by phone, email or text."
+  },
+  {
+   "q": "How long should I keep lead data?",
+   "a": "That is for your firm to decide, based on your obligations and policies. Set a retention schedule by outcome and review old leads regularly."
+  },
+  {
+   "q": "What if an owner asks me to stop contacting them?",
+   "a": "Stop straight away and update your records. Keep a suppression list so they are not contacted again."
+  }
+ ],
+ "cta_h2": "Work leads with a clear consent record",
+ "cta_text": "Every lead on Loanleaf Platform comes with the consent wording and timestamp, ready to store with your own records."
+}

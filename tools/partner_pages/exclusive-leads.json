@@ -1,0 +1,98 @@
+{
+  "slug": "exclusive-leads",
+  "nav": "Exclusive leads",
+  "title": "Exclusive Business Loan Leads for Brokers | Loanleaf",
+  "description": "What exclusive means at Loanleaf: each business loan lead goes to one broker only, is never resold, and why that matters for your conversion rates.",
+  "h1": "Exclusive business loan leads, one lead for one broker",
+  "summary": "At Loanleaf, exclusive means each lead is sold to one broker only. Once you buy it, it disappears for every other broker and is never resold. You are the only firm the business owner hears from through Loanleaf.",
+  "sections": [
+    {
+      "h2": "What exclusive means here",
+      "blocks": [
+        "Many lead sources send one enquiry to several firms. Loanleaf does not. When you buy a lead, it is removed from sale and assigned to you. Nobody else can buy it, and Loanleaf does not resell it later.",
+        "The same applies to repeat enquiries. If the same business enquires again within 7 days, the repeat goes back to the broker who bought it at no extra cost. After that, you never receive the same lead again and never pay for the same lead twice."
+      ]
+    },
+    {
+      "h2": "What exclusive does not mean",
+      "blocks": [
+        "Be clear about the limits. An exclusive lead is not a guaranteed deal. The owner may still speak to other brokers or lenders they find elsewhere, and Loanleaf cannot stop that. What Loanleaf controls is that it will not sell their details to anyone but you.",
+        "Exclusive also does not mean you are the first to see the lead. Brokers see live leads and compete to buy them, either by buying manually or through auto-buy.",
+        "Loanleaf is an introducer. It is not a lender or broker, it does not give advice and it is not authorised by the FCA. Exclusivity concerns who receives a lead, not who is authorised to arrange finance. You are responsible for your own regulatory position, including FCA authorisation where your activities require it."
+      ]
+    },
+    {
+      "h2": "How the first buyer is decided",
+      "blocks": [
+        "If you use manual mode, the first broker to buy gets the lead. If you use auto-buy and several brokers match the same lead, a fair rotation decides, with the broker who auto-bought longest ago going first. Because auto-buy buys the moment a lead arrives, it is the fastest route if you want specific leads. See <a href=\"/partners/platform/auto-buy\">auto-buy</a>."
+      ]
+    },
+    {
+      "h2": "What happens to unsold leads",
+      "blocks": [
+        "Not every lead sells at once. A lead that stays on the platform is still available to buy, and exclusive when bought. If it has not sold after 72 hours, it drops to 50% off. It is not sent to a cheaper shared channel and it is not given away.",
+        "So if you prefer lower prices and can accept leads that have waited a few days, leads in that window are an option. If speed matters most, buy on arrival.",
+        "Many brokers set up auto-buy for the leads they want most and browse the discounted list separately. The two approaches combine well, since the discount applies to whatever remains."
+      ]
+    },
+    {
+      "h2": "Why it matters for conversion",
+      "blocks": [
+        "Competition on a shared lead often becomes a race. The first firm to call sets the pace, and the owner may be tired of calls by the time you ring. With an exclusive lead, you can plan the call.",
+        {
+          "list": [
+            "You can read the lead before dialling, because only you have it.",
+            "The owner has had a “you’ve been matched” email with your profile, so your call is expected.",
+            "You can follow up over several days without wondering if someone else got there first.",
+            "Your work on lenders and documents is not thrown away by a competitor who got in first."
+          ]
+        },
+        "These benefits come from how you use the lead. Exclusivity gives you the room, not the result.",
+        "There is also a cost benefit. If a lead is yours alone, the cost of your time on that lead is not wasted on a race. You can budget your calls per lead more predictably, which is what makes monthly credits easier to plan around.",
+        "Brokers often tell us nothing about their conversion in public, and we do not publish any figures either. Judge it on your own numbers: track how many exclusive leads you reach, how many become applications and how many fund."
+      ]
+    },
+    {
+      "h2": "Exclusivity and price",
+      "blocks": [
+        "Because each lead is sold once, it is priced in credits from £20 to £300, scored on loan size, revenue, time trading, credit history and affordability. A sensible ask from an established company costs more. A long shot costs the minimum. You see the price before you buy, and can read how it is set on the <a href=\"/partners/pricing\">pricing page</a>.",
+        "The easiest test is to open Opportunities, pick a lead and buy it. It then vanishes from the list, and the full details appear in My leads. You can read more about <a href=\"/partners/lead-delivery\">what arrives when you buy</a>."
+      ]
+    },
+    {
+      "h2": "What to do after you buy",
+      "blocks": [
+        "Treat the lead as yours and work it properly. Call within minutes, leave a short voicemail and follow up by email using the address on the lead. Log each attempt in My leads so you know where each lead stands.",
+        "Because the owner has received your matched email, your contact is expected. Open with the amount and purpose they gave. Then ask about what the form did not cover, such as card takings, property details and planning, so your lender conversation starts on solid ground."
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Is every lead really exclusive?",
+      "a": "Yes. Each lead is sold to one broker only, and once bought it is never resold to anyone else."
+    },
+    {
+      "q": "Can the owner still talk to other brokers?",
+      "a": "They may. Loanleaf will not sell their details to anyone but you, but it cannot control who else the owner contacts."
+    },
+    {
+      "q": "What happens if nobody buys a lead?",
+      "a": "After 72 hours it drops to 50% off. It stays available to a single buyer and is not shared."
+    },
+    {
+      "q": "What if two brokers both want the lead?",
+      "a": "With manual buying, the first to buy gets it. If several brokers match on auto-buy, a fair rotation decides, starting with whoever auto-bought longest ago."
+    },
+    {
+      "q": "Does Loanleaf share leads with lenders directly?",
+      "a": "Loanleaf sells leads to brokers and lenders through the platform. Each lead is still sold to one buyer only."
+    },
+    {
+      "q": "Do repeat enquiries get sold twice?",
+      "a": "No. If the same business enquires again within 7 days, the repeat goes back to the broker who bought it at no extra cost. After that, you never receive the same lead again and never pay for the same lead twice."
+    }
+  ],
+  "cta_h2": "Work leads nobody else has",
+  "cta_text": "Sign up on Loanleaf Platform and buy your first exclusive lead, or <a href=\"/partners/apply\">apply to become a partner</a>."
+}

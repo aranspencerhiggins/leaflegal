@@ -1,0 +1,96 @@
+{
+ "slug": "guides/qualifying-business-finance-enquiries",
+ "nav": "Qualifying enquiries",
+ "title": "Qualifying Business Finance Enquiries | Loanleaf",
+ "description": "How to qualify business finance enquiries against lender appetite: amount against revenue, trading time, credit answers, existing finance and purpose.",
+ "h1": "Qualifying business finance enquiries against lender appetite",
+ "summary": "Qualifying means matching what the business owner asked for to what your lenders will fund. This guide shows how to read the Loanleaf lead fields (amount against revenue, trading time, credit answers, existing finance and purpose) and what to confirm on the call.",
+ "sections": [
+  {
+   "h2": "Start with your lenders, not the lead",
+   "blocks": [
+    "Qualification is only useful if it reflects what your lenders actually do. Before you read a lead, write down the appetite of your panel: minimum time trading, revenue floors, loan size ranges, attitude to adverse credit and the purposes they fund.",
+    "Keep that list close. Each field on a Loanleaf lead maps to one of those lines, so you can judge an enquiry in a minute. Each lead also passes the same entry checks: a UK limited company or LLP, at least 6 months trading, and annual revenue of £50,000 or more.",
+    "Because every lead clears those minimums, your job is not to re-check them. It is to see where the enquiry sits above them and whether that suits your panel."
+   ]
+  },
+  {
+   "h2": "Amount against revenue",
+   "blocks": [
+    "The loan amount is chosen from £5,000 to £2m+, and revenue sits in a band from £50k to £100k up to £5m+. Put the two side by side.",
+    "A modest amount against a healthy revenue band is usually straightforward. A large amount against a small revenue band needs a reason, such as security, a contract or an acquisition. Loanleaf prices this as affordability, which is why a very large ask from a small business can cost the minimum.",
+    "As a rule, ask yourself what repayment the ask implies and whether the business could carry it. If you are unsure, test it on the call by asking about margins and what the funds will generate. The revenue band is a range, so confirm the actual figure."
+   ]
+  },
+  {
+   "h2": "Trading time",
+   "blocks": [
+    "Time trading comes in four bands: 6 to 12 months, 1 to 2 years, 2 to 5 years and 5+ years. Lenders differ widely here, so compare it with your panel's minimums.",
+    "A business at 6 to 12 months can still be fundable with the right lender or product, but the options narrow. Check whether the owner has traded in a related business before, as that history can matter even where the company is new.",
+    "The 5+ years band is the widest range of businesses, so do not treat it as a single profile. Ask how steady the revenue has been."
+   ]
+  },
+  {
+   "h2": "Credit answers",
+   "blocks": [
+    "The form asks about missed payments, defaults or CCJs in the last 6 years and offers No, Yes or Not sure. These are the owner's own words, not a credit check.",
+    {
+     "list": [
+      "<b>No:</b> proceed, and still check the directors' personal positions if your lenders do.",
+      "<b>Yes:</b> ask what, when and whether it is settled. Many lenders care about recency and size.",
+      "<b>Not sure:</b> ask the question again in plain terms, and consider whether to run a check with the owner's permission before going further."
+     ]
+    },
+    "If your lenders will not consider adverse credit, set clean credit only in auto-buy so those leads are not bought. Our guide to the <a href=\"/partners/lead-quality-score\">lead quality score</a> explains how this answer feeds the score."
+   ]
+  },
+  {
+   "h2": "Existing finance",
+   "blocks": [
+    "The form asks whether the business has existing finance and, if so, the amount left to repay and the monthly repayments, both in bands. This tells you how much headroom the business has.",
+    "Work out whether the new facility is on top of the old one or replaces it. A refinance with a lower monthly cost is a different case from extra borrowing on a stretched business.",
+    "Ask who the current lender is, whether there are early repayment charges and whether any of it is secured. Those details change which lenders you can approach."
+   ]
+  },
+  {
+   "h2": "Purpose and timeline",
+   "blocks": [
+    "The purposes on the form are growth and expansion, cash flow, equipment or vehicles, stock and inventory, commercial property (buy, build or refurbish), refinancing existing debt, tax or VAT bills and something else.",
+    "Each points to a different product family and a different set of questions. Equipment suggests asset finance. Property suggests a commercial mortgage or bridging. Tax or VAT suggests a short-term facility. Only some of your lenders will fit.",
+    "Timeline matters too: as soon as possible, within 2 weeks, within a month or just exploring options. Match it to how quickly your lenders can realistically move, and be honest with the owner if your route is slower than they need."
+   ]
+  },
+  {
+   "h2": "What the form leaves for you to confirm",
+   "blocks": [
+    "The form does not ask about card takings or card machine turnover, property value or loan to value, the property address, residential or commercial investment, planning status, sector, director names or bank statements.",
+    "These gaps decide many cases. A property enquiry with no valuation cannot be qualified, and a cash flow enquiry without card takings cannot be matched to a merchant product. Use the <a href=\"/partners/guides/first-call-script\">first call script</a> to cover them.",
+    "Finish with a clear decision: place, redirect or decline. A prompt, honest answer helps the owner and keeps your pipeline clean. For how that feeds conversion, see <a href=\"/partners/guides/converting-business-finance-leads\">converting business finance leads</a>, and if you are ready to start, <a href=\"/partners/apply\">apply to become a partner</a>."
+   ]
+  }
+ ],
+ "faqs": [
+  {
+   "q": "Do all leads meet the same minimum criteria?",
+   "a": "Yes. Each is a UK limited company or LLP with at least 6 months trading and annual revenue of £50,000 or more. Qualifying is about fit within that range."
+  },
+  {
+   "q": "How reliable is the credit answer?",
+   "a": "It is the owner's own answer, not a credit check. Treat it as a starting point and confirm details on the call, especially for Not sure and Yes."
+  },
+  {
+   "q": "What if the amount looks too high for the revenue?",
+   "a": "Ask what the funds will be used for and what security is available. If it is unrealistic, consider whether a smaller facility could work. These leads tend to be priced low for that reason."
+  },
+  {
+   "q": "Can I filter out leads my lenders will not fund?",
+   "a": "Yes. Auto-buy criteria cover loan size range, revenue bands, purposes, time trading and clean credit only, and the Opportunities list can be filtered in a similar way."
+  },
+  {
+   "q": "Should I decline leads I cannot place?",
+   "a": "Yes, promptly and politely. Record the reason in your notes and the lead status. Respect any request not to be contacted."
+  }
+ ],
+ "cta_h2": "Buy the leads your lenders will fund",
+ "cta_text": "Set your criteria on Loanleaf Platform so you only see and buy enquiries that match your panel."
+}

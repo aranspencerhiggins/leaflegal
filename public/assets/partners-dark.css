@@ -1,0 +1,223 @@
+/* Partner (broker) side of the site: dark, deep-green theme. Loaded only on /partners pages, scoped to body[data-theme=partner].
+   "Product screenshot" cards (.cfb-lead, .cfb-record, .ll-ui, forms) keep their light colours so they still read as the real UI. */
+[data-theme=partner]{--pd-0:#06110d;--pd-1:#0a1813;--pd-2:#0e1f18;--pd-card:#13281f;--pd-card2:#183126;--pd-line:rgba(255,255,255,.09);--pd-text:#e3eee9;--pd-muted:#a3bdb2;--pd-head:#f3f8f5;--pd-accent:#c4f09f;background:var(--pd-1);color:var(--pd-text)}
+
+/* header + footer: deepest green */
+[data-theme=partner] .llb-top{background:var(--pd-0)}
+[data-theme=partner] .llb-main{background:#0b1a14;border-bottom-color:var(--pd-line)}
+[data-theme=partner] .llf,[data-theme=partner] .llf-main,[data-theme=partner] .llf-base{background:var(--pd-0)}
+[data-theme=partner] .llf-cta{background:var(--pd-card)}
+
+/* generic site sections */
+[data-theme=partner] .section,[data-theme=partner] .ll-docsec{background:transparent;color:var(--pd-text)}
+[data-theme=partner] :is(.section,.ll-docsec,.ll-pagehead) :is(h1,h2,h3,h4,.heading-two,.heading-four,b,strong){color:var(--pd-head)}
+[data-theme=partner] :is(.section,.ll-docsec) :is(p,li,.large-text,dd,dt,summary,td,th){color:var(--pd-text)}
+[data-theme=partner] .ll-section-title .large-text,[data-theme=partner] .ll-disclaimer{color:var(--pd-muted)}
+[data-theme=partner] .ll-pagehead,[data-theme=partner] .ll-pagehead.ll-hero-split{background:radial-gradient(60% 90% at 100% 0%,rgba(87,158,132,.18),transparent 60%),linear-gradient(160deg,var(--pd-0) 0%,#0d2019 100%)}
+[data-theme=partner] .ll-doc a,[data-theme=partner] .ll-faq-a a{color:var(--pd-accent)}
+[data-theme=partner] .ll-gside{background:var(--pd-card);border-color:var(--pd-line)}
+[data-theme=partner] .ll-gside h2,[data-theme=partner] .ll-gside a{color:var(--pd-head)}
+[data-theme=partner] .ll-gside a[aria-current]{color:var(--pd-accent);font-weight:700}
+[data-theme=partner] .ll-gside-cta{background:#1b3a2e}
+[data-theme=partner] .ll-faq{background:var(--pd-card);border-color:var(--pd-line)}
+[data-theme=partner] .ll-faq summary,[data-theme=partner] .ll-faq-a{color:var(--pd-text)}
+[data-theme=partner] .faq-cta{background:var(--pd-card2)}
+[data-theme=partner] .faq-cta .button.bg-base-50{background:var(--pd-accent);color:#0b1a14}
+[data-theme=partner] .ll-tab{background:var(--pd-card);color:var(--pd-text);border-color:var(--pd-line)}
+[data-theme=partner] .ll-tab[aria-selected=true]{background:var(--pd-accent);color:#0b1a14}
+[data-theme=partner] .ll-panel{background:var(--pd-card);color:var(--pd-text)}
+[data-theme=partner] .ll-cta{background:var(--pd-card2)}
+[data-theme=partner] .ll-card,[data-theme=partner] .ll-pcard,[data-theme=partner] .ll-tg-item,[data-theme=partner] .ll-acc{background:var(--pd-card);border-color:var(--pd-line);color:var(--pd-text)}
+[data-theme=partner] .ll-pcard b{color:var(--pd-head)}
+[data-theme=partner] .ll-pcard p,[data-theme=partner] .ll-gcat{color:var(--pd-muted)}
+[data-theme=partner] .ll-pagehead .ll-lead{color:var(--pd-muted)}
+
+/* /partners sales page (cfb.css): remap its palette */
+[data-theme=partner] :is(.cfb-hero,.cfb-facts,.cfb-sec,.cfb-final){--ink:var(--pd-text);--muted:var(--pd-muted);--line:var(--pd-line);--paper:var(--pd-2);--mint:#1d3a2e;--mid:var(--pd-muted)}
+[data-theme=partner] .cfb-hero{background:radial-gradient(90% 120% at 100% 0%,#173328 0%,rgba(23,51,40,0) 55%),linear-gradient(160deg,#0c1d16 0%,var(--pd-0) 100%)}
+[data-theme=partner] .cfb-sec{background:var(--pd-1)}
+[data-theme=partner] .cfb-sec:nth-of-type(odd),[data-theme=partner] .cfb-anat{background:var(--pd-2)}
+[data-theme=partner] :is(.cfb-facts ul,.cfb-cost-card,.cfb-crm,.cfb-points li,.cfb-filter,.cfb-mode,.cfb-crit,.cfb-fund,.cfb-plan,.cfb-col.out,.cfb-btn.line){background:var(--pd-card);border-color:var(--pd-line)}
+[data-theme=partner] .cfb-facts li,.cfb-crm-logo{background:var(--pd-card2)}
+[data-theme=partner] :is(.cfb-facts b,.cfb-cost-copy h2,.cfb-range b,.cfb-crm-h b,.cfb-head h2,.cfb-head a,.cfb-note a,.cfb-points b,.cfb-col.out h3,.cfb-mode h3,.cfb-steps b,.cfb-pp,.cfb-link,.cfb-final h2,.cfb-btn.line){color:var(--pd-head)}
+[data-theme=partner] :is(.cfb-btn.dark,.cfb-price,.cfb-crm-any,.cfb-record-h,.cfb-col.in,.cfb-mode.dark,.cfb-chips span.on,.cfb-steps span){background:#1f4234;color:#fff}
+[data-theme=partner] .cfb-btn.dark:hover,[data-theme=partner] .cfb-btn.line:hover{background:#2a5644;color:#fff}
+[data-theme=partner] .cfb-final{background:linear-gradient(160deg,#10251c 0%,var(--pd-0) 100%)}
+[data-theme=partner] .cfb-final h2 span,[data-theme=partner] .cfb-final em{color:var(--pd-accent)}
+/* product mock-ups stay light, so they read as the real platform */
+[data-theme=partner] :is(.cfb-lead,.cfb-record,.ll-ui,.ap-card,.pe-card){--ink:#132a22;--green:#244237;--muted:#5b7068;--mint:#e4f1ed;--line:#d6e5df;--paper:#f6f9f7;--mid:#3d6656;color:#132a22}
+[data-theme=partner] .cfb-record{background:#fff}
+
+/* new pages: v2 sections */
+[data-theme=partner] .v2-res a{border-color:var(--pd-line);color:var(--pd-head)}
+[data-theme=partner] .v2-res a:hover{background:var(--pd-card)}
+
+/* contrast fixes */
+[data-theme=partner] :is(.cfb-hero,.cfb-facts,.cfb-sec,.cfb-final){--green:var(--pd-head)}
+[data-theme=partner] a.button,[data-theme=partner] .button div,[data-theme=partner] .cfb-btn:not(.dark):not(.line):not(.ghost){color:#10231b}
+[data-theme=partner] .cfb-btn.ghost{color:#fff}
+[data-theme=partner] .cfb-tag,[data-theme=partner] .cfb-fund span{background:#1d3a2e;color:var(--pd-accent)}
+[data-theme=partner] :is(.process-box,.ll-yes,.ll-no,.ll-note){background:var(--pd-card);border-color:var(--pd-line)}
+[data-theme=partner] .process-box.bg-base-100{background:#1f4234}
+[data-theme=partner] :is(.process-box,.ll-yes,.ll-no,.ll-note) :is(h3,.heading-four,li,p,b){color:var(--pd-text)}
+[data-theme=partner] .pe-stages li.on{background:var(--pd-accent);color:#10231b}
+[data-theme=partner] :is(.ll-doc,.ll-faq-a,.ll-prose) a{color:var(--pd-accent)!important}
+[data-theme=partner] .cfb-tag{background:#1d3a2e!important;color:var(--pd-accent)!important}
+[data-theme=partner] .cfb-real span{color:#10231b}
+/* mega menu on partner pages */
+[data-theme=partner] .llb-dd-panel.llb-mega{background:var(--pd-1);box-shadow:0 30px 60px -30px rgba(0,0,0,.8);border-top:1px solid var(--pd-line)}
+[data-theme=partner] .llb-mega .llb-mi{color:var(--pd-text)}
+[data-theme=partner] .llb-mega .llb-mi svg{color:var(--pd-text)}
+[data-theme=partner] .llb-mega .llb-mi.on,[data-theme=partner] .llb-mega .llb-mi:hover,[data-theme=partner] .llb-mega .llb-mi:focus-visible{background:var(--pd-card)}
+[data-theme=partner] .llb-mega .llb-mfoot{border-color:var(--pd-accent);color:var(--pd-accent)}
+[data-theme=partner] .llb-mega .llb-mfoot:hover{background:var(--pd-accent);color:#10231b}
+[data-theme=partner] .llb-mright{background:var(--pd-2)}
+[data-theme=partner] .llb-mgrp h3{color:var(--pd-muted)}
+[data-theme=partner] .llb-mega .llb-mgrp a,[data-theme=partner] .llb-mega .llb-mhead{color:var(--pd-text);border-color:var(--pd-line)}
+[data-theme=partner] .llb-mcard2{background:var(--pd-card)}
+[data-theme=partner] .llb-mcard2 b,[data-theme=partner] .llb-mcard2 p,[data-theme=partner] .llb-mega .llb-mcard2 a{color:var(--pd-text)}
+@media (max-width:1024px){[data-theme=partner] .llb-menu{background:#0b1a14}}
+
+/* /partners hero: full-bleed photo on the right instead of lead screenshots */
+.cfb-hero-photo .cfb-hero-in{grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:min(680px,calc(100vh - 116px));padding-bottom:96px}
+.cfb-photo{position:absolute;top:0;right:0;bottom:0;width:48%;z-index:0}
+.cfb-photo img{width:100%;height:100%;object-fit:cover;object-position:60% 30%;display:block}
+.cfb-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--pd-0,#06110d) 0%,rgba(6,17,13,.55) 18%,rgba(6,17,13,0) 45%)}
+.cfb-hero-photo .cfb-hero-copy{position:relative;z-index:1}
+@media (max-width:991px){
+  .cfb-hero-photo .cfb-hero-in{grid-template-columns:1fr;min-height:0;padding-top:0}
+  .cfb-photo{position:relative;width:auto;height:300px;margin:0}
+  .cfb-photo::after{background:linear-gradient(0deg,var(--pd-0,#06110d) 0%,rgba(6,17,13,0) 40%)}
+}
+
+/* light sections mixed in, so the partner side isn't dark top to bottom */
+[data-theme=partner] :is(.ll-docsec,.cfb-anat,.cfb-int,.cfb-fundsec,.cfb-faq){--ink:#132a22;--green:#244237;--muted:#5b7068;--mint:#e4f1ed;--line:#d6e5df;--paper:#f6f9f7;--mid:#3d6656;background:#fff!important;color:#132a22}
+[data-theme=partner] :is(.ll-docsec,.cfb-anat,.cfb-int,.cfb-fundsec,.cfb-faq) :is(h1,h2,h3,h4,.heading-two,.heading-four,b,strong,p,li,dd,dt,summary,td,th,.large-text,.cfb-head a,.cfb-note a,.cfb-link){color:#132a22}
+[data-theme=partner] :is(.ll-docsec,.cfb-anat,.cfb-int,.cfb-fundsec,.cfb-faq) :is(.cfb-head h2,.cfb-crm-h b,.cfb-points b,.cfb-facts b){color:var(--green)}
+[data-theme=partner] .ll-docsec :is(.ll-doc,.ll-faq-a,.ll-prose) a{color:#1f6b4f!important}
+[data-theme=partner] .ll-docsec .ll-disclaimer,[data-theme=partner] .ll-docsec .ll-gcat,[data-theme=partner] .ll-docsec .ll-pcard p{color:#5b7068}
+[data-theme=partner] :is(.ll-docsec,.cfb-anat,.cfb-int,.cfb-fundsec,.cfb-faq) :is(.ll-gside,.ll-pcard,.cfb-crm,.cfb-fund,.cfb-points li,.ll-faq,.ll-panel){background:#f6f9f7;border-color:#d6e5df;color:#132a22}
+[data-theme=partner] .ll-docsec .ll-gside a{color:#132a22}
+[data-theme=partner] .ll-docsec .ll-gside a[aria-current]{color:#1f6b4f}
+[data-theme=partner] .ll-docsec .ll-gside-cta{background:#0e1f18}
+[data-theme=partner] .ll-docsec .ll-gside-cta :is(h2,p){color:#fff}
+[data-theme=partner] :is(.cfb-int) .cfb-crm-any{background:#13281f}
+[data-theme=partner] :is(.cfb-int) .cfb-crm-any :is(b,p,li,span){color:#fff}
+[data-theme=partner] .cfb-faq .ll-tab{background:#fff;color:#132a22;border-color:#d6e5df}
+[data-theme=partner] .cfb-faq .ll-tab[aria-selected=true]{background:#132a22;color:#fff}
+[data-theme=partner] .cfb-fundsec .cfb-fund span{background:#e4f1ed;color:#244237}
+
+/* platform feature pages: Loanleaf leaf + feature name in the logo style, title below */
+.pf-lock{display:flex;align-items:center;gap:14px;margin-bottom:22px;font-family:"LINE Seed Sans",var(--sans-serif);font-weight:800;font-size:clamp(34px,3.4vw,46px);letter-spacing:-.035em;line-height:1;color:#fff}
+.pf-lock img{width:1.05em;height:1.05em;display:block}
+.pf-title{display:block;font-size:clamp(34px,3.6vw,54px);line-height:1.08}
+
+/* FAQ on dark: rows with lines, padded call-to-action box */
+[data-theme=partner] .section .ll-faq{background:transparent;border-bottom:1px solid var(--pd-line)}
+[data-theme=partner] .section .faq-cta{padding:32px;border-radius:20px;background:var(--pd-card);border:1px solid var(--pd-line);display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+[data-theme=partner] .section .faq-cta .button{margin-top:6px}
+
+/* contrast fixes for the mixed light/dark partner pages */
+[data-theme=partner] .ll-docsec .ll-gside.ll-gside-cta{background:#0e1f18!important;border-color:#0e1f18!important}
+[data-theme=partner] .ll-docsec .ll-gside.ll-gside-cta :is(h2,p){color:#fff!important}
+[data-theme=partner] .cfb-int .cfb-crm.cfb-crm-any{background:#13281f!important}
+[data-theme=partner] .cfb-int .cfb-crm.cfb-crm-any :is(b,p,span,li){color:#fff!important}
+[data-theme=partner] .cfb-int .cfb-crm.cfb-crm-any em{color:var(--pd-accent)!important}
+[data-theme=partner] .cfb-int .cfb-crm.cfb-crm-any ul li{background:rgba(255,255,255,.1)!important}
+[data-theme=partner] :is(.ll-docsec,.cfb-anat,.cfb-int,.cfb-fundsec,.cfb-faq) :is(em,.ll-disclaimer,small){color:#3b725e!important}
+[data-theme=partner] .ap-scale span{color:#3b725e}
+[data-theme=partner] .section a:not(.button):not(.llb-mi){color:var(--pd-accent)}
+[data-theme=partner] :is(.cfb-faq,.cfb-anat,.cfb-int,.cfb-fundsec) .ll-faq-a{color:#132a22!important}
+
+/* /partners hero, full-background photo with a dark green panel (test) */
+.cfb-hero.cfb-hero-full{background:#06110d;position:relative;overflow:hidden}
+.cfb-hero-full .cfb-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 35%;display:block}
+.cfb-hero-full .cfb-hero-in{display:flex;align-items:center;min-height:min(760px,calc(100vh - 116px));padding-top:64px;padding-bottom:64px;box-sizing:border-box}
+.cfb-panel{position:relative;z-index:1;max-width:620px;background:#12271e;border-radius:28px;padding:56px 52px 52px;box-shadow:0 40px 80px -40px rgba(0,0,0,.6)}
+.cfb-panel h1{font-size:clamp(36px,4vw,58px)}
+@media (max-width:991px){
+  .cfb-hero-full .cfb-bg{position:relative;height:300px}
+  .cfb-hero-full .cfb-hero-in{min-height:0;padding-top:0;margin-top:-64px}
+  .cfb-panel{padding:36px 24px;border-radius:22px}
+}
+
+/* partner info + lead pages: full-background photo hero with a dark panel (same as /partners) */
+.ph-hero{position:relative;overflow:hidden;background:#06110d}
+.ph-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:72% 35%;display:block}
+.ph-in{position:relative;max-width:1280px;margin:0 auto;padding:64px 32px;min-height:min(700px,calc(100vh - 116px));display:flex;align-items:center;box-sizing:border-box}
+.ph-panel{max-width:640px;background:#12271e;border-radius:28px;padding:52px 52px 48px;box-shadow:0 40px 80px -40px rgba(0,0,0,.6)}
+.ph-panel h1{font-size:clamp(34px,3.8vw,56px);line-height:1.06;color:#fff;margin:0 0 18px}
+.ph-panel .ll-lead{color:#c9dcd3;margin:0 0 24px}
+.ph-panel .ll-hero-ticks{margin:0 0 28px}
+.ph-panel .ll-hero-ticks li{color:#e8f1ed}
+@media (max-width:991px){
+  .ph-bg{position:relative;height:280px}
+  .ph-in{min-height:0;padding:0 16px 40px;margin-top:-56px}
+  .ph-panel{padding:32px 22px;border-radius:22px}
+}
+.cfb-hero-full .cfb-bg{content:normal}
+
+/* icons readable on the lime tiles and ticks */
+[data-theme=partner] .cfb-facts li>i{color:#12271e}
+[data-theme=partner] .cfb-facts li>i svg{stroke:#12271e;color:#12271e}
+[data-theme=partner] .cfb-ok{color:#12271e}
+[data-theme=partner] .cfb-ok svg{stroke:#12271e}
+
+/* partner menu a little lighter */
+[data-theme=partner] .llb-top{background:#102720}
+[data-theme=partner] .llb-main{background:#1a3a2e;border-bottom-color:rgba(255,255,255,.1)}
+[data-theme=partner] .llb-dd-panel.llb-mega{background:#173328}
+[data-theme=partner] .llb-mright{background:#1d3d31}
+[data-theme=partner] .llb-mega .llb-mi.on,[data-theme=partner] .llb-mega .llb-mi:hover,[data-theme=partner] .llb-mega .llb-mi:focus-visible{background:#24493b}
+[data-theme=partner] .llb-mcard2{background:#24493b}
+@media (max-width:1024px){[data-theme=partner] .llb-menu{background:#1a3a2e}}
+
+/* partner side moved onto the same deep green family as /apply (owner, 21 Nov) */
+[data-theme=partner]{--pd-0:#11251f;--pd-1:#18302a;--pd-2:#1b352e;--pd-card:#203d34;--pd-card2:#24453a;background:var(--pd-1)}
+[data-theme=partner] .llb-top{background:#11251f}
+[data-theme=partner] .llb-main{background:#18302a}
+[data-theme=partner] .llb-dd-panel.llb-mega{background:#1b352e}
+[data-theme=partner] .llb-mright{background:#203d34}
+[data-theme=partner] :is(.cfb-panel,.ph-panel){background:radial-gradient(140% 60% at 50% 0%,rgba(97,176,146,.18),transparent 75%),#18302a}
+[data-theme=partner] .cfb-hero,[data-theme=partner] .cfb-final,[data-theme=partner] .ll-pagehead,[data-theme=partner] .ll-pagehead.ll-hero-split{background:var(--ll-glow,none),#18302a}
+[data-theme=partner] .cfb-sec:not(.cfb-anat):not(.cfb-int):not(.cfb-fundsec):not(.cfb-faq){background:radial-gradient(120% 50% at 50% 0%,rgba(97,176,146,.1),transparent 70%),#18302a}
+[data-theme=partner] :is(.llf,.llf-main,.llf-base,.llf-cta){background:#11251f}
+[data-theme=partner] .llf-main{background:var(--ll-glow,none),#11251f}
+@media (max-width:1024px){[data-theme=partner] .llb-menu{background:#18302a}}
+
+/* partner header: darker, logo with a PARTNERS tag */
+[data-theme=partner] .llb-top{background:#0b1813}
+[data-theme=partner] .llb-main{background:#10221c}
+@media (max-width:1024px){[data-theme=partner] .llb-menu{background:#10221c}}
+.llb-logo-p{display:inline-flex;flex-direction:column;align-items:flex-end;text-decoration:none;gap:3px}
+.llb-logo-tag{display:block;width:118px;font-size:10.5px;line-height:1;font-weight:800;letter-spacing:.34em;text-transform:uppercase;color:#c4f09f;text-align:left;padding-left:2px}
+@media (max-width:1024px){.llb-logo-tag{width:103px;font-size:9.5px}}
+/* cafe hero photo: keep his face in frame */
+.cfb-hero-full .cfb-bg,.ph-bg{object-position:60% 28%}
+.llb-logo-tag{width:auto;align-self:flex-end;color:#fff;text-align:right;padding-left:0;margin-right:calc(-.34em + 3px)}
+.ph-bg.ph-flip{transform:scaleX(-1)}
+.ph-panel,.cfb-panel{max-width:min(640px,44vw)}@media (max-width:991px){.ph-panel,.cfb-panel{max-width:none}}
+/* split hero on partner pages */
+[data-theme=partner] .ll-hero-split .ll-hero-media img{width:100%;object-fit:cover;display:block}
+[data-theme=partner] .ll-hero-split .ll-hero-media img.ph-flip{transform:scaleX(-1)}
+[data-theme=partner] .cfb-hero-split h1 span{color:inherit}
+/* darker partner hero gradient */
+[data-theme=partner] .ll-pagehead.ll-hero-split{background:radial-gradient(70% 90% at 0% 0%,rgba(87,158,132,.22),transparent 60%),radial-gradient(60% 70% at 40% 100%,rgba(245,165,36,.06),transparent 70%),linear-gradient(165deg,#10241c 0%,#0a1a14 55%,#06110d 100%)}
+[data-theme=partner] .ll-hero-split h1{font-size:clamp(34px,3.5vw,54px)}
+/* feature lockup as a small pill label */
+.ll-hero-split .pf-lock{display:inline-flex;width:max-content;gap:8px;align-items:center;padding:8px 16px 8px 12px;border-radius:999px;background:rgba(211,245,180,.12);border:1px solid rgba(211,245,180,.35);font-size:16px;letter-spacing:-.01em;margin-bottom:20px;color:#d3f5b4}
+.ll-hero-split .pf-lock img{width:18px;height:18px}
+.ll-hero-split .pf-title{font-size:inherit}
+/* cost per lead calculator sits on a light section */
+[data-theme=partner] .ll-calc-sec :is(h1,h2){color:#132a22}
+[data-theme=partner] .ll-calc-sec .ll-lead{color:#3d6656}
+[data-theme=partner] .pe-stages li:is(.on,.done),.pe-stages li:is(.on,.done){background:#ffb020}
+/* animated Loanleaf / Partners logo (falls back to static logo + tag) */
+.llb-logo-vid{display:none;width:180px;height:60px;margin:-15px 0 -15px -15px;pointer-events:none}
+.llb-logo-p.anim{flex-direction:row;align-items:center}
+.llb-logo-p.anim .llb-logo-vid{display:block}
+.llb-logo-p.anim img,.llb-logo-p.anim .llb-logo-tag{display:none}
+@media (max-width:1024px){.llb-logo-vid{width:156px;height:52px;margin:-13px 0 -13px -13px}}
+/* before the video starts show the plain Loanleaf logo; the PARTNERS tag only appears if the video can't play */
+.llb-logo-p:not(.noanim) .llb-logo-tag{display:none}
+.llb-logo-p:not(.noanim):not(.anim){flex-direction:row}

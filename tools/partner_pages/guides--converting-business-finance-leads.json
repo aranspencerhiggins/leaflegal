@@ -1,0 +1,97 @@
+{
+  "slug": "guides/converting-business-finance-leads",
+  "nav": "Converting leads",
+  "title": "Converting Business Finance Leads, a Broker Guide | Loanleaf",
+  "description": "End-to-end guide to converting business finance leads, from first call to completion, with the common drop-off points and how to reduce each one.",
+  "h1": "Converting business finance leads from first call to completion",
+  "summary": "Converting a business finance lead is a sequence of small steps, and each one can lose the deal. This guide walks through the process from first call to completion and names the points where enquiries most often drop off.",
+  "sections": [
+    {
+      "h2": "Think in stages, not a single sale",
+      "blocks": [
+        "A funded deal is rarely won on one call. It moves through stages, and the useful question is where yours stall. The platform pipeline mirrors this: New, Contacted, Application, Funded and Lost, with notes against each lead.",
+        "Treat those stages as a checklist. Know how many leads you bought, how many you reached, how many became applications and how many funded. Without your own numbers you cannot tell whether the issue is speed, qualification or lender appetite.",
+        "Do not assume any figures from elsewhere. Your conversion depends on your lenders, your market and your process. Measure it yourself, starting from the first leads you buy."
+      ]
+    },
+    {
+      "h2": "Reaching the owner",
+      "blocks": [
+        "The first drop-off is not getting through. A lead that is never reached never converts, so this is where speed, repeat attempts and the right channel matter. See <a href=\"/partners/guides/speed-to-lead\">speed to lead</a> for the setup.",
+        "Use the fields. The form checks the mobile is a valid UK mobile number and that the email domain can receive email, so contact details are real. A missed call is usually about timing, not a wrong number.",
+        "Try at different times of day, leave a clear voicemail, and follow with an email or text. The owner consented to contact by phone, email or text."
+      ]
+    },
+    {
+      "h2": "The first conversation",
+      "blocks": [
+        "Here you confirm the enquiry and fill the gaps. If you ask the owner to repeat everything they put on the form, they lose patience. If you skip the questions the form did not ask, you lose time later when a lender asks for them.",
+        "Come away from the call knowing the security, the use of funds in detail, the decision maker and the documents available. Our <a href=\"/partners/guides/first-call-script\">first call script</a> sets out how.",
+        "The drop-off here is usually trust. Explain who you are, how you were introduced and how you are paid. A clear answer on fees early prevents a cooling off after the call."
+      ]
+    },
+    {
+      "h2": "Qualifying against lender appetite",
+      "blocks": [
+        "Many enquiries fall away because the ask does not fit any lender you use. Better to find that out on the first call than after a week of chasing documents.",
+        "Compare the amount to revenue, the time trading to lender minimums and the credit answer to your panel's appetite. Check the existing finance and monthly repayments against affordability. The detail is in <a href=\"/partners/guides/qualifying-business-finance-enquiries\">qualifying business finance enquiries</a>.",
+        "If it does not fit, say so honestly and, where you can, suggest a smaller or different facility. An honest no today can become a referral or a better-fitting deal later."
+      ]
+    },
+    {
+      "h2": "Collecting documents",
+      "blocks": [
+        "This is the quiet drop-off. The owner agrees in principle, then the bank statements, filed accounts or management accounts take days to arrive. Momentum fades.",
+        {
+          "list": [
+            "Give a short, specific list in writing straight after the call.",
+            "Say why each item is needed and offer a way to send it that suits them, such as a secure upload or a photo.",
+            "Set a date for the next check-in so the request does not sit unanswered.",
+            "Make it easy: ask for what you need now, not a longer list in stages."
+          ]
+        },
+        "Keep notes on the lead so the next person to speak to the owner knows exactly what is outstanding."
+      ]
+    },
+    {
+      "h2": "Lender submission and offer",
+      "blocks": [
+        "Once you submit, keep the owner informed. Silence is when owners start looking elsewhere. Tell them when you have submitted, what you expect next and roughly when.",
+        "If a lender declines or asks for more, call the owner the same day. Explain the reason, and what you can try next. Do not leave bad news to an email.",
+        "Present offers clearly, with the cost, term, repayments and any fees. You are responsible for your own regulatory position, including how you present and arrange finance."
+      ]
+    },
+    {
+      "h2": "Completion and review",
+      "blocks": [
+        "Even after an offer, deals stall at paperwork, security, valuations or legal steps. Stay in touch through completion, and move the lead to Funded when it completes.",
+        "Then look back. Pick a sample of Lost leads and write down why: no contact, no fit, no documents, declined, or went elsewhere. Patterns tell you what to change. If many are no contact, work on speed. If many are no fit, tighten your criteria in auto-buy.",
+        "Use <a href=\"/partners/guides/following-up-quiet-leads\">follow-up routines</a> for leads that go quiet, and refine your auto-buy criteria as you learn which leads you convert. If you are not yet a partner, <a href=\"/partners/apply\">apply here</a>."
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Where do most leads drop off?",
+      "a": "It varies by firm, so measure your own pipeline. Common points are not reaching the owner, no fit with a lender, and slow document collection. Track which stage your Lost leads were in."
+    },
+    {
+      "q": "How do I improve conversion without buying more leads?",
+      "a": "Look at speed to first call, the quality of your qualification questions and how quickly you collect documents. These are within your control and cost nothing in credits."
+    },
+    {
+      "q": "Should I chase leads that have gone quiet?",
+      "a": "Yes, within reason. A structured follow-up by phone, email and text is worthwhile, and there is a point at which to stop. See the guide on following up quiet leads."
+    },
+    {
+      "q": "Can I use the platform pipeline to track this?",
+      "a": "Yes. My leads has stages for New, Contacted, Application, Funded and Lost, with notes, and a CSV export if you want to analyse results elsewhere."
+    },
+    {
+      "q": "What if the owner says no?",
+      "a": "Record the reason, thank them and stop if they ask you to. Respect any request not to be contacted."
+    }
+  ],
+  "cta_h2": "Build a pipeline you can measure",
+  "cta_text": "Sign up on Loanleaf Platform to buy exclusive leads and track each one from New to Funded."
+}

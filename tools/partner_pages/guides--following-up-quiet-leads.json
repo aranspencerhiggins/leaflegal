@@ -1,0 +1,115 @@
+{
+ "slug": "guides/following-up-quiet-leads",
+ "nav": "Following up quiet leads",
+ "title": "Following Up Quiet Business Finance Leads | Loanleaf",
+ "description": "A follow-up cadence for quiet business finance leads by phone, email and text, with example wording and a clear rule for when to stop contacting.",
+ "h1": "Following up quiet business finance leads",
+ "summary": "Most enquiries do not convert on the first call. A short, polite follow-up cadence across phone, email and text recovers many of them, and a clear stopping point protects the owner and your reputation.",
+ "sections": [
+  {
+   "h2": "Why leads go quiet",
+   "blocks": [
+    "A lead goes quiet for ordinary reasons. The owner is busy, waiting on an accountant, comparing options or not yet ready to commit. The enquiry was real, but the timing has not matched.",
+    "The fields help you tell them apart. A lead marked as needing funds as soon as possible that goes quiet is a different case from one marked as just exploring options. Read the timeline before you decide how hard to chase.",
+    "Follow-up is not nagging. Done well, it is a few well-timed, useful contacts that make it easy for the owner to reply.",
+    "A useful habit is to write down, before the first call, what a good outcome looks like for this lead. It tells you later whether the silence is a real no or simply a delay."
+   ]
+  },
+  {
+   "h2": "The rules before you start",
+   "blocks": [
+    "The business owner consented to be contacted by a broker by phone, email or text about business finance. That consent is for their enquiry. Use it for that purpose.",
+    {
+     "list": [
+      "Contact them only about the enquiry they made.",
+      "Be clear who you are and that you are following up their request.",
+      "Include a simple way to say no, and respect it straight away.",
+      "Keep a record of every attempt in your notes."
+     ]
+    },
+    "You are responsible for your own regulatory position and for handling the data lawfully. Our guide to <a href=\"/partners/guides/handling-lead-data\">handling lead data</a> covers the basics.",
+    "Before you send anything, check the lead's details on the platform. The phone and email were verified as a valid UK mobile and a real email domain before the form could be submitted, so a lack of reply is rarely about the contact details."
+   ]
+  },
+  {
+   "h2": "A cadence you can adapt",
+   "blocks": [
+    "This is a pattern to adapt, not a rule. Spread attempts over days, vary the time of day and mix the channels.",
+    {
+     "list": [
+      "<b>Day 0:</b> call straight away. If no answer, leave a short voicemail, then send a brief text and email.",
+      "<b>Day 1:</b> call at a different time of day.",
+      "<b>Day 3:</b> email with something useful, such as the documents you will need.",
+      "<b>Day 5 to 7:</b> call again, then a short text.",
+      "<b>Day 10 to 14:</b> a final email that closes the loop and invites a reply."
+     ]
+    },
+    "Shorten it for urgent leads and lengthen it for those still exploring. The aim is to be persistent but not relentless.",
+    "Whatever the cadence, avoid contacting at unsociable hours, and keep each message short enough to read on a phone. If the owner replies on any channel, switch to that channel and pause the rest of the sequence."
+   ]
+  },
+  {
+   "h2": "What to say by phone",
+   "blocks": [
+    "Voicemails should be under thirty seconds: who you are, why you are calling and a number to call back.",
+    "For example: \"Hi Sam, it's Alex from Example Finance. You enquired through Loanleaf about finance for new equipment. I'd like to help, so call me on this number when you have a moment.\"",
+    "On a live call with a returning contact, do not make them repeat themselves. Pick up where you left off, using your notes, and offer one clear next step."
+   ]
+  },
+  {
+   "h2": "What to write by email and text",
+   "blocks": [
+    "Keep emails short, with a clear subject that names their enquiry. Say who you are, what you can do and what you need from them. One request per email works best.",
+    "For example: \"Hi Sam, following up on your enquiry about around £150,000 for equipment. To go to lenders I need your last three months of bank statements and your latest filed accounts. Reply here or call me on the number below.\"",
+    "Texts should be shorter still: your name, firm, a line about their enquiry and a call to reply. Always make it clear who is writing, and avoid long links or attachments."
+   ]
+  },
+  {
+   "h2": "Give each follow-up a reason",
+   "blocks": [
+    "A message that only says \"just checking in\" is easy to ignore. Add something each time.",
+    {
+     "list": [
+      "A list of documents that would speed things up.",
+      "A question that moves the conversation on, such as whether the timeline has changed.",
+      "An update on how long a type of facility takes.",
+      "An offer to call at a time that suits them."
+     ]
+    },
+    "This also keeps each contact connected to the enquiry, which is the purpose they agreed to."
+   ]
+  },
+  {
+   "h2": "When to stop",
+   "blocks": [
+    "Decide your stopping point in advance. Many brokers stop after a set number of attempts across a couple of weeks, then move the lead to Lost with a note. Your own data will show when further effort stops paying off.",
+    "Stop at once if the owner asks not to be contacted, says they have found finance elsewhere or tells you the enquiry was not theirs. Update your records and move on.",
+    "Moving a lead to Lost is not the end for the owner. If they reply months later, you can pick it up. Review your Lost leads occasionally and see which of the <a href=\"/partners/guides/converting-business-finance-leads\">conversion stages</a> they stalled at. To buy leads and follow them up in one place, <a href=\"/partners/apply\">apply to become a partner</a>."
+   ]
+  }
+ ],
+ "faqs": [
+  {
+   "q": "How many times should I contact a quiet lead?",
+   "a": "There is no fixed number. Many brokers use a handful of attempts across one to two weeks, mixing calls, emails and texts. Set your own limit and review it against results."
+  },
+  {
+   "q": "Can I text and email leads I have bought?",
+   "a": "The owner consented to be contacted by phone, email or text about business finance. Use that only for their enquiry, and you remain responsible for your own regulatory position."
+  },
+  {
+   "q": "What if a lead says they are not interested?",
+   "a": "Thank them, stop contacting them and record it. Respect any request not to be contacted."
+  },
+  {
+   "q": "Should I follow up leads that were just exploring options?",
+   "a": "Yes, but at a slower pace. A gentle sequence over a longer period suits owners who are not yet ready to proceed."
+  },
+  {
+   "q": "Where do I keep notes on attempts?",
+   "a": "On the platform, each lead has a pipeline stage and notes. You can also send leads to your CRM by webhook and keep notes there."
+  }
+ ],
+ "cta_h2": "Keep every lead moving",
+ "cta_text": "Sign up on Loanleaf Platform to track each lead through the pipeline, with notes and CSV export."
+}

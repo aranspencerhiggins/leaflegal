@@ -1,0 +1,114 @@
+{
+ "slug": "lead-delivery",
+ "nav": "Lead delivery",
+ "title": "Real-Time Business Loan Lead Delivery | Loanleaf",
+ "description": "How Loanleaf delivers business loan leads in real time to the platform, your email and your CRM by webhook, and what the business owner receives.",
+ "h1": "Real-time delivery of business loan leads to your CRM",
+ "summary": "The moment a lead is bought, the full details appear on Loanleaf Platform, arrive by email and are sent to your CRM by webhook. The business owner is also sent a “you’ve been matched” email showing your public profile.",
+ "sections": [
+  {
+   "h2": "Three places at once",
+   "blocks": [
+    "When you buy a lead manually, or auto-buy buys it for you, delivery is instant and happens in three places.",
+    {
+     "list": [
+      "<b>On the platform.</b> The lead appears in My leads with every field unlocked.",
+      "<b>By email.</b> The full lead is sent to the delivery address you set.",
+      "<b>By webhook.</b> The lead is posted as JSON to your CRM or automation tool."
+     ]
+    },
+    "Webhooks work for both manual purchases and auto-buy, so your CRM stays in sync whichever mode you use."
+   ]
+  },
+  {
+   "h2": "What each lead contains",
+   "blocks": [
+    "The delivered lead is the full record of what the business owner told us.",
+    {
+     "list": [
+      "Loan amount, and the purpose, for example Growth and expansion, Cash flow, Equipment or vehicles, Stock and inventory, Commercial property, Refinance existing debt, Tax or VAT bill, or Something else.",
+      "How soon they need it: As soon as possible, Within 2 weeks, Within a month, or Just exploring options.",
+      "Company structure (Ltd or LLP), annual revenue band, time trading band and business name.",
+      "Missed payments, defaults or CCJs in the last 6 years: No, Yes or Not sure.",
+      "Existing finance, and if yes, the amount left to repay and the monthly repayments band.",
+      "Contact details: name, business name, UK mobile and email.",
+      "Source page, timestamp and the consent record.",
+      "A quality score from 0 to 100."
+     ]
+    },
+    "Before purchase, name and contact details are masked. They unlock when you buy."
+   ]
+  },
+  {
+   "h2": "Setting up the webhook",
+   "blocks": [
+    "You can add up to 5 webhook destinations in your auto-buy and delivery settings. Each one receives the lead as JSON. It works with Zapier, Make, HubSpot, Pipedrive and any CRM that accepts webhooks.",
+    "The simplest route is to point the webhook at a Zapier or Make scenario, map the fields to your CRM and send a test lead. Once you see the record created in the right pipeline, switch it on. If your CRM takes leads by email only, the email delivery still works on its own."
+   ]
+  },
+  {
+   "h2": "A webhook example",
+   "blocks": [
+    "A typical setup uses Zapier or Make as the middle step. The webhook receives the lead as JSON, a mapping step matches each field to your CRM, and a record is created with the owner assigned to an adviser. Map the loan amount, purpose, timeline and quality score, because advisers will sort and prioritise on them.",
+    "Keep the consent record and timestamp in a note or custom field. If you ever need to evidence where a contact came from, it should sit with the record rather than in an email thread."
+   ]
+  },
+  {
+   "h2": "Delivery by email",
+   "blocks": [
+    "The email gives you the same details as the platform. Use a shared inbox, or an address that several people can see, so a lead is not stuck in one person’s mail on a day off.",
+    "Manual-mode brokers can also get an email when a matching lead goes live. That is separate from delivery: it is an alert that a lead is available, and nothing is bought until you buy it.",
+    "If several advisers share leads, set the delivery address to a shared mailbox and use your CRM rules to assign them. Do not forward manually from one person’s inbox, since that adds delay."
+   ]
+  },
+  {
+   "h2": "What the business owner receives",
+   "blocks": [
+    "At the same time as your delivery, the owner is sent a “you’ve been matched” email. It shows your public profile, including your logo and contact buttons. The owner then knows who to expect.",
+    "Your profile is part of the first impression, so fill it in properly before you buy your first lead. A recognisable logo and working contact buttons give the owner confidence that the call is real."
+   ]
+  },
+  {
+   "h2": "Working the delivered lead",
+   "blocks": [
+    "Call quickly. Open with the amount and purpose they gave, then ask for the things the form does not collect. The <a href=\"/partners/lead-verification\">verification page</a> lists them.",
+    "In My leads, move the lead through New, Contacted, Application, Funded and Lost, and add notes. CSV export is there if you want to report outside the platform. If the number or email is invalid, see <a href=\"/partners/refunds\">refunds</a>, and note the 72-hour limit."
+   ]
+  },
+  {
+   "h2": "Planning for speed, and if something does not arrive",
+   "blocks": [
+    "The fastest way to waste a delivered lead is to let it sit. Decide before you buy who owns new leads each hour of the working day, and set a CRM alert for new records. Speed to first call is something you control completely, and delivery is built to let you start the moment the lead exists.",
+    "First check the lead in My leads, which is always the source of truth. Then check your webhook address and any filters in your automation tool. Email delivery can be caught by spam filters, so add hello@loanleaf.co to your safe senders. If it still looks wrong, contact the team through the platform."
+   ]
+  }
+ ],
+ "faqs": [
+  {
+   "q": "How quickly is a lead delivered?",
+   "a": "Instantly. It appears on the platform, by email and in your CRM by webhook at the point of purchase."
+  },
+  {
+   "q": "Which CRMs work?",
+   "a": "Any CRM that accepts webhooks, including through Zapier and Make, and including HubSpot and Pipedrive. Leads are sent as JSON."
+  },
+  {
+   "q": "How many webhooks can I add?",
+   "a": "Up to 5 destinations."
+  },
+  {
+   "q": "Are contact details masked before I buy?",
+   "a": "Yes. You see masked details with “valid UK mobile” and “domain verified” checks. The business name and full details unlock on purchase."
+  },
+  {
+   "q": "Does the business owner know I will call?",
+   "a": "Yes. They receive a “you’ve been matched” email showing your public profile with your logo and contact buttons."
+  },
+  {
+   "q": "Do I get the consent record?",
+   "a": "Yes. The wording the owner saw and the timestamp are supplied with every lead, along with the source page."
+  }
+ ],
+ "cta_h2": "Get leads straight into your CRM",
+ "cta_text": "Set up your webhook when you register on Loanleaf Platform, or <a href=\"/partners/apply\">apply to become a partner</a> to talk it through."
+}

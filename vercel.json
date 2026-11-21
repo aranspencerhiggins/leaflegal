@@ -1,0 +1,129 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "framework": null,
+  "buildCommand": "python3 tools/build_pages.py > /dev/null && python3 tools/detemplate.py > /dev/null && (node tools/preview_emails.mjs > /dev/null || echo \"email previews not rebuilt, using committed copy\")",
+  "outputDirectory": "public",
+  "redirects": [
+    {
+      "source": "/index-b",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/legal",
+      "destination": "/partners/legal",
+      "permanent": true
+    },
+    {
+      "source": "/post/growth-guarantee-scheme-launched-what-every-uk-business-needs-to-know",
+      "destination": "/guides/growth-guarantee-scheme",
+      "permanent": true
+    },
+    {
+      "source": "/post/:slug",
+      "destination": "/guides",
+      "permanent": true
+    },
+    {
+      "source": "/blog-categories/:slug",
+      "destination": "/guides",
+      "permanent": true
+    },
+    {
+      "source": "/author/:slug",
+      "destination": "/guides",
+      "permanent": true
+    },
+    {
+      "source": "/partners/commercial-finance-brokers",
+      "destination": "/partners",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), payment=(self \"https://js.stripe.com\" \"https://checkout.stripe.com\")"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        }
+      ]
+    },
+    {
+      "source": "/platform(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://*.chatra.io https://js.stripe.com https://checkout.stripe.com; frame-src https://challenges.cloudflare.com https://*.chatra.io https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com https://*.stripe.com; connect-src 'self' https://challenges.cloudflare.com https://*.chatra.io wss://*.chatra.io https://tefpljuzuvdchczcfjlz.supabase.co https://api.stripe.com https://checkout.stripe.com https://*.stripe.com; img-src 'self' data: blob: https://*.fbcdn.net https://*.chatra.io https://*.stripe.com https://tefpljuzuvdchczcfjlz.supabase.co https://loanleaf.co; style-src 'self' 'unsafe-inline'; font-src 'self' https://*.chatra.io; object-src blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/google-callback",
+      "destination": "/api/partner?action=google-callback"
+    },
+    {
+      "source": "/api/google-auth",
+      "destination": "/api/partner?action=google-auth"
+    }
+  ],
+  "regions": [
+    "dub1"
+  ],
+  "crons": [
+    {
+      "path": "/api/platform?action=cron-plans",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/crm?action=cron",
+      "schedule": "0 8 * * *"
+    }
+  ],
+  "functions": {
+    "api/platform.js": {
+      "includeFiles": "api/_lib/email-previews.json"
+    }
+  }
+}

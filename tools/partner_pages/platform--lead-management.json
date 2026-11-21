@@ -1,0 +1,108 @@
+{
+  "slug": "platform/lead-management",
+  "nav": "Lead management",
+  "title": "Lead Management and Pipeline Guide | Loanleaf",
+  "description": "Work your business finance leads on Loanleaf Platform: My leads, pipeline stages from New to Funded, notes, CSV export and how to work a pipeline.",
+  "h1": "Work your pipeline in My leads",
+  "summary": "My leads on Loanleaf Platform holds every lead you have bought, with full contact details, the business's answers and a simple pipeline: New, Contacted, Application, Funded and Lost. You can add notes, export to CSV and send leads to your CRM by webhook. It is built to keep a small team organised without extra software.",
+  "sections": [
+    {
+      "h2": "What My leads holds",
+      "blocks": [
+        "Once you buy a lead, it moves from Opportunities into My leads. Unlike the marketplace view, nothing is masked: you see the business name, the contact's name, the full mobile number and email address, plus every answer from the form.",
+        "That includes the loan amount, purpose, timeline, revenue band, time trading, credit history answer and existing finance. The quality score and the consent record come with it, so you can show where the lead came from and what the business agreed to."
+      ]
+    },
+    {
+      "h2": "The five pipeline stages",
+      "blocks": [
+        "Each lead sits in one stage. You move it as the conversation progresses.",
+        {
+          "list": [
+            "<b>New:</b> bought, not yet called",
+            "<b>Contacted:</b> you have spoken to them or tried to",
+            "<b>Application:</b> they have agreed to go ahead and you are gathering documents or have submitted to a lender",
+            "<b>Funded:</b> the deal has completed",
+            "<b>Lost:</b> it will not proceed, whether they went elsewhere, no longer need the money or could not be helped"
+          ]
+        },
+        "The stages are deliberately simple. If you need more detail, put it in the notes or in your CRM, and use My leads as a clear view of where each enquiry stands."
+      ]
+    },
+    {
+      "h2": "Notes",
+      "blocks": [
+        "Each lead has a notes field. Use it for anything the next person (or you next week) would need: what they said they need the money for, when to call back, what documents they promised, or why it was marked Lost.",
+        "For example: \"Wants £80k for a second van. Accountant sending 6 months of bank statements on Thursday. Call Friday after 2pm.\" A note like that makes a follow-up call take a minute instead of ten."
+      ]
+    },
+    {
+      "h2": "Working a pipeline day to day",
+      "blocks": [
+        "A routine that works for most teams:",
+        {
+          "list": [
+            "First thing: filter to New and call anything bought since yesterday",
+            "Within minutes of a purchase: call the mobile, and email straight after if there is no answer",
+            "After each call: set the stage and add a note",
+            "Midday: chase anyone with a promised document",
+            "End of day: nothing should be left in New that you bought more than a day ago"
+          ]
+        },
+        "The business owner has just been sent a \"you've been matched\" email with your profile, so a prompt call feels expected. See <a href=\"/partners/platform/broker-profile\">broker profile</a> to make that email work for you."
+      ]
+    },
+    {
+      "h2": "Reading your own numbers",
+      "blocks": [
+        "The pipeline doubles as a simple scorecard. Count how many leads you bought, how many reached Application, and how many reached Funded. Set that against the credits you spent on them and you have a real cost per funded deal for your own business.",
+        "Break it down by what you can see: purpose, loan size band, time trading, credit history answer, or the quality score. You may find that leads asking for Equipment or vehicles convert far better for you than Tax or VAT bill, or that your best results come from the 2 to 5 years trading band. Use that to change your criteria rather than guessing.",
+        "A monthly CSV export into a spreadsheet is enough for most firms to do this without any extra tooling."
+      ]
+    },
+    {
+      "h2": "Using Lost properly",
+      "blocks": [
+        "Lost is not a failure state to hide. It is how you learn. If many of your Lost leads share a pattern, such as very new businesses or asks far above revenue, you can change your <a href=\"/partners/platform/auto-buy\">auto-buy criteria</a> or your filters in Opportunities to stop buying them.",
+        "Make a note on every Lost lead. A line such as \"went with their bank\" or \"declined, CCJ not disclosed on form\" is enough to spot patterns later. If the phone number was not in service or the email did not exist, ask for a refund within 72 hours of purchase. Other reasons do not qualify."
+      ]
+    },
+    {
+      "h2": "CSV export and your CRM",
+      "blocks": [
+        "You can export your leads to CSV whenever you need them elsewhere, for a monthly review, an accountant, or a one-off import into another system.",
+        "For day-to-day use, a CRM connection is better than exporting. Set up a webhook and every lead you buy, by auto-buy or by hand, arrives in your CRM at the moment of purchase. See <a href=\"/partners/platform/crm-integrations\">CRM integrations</a>."
+      ]
+    },
+    {
+      "h2": "Data responsibilities",
+      "blocks": [
+        "Once a lead is delivered, you are responsible for your copy of the data and for handling it in line with UK data protection law and your own privacy notice. Use it to contact the business about its finance enquiry, and respect any request to stop. You are also responsible for your own regulatory position."
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do I have to use all five stages?",
+      "a": "No. Use as many as help you. Many brokers only use New, Contacted and Lost at first, and add Application and Funded once they are submitting deals."
+    },
+    {
+      "q": "Can my team share the same leads?",
+      "a": "Leads are bought by your firm's account. For team workflows, send leads to your CRM by webhook, where you can assign them to individual advisers."
+    },
+    {
+      "q": "Do I need My leads if I use a CRM?",
+      "a": "Not necessarily, but it is a useful backup and it is where the purchase record, price and consent details sit. Many brokers use both."
+    },
+    {
+      "q": "What can I export?",
+      "a": "You can export your leads as a CSV file. Use it for reviews or imports. For ongoing syncing, use a webhook."
+    },
+    {
+      "q": "How long should I wait before calling?",
+      "a": "As soon as you can. The business owner has just asked to be contacted, and a prompt call is far more likely to find them at their desk and ready to talk."
+    }
+  ],
+  "cta_h2": "Keep every lead moving",
+  "cta_text": "Open My leads on Loanleaf Platform, or <a href=\"/partners/apply\">apply to talk to the team</a>. The <a href=\"/partners/platform\">platform overview</a> shows how it all fits together."
+}

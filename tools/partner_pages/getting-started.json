@@ -1,0 +1,99 @@
+{
+ "slug": "getting-started",
+ "nav": "Getting started",
+ "title": "Getting Started with Loanleaf Leads for Brokers | Loanleaf",
+ "description": "How to sign up as a Loanleaf broker: account, company details, lead criteria, plan and agreement, approval, and what to set up before your first lead.",
+ "h1": "Getting started as a Loanleaf broker",
+ "summary": "Signing up takes about five minutes: create an account, add company details, set your lead criteria, build a public profile, choose a plan, accept the partner agreement and pay by card. Loanleaf then checks your firm, usually within one working day, and you can buy once you are approved.",
+ "sections": [
+  {
+   "h2": "Before you begin",
+   "blocks": [
+    "Have a few things to hand: your company name, your FCA reference if you hold one, your registered address, the name and position of the person responsible for the account, and a phone number. It also helps to know which loan sizes and purposes you want, and which CRM you use.",
+    "If you would rather talk first, book a call or send an enquiry from the partner application form. The team will answer questions about criteria, plans and delivery. Otherwise you can register directly on Loanleaf Platform.",
+    "The leads are UK limited companies and LLPs asking for between £5,000 and £2m+, for purposes such as growth, cash flow, equipment, stock, commercial property, refinancing and tax bills. Your platform criteria let you narrow this to what you arrange, so a broker working only in asset finance can set equipment and vehicles alone."
+   ]
+  },
+  {
+   "h2": "The onboarding steps",
+   "blocks": [
+    "Registration runs through seven steps, one screen at a time.",
+    "Details from a partner application can be passed across so some fields arrive filled in. Check them anyway.",
+    "You can use the details from a partner application so some fields arrive filled in. Check them anyway."
+   ]
+  },
+  {
+   "h2": "Choosing your plan",
+   "blocks": [
+    "Plans are monthly subscriptions, with prices excluding VAT. Starter is £2,500 a month for 2,500 credits and Growth is £5,000 for 5,000. Custom plans start from £6,000 in £1,000 steps. One credit is £1 and there are no bonus credits. Plans over 20,000 credits a month are arranged with the team.",
+    "New partners can take a first month offer: £1,000 + VAT for 1,000 credits, then Starter at £2,500 + VAT a month. You can cancel at any time. Upgrades apply immediately and downgrades at renewal. Unused credits roll over while you stay subscribed. The <a href=\"/partners/pricing\">pricing page</a> has the detail."
+   ]
+  },
+  {
+   "h2": "Approval",
+   "blocks": [
+    "Loanleaf checks each firm before it can buy leads, usually within one working day. You cannot buy until three things are true: you are approved, you have accepted the partner agreement and you have credits in your account.",
+    "Regulation is your responsibility. Loanleaf is an introducer and is not authorised by the FCA. You are responsible for your own regulatory position, including any authorisation your activities require.",
+    "If anything is unclear when your firm is checked, the team may get in touch. Make sure your company details match your public records, and use a phone number and email that someone will answer."
+   ]
+  },
+  {
+   "h2": "What to set up first",
+   "blocks": [
+    "Once approved, spend ten minutes on the following before you buy anything.",
+    {
+     "list": [
+      "<b>Public profile.</b> Add a clear logo and the contact buttons you want owners to use. This appears in the matched email.",
+      "<b>CRM webhook.</b> Add up to 5 destinations so purchased leads land in your system. Zapier, Make, HubSpot, Pipedrive and any CRM that accepts webhooks will work. Send a test lead before the real thing.",
+      "<b>Notification email.</b> Use an address that someone watches during working hours.",
+      "<b>Criteria.</b> Set your loan size range, purposes, revenue bands, time trading and credit preference, even if you start in manual mode."
+     ]
+    }
+   ]
+  },
+  {
+   "h2": "Your first leads and your credits",
+   "blocks": [
+    "Open Opportunities and read a few listings before you spend. Look at the quality score, the credit history answer, the timeline and the masked contact checks. Then buy one or two leads and call them straight away. This tells you quickly whether your criteria are right.",
+    "If you choose manual mode you can ask for an email when a matching lead arrives. If you choose auto-buy, set conservative limits to begin with: leads per day, credits per day, credits per month and a maximum credits per lead. You can widen them later. The <a href=\"/partners/platform/auto-buy\">auto-buy page</a> explains each one.",
+    "The dashboard shows your balance. A warning email is sent once when your balance falls below 100 credits, so you are not caught out mid-month. If you run out, you can upgrade your plan and the change takes effect straight away."
+   ]
+  },
+  {
+   "h2": "A sensible first week",
+   "blocks": [
+    "On day one, register, set your profile and run a test webhook. Once approved, read through live leads on Opportunities for a short while without buying, so you learn how the quality score, credit history and timeline relate to the price.",
+    "On days two and three, buy a handful of leads in manual mode and call them within minutes. Keep notes in the pipeline. By the end of the week you will know which loan sizes and purposes you convert, and can tighten your criteria or turn on auto-buy with limits that fit your team’s capacity.",
+    "Do not set auto-buy limits above what your team can call in a day. A lead that waits is a lead that cools."
+   ]
+  }
+ ],
+ "faqs": [
+  {
+   "q": "How long does sign-up take?",
+   "a": "About five minutes to register. Loanleaf then checks your firm, usually within one working day, before you can buy."
+  },
+  {
+   "q": "Can I buy leads straight after paying?",
+   "a": "Not until you are approved. You also need to have accepted the partner agreement and have credits in your account."
+  },
+  {
+   "q": "Do I need an FCA reference?",
+   "a": "The company step asks for one. You are responsible for your own regulatory position, including any authorisation your activities require."
+  },
+  {
+   "q": "Can I change my criteria later?",
+   "a": "Yes. Edit your lead criteria whenever you like. Changes apply to new leads straight away."
+  },
+  {
+   "q": "Can I talk to someone before signing up?",
+   "a": "Yes. Choose a call or an enquiry through the partner application and the team will answer your questions. You can still register on the platform yourself at any time."
+  },
+  {
+   "q": "What if I want to stop?",
+   "a": "You can cancel at any time. Unused credits expire when the subscription ends, so spend them before you cancel."
+  }
+ ],
+ "cta_h2": "Create your account",
+ "cta_text": "Register on Loanleaf Platform in about five minutes, or <a href=\"/partners/apply\">apply to become a partner</a> if you want to talk it through first."
+}

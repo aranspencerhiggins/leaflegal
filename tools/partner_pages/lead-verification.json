@@ -1,0 +1,104 @@
+{
+  "slug": "lead-verification",
+  "nav": "Lead verification",
+  "title": "Business Loan Lead Verification and Checks | Loanleaf",
+  "description": "Every check a Loanleaf lead passes before sale: form filters, valid UK mobile, email domain, Companies House name, repeat enquiries and a quality score.",
+  "h1": "How Loanleaf verifies every business loan lead",
+  "summary": "Before a lead is sold, the form filters out unsuitable businesses, the mobile is checked as a valid UK number, the email domain is checked, the company name is checked against Companies House and repeat enquiries are caught, so no broker pays for the same lead twice. Each lead also gets a quality score from 0 to 100.",
+  "sections": [
+    {
+      "h2": "Why we check, and the form filters",
+      "blocks": [
+        "Some businesses never get to submit. The form turns away anyone who is not a UK limited company or LLP, so sole traders and ordinary partnerships are out. It also turns away businesses not yet trading, firms with under 6 months of trading and annual revenue under £50,000.",
+        "The loan amount is chosen from a range running from £5,000 to £2m+. Because these rules apply on the form itself, the lead you see already meets them.",
+        "A lead is only worth buying if you can reach the person and they fit what you arrange. Verification removes many problems before you pay. It cannot replace your own qualifying, and this page is honest about where the checks stop."
+      ]
+    },
+    {
+      "h2": "A valid UK mobile",
+      "blocks": [
+        "The mobile number is checked as a valid UK mobile number. On the platform you see this as a “valid UK mobile” tick next to the masked number, for example +447*******90. A lead whose phone check failed is flagged and is never taken by auto-buy."
+      ]
+    },
+    {
+      "h2": "The email domain",
+      "blocks": [
+        "The email domain is checked so that it can receive email, and common typos are caught. You see a “domain verified” tick next to the masked address, for example a***@b****.co.uk. This reduces bounces. It does not prove the mailbox belongs to the owner. The same rule applies: a failed email check keeps a lead out of auto-buy."
+      ]
+    },
+    {
+      "h2": "Companies House and company name",
+      "blocks": [
+        "The form asks for the registered company name, and checks that it ends in the right form, Ltd or LLP. The company is then looked up on Companies House, and a summary is shown to you on the Opportunities page before you buy.",
+        "Use that summary as a starting point. A lookup tells you the company exists. It does not tell you the owner’s credit position, who the directors are or whether the figures they gave are right."
+      ]
+    },
+    {
+      "h2": "Repeat enquiries",
+      "blocks": [
+        "If the same business enquires again within 7 days, the repeat goes back to the broker who bought the first enquiry, at no extra cost. This protects you from buying the same person twice and from paying for a lead another broker already worked.",
+        "After that, a broker never receives the same lead again and never pays for the same lead twice. After that, a returning owner can enquire again as a new lead, which is reasonable because their circumstances may have changed."
+      ]
+    },
+    {
+      "h2": "The quality score",
+      "blocks": [
+        "Each lead has a quality score from 0 to 100, based on credit history, time trading, revenue, urgency and existing debt. You see it before you buy, alongside the credit history answer (No, Yes or Not sure for missed payments, defaults or CCJs in the last 6 years).",
+        "The score helps you rank leads. It is not a lending decision, and a lower score is not a reason to ignore a lead if it fits your lenders. See <a href=\"/partners/platform/auto-buy\">auto-buy</a> if you want to filter by clean credit only."
+      ]
+    },
+    {
+      "h2": "Reading a lead before you buy",
+      "blocks": [
+        "Use the checks together, not one at a time. A high quality score with a failed phone check is not a lead to rush. A modest score with a clean credit answer, a clear purpose and a short timeline may suit your lenders well.",
+        "For example, a £40,000 cash flow lead with “As soon as possible”, 2 to 5 years trading and “No” on credit problems is usually a call to make first. A £1m property request from a business with £100k to £250k revenue and 6 to 12 months trading is worth a closer look at affordability before you spend time on it. The price signals this too, because affordability is part of how a lead is priced."
+      ]
+    },
+    {
+      "h2": "What you should still qualify on the call",
+      "blocks": [
+        "The form does not ask several things lenders care about. Ask about:",
+        {
+          "list": [
+            "card takings or card machine turnover",
+            "property value, loan to value and the property address",
+            "whether a property is residential or commercial investment, and its planning status",
+            "sector and what the business actually does",
+            "director names and who will sign",
+            "bank statements and whether the stated revenue holds up",
+            "the real position on credit, especially where the owner answered “Not sure”"
+          ]
+        },
+        "If a phone number is not in service, belongs to someone else or the email does not exist, see the <a href=\"/partners/refunds\">refund policy</a>."
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Does a valid mobile mean the owner will answer?",
+      "a": "No. It means the number is a valid UK mobile. You should still call promptly and try more than once."
+    },
+    {
+      "q": "What does “domain verified” mean?",
+      "a": "The email domain can receive email and has no obvious typo. It does not confirm the mailbox belongs to the owner."
+    },
+    {
+      "q": "Can I rely on the revenue band?",
+      "a": "It is what the owner told us. The form requires £50,000 or more, but you should check against bank statements as part of your usual process."
+    },
+    {
+      "q": "Is the quality score a credit score?",
+      "a": "No. It combines credit history, time trading, revenue, urgency and existing debt into a 0 to 100 guide. It is not a credit report or lending decision."
+    },
+    {
+      "q": "What if the contact details turn out to be wrong?",
+      "a": "You can request a refund within 72 hours of purchase if the number is not in service, belongs to someone else or the email does not exist."
+    },
+    {
+      "q": "Does Loanleaf check the owner’s credit?",
+      "a": "No. The credit history field is the owner’s own answer: No, Yes or Not sure for missed payments, defaults or CCJs in the last 6 years. You should run your own checks as part of your usual process."
+    }
+  ],
+  "cta_h2": "See the checks on live leads",
+  "cta_text": "Register on Loanleaf Platform to see the checks and scores on live leads, or <a href=\"/partners/apply\">apply to become a partner</a>."
+}

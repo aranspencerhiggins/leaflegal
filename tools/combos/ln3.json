@@ -1,0 +1,860 @@
+{
+ "revolving-credit-facility|working-capital": {
+  "h1": "Revolving credit facilities for working capital",
+  "title": "Revolving Credit Facilities for Working Capital | Loanleaf",
+  "desc": "How a revolving credit facility covers working capital gaps for UK limited companies and LLPs. Get matched with one specialist finance broker, free.",
+  "lead": "A standing limit sized to the low point of your cash cycle, drawn when wages and bills fall due and repaid as customers pay.",
+  "intro": [
+   "Working capital rarely runs short evenly. It dips on the days wages, rent and supplier invoices leave the account, then recovers when customers pay. A revolving credit facility is built around that rhythm. Instead of a lump sum you may not need for months, you agree a limit, draw only what the next few weeks require and repay when receipts arrive. Interest is generally charged on the amount drawn, so the facility costs more in tight weeks and little in easy ones. That makes it a natural match for businesses whose cash position swings by thousands of pounds within a single month.",
+   "The key decision is the size of the limit. A sensible starting point is the deepest point your cash balance reaches in a normal year, plus a margin for a late payer. Lenders will test that against your bank statements, looking at how often the account dips, how quickly it recovers and whether the pattern looks like timing or like a loss. For example, a distributor with £30,000 of monthly outgoings and customers paying after 45 days might ask for a limit near one month of costs rather than a round number."
+  ],
+  "uses": [
+   [
+    "Payroll weeks",
+    "Draw ahead of month-end payroll and repay when the invoice you are waiting on lands, so wages are never the thing that waits."
+   ],
+   [
+    "Late-paying customers",
+    "Cover the extra fortnight when a large client pays outside terms, then repay in full once it clears rather than carrying a loan you no longer need."
+   ],
+   [
+    "Bunched outgoings",
+    "Smooth the weeks when rent, insurance renewals and supplier bills fall together, drawing for a short spell and clearing the balance afterwards."
+   ],
+   [
+    "Supplier terms",
+    "Settle supplier invoices on time while goods or services are still being billed on to your own customers, which can help keep good terms for the next order."
+   ]
+  ],
+  "fit": [
+   [
+    "Sizing the limit to the cycle",
+    "Facilities are commonly set against turnover and the shape of your bank statements rather than a single asset. Ask for enough to cover your worst normal month, not your worst imaginable one, because unused limit can carry a fee. A lender may offer a smaller limit first and review it upward."
+   ],
+   [
+    "How lenders read the account",
+    "Expect close attention to daily balances, returned payments and whether the account ever hits a ceiling. A pattern of dipping and recovering supports a revolving facility. A balance that only falls suggests a different problem, and lenders will usually ask what is behind it."
+   ],
+   [
+    "Security and the annual review",
+    "Many facilities are unsecured with a director’s personal guarantee, though some lenders take a debenture. Limits are usually reviewed each year, so plan for a reduced or withdrawn limit and decide in advance what you would do if that happened."
+   ]
+  ],
+  "considerations": [
+   [
+    "A permanent shortfall is not a timing gap",
+    "If the balance sits near the limit for months, the facility is working as a loan with a variable cost. A fixed-term loan, or a look at pricing and credit terms, may suit better, and a broker may point you that way."
+   ],
+   [
+    "Ledger-heavy businesses",
+    "A company invoicing other businesses on 60 or 90-day terms may find invoice finance releases more cash than a revolving limit, because it is sized to unpaid invoices. A broker can compare the two against your sales ledger."
+   ],
+   [
+    "Fees on idle limit",
+    "Check for arrangement, renewal and non-utilisation fees. A facility drawn twice a year can cost more per pound used than one used every month, so be honest about how often you will need it."
+   ]
+  ],
+  "faqs": [
+   [
+    "How big a limit should a company ask for?",
+    "Start from the lowest point your cash balance reaches in a normal year, then add a margin for a late payment. Lenders usually compare the figure with turnover and your bank statements. A broker can help you test a few sizes, and a smaller limit that you can justify is often easier to agree than a large one."
+   ],
+   [
+    "Do I have to clear the balance every so often?",
+    "It depends on the lender. Some require the balance to drop to nil for a short period each year, often called a clean-down, while others only ask for interest to be paid monthly. Check this before you accept, because a clean-down can be hard to meet if the facility has become a standing loan."
+   ],
+   [
+    "How do I draw money from the facility?",
+    "Most lenders let you request a draw online or by email, and the money is paid into your business account. Timings differ between lenders and some need notice for larger amounts, so ask the broker how it works in practice rather than assuming same-day access."
+   ],
+   [
+    "What documents will a lender want to see?",
+    "Usually several months of business bank statements, the latest filed accounts and sometimes management accounts or an aged debtor list. Lenders also run credit checks on the company and its directors. Having these ready tends to make the process smoother, and a broker can tell you which lenders ask for what."
+   ],
+   [
+    "What happens if my turnover falls during the year?",
+    "The lender may review the limit early or reduce it at the next renewal, and in some cases it can ask for the facility to be repaid. Talk to the lender or your broker early if trading changes, because options are usually wider before the balance is under pressure."
+   ]
+  ]
+ },
+ "revolving-credit-facility|buying-stock": {
+  "h1": "Revolving credit facilities for buying stock",
+  "title": "Revolving Credit Facilities for Buying Stock | Loanleaf",
+  "desc": "How a revolving credit facility lets UK limited companies buy stock ahead of sales and repay as it sells. Get matched with one specialist finance broker.",
+  "lead": "Draw to pay suppliers when stock is ordered, repay as it sells, and pay interest only while the money is out.",
+  "intro": [
+   "Stock has a life cycle: ordered, paid for, shelved, sold, then paid for again by the customer. The money is out of the business for that whole stock-turn period, which might be ten weeks for a clothing retailer and five months for a specialist wholesaler. A revolving facility is repaid as sales come in, so the borrowing lasts about as long as the stock does. Because interest accrues on the balance drawn, a purchase that sells quickly costs little, while the same purchase sitting on the shelves keeps costing money until it moves.",
+   "Lenders think about stock differently from other costs. They ask how many days it takes to sell, how margins hold up after discounting and whether you buy from a few large suppliers or many small ones. A limit sized to your biggest single seasonal order, rather than your total annual purchases, is often easier to justify. For example, a homeware company placing a £60,000 autumn order might draw it in two stages as goods arrive, repaying each stage from the Black Friday and Christmas sales."
+  ],
+  "uses": [
+   [
+    "Pre-season orders",
+    "Pay for winter coats, garden furniture or Christmas lines when the supplier needs the order, months before the shop or website takes the money."
+   ],
+   [
+    "Imported goods",
+    "Cover the deposit and balance on goods shipped from abroad, where payment is due long before the container arrives and is unpacked."
+   ],
+   [
+    "Volume purchases",
+    "Take a bulk price from a manufacturer, draw for the invoice and repay over the following weeks as the extra units sell."
+   ],
+   [
+    "Reordering best sellers",
+    "Reorder a line that is selling ahead of forecast, without waiting for earlier sales to clear first."
+   ]
+  ],
+  "fit": [
+   [
+    "Limit set to the biggest order",
+    "Ask the broker to size the facility against your largest seasonal purchase and how long it takes to sell through. A limit that comfortably covers one big order and is repaid before the next is easier to support than a large limit that stays drawn all year."
+   ],
+   [
+    "What lenders check",
+    "Stock turn, gross margin, supplier payment terms and whether discounted lines hurt profit. Lenders may ask for stock reports or management accounts, and some take a debenture over stock, though many unsecured facilities rely on accounts and bank statements alone."
+   ],
+   [
+    "Drawing and repaying with sales",
+    "Draws are usually made when a supplier invoice falls due, and repayments follow the sales calendar. Many businesses repay in larger sums after peak trading, so note when the balance will need to come down and whether the lender expects regular reductions."
+   ]
+  ],
+  "considerations": [
+   [
+    "Slow-moving stock",
+    "A revolving facility assumes the goods sell. Last season’s unsold lines still need paying for, and carrying them on the facility eats into margin. If unsold stock is building up, more credit will not fix it, and a markdown plan may matter more."
+   ],
+   [
+    "A single large purchase",
+    "If you are buying one large order and know exactly when it will sell, a short fixed-term loan can be simpler than a facility with an annual review and fees for unused limit."
+   ],
+   [
+    "Customers on credit",
+    "Where goods are sold to other businesses on 60-day terms, the cash gap runs from paying the supplier to being paid by the customer, not just to the sale. Invoice finance alongside, or instead, may fit that longer cycle."
+   ]
+  ],
+  "faqs": [
+   [
+    "Can I use a revolving facility to buy from overseas suppliers?",
+    "Generally yes, because the facility is just cash in your business account. The practical issues are timing and currency. Overseas suppliers often want payment before shipping, and exchange rate movements can change the sterling cost between ordering and paying. A broker can explain how lenders view that risk."
+   ],
+   [
+    "How long should stock take to sell for this to work?",
+    "There is no fixed number, but the facility suits stock that turns within weeks or a few months rather than a year or more. Lenders look at your own history, so a company that has sold through its autumn range by January will be seen more favourably than one carrying unsold lines for twelve months."
+   ],
+   [
+    "Will the lender take security over my stock?",
+    "Sometimes. Some facilities are unsecured with a director’s personal guarantee, while others take a debenture, which gives the lender a charge over company assets including stock. Which applies depends on the lender and the limit, and a broker can tell you what each is likely to ask for."
+   ],
+   [
+    "What if a season goes badly and the stock does not sell?",
+    "You still owe the drawn balance, with interest, whether or not the goods have sold. Talk to the lender early. Some will agree a repayment plan, and a broker may suggest another structure. It helps to size the limit so one poor season does not leave the facility fully drawn."
+   ],
+   [
+    "How often can I draw during a buying season?",
+    "Usually as often as you need, up to the limit and subject to the lender’s terms. Each repayment restores some of the limit for later draws. Some lenders set a minimum draw size or charge for each transfer, so ask about both if you expect to make several small purchases."
+   ]
+  ]
+ },
+ "revolving-credit-facility|hiring-staff": {
+  "h1": "Revolving credit facilities for hiring staff",
+  "title": "Revolving Credit Facilities for Hiring Staff | Loanleaf",
+  "desc": "How a revolving credit facility covers payroll while new hires build up to earning their keep. For UK limited companies and LLPs. Free to use.",
+  "lead": "Draw each month to pay wages while new hires ramp up, then repay as the work they deliver is invoiced and paid.",
+  "intro": [
+   "A new hire is paid from day one but rarely pays for themselves until months later. Recruitment fees, equipment and training come first, then salary, employer National Insurance and pension contributions every month while the person learns the role. For a team of ten adding two people, that can be several thousand pounds a month of extra outgoings before any extra income. A revolving credit facility can cover that ramp-up, because you draw each month to meet payroll and repay as the new work is invoiced and the customers pay.",
+   "The structure fits best where hiring and income are linked by a payment delay rather than by uncertainty. A staffing, construction or agency business that places people on a client site often pays wages weekly while the client pays on 45 or 60-day terms. Lenders look at whether payroll is rising in step with revenue, how regular your outgoings are and whether the business could carry the new cost if a contract paused. A permanent increase in headcount that is not yet earning is a different case, and a term loan may suit it better."
+  ],
+  "uses": [
+   [
+    "Contractors paid weekly",
+    "Pay contractors or temporary workers each week while the client’s invoice runs on 30 or 60-day terms, then repay the draw when the client pays."
+   ],
+   [
+    "New contract start-up",
+    "Add a team ahead of a contract start date, drawing each month until the first invoices are issued and paid."
+   ],
+   [
+    "Seasonal hiring",
+    "Take on extra people for a peak such as summer or Christmas, drawing against wages and repaying from the takings that follow."
+   ],
+   [
+    "Billable hires",
+    "Recruit a consultant, engineer or salesperson whose billable work starts a few months after they join."
+   ]
+  ],
+  "fit": [
+   [
+    "Sizing for payroll",
+    "A rough guide is to cover three months of the new payroll cost, including employer National Insurance and pension, plus the one-off cost of recruiting and equipping each person. Lenders are likely to compare that with your existing outgoings and the contract or pipeline behind the hire."
+   ],
+   [
+    "What lenders check",
+    "Payroll records, bank statements showing wage runs, signed contracts or purchase orders that justify the hire, and the company’s ability to carry the cost if the work stops. For agency-style businesses they may also ask for the aged debtor list."
+   ],
+   [
+    "Repayment pattern",
+    "Repayment tends to follow client payments rather than a fixed monthly date. That works when invoices are reliable. If customers pay late, the facility can stay drawn for longer than planned, so ask the broker how a lender treats a balance that has not come down."
+   ]
+  ],
+  "considerations": [
+   [
+    "Permanent headcount is a fixed cost",
+    "A hire who stays is paid every month for years. Drawing on a facility to pay permanent salaries the business cannot yet cover can leave you sitting at the limit. In that case a term loan, repaid over the time the hire needs to pay their way, may be a better fit."
+   ],
+   [
+    "Notice and holiday costs",
+    "If a contract ends, notice periods and accrued holiday pay still fall due. Allow for them when sizing the limit, rather than assuming wages stop when the work does."
+   ],
+   [
+    "Review risk",
+    "A lender can reduce the limit at review. Salaries committed against a facility that might shrink are a risk, so keep a reserve or an alternative in mind before you make the offer to a candidate."
+   ]
+  ],
+  "faqs": [
+   [
+    "How much of the cost of a new hire can a facility cover?",
+    "There is no standard figure. Lenders set the limit against the whole business, not against one salary. A useful planning guide is three months of the extra payroll cost plus recruitment and equipment, then a broker can tell you whether your trading figures support a limit of that size."
+   ],
+   [
+    "Can I use the facility to pay a recruitment agency fee?",
+    "Yes, the facility is general working capital and the money can go on any business cost, including agency fees, training and equipment. Lenders may ask what the borrowing is for at application, so be clear that hiring is the purpose and show how the new role is expected to pay back."
+   ],
+   [
+    "Is this better than a loan for hiring?",
+    "It depends on how the hire pays back. If wages are billed on to clients, so the cost is repaid within a few months, a revolving facility can be cheaper because you pay interest only while drawn. If the role will take a year to pay back, a fixed-term loan may suit better."
+   ],
+   [
+    "Will the lender want to see the contract behind the hire?",
+    "Often, if the hire depends on a specific contract. A signed contract or purchase order shows the lender where the repayment will come from. For general growth hires, they rely more on your accounts, bank statements and forecast. A broker can tell you which evidence will carry weight."
+   ],
+   [
+    "What if I need to let someone go?",
+    "Redundancy, notice and holiday pay are costs the business bears, and a facility can cover them like any other cash need. The point to watch is the lender’s review: if trading weakens, the limit may be reduced. Planning for a downside from the start keeps your options open."
+   ]
+  ]
+ },
+ "revolving-credit-facility|paying-a-tax-bill": {
+  "h1": "Revolving credit facilities for paying a tax bill",
+  "title": "Revolving Credit Facilities for Paying a Tax Bill | Loanleaf",
+  "desc": "How UK limited companies use a revolving credit facility to pay VAT, PAYE or corporation tax on time and repay as cash arrives. One free introduction.",
+  "lead": "Draw on the due date to pay HMRC in full, then repay over the following weeks as customer money comes in.",
+  "intro": [
+   "Most tax bills are predictable, which makes a revolving facility a reasonable way to meet them. VAT is generally due one month and seven days after each quarter ends, PAYE and National Insurance are normally due on the 22nd for employers paying electronically, and corporation tax is usually due nine months and a day after the year end for most companies (large companies pay in instalments). With a facility in place, you draw on the due date, pay HMRC in full and repay across the following weeks as receipts arrive. HMRC is paid on time and the bank balance does not take one large hit.",
+   "The catch is timing. A facility has to be in place before the bill falls due, because a lender will want accounts and bank statements before agreeing a limit. Arranging one in the week a VAT payment is due is likely to be too late. The limit also needs room: if it is already used for stock or wages, nothing may be left for HMRC. Lenders assess it as they would any facility, so a business that is up to date with HMRC and has a steady cash pattern is better placed than one with arrears."
+  ],
+  "uses": [
+   [
+    "Quarterly VAT",
+    "Draw on the due date for a VAT return that follows a strong sales quarter, then repay over the next few weeks."
+   ],
+   [
+    "Corporation tax after a good year",
+    "Pay a large corporation tax bill without running down cash held for stock, wages or a planned purchase."
+   ],
+   [
+    "PAYE after pay rises",
+    "Cover a monthly PAYE and National Insurance bill that has risen after bonuses, a pay review or new hires, while income catches up."
+   ],
+   [
+    "Several bills in one month",
+    "Handle a month where VAT, PAYE and a corporation tax payment land close together, using the same limit rather than three separate arrangements."
+   ]
+  ],
+  "fit": [
+   [
+    "Arrange it before the bill",
+    "A facility takes time to set up, with accounts, bank statements and credit checks all involved. Start months before a large bill, ideally soon after your accounts are filed, and ask the broker to size the limit against your biggest bill rather than an average one."
+   ],
+   [
+    "Headroom matters",
+    "Lenders look at the limit against your normal usage. If the facility is already half used for other things, the broker may suggest a larger limit or a separate tax loan, so that HMRC does not compete with wages and stock for the same money."
+   ],
+   [
+    "Repaying the draw",
+    "Plan repayment around when money actually arrives. A draw for a VAT bill is usually repaid from the following weeks’ receipts, so check the balance is cleared before the next VAT date rather than rolling forward from quarter to quarter."
+   ]
+  ],
+  "considerations": [
+   [
+    "Tax arrears are different",
+    "A facility works for bills not yet due. If you are already behind with HMRC, lenders may be reluctant, and a Time to Pay arrangement or a conversation with your accountant may need to come first."
+   ],
+   [
+    "A tax loan has fixed instalments",
+    "A VAT or tax loan is repaid in fixed instalments over a set period, which suits some businesses better than a balance that has to be repaid when cash allows. A broker can compare the two against your cash pattern."
+   ],
+   [
+    "Do not make the limit a habit",
+    "If every tax date is met by drawing, the facility ends up permanently near its limit. Moving money into a separate account for tax as you collect it is the long-term fix, and your accountant can help you set that up."
+   ]
+  ],
+  "faqs": [
+   [
+    "Is a revolving facility better than a tax loan for a tax bill?",
+    "Not always. A facility is flexible and cheap if you repay within weeks, but it needs to be in place already and has an annual review. A tax loan spreads one bill over fixed instalments. If you have no facility and a bill is due, a tax loan is often the more direct route."
+   ],
+   [
+    "Can the facility pay HMRC directly?",
+    "Usually the money is paid into your business account and you pay HMRC yourself, as with any other bill. Some lenders will pay a third party on request. Check how the lender handles it, and keep the payment reference handy so HMRC allocates the payment to the right period."
+   ],
+   [
+    "What if the tax bill is bigger than my limit?",
+    "You would need another source for the rest, such as a tax loan or an arrangement with HMRC. Lenders can sometimes increase a limit, but they will want to see why the bill has grown. Raise it with a broker as soon as you know the figure, not at the deadline."
+   ],
+   [
+    "Will drawing for tax affect my renewal?",
+    "It may be noticed, but one draw followed by repayment is normal use. What lenders dislike is a balance that stays at the limit. If you draw for tax and clear the balance within a few weeks, that pattern looks like good use of the facility rather than a warning sign."
+   ],
+   [
+    "Can I use the facility if I owe HMRC from earlier years?",
+    "It is harder. Many lenders treat arrears or an existing payment plan as a risk and may decline or offer a smaller limit. Being open about it helps, because a broker can look for lenders that work with companies in that position. Your accountant may also be able to negotiate with HMRC."
+   ]
+  ]
+ },
+ "revolving-credit-facility|business-expansion": {
+  "h1": "Revolving credit facilities for business expansion",
+  "title": "Revolving Credit Facilities for Business Expansion | Loanleaf",
+  "desc": "How UK limited companies use a revolving credit facility for the running costs of expansion, alongside a term loan. One free introduction to a broker.",
+  "lead": "Cover the early running costs of a new site, team or market while takings build, and keep the fixed items on longer finance.",
+  "intro": [
+   "Expansion costs fall into two groups. There are one-off items such as a fit-out or equipment, and there are running costs that start before the new site or team earns anything: extra rent, wages, stock and marketing. A revolving credit facility suits the second group. It is not a way to buy a building or a machine, because the limit can be reviewed and reduced, but it can carry the new operation through its first months while takings build up. You draw as bills arrive and repay as income grows.",
+   "Many expanding companies therefore use a facility alongside a longer-term product. A term loan or asset finance pays for the fit-out and equipment, and the revolving limit covers the early running costs. Lenders want to see that the combined borrowing is affordable on the existing business alone, not just on the forecast. For example, a dental practice opening a second surgery might finance the chairs through asset finance and keep a £40,000 limit for the first six months of wages, rent and supplies."
+  ],
+  "uses": [
+   [
+    "Second-site running costs",
+    "Cover rent, wages and utilities at a new location during the months before it pays its own way."
+   ],
+   [
+    "Launch stock and marketing",
+    "Pay for opening stock and a launch campaign for a new line or region, repaying as sales begin."
+   ],
+   [
+    "Overlap between premises",
+    "Pay for two sets of rent and staff while moving from an old site to a larger one."
+   ],
+   [
+    "Ramping up a contract",
+    "Cover the early months of a contract that needs extra people and materials but pays in arrears."
+   ]
+  ],
+  "fit": [
+   [
+    "Pair it with a term product",
+    "Use a loan or asset finance for fixed items and a facility for running costs. Lenders usually prefer that split because each product is repaid in the way that matches what it paid for."
+   ],
+   [
+    "Sizing for the ramp-up",
+    "Estimate how many months until the new operation breaks even and the total loss in that time, then add a margin for delay. The broker will want that forecast alongside the existing business’s accounts, since the main business supports the borrowing."
+   ],
+   [
+    "Security and review",
+    "Limits are usually reviewed annually, and many facilities include a director’s personal guarantee. A lender may ask for a debenture where the amount is larger. Ask how the limit would be treated if the expansion runs behind plan."
+   ]
+  ],
+  "considerations": [
+   [
+    "Not a purchase tool",
+    "Do not use a revolving facility to buy property, machinery or a fit-out. If the limit were cut at review, you would still owe the money while the asset stays fixed. A term loan, commercial mortgage or asset finance fits those costs better."
+   ],
+   [
+    "Delays use up the limit",
+    "A planning delay or a late opening means the facility is drawn for longer than expected. Build extra months into your forecast, and into the limit you ask for."
+   ],
+   [
+    "The existing business must carry it",
+    "If the current business is already stretched, lenders may be cautious. A broker might suggest a smaller project or a staged opening to keep borrowing within reach."
+   ]
+  ],
+  "faqs": [
+   [
+    "Can a revolving facility pay for a new site?",
+    "It can pay for the running costs of one, such as rent, wages and stock in the opening months. It is not designed for the purchase or fit-out, which are one-off costs better matched to a term loan, asset finance or a commercial mortgage. Many companies use both together."
+   ],
+   [
+    "How big a limit should I ask for when expanding?",
+    "Work out the number of months until the new operation covers its own costs, multiply by the monthly shortfall and add a margin. Lenders then check that figure against your existing turnover and accounts. A broker can help you test whether it is realistic before you apply."
+   ],
+   [
+    "Will a lender want to see an expansion forecast?",
+    "Usually, yes. A simple monthly forecast showing costs, expected sales and the month the new site breaks even helps a lender understand the draw pattern. It should include a slower scenario, because expansions often run behind plan, and lenders pay attention to how you have allowed for that."
+   ],
+   [
+    "Can I get a facility and a term loan at the same time?",
+    "Often yes, but lenders look at total borrowing. If both come from different lenders, each will ask about the other. Applying for them together through one broker lets them be structured to fit, so the combined repayments are affordable on the existing business."
+   ],
+   [
+    "What if the new site takes longer than planned to pay?",
+    "You would need to keep drawing, so the balance grows and may reach the limit. Talk to the lender before that point. Options may include extending the limit, switching part of the balance to a term loan or adjusting the plan. Building headroom into the original limit gives you more choices."
+   ]
+  ]
+ },
+ "commercial-mortgages|business-expansion": {
+  "h1": "Commercial mortgages for business expansion",
+  "title": "Commercial Mortgages for Business Expansion | Loanleaf",
+  "desc": "How UK limited companies use a commercial mortgage to buy larger premises or a second site as they grow. Get matched with one specialist finance broker.",
+  "lead": "Buy the building your next stage of growth needs, spreading the cost over many years and building equity instead of paying rent.",
+  "intro": [
+   "For some companies, expansion means outgrowing rented space. A workshop that no longer fits the machinery, a clinic with a waiting list or a distributor short of loading bays can all reach the point where a larger building is the next step. Buying it with a commercial mortgage turns rent into repayments, and the company ends up owning an asset. The lender is usually an owner-occupier lender, so it focuses on the trading business rather than on rental income. It will want to see that the company can pay the mortgage from profit, on top of its other costs.",
+   "Expansion adds a complication, because the premises are bought before the extra revenue arrives. Lenders therefore look carefully at current figures and at whether the plan is realistic, and they usually expect a meaningful deposit, often a quarter or more of the price, from cash or from equity in existing property. For example, a joinery company buying a £650,000 unit might put in £200,000 from its own cash and the sale of its old lease, borrow the rest and arrange fit-out separately. Each lender sets its own terms."
+  ],
+  "uses": [
+   [
+    "Buying larger premises",
+    "Move from a rented unit that limits output to a bigger building you own, with room for machinery, stock and staff."
+   ],
+   [
+    "Buying the building you rent",
+    "Purchase your current site before the lease ends or the landlord sells, then expand on the land you already know."
+   ],
+   [
+    "Adding a second site",
+    "Buy a freehold for a new branch, clinic or depot rather than taking another lease and paying rent indefinitely."
+   ],
+   [
+    "Buying a site to extend",
+    "Acquire a building with space to extend, with the works financed separately once the purchase is complete."
+   ]
+  ],
+  "fit": [
+   [
+    "Deposit and costs on top",
+    "Allow for the deposit plus Stamp Duty Land Tax, valuation, legal and arrangement fees. These can add several per cent to the price, and they come from the company before the expansion has earned anything."
+   ],
+   [
+    "What lenders look at",
+    "Several years of profits where the company has them, the trading plan, the type and condition of the property and whether it could be re-let or sold if the company moved on. Specialist buildings, such as a bespoke factory, can be harder to finance."
+   ],
+   [
+    "Terms and fit-out",
+    "Terms can run for ten to 25 years, which spreads the monthly cost, but the mortgage does not normally cover fit-out or equipment. Those are financed separately, for example through asset finance or an unsecured loan."
+   ]
+  ],
+  "considerations": [
+   [
+    "Capital tied up in property",
+    "A deposit spent on a building is not available for stock, hires or marketing. If cash will be tight after completion, consider renting for longer and financing growth in other ways."
+   ],
+   [
+    "A commitment that outlasts the project",
+    "A mortgage runs well beyond the expansion. If the business shrinks, the payments continue, and selling a specialist building can take time."
+   ],
+   [
+    "Timing",
+    "Valuations and legal work take weeks. If the expansion has a fixed date, such as a lease ending, tell the broker early. A bridging loan can cover a short gap, but it adds cost."
+   ]
+  ],
+  "faqs": [
+   [
+    "How much deposit would I need to buy bigger premises?",
+    "It varies by lender and property, but many ask for a deposit of around 25% or more of the purchase price for an owner-occupier mortgage. The deposit can come from company cash, the sale of existing property or equity in other property. A broker can tell you what lenders are likely to ask for in your case."
+   ],
+   [
+    "Can I buy premises through a separate property company?",
+    "Some businesses do, with the trading company paying rent to a property company owned by the same directors. This can change how the lender views the loan, and it has tax consequences, so take advice from your accountant. A broker can explain how lenders treat each structure."
+   ],
+   [
+    "Will a lender lend if the expansion has not started?",
+    "Lenders usually base the decision on the current business and its accounts, with the expansion plan as supporting evidence. Projected income on its own is rarely enough. If your existing profits cover the mortgage comfortably, the position is stronger than if the loan depends on future growth."
+   ],
+   [
+    "Does the mortgage cover the fit-out?",
+    "Usually not in full. Some lenders include limited works in the loan or release funds in stages, but most expect fit-out and equipment to be financed separately. Asset finance, an unsecured loan or your own cash can cover those costs, and a broker can look at how they fit together."
+   ],
+   [
+    "Is it better to buy than to lease a larger unit?",
+    "Neither is better in every case. Buying builds equity and fixes costs, but ties up a deposit and commits you for years. Leasing is more flexible and needs less cash upfront. The right choice depends on cash, how settled the business is and the building. Your accountant can help weigh it up."
+   ]
+  ]
+ },
+ "commercial-mortgages|refurbishing-premises": {
+  "h1": "Commercial mortgages for refurbishing premises",
+  "title": "Commercial Mortgages for Refurbishing Premises | Loanleaf",
+  "desc": "How UK limited companies use a commercial mortgage or remortgage to release equity for refurbishing premises they own. Matched with one finance broker.",
+  "lead": "If your company owns its premises, a commercial mortgage can release equity to pay for substantial refurbishment over a long term.",
+  "intro": [
+   "When a company owns its premises, refurbishment can be financed against the building itself. The property has often grown in value or been partly repaid, so there is equity a commercial mortgage can release. Two routes are common. A company can remortgage to a larger loan and take the extra as cash for the works, or it can buy a tired building with a mortgage and plan the works as part of the deal. Either way, the lender is lending against the property and the business together, and the works are judged by what they do to the building’s value and to trade.",
+   "This fits only where the company owns the freehold or a long lease, and where the work is large enough to justify legal and valuation costs. For a £20,000 repaint and new lighting, a mortgage is disproportionate; for a £250,000 hotel refurbishment, it can make sense. Lenders may want a schedule of works, contractor quotes and sometimes a valuation based on the finished building. Some release money in stages as work is certified, so the company must be able to pay the first costs itself. The detail varies between lenders."
+  ],
+  "uses": [
+   [
+    "Remortgaging to release equity",
+    "Raise additional borrowing on a building you own, then use it for a refit, new roof, extension or upgraded kitchens."
+   ],
+   [
+    "Buying a worn property",
+    "Buy premises that need work, with a refurbishment plan agreed with the lender alongside the purchase."
+   ],
+   [
+    "Meeting compliance standards",
+    "Pay for fire safety, accessibility or energy performance upgrades the building needs in order to stay in use."
+   ],
+   [
+    "Refurbishing let units",
+    "Improve units let to tenants so they can be re-let, or let at a better rent, once the work is done."
+   ]
+  ],
+  "fit": [
+   [
+    "Staged release",
+    "Where works are large, lenders may release funds in stages after a surveyor confirms progress. The company usually pays the early bills itself and is then reimbursed, so cash flow during the build needs planning."
+   ],
+   [
+    "What the valuation shows",
+    "The lender’s surveyor looks at the building as it stands and sometimes as it will be after the works. A cosmetic refit may not raise the valuation, so the borrowing is supported mainly by the trading business rather than by uplift in the building."
+   ],
+   [
+    "Terms and the life of the works",
+    "Mortgage terms can run for many years, which is long compared with the life of a paint scheme or fit-out. Some owners therefore borrow against the building only for structural or long-lived works, and finance fixtures and equipment separately over a shorter term."
+   ]
+  ],
+  "considerations": [
+   [
+    "Long debt for short-lived items",
+    "A 15-year mortgage paying for carpets and fixtures that last five years leaves you paying after they have been replaced. Match the term to the life of the work wherever you can."
+   ],
+   [
+    "Not for rented premises",
+    "If you lease the building, there is nothing for a commercial mortgage to secure. An unsecured loan, asset finance for equipment or a landlord contribution is more likely to fit."
+   ],
+   [
+    "Overruns and disruption",
+    "Building work often costs more and takes longer than planned. A contingency in the budget, and a lender that allows for variations, protect the project. Trading disruption during works also matters, because mortgage payments continue."
+   ]
+  ],
+  "faqs": [
+   [
+    "Can I remortgage my premises just to pay for a refit?",
+    "Yes, in principle. The lender looks at the building’s value, the current loan and the business’s ability to afford the larger payments. Valuation, legal and arrangement fees apply, and there may be early repayment charges on the existing mortgage, so a broker should compare the total cost with other ways to finance the work."
+   ],
+   [
+    "Will the lender pay the contractor directly?",
+    "Some lenders release funds to the borrower, others in stages against a surveyor’s certificate and a few pay the contractor. Practice varies, and larger projects often use stage payments. Ask the broker how the lender you are considering handles it, because it affects what you must pay up front."
+   ],
+   [
+    "How much of the refurbishment cost can I borrow?",
+    "It depends on the property’s value, the existing loan and your trading figures, not on the cost of the work alone. Lenders usually lend a proportion of value, not of cost. A broker can give a realistic range after looking at the building, the plan and your accounts."
+   ],
+   [
+    "Do I need planning permission or building regulations approval first?",
+    "For works that need them, lenders usually want evidence before releasing funds, and may ask for a surveyor’s sign-off at the end. Cosmetic works normally do not. Ask your contractor or architect which approvals apply, and tell the broker early, because missing consents can delay or stop a loan."
+   ],
+   [
+    "Is it worth a mortgage for a smaller refurbishment?",
+    "Often not. Legal and valuation costs apply however much you borrow, so for smaller projects an unsecured loan can be simpler, even if the rate is higher. A broker can compare options for your amount, and the answer often turns on the size of the work and how long you plan to stay."
+   ]
+  ]
+ },
+ "bridging-loans|refurbishing-premises": {
+  "h1": "Bridging loans for refurbishing premises",
+  "title": "Bridging Loans for Refurbishing Premises | Loanleaf",
+  "desc": "How UK limited companies use bridging finance to buy and refurbish premises before refinancing. Learn about works, exits and costs. One free introduction.",
+  "lead": "Short-term borrowing secured on a building that cannot yet be mortgaged, repaid once the works are done and longer-term finance is in place.",
+  "intro": [
+   "Some premises cannot be financed by a mainstream lender in their current state. A former shop with no kitchen, a mill with an unsafe floor or a building with no working heating may be refused a standard mortgage until the works are done. Bridging finance fills that gap. It lends against the property for a short period, often between six and eighteen months, while the refurbishment is carried out, and the loan is repaid when the building is refinanced or sold. Interest is often rolled into the loan or retained from the advance, so the company may not make monthly payments during the works.",
+   "The structure suits a defined project with a start date, a budget and an end date, such as buying a derelict unit for a bakery’s new production site. Lenders look closely at the plan: the purchase price, the works budget, the finished value and how the loan will be repaid. Larger works may be released in stages after a surveyor inspects the work. A bridging loan is a project finance tool, not a general refit loan, and it is costly enough that the numbers need a comfortable margin."
+  ],
+  "uses": [
+   [
+    "Buying a building that needs work",
+    "Complete the purchase of a unit that cannot yet be mortgaged, then pay for the works on the same loan where the lender allows it."
+   ],
+   [
+    "Change of use",
+    "Convert a warehouse into studios, a shop into a clinic or offices into a showroom, once planning is secured."
+   ],
+   [
+    "Bringing a lapsed property back",
+    "Repair a building that has stood empty, so it passes a lender’s survey and can move onto a longer-term mortgage."
+   ],
+   [
+    "Auction purchase with works to follow",
+    "Complete within the auction deadline, then carry out repairs before refinancing."
+   ]
+  ],
+  "fit": [
+   [
+    "Light and heavy refurbishment",
+    "Lenders separate cosmetic work, such as decoration and flooring, from structural work such as extensions or change of use. Heavier work may need planning permission, a schedule of works and a monitoring surveyor, and the loan is structured differently."
+   ],
+   [
+    "Loan size and costs",
+    "The loan is usually a proportion of the purchase price plus some of the works, with the borrower paying the rest. Interest, arrangement fees, valuation, legal and surveyor fees all come on top, so work out the total cost, not just the monthly rate."
+   ],
+   [
+    "Exit through refinance",
+    "The usual way out is a commercial mortgage once the building is finished and valued. Before borrowing, ask a broker whether the finished building and your trading would meet a mortgage lender’s criteria, because the bridge is only as safe as that exit."
+   ]
+  ],
+  "considerations": [
+   [
+    "Contingency and time",
+    "Works run late and over budget more often than they finish on time. Build a margin into both the budget and the loan term. Extending a bridge adds cost, and interest runs while the building is not yet earning."
+   ],
+   [
+    "Exit risk",
+    "If the finished building is valued lower than expected, or lending criteria change, the refinance may be smaller than the bridge. You would have to find the gap, so test the exit before you commit."
+   ],
+   [
+    "Not for a simple refit",
+    "A tenant refitting a rented shop has no property to secure a bridge on. Light refurbishment of a building already in use is usually better financed through an unsecured loan or a remortgage."
+   ]
+  ],
+  "faqs": [
+   [
+    "What kinds of refurbishment suit bridging finance?",
+    "Projects where the building cannot be mortgaged until the work is done, such as buying a derelict or part-finished unit, converting it to a new use or repairing a long-empty property. Cosmetic refits to a trading building rarely need bridging. Lenders assess each project on its plan, budget and exit."
+   ],
+   [
+    "Is the cost of the works included in the loan?",
+    "Often partly. Many lenders lend against the purchase price and release a further amount for works in stages, as the surveyor confirms progress. The borrower usually pays some costs from their own money. How much depends on the lender, the property and the plan, and a broker can explain what to expect."
+   ],
+   [
+    "What is a monitoring surveyor?",
+    "A surveyor appointed for the lender who visits during the works and confirms that they are on track before each payment is released. Their fees are normally paid by the borrower. It adds cost and a step to the process, but it also gives the lender confidence and helps keep the project to its plan."
+   ],
+   [
+    "How do I repay the loan when the works finish?",
+    "Usually by refinancing onto a commercial mortgage or by selling the property. The lender will want to see that this is realistic before agreeing the loan. A broker can often indicate whether a mortgage lender would take the finished building, which is a useful check before you start the works."
+   ],
+   [
+    "What happens if the works overrun?",
+    "The loan term may need extending, which usually costs extra in interest and fees, and the lender may want a fresh valuation. If it is not extended, the lender can take steps to recover the debt from the property. Setting a longer term than you think you need is cheaper than extending later."
+   ]
+  ]
+ },
+ "bridging-loans|business-expansion": {
+  "h1": "Bridging loans for business expansion",
+  "title": "Bridging Loans for Business Expansion | Loanleaf",
+  "desc": "How UK limited companies use a bridging loan to secure premises for expansion before a sale or mortgage completes. Costs, exits and risks explained.",
+  "lead": "Secure the building your expansion needs now, and repay the loan when the old premises sell or a longer-term mortgage completes.",
+  "intro": [
+   "Expansion sometimes depends on a single window. A larger unit comes up two streets away, a competitor’s premises go on the market, or an auction lot would double your capacity. The company knows it wants the property, but its longer-term finance is not ready: a commercial mortgage is still being underwritten, the old building has not sold or an investor has not yet committed. A bridging loan secured on property can cover the purchase in the meantime, typically for some months and up to a year or two, and is repaid when the longer-term money arrives.",
+   "The company needs to know exactly how the loan ends. Bridging lenders care less about monthly affordability than about the exit, such as the sale of the old premises, a refinance onto a commercial mortgage or the sale of other property. A garden centre moving to a larger site might bridge the new purchase while its existing freehold is on the market, repaying from the sale. Because bridging costs more than long-term finance, it fits best where the opportunity is worth the extra cost, and where the exit does not depend on trading that has not happened yet."
+  ],
+  "uses": [
+   [
+    "Buying before you sell",
+    "Complete on a new site while the old building is still being sold, so the business can move when it needs to."
+   ],
+   [
+    "Acquiring a neighbouring property",
+    "Secure an adjacent unit that has come up for sale, before a permanent mortgage is arranged."
+   ],
+   [
+    "Property with a business purchase",
+    "Complete a property purchase that comes with buying another business, while the main acquisition finance is finalised."
+   ],
+   [
+    "Auction purchase for a new branch",
+    "Complete within the auction deadline, then refinance once the building is in use."
+   ]
+  ],
+  "fit": [
+   [
+    "Security can be other property",
+    "The loan can be secured on the property being bought, on the one being sold or on other property owned by the company or its directors. The lender’s valuation of each affects how much is available."
+   ],
+   [
+    "Exit timelines",
+    "Lenders usually want a credible exit within the term, backed by a sale listing, a mortgage offer in principle or a contract. A broker will ask for evidence early, so have agent valuations and mortgage indications ready."
+   ],
+   [
+    "Costs to budget",
+    "Allow for interest, which is often rolled up, plus arrangement, valuation and legal fees on both the bridge and the eventual mortgage. For a company with a tight margin, two sets of fees can be significant."
+   ]
+  ],
+  "considerations": [
+   [
+    "Two sets of costs",
+    "A bridge followed by a mortgage means two sets of legal costs and valuations. If the timeline allows, going straight to a commercial mortgage may cost less overall."
+   ],
+   [
+    "The sale may not happen",
+    "If the old premises sell for less, or later, than planned, the bridge may need extending at extra cost. Set a realistic price with an agent and allow extra months."
+   ],
+   [
+    "Not for open-ended growth",
+    "If repayment depends on the expansion itself producing cash, the exit is too uncertain for short-term borrowing. A longer-term secured loan or a commercial mortgage is a better match."
+   ]
+  ],
+  "faqs": [
+   [
+    "How long can a company hold a bridging loan for expansion?",
+    "Terms commonly run from a few months up to around a year or two, depending on the lender and the exit. Lenders usually set the term to fit the plan, such as the time to sell the old building. A longer term can cost more, so ask a broker how the term, interest and extension fees work together."
+   ],
+   [
+    "Can I use my existing premises as security for the new purchase?",
+    "Often, yes. Lenders can take a charge over your existing property, over the new one or over both. Using both can increase the amount available, but it puts both at risk if the loan is not repaid. A broker can explain the choices and what each would mean for your company."
+   ],
+   [
+    "What if my old premises do not sell in time?",
+    "The lender may agree to extend the term, usually for extra interest and fees, or you may need to refinance. If neither is possible, the lender can take action against the security. It helps to price the old building realistically, to keep a reserve and to discuss a plan B with your broker early."
+   ],
+   [
+    "Is bridging suitable if I am buying a business, not just a building?",
+    "Bridging is secured on property, so it can cover the property part of a purchase but not the goodwill or stock. For a full acquisition, the property bridge may sit alongside other finance. A broker can look at how the pieces fit and what the lenders need to see."
+   ],
+   [
+    "Why not just get a commercial mortgage straight away?",
+    "If the timing allows, that is often cheaper. Bridging suits cases where a mortgage cannot be arranged in time, such as an auction deadline or a chain, or where the building cannot yet be mortgaged. Because bridging costs more, it needs a clear reason, and a broker can tell you whether you really need it."
+   ]
+  ]
+ },
+ "vat-and-tax-loans|paying-a-tax-bill": {
+  "h1": "VAT and tax loans for paying a tax bill",
+  "title": "VAT and Tax Loans for Paying a Tax Bill | Loanleaf",
+  "desc": "How a VAT or tax loan lets UK limited companies pay HMRC on time and spread the cost over months. One short form, one specialist finance broker.",
+  "lead": "Pay VAT, PAYE or corporation tax on the due date and spread the cost into fixed monthly instalments.",
+  "intro": [
+   "HMRC works to fixed dates. VAT is generally due one month and seven days after each quarter ends, PAYE and National Insurance are normally due on the 22nd for employers paying electronically, and corporation tax is usually due nine months and a day after the year end for most companies (large companies pay in instalments). A VAT or tax loan is built for those dates. The lender can pay HMRC directly or release the money to the company, which then repays in fixed monthly instalments over a few months to around a year. The tax is paid on time, and the cost is spread across the months that follow.",
+   "Because the amount and the due date are known in advance, lenders can assess a tax loan on specific numbers: the bill itself, the company’s profits and the bank balance it will be repaid from. For example, a company with a £48,000 VAT bill after a strong quarter might spread it over six monthly payments instead of taking £48,000 from the account in one go. A simple case can be clear, but timing matters. Applications should start well before the deadline, because lenders need accounts, statements and the HMRC figures before they agree."
+  ],
+  "uses": [
+   [
+    "VAT after a high-sales quarter",
+    "Pay a larger-than-usual VAT return on time after a quarter of strong invoicing, and spread the cost."
+   ],
+   [
+    "Corporation tax on a profitable year",
+    "Meet a corporation tax bill that is larger than expected, while keeping cash for stock, wages and planned investment."
+   ],
+   [
+    "PAYE and NI after hiring or bonuses",
+    "Pay a higher payroll tax bill after pay rises or seasonal staff, without delaying suppliers."
+   ],
+   [
+    "Several bills in one month",
+    "Take one loan and one set of instalments when VAT, PAYE and a corporation tax payment fall in the same month."
+   ]
+  ],
+  "fit": [
+   [
+    "Amount and term",
+    "The loan is sized to the bill. Terms are usually a few months up to around a year, and it is worth checking how the repayments will sit alongside the next tax bill of the same kind, since the two will overlap."
+   ],
+   [
+    "Paying HMRC",
+    "Some lenders pay HMRC themselves, which also shows how the money was used. Others pay the company, which then settles the bill. Ask how it works and which payment reference to use, so HMRC allocates the payment to the correct period."
+   ],
+   [
+    "What lenders check",
+    "The bill itself, such as a VAT return, a corporation tax computation or a payroll statement, along with recent accounts, bank statements and whether any HMRC arrangements already exist. Being up to date with filings helps."
+   ]
+  ],
+  "considerations": [
+   [
+    "Compare with Time to Pay",
+    "HMRC may agree its own payment plan, charging interest on the amount outstanding but no loan arrangement fees. A tax loan has its own interest and fees, so compare the total cost of both. A loan can make sense where certainty or the speed of settling HMRC in full matters to you."
+   ],
+   [
+    "Start early",
+    "Lenders need time, and an application made in the last week before a deadline may not complete. If you miss the date, HMRC interest and penalties can start, so build in a margin."
+   ],
+   [
+    "Already in arrears",
+    "If you already owe HMRC from earlier periods, fewer lenders will help, and the first step may be an arrangement with HMRC. A broker can explain what is realistic."
+   ]
+  ],
+  "faqs": [
+   [
+    "Which tax bills can a tax loan cover?",
+    "Commonly VAT, PAYE and National Insurance and corporation tax, as these are the regular company bills. Some lenders will consider other HMRC liabilities. Each lender has its own rules, and some prefer a specific type of bill, so a broker can tell you which lenders are likely to take yours."
+   ],
+   [
+    "Can the loan be arranged before the bill is final?",
+    "Lenders generally want to see the actual bill, such as a filed VAT return or corporation tax computation, but may discuss the plan earlier. Starting the conversation in advance, with accounts and bank statements ready, gives you time to compare options before the due date arrives."
+   ],
+   [
+    "How is the loan repaid?",
+    "Normally by fixed monthly instalments, paid by direct debit over the term. Some lenders offer a short initial period before payments start. You should see the total repayable, any fees and what happens if you repay early before you accept, so the full cost is clear."
+   ],
+   [
+    "Does the loan show up on my credit file?",
+    "The company’s credit file will show the lender’s searches and the loan, as with any business borrowing. Directors who give a personal guarantee may also see a footprint on their own files. A broker can explain what the lender checks and how this might affect other applications."
+   ],
+   [
+    "What if I cannot make the due date?",
+    "Contact HMRC before the date, as they may agree a payment plan, and speak to a broker about how long a loan would take. Late payment can bring interest and penalties, so the sooner the options are explored, the more of them stay open."
+   ]
+  ]
+ },
+ "vat-and-tax-loans|working-capital": {
+  "h1": "VAT and tax loans for working capital",
+  "title": "VAT and Tax Loans for Working Capital | Loanleaf",
+  "desc": "How UK limited companies use a VAT or tax loan to keep working capital for wages and suppliers while still paying HMRC on time. One free introduction.",
+  "lead": "Pay HMRC on time and keep your operating cash for wages, stock and suppliers, repaying through steady monthly instalments.",
+  "intro": [
+   "For many companies, tax is the largest predictable cash outflow of the year, and it arrives in lumps. VAT money sits in the bank for weeks after a sale, so the account looks healthy, but it belongs to HMRC and must leave on the due date. If the balance has been used to pay wages and suppliers in the meantime, the quarter’s VAT bill takes working capital that was already spoken for. A VAT or tax loan treats that lump as a working capital item: it pays HMRC and lets the business keep its operating cash, repaying in instalments from trading income.",
+   "This is a different use from simply paying a bill. The aim is to even out cash across the year, so that stock orders, payroll and supplier payments are not delayed by one tax date. Businesses with seasonal sales are common users. A retailer that sells most of its goods in November and December might face a large VAT bill in January, just when trade is slow. Lenders assess that on the full pattern of the year, so they will want to see that the business earns enough in its busy months to carry the instalments in its quiet ones."
+  ],
+  "uses": [
+   [
+    "Post-peak VAT bills",
+    "Handle the large VAT return that follows a busy season, when takings are about to fall."
+   ],
+   [
+    "Protecting stock buying",
+    "Keep cash for a supplier order that has a deadline, rather than losing it to a tax date."
+   ],
+   [
+    "Smoothing quarterly swings",
+    "Turn a bill that varies from quarter to quarter into regular monthly instalments that can be planned for."
+   ],
+   [
+    "A late customer payment",
+    "Pay the VAT due on an invoice a large customer has not yet settled, so the business is not penalised for their delay."
+   ]
+  ],
+  "fit": [
+   [
+    "The timing gap in VAT",
+    "On standard VAT accounting, VAT is generally due on invoices issued, whether or not the customer has paid. A company with big unpaid invoices can owe VAT on money it has not yet received, which is the kind of gap a tax loan can bridge. Schemes such as cash accounting work differently, so check which applies."
+   ],
+   [
+    "Sizing against the year",
+    "The broker will look at the seasonal pattern: how much the business earns in strong months, how low cash falls in weak ones and where the tax dates sit. Instalments sized to the weak months are safer than ones matched to the strong months."
+   ],
+   [
+    "Alongside other facilities",
+    "A tax loan can sit next to a revolving facility or invoice finance. The tax loan handles the known, regular lump, while the flexible facility handles the unpredictable gaps. Lenders ask about existing borrowing, so list all of it."
+   ]
+  ],
+  "considerations": [
+   [
+    "A flexible facility may fit better",
+    "A tax loan has fixed instalments. If your cash gaps are irregular, a revolving credit facility may fit better, because you draw and repay as needed. A tax loan works best where the shortfall is a single bill that you know about."
+   ],
+   [
+    "Fixed repayments in quiet months",
+    "Instalments continue whether or not a month is busy. For a seasonal business, check that the quietest months can carry them, and ask about the term so the loan clears before the next lull."
+   ],
+   [
+    "Set VAT aside as you collect it",
+    "Regular tax shortfalls suggest VAT money is being spent as it arrives. Moving it into a separate account each time an invoice is paid costs nothing, and your accountant can set it up, so the loan becomes a one-off help rather than a routine."
+   ]
+  ],
+  "faqs": [
+   [
+    "How is a tax loan a working capital product?",
+    "It does not add cash to the business. It stops a large tax payment from draining the cash you use for wages, stock and suppliers, by spreading the cost over months. For companies with steady profits but lumpy cash, that can be easier to plan around than paying in full on one date."
+   ],
+   [
+    "Is it only for VAT?",
+    "No. Lenders may also cover PAYE and National Insurance or corporation tax, though VAT is the most common because the bills recur and can be large relative to cash. The lender will want to see the bill and your accounts. A broker can tell you which lenders handle each type."
+   ],
+   [
+    "Should I choose a tax loan or a revolving facility?",
+    "If you know the bill and want fixed instalments, a tax loan is simple. If your cash gaps are irregular or you want a standing buffer, a revolving facility gives flexibility, though it needs to be arranged in advance. Some businesses use both, and a broker can compare them for your pattern."
+   ],
+   [
+    "Will lenders look at my seasonal trading?",
+    "Yes. They check bank statements and accounts across the year to see how cash moves, including the quiet months. If you are seasonal, explain it up front and show how the busy months cover the instalments. A broker can present that pattern clearly, which often helps."
+   ],
+   [
+    "Can I repay the loan early if cash improves?",
+    "Many lenders allow it, but some charge a fee or require a minimum amount of interest. Check the early repayment terms before you accept. If you expect a large payment from a customer, a loan that lets you clear the balance without penalty may be more valuable than a slightly lower monthly cost."
+   ]
+  ]
+ }
+}

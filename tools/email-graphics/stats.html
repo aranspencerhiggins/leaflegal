@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stats graphic</title>
+<style>
+@font-face{font-family:"LINE Seed Sans";src:url("https://loanleaf.co/assets/LINESeedSans_Rg.ttf");font-weight:400}
+@font-face{font-family:"LINE Seed Sans";src:url("https://loanleaf.co/assets/LINESeedSans_Bd.ttf");font-weight:700}
+@font-face{font-family:"LINE Seed Sans";src:url("https://loanleaf.co/assets/LINESeedSans_XBd.ttf");font-weight:800}
+html,body{margin:0;background:#fff}
+body{font-family:"LINE Seed Sans",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.g{width:520px;box-sizing:border-box;padding:22px 26px 24px;background:radial-gradient(120% 140% at 100% 0%,#2b4a3f,#18302a 70%);color:#fff;border-radius:18px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.k{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#a9c8bb;margin:0 0 10px}
+.n{font-size:56px;line-height:1;font-weight:800;letter-spacing:-.02em}
+.n span{color:#f2a94a}
+.l{margin-top:10px;font-size:15px;line-height:1.4;color:#d6e8e1}
+.bars{display:flex;gap:8px;align-items:flex-end;height:92px}
+.bars i{display:block;width:30px;border-radius:6px 6px 2px 2px;background:rgba(255,255,255,.22)}
+.bars i.on{background:#f2a94a}
+.cap{display:flex;gap:8px;margin-top:6px;font-size:10.5px;color:#a9c8bb}.cap b{width:30px;text-align:center;font-weight:400}
+</style></head>
+<body>
+<div class="g" id="g">
+  <div><p class="k">This week</p><div class="n"><span>+</span>21%</div><div class="l">more business enquiries than last week</div></div>
+  <div><div class="bars"><i style="height:76px"></i><i class="on" style="height:92px"></i></div><div class="cap"><b>Last</b><b>This</b></div></div>
+</div>
+</body></html>

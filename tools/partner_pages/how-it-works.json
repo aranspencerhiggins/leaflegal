@@ -1,0 +1,105 @@
+{
+  "slug": "how-it-works",
+  "nav": "How it works",
+  "title": "How Loanleaf Works for Brokers | Loanleaf",
+  "description": "See how Loanleaf works for UK finance brokers, from the business owner’s enquiry to an exclusive, pre-screened lead in your CRM, step by step.",
+  "h1": "How Loanleaf works for brokers, from enquiry to your CRM",
+  "summary": "A UK business owner completes the Loanleaf enquiry form, the lead is checked and priced in credits, and it is sold to one broker only. You buy it yourself or let auto-buy do it, and the full lead reaches you by platform, email and CRM webhook within moments.",
+  "sections": [
+    {
+      "h2": "The short version",
+      "blocks": [
+        "Loanleaf is an introducer. It runs the marketing, takes the enquiry, checks it and sells it to one specialist broker. You do not run ads or buy shared lists. You choose which leads you want, pay in credits and call a business owner who has asked to hear from a broker.",
+        "The steps below follow one lead from the first click to your pipeline, and show what you see and do at each stage."
+      ]
+    },
+    {
+      "h2": "A business owner makes an enquiry",
+      "blocks": [
+        "The owner finds Loanleaf through search, content or paid online advertising and completes the enquiry form on loanleaf.co. They tell us how much they want to borrow, what it is for, how soon they need it, how the company is set up, annual revenue, company name, time trading, credit history, any existing finance and their contact details.",
+        "The form turns away sole traders, ordinary partnerships, businesses not yet trading, firms with under 6 months of trading and annual revenue under £50,000. Only UK limited companies and LLPs get through. Before submitting, the owner ticks one box to accept the terms and privacy policy and another to consent to being contacted by a matched broker. More on this in <a href=\"/partners/lead-generation\">where the leads come from</a>."
+      ]
+    },
+    {
+      "h2": "The lead is checked",
+      "blocks": [
+        "Before a lead goes on sale it passes a set of checks. They include:",
+        {
+          "list": [
+            "the mobile is checked as a valid UK mobile number",
+            "the email domain is checked so it can receive email",
+            "the company is looked up on Companies House, using the registered name with its Ltd or LLP ending",
+            "the phone number and email are compared with earlier enquiries: a repeat within 7 days goes back to the broker who bought it at no extra cost, and no broker ever pays for the same lead twice"
+          ]
+        },
+        "The lead also gets a quality score from 0 to 100. The full list, and what you should still ask on the call, is on the <a href=\"/partners/lead-verification\">lead verification page</a>."
+      ]
+    },
+    {
+      "h2": "The lead is priced and listed",
+      "blocks": [
+        "Each lead is priced in credits, where 1 credit is £1. The price runs from £20 to £300 and reflects loan size, revenue, time trading, credit history and whether the amount asked for is realistic for the business. A sensible ask from an established firm costs more than a long shot.",
+        "The lead then appears under Opportunities on Loanleaf Platform. You see the amount, purpose, timeline, revenue band, time trading, credit history, existing finance, quality score and a Companies House summary. Contact details are masked, for example a***@b****.co.uk and +447*******90, with the “valid UK mobile” and “domain verified” checks shown. The business name and full details unlock when you buy."
+      ]
+    },
+    {
+      "h2": "It is bought by one broker",
+      "blocks": [
+        "There are two ways to buy. In manual mode you browse Opportunities and buy the leads you want. If you ask for it, you get an email when a lead matching your criteria arrives, so you can move quickly.",
+        "In auto-buy mode you set the criteria and limits once and the platform buys matching leads the moment they arrive. If several brokers match the same lead, a fair rotation decides who gets it, so the broker who auto-bought longest ago goes first. Auto-buy never takes a lead whose phone or email check failed. See <a href=\"/partners/platform/auto-buy\">auto-buy</a> for the settings.",
+        "Once a lead is bought it disappears for everyone else and is never resold. That is what <a href=\"/partners/exclusive-leads\">exclusive</a> means here.",
+        "A lead that has not sold after 72 hours drops to 50% off. It stays exclusive: whoever buys it is the only broker who receives it. This is useful if you have a lower budget per lead and are happy to take leads that have waited a little."
+      ]
+    },
+    {
+      "h2": "Delivery and the matched email",
+      "blocks": [
+        "A bought lead reaches you in three places at once: on the platform under My leads, by email, and by webhook to your CRM if you have connected one. You can add up to 5 webhook destinations. The delivery page covers <a href=\"/partners/lead-delivery\">what each lead contains</a>.",
+        "At the same time the business owner receives a “you’ve been matched” email. It shows your public profile with your logo and contact buttons, so they know who to expect a call from. Complete your profile before you buy, because it is the first thing the owner sees of your firm."
+      ]
+    },
+    {
+      "h2": "You work the lead",
+      "blocks": [
+        "Call while the enquiry is fresh. The lead tells you the amount, purpose and timeline, so you can open with what they have already said rather than asking again. Then qualify the things the form does not ask, such as card takings, property details or planning status.",
+        "Inside the platform, My leads has a simple pipeline: New, Contacted, Application, Funded and Lost. Add notes as you go and export to CSV if you want your own records. If a phone number or email turns out to be invalid, you can request a refund within 72 hours, as explained on the <a href=\"/partners/refunds\">refunds page</a>."
+      ]
+    },
+    {
+      "h2": "A worked example and the limits",
+      "blocks": [
+        "Say a business owner asks for £100,000 for equipment, needs it within a month, has been trading for 2 to 5 years with £250k to £500k revenue, and answers “No” on credit problems. That lead is priced by the scoring model and appears on Opportunities with a quality score and the “valid UK mobile” tick.",
+        "If your auto-buy criteria cover £50k to £250k, equipment purposes and clean credit only, and you are next in the rotation, you get it the moment it lands. Your CRM creates a record, the owner receives your matched email, and your adviser rings with “I understand you are looking at £100,000 for equipment”. No part of that needed you to write an advert or open a list.",
+        "Loanleaf is an introducer. It is not a lender or a broker, it does not give advice and it is not authorised by the FCA. It does not take commission from lenders on leads it sells to partners. You are responsible for your own regulatory position, including FCA authorisation where your activities require it."
+      ]
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Do I need to run my own advertising?",
+      "a": "No. Loanleaf generates the enquiries and you buy the ones you want. You pay for leads in credits on a monthly plan, with no ad spend of your own."
+    },
+    {
+      "q": "Can two brokers get the same lead?",
+      "a": "No. Each lead is sold to one broker only. Once it is bought it disappears for everyone else and is never resold."
+    },
+    {
+      "q": "How fast does a lead reach me after I buy it?",
+      "a": "Delivery is instant. The full details appear on the platform, arrive by email and are sent to your CRM by webhook as the purchase completes."
+    },
+    {
+      "q": "Can I see the lead before I pay?",
+      "a": "Yes. You see a summary of every live lead, including its price and quality score, before buying. Contact details are masked until you buy."
+    },
+    {
+      "q": "Does the business owner know who will call?",
+      "a": "Yes. They receive a “you’ve been matched” email showing your public profile, with your logo and contact buttons."
+    },
+    {
+      "q": "How do I start?",
+      "a": "Create an account on Loanleaf Platform, or talk to the team first. The <a href=\"/partners/getting-started\">getting started guide</a> walks through approval and your first leads."
+    }
+  ],
+  "cta_h2": "Start buying exclusive leads",
+  "cta_text": "Sign up on Loanleaf Platform in about five minutes, or <a href=\"/partners/apply\">apply to become a partner</a> and talk to the team first."
+}
