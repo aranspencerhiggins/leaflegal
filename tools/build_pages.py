@@ -133,13 +133,14 @@ def with_nav(h, page, header=None):
     h = re.sub(r'<nav class="ll-crumbs"[^>]*>.*?</nav>', '', h, flags=re.S)  # no visible breadcrumbs (owner); BreadcrumbList JSON-LD stays
     h = FOOT_RE.sub(lambda m: footer_html(strip=page not in ('apply.html', 'business-finance.html', 'partners.html'), minimal=header is not None and 'llb-lp' in header), h, count=1)  # form-only pages: no CTA strip
     if 'assets/masthead.css' in h:  # bump the version in place: stylesheet order matters (apply.css overrides the header on form pages)
-        h = re.sub(r'/assets/masthead\.css\?v=\d+', '/assets/masthead.css?v=24', h)
+        h = re.sub(r'/assets/masthead\.css\?v=\d+', '/assets/masthead.css?v=25', h)
     else:
-        h = h.replace('</head>', '<link href="/assets/masthead.css?v=24" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/masthead.css?v=25" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=39', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=38" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=39" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -193,7 +194,7 @@ def mega(label, items, subs, card, foot=('/apply', 'Not sure? Get a quote')):
     items: [(href, name, sub_key)]; subs: {key: (heading, [(href, name)])}; card: (img, title, text, href, link label)."""
     first = items[0][2]
     left = ''.join(f'<a href="{h}" class="llb-mi{" on" if i == 0 else ""}" data-k="{k}"><span>{t}</span>{ARR}</a>' for i, (h, t, k) in enumerate(items))
-    left = f'<div class="llb-mlist{" two" if len(items) > 10 else ""}">{left}</div><a href="{foot[0]}" class="llb-mfoot">{foot[1]}</a>'
+    left = f'<div class="llb-mlist{" three" if len(items) > 18 else " two" if len(items) > 10 else ""}">{left}</div><a href="{foot[0]}" class="llb-mfoot">{foot[1]}</a>'
     def sub(k, v):
         if isinstance(v, tuple):
             v = {'groups': [v]}
@@ -333,34 +334,33 @@ def footer_html(strip=True, minimal=False):
 
 
 # ---------------------------------------------------------------- header (two tiers: audience bar + main menu)
-area_links = [(AREA_URL(a['slug']), a['name'], ICON[a['icon']]) for a in AC.AREAS] + [('/legal-services', 'All legal services', ICON['other'])]
-help_dd = mega('Legal help', [(AREA_URL(a['slug']), a['name'], a['slug']) for a in AC.AREAS] + [('/legal-services', 'All legal services', 'all')],
-               {**{a['slug']: {'head': (AREA_URL(a['slug']), f'{a["name"]}: overview'), 'groups': [('Common matters', [(AREA_URL(a['slug']) + '#matters', m) for m in a['matters'][:5]])]} for a in AC.AREAS},
-                'all': ('Not sure?', [('/apply', 'Answer a few questions'), ('/how-it-works', 'How it works')])},
-               ('/assets/stock-legal-meet.webp', 'One specialist firm', 'Your enquiry goes to one regulated law firm, not a list.', '/how-it-works', 'How it works'), foot=('/apply', 'Not sure? Get matched'))
-about_dd = mega('About', [('/about', 'About us', 'a'), ('/how-we-make-money', 'How we make money', 'a'), ('/press', 'Press', 'a'), ('/contact', 'Contact us', 'c'), ('/complaints', 'Complaints', 'c')],
-                {'a': (f'More about {BRAND}', [('/how-it-works', 'How it works'), ('/partners', 'For law firms'), ('/privacy-policy', 'Privacy Policy'), ('/terms-conditions', 'Terms of Service')]),
-                 'c': ('Get in touch', [(f'mailto:{EMAIL}', EMAIL), ('/contact', 'Contact form'), ('/accessibility', 'Accessibility')])},
-                ('/assets/stock-about.webp', 'An introducer, not a law firm', 'We introduce people and businesses to regulated firms. We never give legal advice.', '/how-we-make-money', 'How we make money'), foot=('/apply', 'Get matched'))
-P_LINKS = [('/partners#areas', 'Practice areas', ICON['scale']), ('/partners#how-it-works', 'How it works', ICON['link']), ('/partners#pricing', 'Pricing', ICON['cash']),
-           ('/partners#compliance', 'Compliance', ICON['shield']), ('/partners#faq', 'Questions and answers', ICON['doc'])]
-P_ACCOUNT = [('/partners/apply', 'Book a call or apply', ICON['phone']), ('/contact', 'Contact the team', ICON['user'])]  # no platform yet (owner, 2026-11-21)
-PARTNER_MENU = dd('For law firms', P_LINKS) + dd('Get started', P_ACCOUNT)
+exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build_menus.py')).read())  # CLIENT_MENU, PARTNER_MENU, matter/location data
+
+
+PLOGO_ANIM = ('<span class="llb-logo-tag">Partners</span><video class="llb-logo-vid" muted loop playsinline preload="auto" aria-hidden="true"></video>'
+  '<script>(function(){var a=document.currentScript.parentNode;if(matchMedia("(prefers-reduced-motion: reduce)").matches){a.classList.add("noanim");return}'
+  'var v=a.querySelector("video"),u=navigator.userAgent,h=/iP(hone|ad|od)/.test(u)||(/Safari/.test(u)&&!/Chrome|Chromium|Edg|Firefox|OPR/.test(u));'
+  'if(h){a.classList.add("noanim");return}v.src="/assets/logo-anim/leaflegal-partners-dark.webm";'
+  'var want="L",first=1,seen=performance.now(),busy=0;function go(){var p=v.play();p&&p.catch(function(e){if(e.name!="AbortError"&&!a.classList.contains("anim"))a.classList.add("noanim")})}'
+  'function tick(){var t=v.currentTime,n=performance.now();if(!busy&&!v.paused&&(want=="L"?t<.62||t>=2.65:t>=1.05&&t<2.22)){'
+  'var rem=want=="P"?2.22-t:(t>=2.65?3.6-t+.62:.62-t),ms=Math.max(0,(want=="P"?4000:first?2000:4500)-(n-seen)-rem*1000);'
+  'busy=1;v.pause();first=0;setTimeout(function(){var c=v.currentTime;seen=performance.now()+1000*(want=="L"?(c<.62?1.05-c:3.6-c+1.05):2.65-c);want=want=="L"?"P":"L";busy=0;go()},ms)}requestAnimationFrame(tick)}'
+  'v.addEventListener("playing",function(){a.classList.add("anim")},{once:true});v.addEventListener("error",function(){a.classList.add("noanim")});go();requestAnimationFrame(tick)})()</script>')
+# Safari gets the static logo until a HEVC-with-alpha .mov exists (then swap the noanim line for the -hevc.mov source, as LoanLeaf does).
 
 
 def header_b(page=''):
     cur = ' aria-current="page"'
     partner = page == 'partners.html'
     cta_href, cta_label = ('/partners/apply', 'Become a partner firm') if partner else (('#quote' if page == 'index.html' else '/apply'), 'Get matched')
-    menu = PARTNER_MENU if partner else f'{help_dd}{about_dd}'
+    menu = PARTNER_MENU if partner else CLIENT_MENU
     extra = '<a href="/">For people and businesses</a>' if partner else '<a href="/partners">For law firms</a>'
     signin = ''  # platform sign-in comes back when the law-firm platform exists
-    tag = '<span class="llb-logo-tag">Partners</span>' if partner else ''
     return f'''<header class="llb-head">
 <div class="llb-top"><div class="llb-in"><nav class="llb-top-l" aria-label="Audience"><a href="/"{"" if partner else cur}>Clients</a><a href="/partners"{cur if partner else ""}>Law firms</a></nav>
 <div class="llb-top-r"><a href="/how-it-works">How it works</a><a href="/contact">Contact us</a></div></div></div>
 <div class="llb-main"><div class="llb-in">
-<a href="{'/partners' if partner else '/'}" class="llb-logo{' llb-logo-p noanim' if partner else ''}" aria-label="{BRAND + ' Partners' if partner else BRAND + ' home'}"><img src="{LOGO_LIGHT}" width="150" alt="{BRAND}"/>{tag}</a>
+<a href="{'/partners' if partner else '/'}" class="llb-logo{' llb-logo-p' if partner else ''}" aria-label="{BRAND + ' Partners' if partner else BRAND + ' home'}"><img src="{LOGO_LIGHT}" width="150" alt="{BRAND}"/>{PLOGO_ANIM if partner else ''}</a>
 <button type="button" class="llb-toggle" aria-expanded="false" aria-controls="llb-menu" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
 <nav class="llb-menu" id="llb-menu" aria-label="Main">{menu}
 <div class="llb-mobile-extra">{extra}<a href="/about">About us</a><a href="mailto:{EMAIL}">{EMAIL}</a></div>
@@ -410,12 +410,12 @@ home = f'''
 <div id="how-it-works"></div>
 {process(STEPS3, '#quote', 'Get matched')}
 
-{section(split('/assets/stock-legal-meet.webp', f"""<h2 class="heading-two">Less searching. Better first conversations.</h2>
+{section(split(PH.photo('lawyer-desk'), f"""<h2 class="heading-two">Less searching. Better first conversations.</h2>
 <div class="large-text serif-typeface">Instead of ringing round firms, you fill in one form and speak to a lawyer who already knows what your matter is about.</div>
 {checks(['One short form instead of calling round', 'A firm that handles your kind of matter', 'Your enquiry goes to one firm, not a list', 'Free to use, with no obligation to go ahead'])}
 <div class="ll-actions" style="margin-top:32px"><a href="#quote" class="button w-inline-block"><div>Get matched</div></a></div>""", alt='A solicitor talking with a client'))}
 
-{photo_box('/assets/stock-legal-call.webp', f"""<div class="section-title"><h2 class="heading-two">Who we can help</h2><div class="large-text serif-typeface">People and businesses looking for paid legal help.</div><div class="horizontal-line"></div></div>
+{photo_box(PH.photo('golden-street'), f"""<div class="section-title"><h2 class="heading-two">Who we can help</h2><div class="large-text serif-typeface">People and businesses looking for paid legal help.</div><div class="horizontal-line"></div></div>
 {checks(['Homeowners, buyers and sellers in England and Wales', 'People going through a separation', 'Drivers facing points, a ban or a court date', 'Businesses owed money or needing a licence'], white=True)}
 <a href="#quote" class="button w-inline-block"><div>Get matched</div></a>""", cls='section padding-btm-0', photo=True, alt='A woman at a desk')}
 
@@ -459,7 +459,7 @@ for a in AC.AREAS:
             f'<h1>{a["h1"]}</h1><p class="ll-lead">{a["lead"]}</p>'
             f'<ul class="ll-hero-ticks"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}{where}</li></ul>'
             f'<div class="ll-head-btns"><a href="{q}" class="button"><div>Get matched</div></a><a href="#how" class="ll-ghost-light">How it works</a></div></div>'
-            f'<div class="ll-hero-media"><img src="/assets/{AREA_IMG[a["slug"]]}.webp" alt="" loading="eager" fetchpriority="high"/></div></div></section>')
+            f'<div class="ll-hero-media"><img src="{PH.photo(PH.AREA[a["slug"]][0])}" alt="" loading="eager" fetchpriority="high"/></div></div></section>')
     crumb_ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': 'Legal services', 'item': f'{SITE}/legal-services'},
         {'@type': 'ListItem', 'position': 2, 'name': a['name'], 'item': f'{SITE}{AREA_URL(a["slug"])}'}]}
@@ -469,11 +469,13 @@ for a in AC.AREAS:
     body = ''.join([
         head, TRUST_STRIP,
         section(title_block(f'About {a["name"].lower()}') + prose(a['intro']) + notice),
-        section('<div id="matters"></div>' + title_block('What the firms help with') + f'<div class="ll-docs">{checks(a["matters"])}</div>'),
+        section('<div id="matters"></div>' + title_block('What the firms help with', 'Pick your matter to find out more.') + cards([(a['icon'], m['name'], m['short'], M_URL(a['slug'], m['slug'])) for m in MAT[a['slug']]], 'three', more_label='Learn more')),
         '<div id="how"></div>',
         section(title_block('How it works') + accordion(a['how'], numbered=True), cls='section ll-tight'),
         section(title_block('Things to know') + tabs('cons', [(t, f'<h3>{t}</h3><p>{d}</p>') for t, d in a['considerations']])),
         faq(a['faqs'], 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched', title=f'{a["name"]} questions and answers'),
+        section(title_block(f'{LOCAL_NAME[a["slug"]]} near you') + ''.join(f'<ul class="ll-linkgrid">' + ''.join(f'<li><a href="{LOC_URL(c[0], a["slug"])}">{c[1]}{ARR}</a></li>' for c in MC.CITIES) + '</ul>')) if a['slug'] in MC.LOCAL_AREAS else '',
+        section(title_block('Guides') + ''.join(f'<ul class="ll-linkgrid">' + ''.join(f'<li><a href="/guides/{g["slug"]}">{g["h1"]}{ARR}</a></li>' for g in AREA_GUIDES[a['slug']]) + '</ul>')) if a['slug'] in AREA_GUIDES else '',
         section(title_block('Other legal services') + area_cards(others)),
     ])
     page(f'{PUB}/legal-services/{a["slug"]}.html', a['title'], a['desc'], compact(body), ld(faq_ld(a['faqs']), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>', backup=False)
@@ -510,7 +512,7 @@ hiw = ''.join([
     f'<p class="ll-lead">{BRAND} introduces people and businesses to a regulated law firm that handles their kind of matter, so the first conversation is a useful one.</p>'
     f'<ul class="ll-hero-ticks"><li>{TICK}About two minutes to complete</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}Free, with no obligation</li></ul>'
     f'<div class="ll-head-btns"><a href="/apply" class="button"><div>Get matched</div></a><a href="#steps" class="ll-ghost-light">See the steps</a></div></div>'
-    f'<div class="ll-hero-media"><img src="/assets/stock-legal-meet.webp" alt="A solicitor meeting a client" loading="eager" fetchpriority="high"/></div></div></section>',
+    f'<div class="ll-hero-media"><img src="{PH.photo('desk-warm')}" alt="A woman working at a desk" loading="eager" fetchpriority="high"/></div></div></section>',
     TRUST_STRIP,
     '<div id="steps"></div>',
     process(tuple(t for t, _ in HIW_STEPS), '/apply', 'Get matched', title='Three simple steps'),
@@ -518,7 +520,7 @@ hiw = ''.join([
     section(title_block('What happens after you submit', 'A clear timeline, so you always know what comes next.') + cards([(ic, t, d, None) for ic, t, d in HIW_AFTER], 'four')),
     section(title_block(f'Who {BRAND} is for') + yes_no('We can help', ['People and businesses looking for paid legal help', 'Matters in England and Wales', 'Introductions to regulated immigration lawyers', 'Businesses recovering debts from other businesses'],
                                                       'We can’t help', ['Personal injury or clinical negligence claims', 'Housing disrepair claims', 'Financial mis-selling claims', 'Legal aid only matters'])),
-    section(split('/assets/stock-about.webp', '<h2 class="heading-two">How we are paid</h2><div class="large-text serif-typeface">' + BRAND + ' is free for you.</div>'
+    section(split(PH.photo('keys'), '<h2 class="heading-two">How we are paid</h2><div class="large-text serif-typeface">' + BRAND + ' is free for you.</div>'
                   '<p class="ll-split-p-text">We are paid by the firm we introduce you to, so you never pay us. The firm must tell you about that fee in writing, and it does not change what the firm charges you.</p>'
                   '<a href="/how-we-make-money" class="button bg-base-50" style="margin-top:24px"><div>How we make money</div></a>', flip=True)),
     faq(HIW_FAQ, 'Ready to get started?', 'It takes about two minutes.', '/apply', 'Get matched', title='Questions about how it works'),
@@ -558,30 +560,9 @@ L_FEATURES = section('<div class="section-title text-center"><h2 class="heading-
               ['Paid legal help confirmed, not legal aid', 'Matched to your practice areas and locations', 'UK mobile and email checked on submission'])
     + feature(feat_photo('legal-call'), 'Delivered while the enquiry is fresh', 'Leads arrive quickly with the source, timestamp and every answer the client gave, so you can call while it is fresh.',
               ['Email, CRM or case management delivery', 'No shared or recycled leads'], ui_first=False))
-partners_p = ''.join([
-    L_HERO,
-    '<div id="areas"></div>',
-    section(title_block(LC.AREAS_H2, LC.AREAS_LEAD) + tabs('area', [
-        (name, f'<h3>{name}</h3><p>{detail}</p><div class="ll-matters"><b>Typical matters</b>{checks(matters)}</div>')
-        for ic, name, short, detail, matters in LC.AREAS])),
-    section(title_block('What’s in every lead', LC.LEAD_CONTENTS_TEXT) + cards([(ic, t, d, None) for ic, t, d in LC.LEAD_CONTENTS], 'three')),
-    '<div id="how-it-works"></div>',
-    process(LC.PROCESS_STEPS, APPLY_L, 'Become a partner firm'),
-    section(title_block('Each step in detail') + accordion(LC.PROCESS_DETAIL, numbered=True), cls='section ll-tight'),
-    section(title_block(LC.QUAL_H2, LC.QUAL_LEAD) + yes_no('Every lead is', LC.QUAL_YES, 'We don’t send', LC.QUAL_NO) + f'<p class="ll-note">{LC.QUAL_NOTE}</p>'),
-    L_FEATURES,
-    '<div id="pricing"></div>',
-    section(title_block(LC.PRICING_H2) + read_more(LC.PRICING)),
-    '<div id="compliance"></div>',
-    section(title_block(LC.COMPLIANCE_H2) + tabs('comp', [(t, f'<h3>{t}</h3><p>{d}</p>') for t, d in LC.COMPLIANCE])),
-    section(title_block(LC.FIRMS_H2) + cards([(ic, t, d, None) for ic, t, d in LC.FIRMS], 'three')),
-    section(title_block(LC.INTRO_H2) + read_more(LC.INTRO)),
-    section(title_block(LC.GUIDE_H2, LC.GUIDE_LEAD) + accordion(LC.GUIDE, numbered=True)),
-    section(title_block(LC.FAQ_H2, 'Choose a topic to see the questions firms ask us most.') + faq_tabs(LC.FAQ_GROUPS), cls='section" id="faq'),
-    cta('Start receiving client enquiries', 'Exclusive, pre-screened leads in the practice areas you choose, sent to you while the enquiry is fresh.', APPLY_L, 'Become a partner firm'),
-])
-partners_p = re.sub(r'<section class="section(?! legal-hero)(?! padding-btm-0)', '<section class="section ll-compact', partners_p)
-page(f'{PUB}/partners.html', LC.TITLE, LC.DESC, partners_p, L_HEAD, '<script src="/assets/tabs.js?v=2"></script>', header='PARTNERS_HEADER', backup=False)
+import cfb_legal
+page(f'{PUB}/partners.html', LC.TITLE, LC.DESC, cfb_legal.build(ICON, TICK, faq_tabs(LC.FAQ_GROUPS), LC.FAQ_H2, LC, PS.AREA_LEADS, PH.photo('partner-call')),
+     L_HEAD + '<link href="/assets/cfb.css?v=17" rel="stylesheet"/>', '<script src="/assets/tabs.js?v=2"></script>', header='PARTNERS_HEADER', backup=False)
 
 os.makedirs(f'{PUB}/partners', exist_ok=True)
 # Law firm enquiry: details, then book a call with Aran (assets/partner-enquiry.js). The same flow opens as a pop-up from any
@@ -612,7 +593,7 @@ about = f'''
   ('target', 'Focused', 'We only work in seven areas of law, so the firms we introduce can really help.', None),
 ], 'three')}""")}
 
-{section(split('/assets/stock-about.webp', f"""<h2 class="heading-two">What we are, and what we aren't</h2>
+{section(split(PH.photo('desk-warm'), f"""<h2 class="heading-two">What we are, and what we aren't</h2>
 <div class="large-text serif-typeface">We think you should know exactly who you're dealing with.</div>
 <div class="ll-isnt" style="margin-top:28px;grid-template-columns:1fr">
 <div class="ll-yes"><h3>{BRAND} is</h3><ul><li>{TICK}A free introduction service</li><li>{TICK}Run by Vertical Brands Ltd</li><li>{TICK}Paid by the firms we introduce, never by you</li></ul></div>
@@ -713,6 +694,8 @@ page(f'{PUB}/404.html', f'Page Not Found | {BRAND}', 'The page you were looking 
                       ('doc', 'Legal services', 'The areas of law we can help with.', '/legal-services'),
                       ('briefcase', 'For law firms', 'Exclusive client enquiries for solicitors.', '/partners')], 'three')),
      extra_head='<meta name="robots" content="noindex"/>', backup=False)
+
+exec(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'build_seo.py')).read())
 
 # ---------------------------------------------------------------- shared nav on every other page (legal pages from tools/legal.py)
 for f in glob.glob(f'{PUB}/**/*.html', recursive=True):
