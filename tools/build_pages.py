@@ -640,8 +640,8 @@ def cs_guides_home():
 
 
 # ---------------------------------------------------------------- homepage
-# Hero photo (Unsplash MkNnPlMThgk, solicitor greeting a client across a desk), shown mirrored so the solicitor sits on the right.
-HOME_HERO_IMG = lambda w: PH.U('1780733065500-4284d227f58c', w)
+# Hero photo (Unsplash Nwj_ESx66Zk, woman with a coffee at a sunlit desk at home), shown mirrored so she sits on the right. Never use handshake photos.
+HOME_HERO_IMG = lambda w: PH.U('1789540883496-4a5b0f9d2900', w)
 home = f'''
 <section class="ll-hero ll-hero-photo ll-hero-noform" id="quote">
 <img class="ll-hero-bg" src="{HOME_HERO_IMG(1800)}" srcset="{HOME_HERO_IMG(900)} 900w, {HOME_HERO_IMG(1400)} 1400w, {HOME_HERO_IMG(2200)} 2200w" sizes="100vw" alt="" fetchpriority="high"/>
