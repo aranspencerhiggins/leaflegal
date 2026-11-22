@@ -9,14 +9,14 @@ export default {
   defaultMatter: 'other-licensing',
   steps: [
     { id: 'need', q: 'What do you need help with?', type: 'single', icons: true, options: [
-      { v: 'newprem', label: 'A new premises licence', sub: 'For selling alcohol, live music, late night food or events', ico: 'building', audience: 'business', matter: 'premises-licence-applications', tags: ['premises-licence', 'new-application'] },
-      { v: 'vary', label: 'Changing an existing premises licence', sub: 'Longer hours, new activities, a new layout or conditions', ico: 'doc', audience: 'business', matter: 'licence-variations', tags: ['premises-licence', 'variation'] },
-      { v: 'transfer', label: 'Transferring a licence or changing the DPS', sub: 'Buying or taking over a business, or a new designated premises supervisor', ico: 'key', audience: 'business', matter: 'transfers-and-dps', tags: ['premises-licence', 'transfer'] },
-      { v: 'review', label: 'A licence review, hearing or closure', sub: 'The police, council or residents have raised concerns', ico: 'gavel', audience: 'business', matter: 'licence-reviews', tags: ['premises-licence', 'review'] },
-      { v: 'personal', label: 'A personal licence', sub: 'Applying, or a licence at risk because of a conviction', ico: 'person', audience: 'individual', matter: 'personal-licences', tags: ['personal-licence'] },
-      { v: 'taxi', label: 'A taxi or private hire licence', sub: 'Drivers, vehicles and operators', ico: 'car', matter: 'taxi-and-private-hire-licences', tags: ['taxi'] },
-      { v: 'object', label: 'Objecting to a licence near me', sub: 'A new application or a venue causing problems', ico: 'home', audience: 'individual', matter: 'licence-reviews', tags: ['objector'] },
-      { v: 'other', label: 'Another licence from the council', sub: 'Gambling, events, street trading and more', ico: 'badge', audience: 'business', matter: 'other-licensing' },
+      { v: 'newprem', label: 'A new licence to sell alcohol or put on entertainment', ico: 'building', audience: 'business', matter: 'premises-licence-applications', tags: ['premises-licence', 'new-application'] },
+      { v: 'vary', label: 'Changing an existing premises licence', ico: 'doc', audience: 'business', matter: 'licence-variations', tags: ['premises-licence', 'variation'] },
+      { v: 'transfer', label: 'Transferring a licence or changing the designated premises supervisor', ico: 'key', audience: 'business', matter: 'transfers-and-dps', tags: ['premises-licence', 'transfer'] },
+      { v: 'review', label: 'Complaints, a licence review or a closure', ico: 'gavel', audience: 'business', matter: 'licence-reviews', tags: ['premises-licence', 'review'] },
+      { v: 'personal', label: 'A personal licence to sell alcohol', ico: 'person', audience: 'individual', matter: 'personal-licences', tags: ['personal-licence'] },
+      { v: 'taxi', label: 'A taxi or private hire licence', ico: 'car', matter: 'taxi-and-private-hire-licences', tags: ['taxi'] },
+      { v: 'object', label: 'Objecting to a licence near me', ico: 'home', audience: 'individual', matter: 'licence-reviews', tags: ['objector'] },
+      { v: 'other', label: 'Another council licence, such as gambling or street trading', ico: 'badge', audience: 'business', matter: 'other-licensing' },
       { v: 'notlicensing', label: 'A TV licence, driving licence or something else', ico: 'other', exit: 'notlicensing' }] },
 
     // Other council licences
@@ -75,7 +75,7 @@ export default {
       { v: 'submitted', label: 'Submitted and waiting', tags: ['application-submitted'] },
       { v: 'objections', label: 'Objections or representations have been made', tags: ['representations'] },
       { v: 'refused', label: 'It was refused or granted with conditions I can’t accept', tags: ['appeal'] }] },
-    { id: 'n_cia', when: { need: ['newprem', 'vary'] }, q: 'Is the premises in a cumulative impact area?', type: 'single', options: [
+    { id: 'n_cia', when: { need: ['newprem', 'vary'] }, q: 'Is it in an area where the council limits new licences (a cumulative impact area)?', type: 'single', options: [
       { v: 'yes', label: 'Yes', tags: ['cumulative-impact'] },
       { v: 'no', label: 'No' },
       { v: 'unsure', label: 'I’m not sure' }] },
@@ -130,10 +130,10 @@ export default {
 
     // Taxi and private hire
     { id: 'tx_role', when: { need: ['taxi'] }, q: 'Which licence is it?', type: 'single', options: [
-      { v: 'hackney', label: 'Hackney carriage driver', sub: 'A black cab or taxi you can hail', audience: 'individual', tags: ['driver', 'hackney'] },
-      { v: 'phv', label: 'Private hire driver', sub: 'Including app based work', audience: 'individual', tags: ['driver', 'private-hire'] },
+      { v: 'hackney', label: 'Hackney carriage (black cab) driver', audience: 'individual', tags: ['driver', 'hackney'] },
+      { v: 'phv', label: 'Private hire or app based driver', audience: 'individual', tags: ['driver', 'private-hire'] },
       { v: 'vehicle', label: 'A vehicle licence', audience: 'individual', tags: ['vehicle-licence'] },
-      { v: 'operator', label: 'A private hire operator licence', sub: 'Running a taxi or private hire firm', audience: 'business', tags: ['operator'] }] },
+      { v: 'operator', label: 'An operator licence to run a private hire firm', audience: 'business', tags: ['operator'] }] },
     { id: 'tx_company', when: { tx_role: ['operator'] }, q: 'What is the name of your business?', type: 'company', placeholder: 'Company name' },
     { id: 'tx_fleet', when: { tx_role: ['operator'] }, q: 'How many vehicles do you run?', type: 'single', grid: true, options: [
       { v: 'f1', label: '1 to 10' }, { v: 'f2', label: '11 to 50' }, { v: 'f3', label: '51 to 200', tags: ['large-operator'] }, { v: 'f4', label: 'More than 200', tags: ['large-operator'] }] },
