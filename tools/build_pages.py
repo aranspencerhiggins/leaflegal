@@ -760,7 +760,7 @@ for a in AC.AREAS:
     os.makedirs(f'{PUB}/enquire', exist_ok=True)
     page(f'{PUB}/enquire/{a["slug"]}.html', f'{a["name"]} Enquiry | {BRAND}',
          f'Answer a few quick questions about your {a["name"].lower()} matter and we will introduce you to one regulated firm. Free, with no obligation.',
-         lp_body(ENQ_H1[a['slug']], ('Free, no obligation', 'One regulated firm', 'UK wide' if imm_a else 'England and Wales'), form_card(a['slug']), img=PH.photo(PH.AREA[a['slug']][0], 1600)),
+         lp_body(ENQ_H1[a['slug']], ('Free, no obligation', 'One regulated firm', 'UK wide' if imm_a else 'England and Wales'), form_card(a['slug'])),
          APPLY_HEAD + '<meta name="robots" content="noindex"/>', APPLY_JS, header=LP_HEADER, backup=False)
     page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), APPLY_HEAD + ld(faq_ld([qa for _, g in faq_groups(seo_faqs(AREA_URL(a['slug'])) + a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
 
