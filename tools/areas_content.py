@@ -12,7 +12,7 @@ AREAS = [
         'short': 'Buying, selling or remortgaging a property in England and Wales.',
         'title': 'Conveyancing Solicitors | Get Matched With a Conveyancer | Leaflegal',
         'desc': 'Buying, selling or remortgaging? Answer a few quick questions and we will introduce you to a regulated conveyancing firm. Free to use, no obligation.',
-        'h1': 'Find a conveyancing solicitor for your move',
+        'h1': 'Find a conveyancing solicitor',
         'lead': 'Tell us about your purchase, sale or remortgage and we will introduce you to a regulated conveyancing firm that handles your kind of property.',
         'intro': [
             'Conveyancing is the legal work involved in transferring a property from one owner to another. A conveyancer checks the title, carries out searches, raises questions with the other side, handles the money and registers the change of ownership with HM Land Registry.',
@@ -41,7 +41,7 @@ AREAS = [
         'short': 'Introductions to regulated immigration lawyers and advisers.',
         'title': 'Immigration Lawyers | Get Introduced to a Regulated Adviser | Leaflegal',
         'desc': 'Looking for an immigration lawyer? We introduce you to a firm regulated to give immigration advice. We do not give immigration advice ourselves.',
-        'h1': 'Get introduced to a regulated immigration lawyer',
+        'h1': 'Find a regulated immigration adviser',
         'lead': 'Tell us a little about what you need and we will pass your enquiry to one firm that is regulated to give immigration advice. They will talk you through it.',
         'intro': [
             'In the UK, only people who are regulated can give immigration advice or provide immigration services. That includes solicitors regulated by the Solicitors Regulation Authority and advisers registered with the Immigration Advice Authority (formerly the OISC).',
