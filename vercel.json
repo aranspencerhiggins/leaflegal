@@ -125,11 +125,11 @@
   "rewrites": [
     {
       "source": "/platform",
-      "destination": "/platform/index.html"
+      "destination": "/platform"
     },
     {
       "source": "/platform/:path*",
-      "destination": "/platform/index.html"
+      "destination": "/platform"
     },
     {
       "source": "/:path*",
@@ -139,7 +139,7 @@
           "value": "platform.leaflegal.co"
         }
       ],
-      "destination": "/platform/index.html"
+      "destination": "/platform"
     },
     {
       "source": "/api/google-callback",
