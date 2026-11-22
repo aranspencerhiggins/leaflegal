@@ -141,9 +141,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=44', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=45', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=44" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=45" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -513,7 +513,7 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
 APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=4" rel="stylesheet"/>'
-APPLY_JS = '<script type="module" src="/assets/enquire.js?v=4"></script>'
+APPLY_JS = '<script type="module" src="/assets/enquire.js?v=5"></script>'
 
 
 def ENQ_URL(area, matter=None):
@@ -649,13 +649,12 @@ home = f'''
 <h1>Find the right solicitor for you</h1>
 <p class="ll-lead">Tell us what you need help with and we'll introduce you to a specialist, regulated law firm that handles your kind of matter.</p>
 <div class="ll-borrow ll-need"><p class="ll-borrow-q">What do you need help with?</p>
-<div class="ll-need-opts">{''.join(f'<a href="/enquire/{a["slug"]}">{a["name"]}</a>' for a in AC.AREAS)}</div>
-<a href="/apply" class="button ll-borrow-go"><div>Not sure? Tell us what is happening</div></a></div>
+<div class="ll-need-opts">{''.join(f'<a href="/enquire/{a["slug"]}">{a["name"]}</a>' for a in AC.AREAS)}</div></div>
 <ul class="ll-hero-points"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a call centre</li><li>{TICK}Your details are kept private</li></ul>
 </div></div></section>
 {TRUST_STRIP}
-{section(f"""<div class="ll-section-title"><h2 class="heading-two">What do you need help with?</h2><div class="large-text serif-typeface">Pick an area to start, or tell us what is happening if you are not sure.</div></div>
-{cards([(a['icon'], a['name'], a['short'], f"/enquire/{a['slug']}") for a in AC.AREAS] + [('other', 'Not sure', 'Tell us what is happening and we will point you in the right direction.', '/apply')], more_label='Get matched')}""")}
+{section(f"""<div class="ll-section-title"><h2 class="heading-two">What do you need help with?</h2><div class="large-text serif-typeface">Pick an area to start and we will introduce you to a firm that handles it.</div></div>
+{cards([(a['icon'], a['name'], a['short'], f"/enquire/{a['slug']}") for a in AC.AREAS], more_label='Get matched')}""")}
 
 <div id="how-it-works"></div>
 {process(STEPS3, '#quote', 'Get matched')}
