@@ -19,6 +19,7 @@ for (const [area, f] of Object.entries(FORMS)) {
   for (const s of f.steps) {
     assert.ok(!ids.has(s.id), `${area}: duplicate step ${s.id}`); ids.add(s.id);
     assert.ok(!SHARED_STEPS[s.id], `${area}: step id ${s.id} clashes with a shared step`);
+    assert.ok(!['area', 'done', '//done'].includes(s.id) && !s.id.startsWith('x_'), `${area}: step id ${s.id} is reserved by the form engine`);
     assert.ok(TYPES.includes(s.type), `${area}.${s.id}: type ${s.type}`);
     for (const k of Object.keys(s.when || {})) { const r = k.replace(/^!/, ''); assert.ok(r.startsWith('$') || ids.has(r), `${area}.${s.id}: when ${k} refers to a later or unknown step`); }
     if (s.note) assert.ok(NOTES[s.note], `${area}.${s.id}: note ${s.note}`);

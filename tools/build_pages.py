@@ -6,6 +6,9 @@ from urllib.parse import quote
 
 PUB = 'public'
 os.makedirs('backup', exist_ok=True)
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from seo_keywords import SEO, AUTO_LINKS, LOCAL_TITLE  # keyword targets from Ahrefs UK data
 
 
 def asset(key):
@@ -138,9 +141,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=42', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=47', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=42" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=47" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -231,7 +234,7 @@ def _pool(rel):
 
 def _topup(path, body, target=5150):
     rel = os.path.relpath(path, PUB)[:-5]
-    if rel in _TOPUP_SKIP or '/platform' in path or 'deep' not in globals():
+    if rel in _TOPUP_SKIP or rel.startswith('enquire/') or '/platform' in path or 'deep' not in globals():
         return body
     need = target - _words(body)
     if need <= 0:
@@ -273,6 +276,11 @@ def _topup(path, body, target=5150):
 def page(path, title, desc, body, extra_head='', extra_js='', header=None, backup=True):
     body, _added = _add_deep(path, body)
     body = _topup(path, body)
+    _url = '/' + os.path.relpath(path, PUB)[:-5]
+    if _url in SEO:
+        title, desc = SEO[_url]['title'], SEO[_url]['desc']
+    if 'auto_link' in globals() and not _url[1:].startswith(_SKIP_LINK) and _url != '/index':
+        body = auto_link(_url, body)
     if 'data-tabs' in body and 'tabs.js' not in extra_js + extra_head:
         extra_js += '<script src="/assets/tabs.js?v=2"></script>'
     h = SHELL
@@ -504,8 +512,20 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
-APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=1" rel="stylesheet"/>'
-APPLY_JS = '<script type="module" src="/assets/enquire.js?v=2"></script>'
+APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=4" rel="stylesheet"/>'
+APPLY_JS = '<script type="module" src="/assets/enquire.js?v=6"></script>'
+
+
+def ENQ_URL(area, matter=None):
+    """The separate enquiry form page for an area, started on a matter when given."""
+    return f'/enquire/{area}' + (f'?matter={matter}' if matter else '')
+
+
+ENQ_LABEL = 'Make an Enquiry'
+
+
+def enq_btn(area, matter=None):
+    return f'<a href="{ENQ_URL(area, matter)}" class="button"><div>{ENQ_LABEL}</div></a>'
 
 
 def form_card(area=None, matter=None):
@@ -515,6 +535,84 @@ def form_card(area=None, matter=None):
 ld = lambda *xs: ''.join(f'<script type="application/ld+json">{_json.dumps(x, ensure_ascii=False)}</script>' for x in xs)
 faq_ld = lambda qas: {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': [
     {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': re.sub(r'<[^>]+>', '', a)}} for q, a in qas]}
+
+# ---------------------------------------------------------------- keyword targeting and internal links (tools/seo_keywords.py)
+_SKIP_LINK = ('enquire/', 'partners', 'apply', 'contact', 'press', 'accessibility', 'complaints', 'cookie-policy', 'privacy-policy', 'terms-conditions', '404', 'platform')
+_AL = sorted(AUTO_LINKS, key=lambda x: -len(x[0]))
+_AL_RE = [(re.compile(r'(?<![\w-])(' + re.escape(ph) + r')(?![\w-])', re.I), url) for ph, url in _AL]
+
+
+def auto_link(url, body, limit=12):
+    """Link the first plain-text mention of key phrases in body paragraphs to the page that targets them.
+    One link per paragraph, each target once, never to the page itself, and only in <p> tags with no other links."""
+    used, n = {url}, [0]
+
+    def para(m):
+        inner = m.group(1)
+        if n[0] >= limit or '<a ' in inner:
+            return m.group(0)
+        parts = re.split(r'(<[^>]+>)', inner)
+        for rx, target in _AL_RE:
+            if target in used:
+                continue
+            for i, t in enumerate(parts):
+                if not t or t.startswith('<'):
+                    continue
+                mm = rx.search(t)
+                if mm:
+                    parts[i] = t[:mm.start()] + f'<a href="{target}">{mm.group(1)}</a>' + t[mm.end():]
+                    used.add(target)
+                    n[0] += 1
+                    return '<p>' + ''.join(parts) + '</p>'
+        return m.group(0)
+    keep = []
+
+    def mask(m):  # paragraphs inside links (cards) are left alone
+        keep.append(m.group(0))
+        return f'\x00{len(keep) - 1}\x00'
+    body = re.sub(r'<a\b[^>]*>.*?</a>', mask, body, flags=re.S)
+    body = re.sub(r'<p>(.*?)</p>', para, body, flags=re.S)
+    return re.sub(r'\x00(\d+)\x00', lambda m: keep[int(m.group(1))], body)
+
+
+_ANCHOR_FALLBACK = {'/solicitors': 'Find a solicitor near you', '/guides': 'Legal guides', '/legal-services': 'All legal services'}
+
+
+def seo_anchor(u):
+    if u in SEO:
+        return SEO[u]['anchor']
+    if u.startswith('/guides/'):
+        g = next((x for x in CG.GUIDES if f'/guides/{x["slug"]}' == u), None)
+        return g['h1'] if g else u
+    return _ANCHOR_FALLBACK.get(u, u)
+
+
+def seo_h1(u, default):
+    return (SEO.get(u) or {}).get('h1') or default
+
+
+def seo_faqs(u):
+    return [tuple(x) for x in (SEO.get(u) or {}).get('faqs', [])]
+
+
+def seo_block(u):
+    """Short keyword-led section placed under the intro of area and matter pages."""
+    e = SEO.get(u)
+    if not e or not e['paras']:
+        return ''
+    kw = e['kw'][0].upper() + e['kw'][1:]
+    return section(f'<div class="cs-deep cs-kw"><h2 class="cs-h2">{kw} in brief</h2>' + ''.join(f'<p>{p}</p>' for p in e['paras']) + '</div>', cls='section cs-sec')
+
+
+def seo_related(u, title, urls):
+    """Related pages with keyword-rich anchors: the area, sibling matters and a few cross-area links."""
+    seen, links = {u}, []
+    for x in urls + (SEO.get(u) or {}).get('cross', []):
+        if x not in seen:
+            seen.add(x)
+            links.append((x, seo_anchor(x)))
+    return cs_links(title, links) if links else ''
+
 compact = lambda body: re.sub(r'<section class="section(?! padding-btm-0| ll-compact| legal-hero)', '<section class="section ll-compact', body)
 
 HOME_FAQ = [
@@ -542,16 +640,21 @@ def cs_guides_home():
 
 
 # ---------------------------------------------------------------- homepage
+# Hero photo (Unsplash+ ARr07aQKrt4, licensed download, man taking notes at a laptop, chosen by Aran). Self hosted WebP, already mirrored so he sits on the right. Never use handshake photos.
+HOME_HERO_IMG = lambda w: f'/assets/home-hero-{w}.webp'
 home = f'''
-<section class="ll-hero" id="quote">
-<div class="ll-hero-in"><div>
-<h1>Legal help, matched to you</h1>
-<p class="ll-lead">Tell us what you need help with and we'll introduce you to a specialist, regulated law firm.</p>
+<section class="ll-hero ll-hero-photo ll-hero-noform" id="quote">
+<img class="ll-hero-bg" src="{HOME_HERO_IMG(2200)}" srcset="{HOME_HERO_IMG(900)} 900w, {HOME_HERO_IMG(1400)} 1400w, {HOME_HERO_IMG(2200)} 2200w" sizes="100vw" alt="" fetchpriority="high"/>
+<div class="ll-hero-in"><div class="ll-hero-copy">
+<h1>Find the right solicitor for you</h1>
+<p class="ll-lead">Tell us what you need help with and we'll introduce you to a specialist, regulated law firm that handles your kind of matter.</p>
+<div class="ll-borrow ll-need"><p class="ll-borrow-q">What do you need help with?</p>
+<div class="ll-need-opts">{''.join(f'<a href="/enquire/{a["slug"]}">{a["name"]}</a>' for a in AC.AREAS)}</div></div>
 <ul class="ll-hero-points"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a call centre</li><li>{TICK}Your details are kept private</li></ul>
-</div>{FORM}</div></section>
+</div></div></section>
 {TRUST_STRIP}
-{section(f"""<div class="ll-section-title"><h2 class="heading-two">What do you need help with?</h2><div class="large-text serif-typeface">Pick an area to start, or go straight to the form.</div></div>
-{cards([(a['icon'], a['name'], a['short'], '#quote') for a in AC.AREAS] + [('other', 'Not sure', 'Tell us what is happening and we will point you in the right direction.', '#quote')], more_label='Get matched')}""")}
+{section(f"""<div class="ll-section-title"><h2 class="heading-two">What do you need help with?</h2><div class="large-text serif-typeface">Pick an area to start and we will introduce you to a firm that handles it.</div></div>
+{cards([(a['icon'], a['name'], a['short'], f"/enquire/{a['slug']}") for a in AC.AREAS], more_label='Get matched')}""")}
 
 <div id="how-it-works"></div>
 {process(STEPS3, '#quote', 'Get matched')}
@@ -592,18 +695,19 @@ org_ld = {'@context': 'https://schema.org', '@type': 'Organization', '@id': f'{S
           'address': {'@type': 'PostalAddress', 'streetAddress': '20-22 Wenlock Road', 'addressLocality': 'London', 'postalCode': 'N1 7GU', 'addressCountry': 'GB'}}
 page(f'{PUB}/index.html', f'Find a Solicitor in England and Wales | {BRAND}',
      'Get matched with a specialist, regulated law firm for conveyancing, family law, motoring offences, licensing, lease extensions, debt recovery or immigration. Free, no obligation.',
-     home, APPLY_HEAD + ld(org_ld, faq_ld(HOME_FAQ)), APPLY_JS)
+     home, ld(org_ld, faq_ld(HOME_FAQ)))
 
 # ---------------------------------------------------------------- /apply: form-only page
 LP_TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 LP_TICKS = ('Free to use, no obligation', 'One regulated firm, not a call centre', 'Your details are kept private')
 
 
-def lp_body(h1='Find the right solicitor for your matter', ticks=LP_TICKS):
-    return ('<section class="ap-section ap-solo ap-lp" id="quote"><div class="ap-wrap"><div class="ap-lp-grid">'
+def lp_body(h1='Find the right solicitor for your matter', ticks=LP_TICKS, form=None, img=None):
+    pic = f'<div class="ap-lp-photo"><img src="{img}" alt="" loading="eager" fetchpriority="high"/></div>' if img else ''
+    return (f'<section class="ap-section ap-solo ap-lp{" ap-has-photo" if img else ""}" id="quote">{pic}<div class="ap-wrap"><div class="ap-lp-grid">'
             f'<div class="ap-lp-head"><h1>{h1}</h1>'
             '<ul>' + ''.join(f'<li><span class="ap-lp-tick">{LP_TICK}</span><span>{t}</span></li>' for t in ticks) + '</ul></div>'
-            + FORM + '</div></div></section>')
+            + (form or FORM) + '</div></div></section>')
 
 
 LP_HEADER = f'<header class="llb-head llb-lp"><div class="llb-main"><div class="llb-in"><a href="/" class="llb-logo" aria-label="{BRAND} home"><img src="{LOGO_LIGHT}" width="150" alt="{BRAND}"/></a></div></div></header>'
@@ -615,14 +719,18 @@ page(f'{PUB}/apply.html', f'Get Matched With a Solicitor | {BRAND}',
 os.makedirs(f'{PUB}/legal-services', exist_ok=True)
 AREA_IMG = {'conveyancing': 'stock-home', 'immigration': 'stock-legal-call', 'family-law': 'stock-about', 'debt-recovery': 'stock-invoice',
             'motoring-offences': 'stock-need-buying-vehicles', 'licensing': 'stock-ind-restaurants-and-hospitality', 'lease-extensions': 'stock-legal-meet'}
+ENQ_H1 = {'conveyancing': 'Get matched with a trusted conveyancer', 'immigration': 'Get matched with an immigration expert',
+          'family-law': 'Speak to a family law specialist', 'debt-recovery': 'Get the money your business is owed',
+          'motoring-offences': 'Get expert help with your driving charge', 'licensing': 'Get expert help with your licence',
+          'lease-extensions': 'Extend your lease with a specialist'}
 for a in AC.AREAS:
-    q = '#quote'  # the form is in the hero
+    q = ENQ_URL(a['slug'])
     where = 'Introductions to regulated immigration advisers across the UK' if a.get('referral_only') else ('For businesses in England and Wales' if a.get('business_only') else 'For matters in England and Wales')
     head = (f'<section class="ll-pagehead ll-hero-split"><div class="ll-hero-grid"><div><nav class="ll-crumbs" aria-label="Breadcrumb"><a href="/legal-services">Legal services</a><span>/</span><span>{a["name"]}</span></nav>'
-            f'<h1>{a["h1"]}</h1><p class="ll-lead">{a["lead"]}</p>'
+            f'<h1>{seo_h1(AREA_URL(a["slug"]), a["h1"])}</h1><p class="ll-lead">{a["lead"]}</p>'
             f'<ul class="ll-hero-ticks"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}{where}</li></ul>'
-            f'</div>'
-            f'<div class="ll-hero-form" id="quote">{form_card(a["slug"])}</div></div></section>')
+            f'<div class="ll-head-btns">{enq_btn(a["slug"])}</div></div>'
+            f'<div class="ll-hero-media"><img src="{PH.photo(PH.AREA[a["slug"]][0])}" alt="" loading="eager" fetchpriority="high"/></div></div></section>')
     crumb_ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': 'Legal services', 'item': f'{SITE}/legal-services'},
         {'@type': 'ListItem', 'position': 2, 'name': a['name'], 'item': f'{SITE}{AREA_URL(a["slug"])}'}]}
@@ -636,17 +744,25 @@ for a in AC.AREAS:
     body = ''.join([
         head, TRUST_STRIP,
         cs_intro(f'About {a["name"].lower()}', a['intro'] + [AREA_EXTRA[a['slug']]['more']], glance, notice),
+        seo_block(AREA_URL(a['slug'])),
         cs_deep(f'{a["name"]} explained', deep(a['slug']), lead='Pick a topic to read more.'),
         section('<div id="matters"></div><h2 class="cs-h2 cs-center">What the firms help with</h2>' + cards([(a['icon'], m['name'], m['short'], M_URL(a['slug'], m['slug'])) for m in MAT[a['slug']]], 'three', more_label='Learn more'), cls='section cs-sec'),
         cs_steps('How it works', a['how'], q, lead='Three simple steps, and nothing to pay us.'),
         cs_fees(a['slug'], a['name']),
         cs_things(a['considerations']),
-        cs_faqs(f'{a["name"]} questions and answers', faq_groups(a['faqs'], deep(a['slug'])), 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched'),
+        cs_faqs(f'{a["name"]} questions and answers', faq_groups(seo_faqs(AREA_URL(a['slug'])) + a['faqs'], deep(a['slug'])), 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, ENQ_LABEL),
+        seo_related(AREA_URL(a['slug']), f'Popular {a["name"].lower()} services', [M_URL(a['slug'], m['slug']) for m in MAT[a['slug']]]),
         cs_guides(a['slug'], AREA_GUIDES.get(a['slug'], [])),
         cs_links(f'{LOCAL_NAME[a["slug"]]} near you', [(LOC_URL(c[0], a['slug']), c[1]) for c in MC.CITIES]) if a['slug'] in MC.LOCAL_AREAS else '',
         section('<h2 class="cs-h2 cs-center">Other legal services</h2>' + area_cards(others), cls='section cs-sec'),
     ])
-    page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), APPLY_HEAD + ld(faq_ld([qa for _, g in faq_groups(a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
+    # The separate enquiry page for this area (like /apply, with the area fixed). Matter pages link here with ?matter=.
+    os.makedirs(f'{PUB}/enquire', exist_ok=True)
+    page(f'{PUB}/enquire/{a["slug"]}.html', f'{a["name"]} Enquiry | {BRAND}',
+         f'Answer a few quick questions about your {a["name"].lower()} matter and we will introduce you to one regulated firm. Free, with no obligation.',
+         lp_body(ENQ_H1[a['slug']], ('Free, no obligation', 'One regulated firm', 'UK wide' if imm_a else 'England and Wales'), form_card(a['slug'])),
+         APPLY_HEAD + '<meta name="robots" content="noindex"/>', APPLY_JS, header=LP_HEADER, backup=False)
+    page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), APPLY_HEAD + ld(faq_ld([qa for _, g in faq_groups(seo_faqs(AREA_URL(a['slug'])) + a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
 
 hub = (page_head('Legal services', 'The areas of law we introduce people and businesses to. Pick one to find out more, or answer a few quick questions and we will do the matching.')
        + TRUST_STRIP + section(area_cards())

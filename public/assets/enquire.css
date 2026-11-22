@@ -2,7 +2,6 @@
 .ll-hero-form{display:flex;align-items:center;justify-content:center;padding:48px max(24px,calc((100vw - 1280px)/2 + 24px)) 48px 24px;scroll-margin-top:90px}
 .ll-hero-form .ap-card{width:100%;max-width:560px}
 @media (max-width:991px){.ll-hero-form{padding:0 16px 48px}.ll-hero-split .ll-hero-grid>div:first-child{padding-bottom:28px}}
-@media (max-width:767px){.ll-hero-split .ll-hero-ticks{display:none}}
 
 .im-note{margin:-8px 0 22px;padding:14px 18px;border-radius:14px;background:var(--base-25,#e3f1ed);color:var(--base-100,#244237);font-size:15px;line-height:1.5;text-align:center}
 .im-links{list-style:none;padding:0;margin:20px auto 0;max-width:440px;display:grid;gap:8px}
@@ -13,3 +12,15 @@
 .im-mobile{text-align:left;margin-top:8px}
 .ap-quick{text-align:center;margin-top:14px;font-size:14px;opacity:.75}
 .ap-exempt{display:block;margin:10px auto 0;background:none;border:0;color:var(--base-100,#244237);text-decoration:underline;font:inherit;font-size:15px;cursor:pointer}
+/* Enquiry page head on mobile, short pills in one tidy wrapping row */
+@media (max-width:767px){.ap-lp .ap-lp-head ul{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px}
+  .ap-lp .ap-lp-head li{white-space:normal;font-size:13px;gap:7px;padding:6px 12px 6px 7px}
+  .ap-lp .ap-lp-head .ap-lp-tick{width:18px;height:18px}.ap-lp .ap-lp-head .ap-lp-tick svg{width:10px;height:10px}}
+/* Enquiry page hero photo, a topic photo behind the head, shaded into the green so text and form stay crisp */
+.ap-lp.ap-has-photo{position:relative;overflow:hidden}
+.ap-lp-photo{position:absolute;inset:0;z-index:0;pointer-events:none}
+.ap-lp-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ap-lp-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(24,48,42,.62) 0%,rgba(24,48,42,.78) 45%,rgba(24,48,42,.9) 100%)}
+.ap-lp.ap-has-photo .ap-wrap{position:relative;z-index:1}
+@media (max-width:767px){.ap-lp-photo{bottom:auto;height:420px}
+  .ap-lp-photo::after{background:linear-gradient(180deg,rgba(24,48,42,.5) 0%,rgba(24,48,42,.72) 55%,#18302a 100%)}}

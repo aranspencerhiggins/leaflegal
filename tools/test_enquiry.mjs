@@ -60,7 +60,7 @@ r = await run({ area: 'immigration', ans: answers('immigration', { who: 'individ
 assert.equal(r.code, 200, 'immigration from outside the UK');
 r = await run({ area: 'debt-recovery', ans: answers('debt-recovery'), business: 'Acme Ltd' });
 assert.equal(r.code, 200, 'B2B debt ok: ' + JSON.stringify(r.out));
-assert.match(sent.find((s) => s.url.includes('resend')).body.html, /Who is owed the money/, 'team email lists the questions and answers');
+assert.match(sent.find((s) => s.url.includes('resend')).body.html, /Is the money owed to you or to your business/, 'team email lists the questions and answers');
 assert.equal(metaLeadBody({ ...base, page: 'https://x/apply?area=Family' }, { headers: {} }).data[0].event_source_url, 'https://x/apply');
 
 // Only property areas ask for a postcode. Others are located from the connection and never refused for it.

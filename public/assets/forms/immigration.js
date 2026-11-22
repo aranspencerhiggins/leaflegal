@@ -8,13 +8,13 @@ export default {
   defaultMatter: null,
   steps: [
     { id: 'who', q: 'What do you need help with?', type: 'single', icons: true, options: [
-      { v: 'employer', label: 'Hiring or sponsoring overseas staff', sub: 'Sponsor licences, Certificates of Sponsorship, compliance', ico: 'office', audience: 'business', matter: 'sponsor-licences', tags: ['employer'] },
-      { v: 'individual', label: 'A visa for me or my family', sub: 'Visas, settlement, citizenship and family routes', ico: 'person' },
-      { v: 'seeker', label: 'Finding a UK job or a sponsor', sub: 'You want an employer to sponsor your visa', ico: 'look', exit: 'sponsor' }] },
+      { v: 'employer', label: 'Hiring or sponsoring overseas staff', ico: 'office', audience: 'business', matter: 'sponsor-licences', tags: ['employer'] },
+      { v: 'individual', label: 'A visa for me or my family', ico: 'person' },
+      { v: 'seeker', label: 'I’m looking for a UK employer to sponsor me', ico: 'look', exit: 'sponsor' }] },
 
     // Employers
     { id: 'e_status', when: { who: ['employer'] }, q: 'Does your business hold a sponsor licence?', type: 'single', options: [
-      { v: 'none', label: 'No licence', tags: ['no-licence'] },
+      { v: 'none', label: 'No', tags: ['no-licence'] },
       { v: 'considering', label: 'No, but we’re thinking about applying', tags: ['no-licence'] },
       { v: 'holds', label: 'Yes, we already hold one', tags: ['licence-holder'] }] },
     { id: 'e_help', when: { who: ['employer'] }, q: 'Which of these does your business need?', type: 'multi', options: [

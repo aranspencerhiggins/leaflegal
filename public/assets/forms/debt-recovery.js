@@ -8,34 +8,34 @@ export default {
   defaultMatter: 'unpaid-invoices',
   steps: [
     { id: 'need', q: 'What do you need help with?', type: 'single', icons: true, options: [
-      { v: 'chase', label: 'Chasing an unpaid invoice', sub: 'A customer or client hasn’t paid what they owe', ico: 'invoice', audience: 'business', matter: 'unpaid-invoices', tags: ['unpaid-invoice'] },
-      { v: 'lba', label: 'Sending a letter before action', sub: 'A formal letter from a solicitor asking for payment', ico: 'doc', audience: 'business', matter: 'letters-before-action', tags: ['letter-before-action'] },
-      { v: 'claim', label: 'Making a court claim', sub: 'Taking the debt to the County Court or High Court', ico: 'gavel', audience: 'business', matter: 'court-claims', tags: ['court-claim'] },
+      { v: 'chase', label: 'Chasing an unpaid invoice', ico: 'invoice', audience: 'business', matter: 'unpaid-invoices', tags: ['unpaid-invoice'] },
+      { v: 'lba', label: 'Sending a solicitor’s letter demanding payment', ico: 'doc', audience: 'business', matter: 'letters-before-action', tags: ['letter-before-action'] },
+      { v: 'claim', label: 'Making a court claim', ico: 'gavel', audience: 'business', matter: 'court-claims', tags: ['court-claim'] },
       { v: 'statdemand', label: 'Serving a statutory demand', sub: 'A formal demand that can lead to insolvency action', ico: 'doc', audience: 'business', matter: 'statutory-demands', tags: ['statutory-demand'] },
       { v: 'windup', label: 'Winding up a company that owes us', sub: 'Asking the court to close down the debtor company', ico: 'building', audience: 'business', matter: 'winding-up-petitions', tags: ['winding-up'] },
-      { v: 'enforce', label: 'Enforcing a judgment we already have', sub: 'We won in court but still haven’t been paid', ico: 'badge', audience: 'business', matter: 'enforcement', tags: ['enforcement', 'judgment'] },
-      { v: 'interest', label: 'Claiming late payment interest', sub: 'Interest and compensation on invoices paid late', ico: 'pound', audience: 'business', matter: 'late-payment-interest', tags: ['late-payment-interest'] },
-      { v: 'owe', label: 'Someone is chasing me or my business for a debt', sub: 'You owe money rather than being owed it', ico: 'other', exit: 'debtor' }] },
+      { v: 'enforce', label: 'Enforcing a court judgment, we won but still haven’t been paid', ico: 'badge', audience: 'business', matter: 'enforcement', tags: ['enforcement', 'judgment'] },
+      { v: 'interest', label: 'Claiming interest on invoices paid late', ico: 'pound', audience: 'business', matter: 'late-payment-interest', tags: ['late-payment-interest'] },
+      { v: 'owe', label: 'I owe money and I’m being chased for it', ico: 'other', exit: 'debtor' }] },
 
     // The creditor
-    { id: 'creditor', q: 'Who is owed the money?', type: 'single', options: [
-      { v: 'ltd', label: 'A limited company or LLP', audience: 'business', tags: ['creditor-company'] },
-      { v: 'sole', label: 'A sole trader or partnership', sub: 'Including self employed contractors and freelancers', audience: 'business', tags: ['creditor-sole-trader'] },
-      { v: 'other', label: 'A charity, club or other organisation', audience: 'business', tags: ['creditor-organisation'] },
-      { v: 'personal', label: 'Me personally, not through a business', sub: 'For example money lent to a friend or a deposit not returned', exit: 'personal' }] },
+    { id: 'creditor', q: 'Is the money owed to you or to your business?', type: 'single', options: [
+      { v: 'ltd', label: 'My limited company or LLP', audience: 'business', tags: ['creditor-company'] },
+      { v: 'sole', label: 'Me, as a sole trader, freelancer or partnership', audience: 'business', tags: ['creditor-sole-trader'] },
+      { v: 'other', label: 'My charity, club or other organisation', audience: 'business', tags: ['creditor-organisation'] },
+      { v: 'personal', label: 'Me personally, for example money lent to a friend', exit: 'personal' }] },
     { id: 'company', when: { creditor: ['ltd'] }, q: 'What is the name of your company?', type: 'company', placeholder: 'Company name' },
     // The debtor
-    { id: 'debtor', q: 'Who owes the money?', type: 'single', options: [
+    { id: 'debtor', q: 'Who hasn’t paid you?', type: 'single', options: [
       { v: 'ltd', label: 'A limited company or LLP', tags: ['debtor-company'] },
       { v: 'sole', label: 'A sole trader or partnership', tags: ['debtor-sole-trader'] },
       { v: 'public', label: 'A public body, charity or other organisation', tags: ['debtor-organisation'] },
       { v: 'abroad', label: 'A business based outside the UK', tags: ['overseas-debtor'] },
-      { v: 'consumer', label: 'A private individual or household', sub: 'Someone who bought from you as a customer, not as a business', exit: 'consumer' }] },
+      { v: 'consumer', label: 'A private individual, not a business', exit: 'consumer' }] },
     { id: 'debtor_status', q: 'Is the business that owes you still trading?', type: 'single', options: [
       { v: 'trading', label: 'Yes, as far as I know', tags: ['debtor-trading'] },
       { v: 'unsure', label: 'I’m not sure, they’ve gone quiet', tags: ['debtor-unresponsive'] },
       { v: 'ceased', label: 'They seem to have stopped trading', tags: ['debtor-ceased-trading'] },
-      { v: 'insolvent', label: 'They’re in liquidation, administration or bankruptcy', sub: 'Or they’ve proposed a CVA or IVA', exit: 'insolvent' },
+      { v: 'insolvent', label: 'They’re insolvent, for example in liquidation or administration', exit: 'insolvent' },
       { v: 'dissolved', label: 'The company has been dissolved or struck off', exit: 'dissolved' }] },
 
     // The debt
@@ -47,7 +47,7 @@ export default {
       { v: 'a5', label: '£25,000 to £100,000', value: { min: 25000, max: 100000 } },
       { v: 'a6', label: '£100,000 to £500,000', value: { min: 100000, max: 500000 }, tags: ['high-value'] },
       { v: 'a7', label: 'Over £500,000', value: { min: 500000, max: 5000000 }, tags: ['high-value'], wide: true }] },
-    { id: 'age', q: 'When was the oldest unpaid amount due?', type: 'single', options: [
+    { id: 'age', q: 'When should the oldest unpaid invoice have been paid?', type: 'single', options: [
       { v: 'm1', label: 'Less than a month ago', tags: ['recent-debt'] },
       { v: 'm3', label: '1 to 3 months ago', tags: ['recent-debt'] },
       { v: 'y1', label: '3 to 12 months ago' },
@@ -69,7 +69,7 @@ export default {
       { v: 'proof', label: 'Delivery notes or proof the work was done' },
       { v: 'guarantee', label: 'A personal guarantee from a director', tags: ['personal-guarantee'] },
       { v: 'nothing', label: 'Nothing in writing', tags: ['no-paperwork'] }] },
-    { id: 'done', q: 'What has been done so far?', type: 'multi', options: [
+    { id: 'so_far', q: 'What have you done so far to get paid?', type: 'multi', options: [
       { v: 'reminders', label: 'Reminders, emails or calls' },
       { v: 'final', label: 'A final demand from us' },
       { v: 'agency', label: 'A debt collection agency', tags: ['agency-tried'] },
@@ -78,7 +78,7 @@ export default {
       { v: 'judgment', label: 'We have a court judgment', tags: ['judgment'] },
       { v: 'statdemand', label: 'A statutory demand has been served', tags: ['stat-demand-served'] },
       { v: 'nothing', label: 'Nothing yet' }] },
-    { id: 'hearing', when: { done: ['claim', 'statdemand'] }, q: 'Is there a court hearing or deadline coming up?', type: 'date', deadline: true, optional: true },
+    { id: 'hearing', when: { so_far: ['claim', 'statdemand'] }, q: 'Is there a court hearing or deadline coming up?', type: 'date', deadline: true, optional: true },
 
     // Enforcing a judgment
     { id: 'judgment', when: { need: ['enforce'] }, q: 'What kind of judgment or award do you have?', type: 'single', options: [

@@ -608,3 +608,29 @@ body:not(:has(.ap-lp)) :is(.button:not(.bg-white):not(.bg-base-50),.cfb-btn:not(
 .cs-deep li{margin:0 0 6px}
 #faq .ll-tabs{max-width:900px}
 @media (max-width:767px){.cs-deep{padding:24px 20px;font-size:16px}}
+/* homepage photo hero (mirrors loanleaf.co): full-bleed photo, copy on the left, practice area picker in a glass card */
+.ll-hero-photo .ll-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 35%;z-index:-2;display:block}
+body .ll-hero.ll-hero-photo.ll-hero-photo::before{background:linear-gradient(90deg,rgba(12,30,23,.86) 0%,rgba(12,30,23,.7) 32%,rgba(12,30,23,.22) 52%,rgba(12,30,23,0) 64%)}
+body .ll-hero.ll-hero-photo.ll-hero-photo::after{background:linear-gradient(180deg,rgba(12,30,23,.3) 0%,transparent 18%,transparent 80%,rgba(12,30,23,.4) 100%)}
+.ll-hero-noform .ll-hero-in{grid-template-columns:minmax(0,600px)}
+.ll-borrow{margin:32px 0 0;padding:22px;border-radius:18px;background:rgba(12,30,23,.45);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);max-width:560px}
+.ll-borrow-q{color:#fff;font-weight:600;font-size:18px;margin:0 0 14px}
+.ll-need-opts{display:flex;flex-wrap:wrap;gap:8px}
+.ll-need-opts a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid rgba(255,255,255,.28);color:#fff;text-decoration:none;font-weight:600;font-size:15px;line-height:1.2;text-align:center;transition:background .15s,border-color .15s,color .15s}
+.ll-need-opts a:hover,.ll-need-opts a:focus-visible{background:#fff;color:var(--ll-deep,#18302a);border-color:#fff}
+.ll-borrow-go{width:100%;justify-content:center;text-align:center}
+.ll-hero-noform .ll-hero-points{margin-top:24px}
+.ll-hero-noform h1,.ll-hero-noform .ll-lead,.ll-hero-noform .ll-hero-points li{text-shadow:0 1px 18px rgba(0,0,0,.35)}
+@media (max-width:991px){
+  .ll-hero-noform{--hp:230px;padding:calc(var(--hp) + 36px) 0 56px;display:block}
+  body:not([data-theme=partner]) .ll-hero.ll-hero-photo{background:radial-gradient(90% 45% at 100% calc(var(--hp) + 60px),rgba(97,176,146,.30),transparent 70%),radial-gradient(80% 40% at 0% 100%,rgba(255,166,48,.12),transparent 70%),linear-gradient(170deg,#1f4f3e 0%,#163a2d 40%,#0e271e 75%,#0a1d16 100%)}
+  .ll-hero-photo .ll-hero-bg{inset:0 0 auto 0;height:var(--hp);object-position:70% 30%}
+  body .ll-hero.ll-hero-photo.ll-hero-photo::before{background:none}
+  body .ll-hero.ll-hero-photo.ll-hero-photo::after{background:none}
+  .ll-hero-noform .ll-hero-in{justify-content:center}
+  .ll-hero-noform .ll-borrow{margin-left:auto;margin-right:auto}
+  .ll-hero-noform .ll-borrow-q{text-align:center}
+  .ll-hero-noform .ll-need-opts{justify-content:center}
+}
+@media (min-width:561px) and (max-width:991px){.ll-hero-noform{--hp:340px}}
+@media (max-width:560px){.ll-borrow{padding:16px}.ll-borrow-go{font-size:15px;padding-left:12px;padding-right:12px}.ll-need-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ll-need-opts a{padding:0 8px;font-size:14px}.ll-need-opts a:last-child:nth-child(odd){grid-column:1/-1}}
