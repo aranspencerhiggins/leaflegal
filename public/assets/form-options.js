@@ -27,7 +27,7 @@
 // After an area's own steps every form asks the shared steps in this order (built by the browser, checked by the server):
 //   postcode (only areas with postcode: true), urgency, pay, business (businesses without a company step), details.
 
-export const FORM_VERSION = '2026-11-22.2';
+export const FORM_VERSION = '2026-11-22.3';
 
 export const AREAS = [
   { slug: 'conveyancing', label: 'Conveyancing', form: 'Buying or selling a home', short: 'Buying, selling or remortgaging', icon: 'home', scope: 'ew', postcode: true },
@@ -37,6 +37,7 @@ export const AREAS = [
   { slug: 'debt-recovery', label: 'Debt recovery', form: 'Recovering a business debt', short: 'For businesses owed money', icon: 'invoice', scope: 'ew', businessOnly: true },
   { slug: 'licensing', label: 'Licensing', form: 'Licensing', short: 'Premises, personal, taxi', icon: 'badge', scope: 'ew' },
   { slug: 'lease-extensions', label: 'Lease extensions', form: 'Extending a lease', short: 'Flats and freeholds', icon: 'key', scope: 'ew', postcode: true },
+  { slug: 'trademarks', label: 'Trademarks', form: 'Trademarks and IP', short: 'Brands, copyright, designs', icon: 'tag', scope: 'uk' },
 ];
 export const AREA_SLUGS = AREAS.map((a) => a.slug);
 export const areaOf = (s) => AREAS.find((a) => a.slug === s || a.form === s || a.label === s) || null;
@@ -80,6 +81,13 @@ export const MATTERS = {
     ['unpaid-invoices', 'Unpaid invoices'], ['letters-before-action', 'Letters before action'], ['court-claims', 'Court claims for debts'],
     ['statutory-demands', 'Statutory demands'], ['winding-up-petitions', 'Winding up petitions'], ['enforcement', 'Enforcing a judgment'],
     ['late-payment-interest', 'Late payment interest and compensation'],
+  ],
+  trademarks: [
+    ['trademark-registration', 'Trademark registration'], ['trademark-searches', 'Trademark searches'],
+    ['objections-and-oppositions', 'Objections and oppositions'], ['trademark-infringement', 'Trademark infringement'],
+    ['cease-and-desist-letters', 'Cease and desist letters'], ['trademark-renewals', 'Renewals and ownership changes'],
+    ['copyright', 'Copyright'], ['design-rights', 'Design rights'],
+    ['other-ip', 'Another brand or IP matter', false],
   ],
 };
 export const matterOf = (area, slug) => {
@@ -174,10 +182,11 @@ import debtRecovery from './forms/debt-recovery.js';
 import motoring from './forms/motoring-offences.js';
 import licensing from './forms/licensing.js';
 import leaseExtensions from './forms/lease-extensions.js';
+import trademarks from './forms/trademarks.js';
 
 export const FORMS = {
   conveyancing, immigration, 'family-law': familyLaw, 'debt-recovery': debtRecovery,
-  'motoring-offences': motoring, licensing, 'lease-extensions': leaseExtensions,
+  'motoring-offences': motoring, licensing, 'lease-extensions': leaseExtensions, trademarks,
 };
 
 // Tags each area can carry, for the platform's filters (collected from the form options).

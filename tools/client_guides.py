@@ -57,6 +57,14 @@ GUIDES = [
       ('h2', 'Before the hearing'), ('p', 'Read your court papers carefully and get advice before the hearing, especially if a ban is possible.'),
       ('h2', 'On the day'), ('p', 'Arrive early. Your case will be called, you will be asked to confirm your details and enter a plea. If you plead guilty, the court may sentence you the same day.'),
       ('h2', 'How a solicitor helps'), ('ul', ['Checking the evidence and procedure', 'Advising on plea', 'Putting forward mitigation or an exceptional hardship argument'])]),
+    g('how-to-trademark-a-name', 'trademarks', 'How to Trademark a Name in the UK | Leaflegal',
+      'How to trademark a business name, logo or product name in the UK, step by step, from searching to registration, and what it costs.',
+      'How to trademark a name', 'A plain English guide to protecting your brand name in the UK.', [
+      ('h2', 'Check the name can be registered'), ('p', 'A trademark must be distinctive. Names that simply describe the product, such as Fresh Bread for a bakery, are usually refused. Invented words and names with no link to what you sell are the easiest to register.'),
+      ('h2', 'Search for earlier marks'), ('p', 'Search the UK IPO register for identical and similar marks used for similar goods or services. A professional clearance search also looks at company names and unregistered use.'),
+      ('h2', 'Choose your classes and specification'), ('p', 'Goods and services are grouped into 45 classes. You list exactly what you sell in each class you choose. The list decides what your registration protects, and it cannot be widened after filing.'),
+      ('h2', 'File, examination and publication'), ('p', 'Once you file at the UK IPO, an examiner checks the application. If it is accepted, it is published for two months so others can oppose it. If nobody does, it is registered, usually around four months after filing.'),
+      ('ul', ['Search before you spend money on branding', 'Describe your goods and services carefully', 'Keep evidence of when you started using the name'])]),
 ]
 
 # Extra depth for each guide (owner, 2026-11-21: "more text"). 'key' shows as a summary box at the top, 'more' is added
@@ -125,5 +133,13 @@ EXTRA = {
             ('h2', 'Possible outcomes'), ('p', 'Depending on the offence, the court can impose a fine, add penalty points or disqualify you from driving. For more serious offences other sentences are possible. A solicitor can explain what is likely in your case and how to put forward your side.'),
             ('h2', 'Exceptional hardship'), ('p', 'If you reach 12 points, the court will usually ban you for at least six months. You can argue that a ban would cause exceptional hardship, for example to people who rely on you. These arguments need careful preparation and evidence.'),
             ('tip', 'If you can’t attend on the date given, contact the court and your solicitor as soon as possible.'),
+        ]},
+    'how-to-trademark-a-name': {
+        'key': ['A company name at Companies House is not a trademark', 'Search before you file, because a filed application can’t be widened', 'Registration usually takes around four months if nobody objects'],
+        'more': [
+            ('h2', 'What it costs'), ('p', 'The UK IPO charges an official fee for the first class and a further fee for each extra class. If you use a trademark solicitor or attorney, they usually quote a fixed fee for searching and filing on top.'),
+            ('h2', 'Trademarking a logo as well as a name'), ('p', 'A word mark protects the name however it is written. A logo mark protects the design. Many businesses start with the word mark because it gives the widest protection for the name itself.'),
+            ('h2', 'Protecting the name abroad'), ('p', 'A UK registration only covers the UK. If you trade overseas, a trademark attorney can extend protection to other countries, for example through the Madrid system.'),
+            ('tip', 'Use the ® symbol only once your mark is registered. Until then you can use ™ to show you claim the name as a trademark.'),
         ]},
 }

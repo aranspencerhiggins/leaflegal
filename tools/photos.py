@@ -7,6 +7,7 @@ def U(pid, w=1400):
 
 
 P = {
+    'trademarks': '1498075702571-ecb018f3752d', 'storefront': '1768180316485-2c7306ab38ff',
     'conveyancing': '1758523671413-cd178a883d6a',      # couple with moving boxes
     'keys': '1744782351841-9cc6b86a5add',              # hand holding house keys
     'street': '1495368427887-e88d33a44e0f',            # terraced street, Kensington
@@ -29,7 +30,7 @@ AREA = {
     'conveyancing': ('conveyancing', 'keys'), 'lease-extensions': ('lease-extensions', 'street'),
     'immigration': ('immigration', 'passport'), 'family-law': ('family-law', 'desk-warm'),
     'motoring-offences': ('motoring-offences', 'golden-street'), 'licensing': ('licensing', 'golden-street'),
-    'debt-recovery': ('debt-recovery', 'desk-warm'),
+    'debt-recovery': ('debt-recovery', 'desk-warm'), 'trademarks': ('trademarks', 'storefront'),
 }
 PARTNER = ['partner-call', 'partner-sunlit', 'lawyer-desk', 'desk-warm']
 

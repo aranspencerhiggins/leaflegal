@@ -412,6 +412,86 @@ SEO = {
             'A motoring solicitor can check the policy and advise on the penalty. Leaflegal introduces you to one regulated motoring firm.',
         ], cross=['/motoring-offences/totting-up'], h1='Driving without insurance'),
 
+    # ------------------------------------------------------------ trademarks and related IP (UK wide)
+    '/trademarks': E(  # trademark registration 11k, trademark 7.2k, intellectual property lawyer 4.4k, trademark lawyer 450, trademark solicitor(s) 300, trademark attorney 250
+        f'Trademark Solicitors and Attorneys UK | Register Your Trademark | {B}',
+        'Find a trademark solicitor or chartered trade mark attorney to register, search, protect and enforce your brand across the UK. Free introductions, no obligation.',
+        'trademark solicitors', 'Trademark solicitors', [
+            'Looking for a trademark solicitor, trademark attorney or intellectual property lawyer? Leaflegal introduces you to one regulated firm that handles UK trademark registration, clearance searches, oppositions and brand disputes, as well as copyright and design rights. Because there is one UK trademark register, we can introduce you wherever you are in the UK.',
+            'Trademark work is done by solicitors regulated by the Solicitors Regulation Authority and by chartered trade mark attorneys regulated by IPReg. Both can search, file and defend a trademark at the UK Intellectual Property Office, and solicitors can also take infringement claims to court. The firm explains its fees and the official UK IPO fees before you decide anything.',
+        ], [
+            ('What is the difference between a trademark attorney and a trademark solicitor?', 'Both can register and protect a UK trademark. A chartered trade mark attorney is regulated by IPReg and specialises in trademark filings and UK IPO proceedings. A trademark solicitor is regulated by the Solicitors Regulation Authority and can also bring or defend infringement claims in court.'),
+            ('Do I need a lawyer to register a trademark?', 'No, anyone can apply at the UK IPO. Many businesses use a trademark solicitor or attorney because the classes and the wording of the goods and services decide how well the brand is protected, and the application can’t be widened once it is filed.'),
+            ('Is an intellectual property lawyer the same as a trademark lawyer?', 'Trademarks are one part of intellectual property law. Many IP lawyers also handle copyright, design rights and passing off, which is why we cover those alongside trademarks.'),
+        ], cross=['/trademarks/trademark-registration', '/trademarks/trademark-searches', '/debt-recovery'], h1='Trademark and IP solicitors'),
+    '/trademarks/trademark-registration': E(  # trademark registration 11k, register a trademark 1.1k, register trademark uk 1k, uk trademark registration 450
+        f'Trademark Registration UK | Register a Trademark With a Specialist | {B}',
+        'Register a trademark in the UK with a trademark solicitor or attorney. Clearance, classes, filing at the UK IPO and international protection. Free introductions.',
+        'trademark registration', 'UK trademark registration', [
+            'UK trademark registration gives you the exclusive right to use your name, logo or slogan for the goods and services you list, across England, Wales, Scotland and Northern Ireland. You register a trademark with the UK Intellectual Property Office, which examines it, publishes it for opposition and then registers it for ten years.',
+            'A trademark solicitor or attorney checks the mark is distinctive, searches for earlier rights, picks the right classes and drafts a specification that matches how you trade. Leaflegal introduces you to one regulated firm for your trademark registration.',
+        ], [
+            ('How much does it cost to register a trademark in the UK?', 'The UK IPO charges an official fee for the first class and a further fee for each extra class. Professional fees for searching and filing are usually quoted as a fixed fee on top.'),
+            ('How long does UK trademark registration take?', 'Around four months if there are no objections or oppositions, and longer if there are.'),
+        ], cross=['/trademarks/trademark-searches', '/guides/how-to-trademark-a-name'], h1='Trademark registration'),
+    '/trademarks/trademark-searches': E(  # trademark search 4.7k, uk trademark search 2.2k, trademark search uk 2k, ipo trademark search 350, trademark clearance search 100
+        f'UK Trademark Search | Professional Clearance Searches | {B}',
+        'Check your brand is free to use with a professional UK trademark search. Clearance searches, similar marks and a written risk opinion. Free introductions.',
+        'trademark search', 'UK trademark search', [
+            'A UK trademark search shows whether someone already has rights in a name or logo like yours. The free UK IPO search finds identical marks, but a professional trademark clearance search also looks for marks that sound, look or mean the same, plus company names and unregistered use.',
+            'A trademark attorney or solicitor turns the results into a clear view of the risk of using and registering your brand. Leaflegal introduces you to one regulated firm to run your trademark search.',
+        ], [
+            ('How do I do a UK trademark search?', 'You can search the UK IPO register online for free. For a launch or a filing, a professional clearance search is more thorough because it looks for similar marks as well as identical ones.'),
+        ], cross=['/trademarks/trademark-registration', '/trademarks/objections-and-oppositions'], h1='Trademark searches'),
+    '/trademarks/objections-and-oppositions': E(  # trademark opposition 150, oppose a trademark 70
+        f'Trademark Opposition UK | Objections and Oppositions | {B}',
+        'Received a UK IPO objection or notice of opposition, or want to oppose a trademark? Find a trademark specialist to act before the deadline. Free introductions.',
+        'trademark opposition', 'Trademark oppositions', [
+            'A trademark opposition is a challenge to an application, brought by someone with earlier rights during the two month opposition period after publication. Examiners can also object to an application before it is published.',
+            'A trademark attorney or solicitor can respond to an examiner, oppose a trademark that clashes with yours or defend your own application. Leaflegal introduces you to one regulated firm.',
+        ], [
+            ('How do I oppose a trademark in the UK?', 'File a notice of opposition with the UK IPO within two months of the application being published, or within three months if you file a notice of threatened opposition first.'),
+        ], cross=['/trademarks/trademark-infringement', '/trademarks/trademark-searches'], h1='Objections and oppositions'),
+    '/trademarks/trademark-infringement': E(  # trademark infringement 700, brand infringement 200, trademark infringement lawyer 200, passing off 350
+        f'Trademark Infringement Solicitors UK | Passing Off | {B}',
+        'Someone using your brand, or accused of using theirs? Find a trademark infringement solicitor for letters, takedowns, passing off and court claims. Free introductions.',
+        'trademark infringement', 'Trademark infringement', [
+            'Trademark infringement is using a sign identical or similar to a registered trademark for similar goods or services without permission. If your brand is not registered, passing off can protect the goodwill you have built.',
+            'A trademark infringement solicitor assesses both sides, deals with marketplace and social media takedowns and can bring or defend a claim. Leaflegal introduces you to one regulated firm that handles brand infringement.',
+        ], [
+            ('What is passing off?', 'A claim that protects unregistered brands. You need to show goodwill in your business, a misrepresentation by the other side that is likely to confuse customers, and damage as a result.'),
+        ], cross=['/trademarks/cease-and-desist-letters', '/trademarks/copyright'], h1='Trademark infringement'),
+    '/trademarks/cease-and-desist-letters': E(  # cease and desist 8.1k (KD 5), cease and desist letter 3.5k, cease and desist letter uk 500
+        f'Cease and Desist Letter UK | Send or Respond With a Solicitor | {B}',
+        'Need to send a cease and desist letter, or received one? Find a solicitor to write a proportionate letter or reply. Free introductions, no obligation.',
+        'cease and desist letter', 'Cease and desist letters', [
+            'A cease and desist letter is a formal demand that someone stops doing something, such as using your brand, copying your work or selling lookalike products. In the UK it is usually the first step in an IP dispute, and many disputes end with the letter.',
+            'Because UK law penalises unjustified threats of trademark and design infringement, a cease and desist letter needs care. A solicitor can write it, or reply to one you have received. Leaflegal introduces you to one regulated firm.',
+        ], [
+            ('What does cease and desist mean?', 'It means stop and do not start again. A cease and desist letter asks the other side to stop a particular activity, and usually to confirm in writing that they will.'),
+        ], cross=['/trademarks/trademark-infringement', '/trademarks/copyright'], h1='Cease and desist letters'),
+    '/trademarks/trademark-renewals': E(  # trademark renewal service 150, renew trademark 100, trademark renewal 90
+        f'Trademark Renewal UK | Renewals and Ownership Changes | {B}',
+        'Renew a UK trademark, restore a lapsed one or record a new owner. Find a trademark specialist to keep your registrations in force. Free introductions.',
+        'trademark renewal', 'Trademark renewals', [
+            'A UK trademark lasts ten years and can be renewed again and again. Trademark renewal can be done up to six months before expiry, with a further six month late period for an extra fee.',
+            'A trademark attorney or solicitor can renew your marks, record a change of owner after a sale and review whether older registrations are still protected. Leaflegal introduces you to one regulated firm.',
+        ], [], cross=['/trademarks/trademark-registration'], h1='Renewals and ownership'),
+    '/trademarks/copyright': E(  # copyright infringement 1.6k, copyright lawyer 350, copyright solicitor 100, copyright infringement lawyer 150
+        f'Copyright Solicitors UK | Copyright Infringement Help | {B}',
+        'Work copied, or received an image claim? Find a copyright solicitor for infringement, takedowns, licences and ownership disputes. Free introductions.',
+        'copyright solicitor', 'Copyright solicitors', [
+            'Copyright protects original writing, photos, art, music, film and software, and arises automatically in the UK. Copyright infringement happens when someone copies a substantial part of a work without permission.',
+            'A copyright solicitor or copyright lawyer can help you prove ownership, act against copying or respond to a claim. Leaflegal introduces you to one regulated firm.',
+        ], [], cross=['/trademarks/cease-and-desist-letters', '/trademarks/design-rights'], h1='Copyright'),
+    '/trademarks/design-rights': E(  # unregistered design rights 150, registered design 100, design registration 70
+        f'Design Rights and Registered Designs UK | {B}',
+        'Protect the look of your product with a registered design, or act on copies. Find an IP specialist for design rights across the UK. Free introductions.',
+        'registered design', 'Design rights', [
+            'A registered design protects the shape, pattern and decoration of a product for up to 25 years. Unregistered design rights also arise automatically, but they last for less time and are harder to prove.',
+            'An IP solicitor or attorney can prepare a design registration and act if a competitor copies your product. Leaflegal introduces you to one regulated firm.',
+        ], [], cross=['/trademarks/copyright', '/trademarks/trademark-registration'], h1='Design rights'),
+
     # ------------------------------------------------------------ licensing
     '/licensing/premises-licence-applications': E(  # premises licence 800, alcohol licence 350, premises licence application 90
         f'Premises Licence Application Solicitors | {B}',
@@ -528,6 +608,10 @@ SEO = {
         f'Divorce Process UK | How No Fault Divorce Works | {B}',
         'The divorce process in England and Wales step by step, from the no fault divorce application to the conditional order, final order and finances.',
         'divorce process', 'The divorce process', []),
+    '/guides/how-to-trademark-a-name': E(  # how to trademark a name 1.1k (KD 6), how to trademark a logo 250, trademark a business name 150
+        f'How to Trademark a Name in the UK | Step by Step | {B}',
+        'How to trademark a business name or logo in the UK, from checking it is distinctive and searching to filing at the UK IPO, plus what it costs.',
+        'how to trademark a name', 'How to trademark a name', []),
 }
 
 # Anchor words that link to a page when they appear in plain body paragraphs (first match only, one link per paragraph).
@@ -580,9 +664,18 @@ AUTO_LINKS = [
     ('statutory demand', '/debt-recovery/statutory-demands'), ('winding up petition', '/debt-recovery/winding-up-petitions'),
     ('High Court enforcement', '/debt-recovery/enforcement'), ('county court judgment', '/debt-recovery/enforcement'),
     ('late payment interest', '/debt-recovery/late-payment-interest'), ('Late Payment of Commercial Debts', '/debt-recovery/late-payment-interest'),
+    ('trademark solicitors', '/trademarks'), ('trademark solicitor', '/trademarks'), ('trademark attorney', '/trademarks'), ('intellectual property lawyer', '/trademarks'),
+    ('trademark registration', '/trademarks/trademark-registration'), ('register a trademark', '/trademarks/trademark-registration'),
+    ('trademark search', '/trademarks/trademark-searches'), ('clearance search', '/trademarks/trademark-searches'),
+    ('notice of opposition', '/trademarks/objections-and-oppositions'), ('trademark opposition', '/trademarks/objections-and-oppositions'),
+    ('trademark infringement', '/trademarks/trademark-infringement'), ('passing off', '/trademarks/trademark-infringement'),
+    ('cease and desist letter', '/trademarks/cease-and-desist-letters'), ('trademark renewal', '/trademarks/trademark-renewals'),
+    ('copyright infringement', '/trademarks/copyright'), ('copyright solicitor', '/trademarks/copyright'),
+    ('registered design', '/trademarks/design-rights'), ('design right', '/trademarks/design-rights'),
 ]
 
 # Location page titles, led by the phrase people search with (Ahrefs UK, e.g. conveyancing solicitors london 1.7k, family solicitors bristol 800).
 LOCAL_TITLE = {'conveyancing': 'Conveyancing Solicitors in {c}', 'family-law': 'Family and Divorce Solicitors in {c}',
                'motoring-offences': 'Motoring Offence Solicitors in {c}', 'licensing': 'Licensing Solicitors in {c}',
-               'debt-recovery': 'Debt Recovery Solicitors in {c}', 'lease-extensions': 'Lease Extension Solicitors in {c}'}
+               'debt-recovery': 'Debt Recovery Solicitors in {c}', 'lease-extensions': 'Lease Extension Solicitors in {c}',
+               'trademarks': 'Trademark Solicitors in {c}'}

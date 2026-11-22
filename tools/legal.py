@@ -127,8 +127,9 @@ TERMS = f'''
 <li>You are at least 18 years old.</li>
 <li>The enquiry is about your own matter, or you are authorised to make it on behalf of the business or person concerned.</li>
 <li>For conveyancing, family law, motoring offences, licensing and lease extensions, the matter is governed by the law of England and Wales.</li>
+<li>For trademarks and related intellectual property, the matter concerns rights in the United Kingdom.</li>
 </ul>
-<p>Debt recovery enquiries are for businesses recovering money owed by other businesses only. We do not deal with personal injury, clinical negligence, housing disrepair or financial mis-selling claims, or with matters where you are looking only for legal aid.</p>
+<p>Debt recovery enquiries are for businesses recovering money owed by other businesses only. Trademark enquiries are introduced to solicitors regulated by the Solicitors Regulation Authority or chartered trade mark attorneys regulated by IPReg. We do not deal with personal injury, clinical negligence, housing disrepair or financial mis-selling claims, or with matters where you are looking only for legal aid.</p>
 
 <h2>4. The law firms we introduce you to</h2>
 <ul>

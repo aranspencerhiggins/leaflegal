@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { FORMS, AREAS, MATTERS, SHARED_STEPS, SHARED_EXITS, NOTES, TAGS, VALUE_BANDS, pathOf, exitOf, regionOf } from '../public/assets/form-options.js';
 import { buildLead, finishLead } from '../api/_lib/lead-schema.js';
 
-const ICONS = 'home globe family invoice car badge key other person office bolt month clock look heart pound shield gavel building child ring doc'.split(' ');
+const ICONS = 'home globe family invoice car badge key other person office bolt month clock look heart pound shield gavel building child ring doc tag'.split(' ');
 const TYPES = ['single', 'multi', 'text', 'date', 'company'];
 const bad = (s) => /[:;–—]/.test(s) ? 'colon, semicolon or dash' : /\b\w+'\w+/.test(s) ? 'straight apostrophe' : '';
 const copy = [];

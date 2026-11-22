@@ -10,7 +10,7 @@ L = lambda *items: {'list': list(items)}
 
 PILLARS = [
     pg('lead-generation-for-law-firms', 'Lead generation for law firms', 'Lead Generation for Law Firms | Exclusive Client Enquiries | Leaflegal',
-       'Lead generation for UK law firms. Exclusive, pre-screened client enquiries in conveyancing, family, immigration, motoring, licensing, debt recovery and lease extensions.',
+       'Lead generation for UK law firms. Exclusive, pre-screened client enquiries in conveyancing, family, immigration, motoring, licensing, debt recovery, lease extensions and trademarks.',
        'Lead generation for law firms',
        'Leaflegal generates client enquiries for solicitors and law firms in England and Wales. We run the campaigns, ask the qualifying questions and send each enquiry to one firm only, while it is fresh.',
        [('Why law firms buy leads', [
@@ -23,13 +23,13 @@ PILLARS = [
         ('What makes a good legal lead', [
            'A good lead is a person with a real matter, who expects your call, in an area you handle. Exclusivity matters too, because an enquiry sent to five firms turns into a race on price. Every Leaflegal lead goes to one firm only.']),
         ('Practice areas', [
-           'We generate enquiries in seven areas where paying for introductions is permitted. They are conveyancing, family law, immigration (introductions to regulated advisers only), debt recovery for businesses, motoring offences, licensing and lease extensions. We don’t generate personal injury, clinical negligence or claims management work.']),
+           'We generate enquiries in eight areas where paying for introductions is permitted. They are conveyancing, family law, immigration (introductions to regulated advisers only), debt recovery for businesses, motoring offences, licensing, lease extensions and trademarks. We don’t generate personal injury, clinical negligence or claims management work.']),
         ('Getting started', [
            'Book a 30-minute call with our team. We will talk through your practice areas, locations, volumes and pricing, and show you a sample lead before you commit to anything.'])],
        [('How is lead generation priced for law firms?', 'Pay per lead, at a price agreed with you before you start. Pricing depends on the practice areas, matter types and locations you choose.'),
         ('Is there a minimum?', 'Yes, the minimum is 10 leads per month. Above that, you set your monthly volume.'),
         ('Are the leads shared with other firms?', 'No. Each enquiry goes to one firm only and is never resold.'),
-        ('Which areas of law do you cover?', 'Conveyancing, family law, immigration, debt recovery, motoring offences, licensing and lease extensions.')]),
+        ('Which areas of law do you cover?', 'Conveyancing, family law, immigration, debt recovery, motoring offences, licensing, lease extensions and trademarks.')]),
     pg('leads-for-solicitors', 'Leads for solicitors', 'Leads for Solicitors | Exclusive, Pre-Screened Enquiries | Leaflegal',
        'Exclusive client leads for solicitors in England and Wales. Pre-screened, verified and sent to one firm only. Pay per lead, minimum 10 a month.',
        'Leads for solicitors',
@@ -47,9 +47,9 @@ PILLARS = [
         ('Can I choose which matters I receive?', 'Yes. Within each area you choose the matter types you want and the ones you don’t.'),
         ('How quickly do leads arrive?', 'As soon as the enquiry has been checked, so you can call while it is fresh.')]),
     pg('legal-leads', 'Legal leads', 'Legal Leads UK | Buy Exclusive Legal Leads | Leaflegal',
-       'Buy exclusive legal leads in England and Wales for conveyancing, family, immigration, motoring, licensing, debt recovery and lease extensions. Pay per lead.',
+       'Buy exclusive legal leads in England and Wales for conveyancing, family, immigration, motoring, licensing, debt recovery, lease extensions and trademarks. Pay per lead.',
        'Legal leads for UK law firms',
-       'Legal leads are enquiries from people and businesses who have asked to speak to a solicitor. Leaflegal generates them in seven practice areas and sends each one to a single firm.',
+       'Legal leads are enquiries from people and businesses who have asked to speak to a solicitor. Leaflegal generates them in eight practice areas and sends each one to a single firm.',
        [('Where our legal leads come from', [
            'From people completing our own enquiry forms after seeing a Leaflegal campaign or finding us through search. We don’t buy data, scrape directories or pass on cold contacts. Every lead is someone who asked to be contacted about their own matter.']),
         ('Shared and exclusive legal leads', [
@@ -270,4 +270,8 @@ AREA_LEADS = {
                          'fields': ['Years left on the lease, roughly', 'Statutory, informal or freehold purchase', 'Whether a sale or remortgage depends on it', 'Number of flats for enfranchisement', 'Location'],
                          'suits': 'Leasehold and property teams working with specialist surveyors.',
                          'reg': 'We tell you roughly how long is left so you can prioritise.'},
+    'trademarks': {'slug': 'trademark-leads', 'kw': 'Trademark leads', 'h1': 'Trademark leads for solicitors and attorneys',
+                   'fields': ['What they want to protect, such as a name, logo or product design', 'Filing, search, opposition, infringement, renewal, copyright or design', 'Whether they have filed or registered already', 'Any UK IPO deadline or letter received', 'Business or individual, and where they trade'],
+                   'suits': 'Trademark solicitors, IP teams and chartered trade mark attorney firms handling UK filings and brand disputes.',
+                   'reg': 'Enquiries can come from anywhere in the UK and go to SRA regulated solicitors or IPReg regulated chartered trade mark attorneys.'},
 }

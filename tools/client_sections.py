@@ -51,6 +51,14 @@ AREA_EXTRA = {
         'ask': ['What will the council fee be, on top of yours?', 'How long will the application take?', 'Will you attend a hearing with me if one is needed?', 'Do you deal with the police and the licensing authority directly?', 'What can I do now to strengthen my position?'],
         'act': ['When a licence review has been called', 'Before you buy or take over licensed premises', 'If the police or council raise concerns', 'Before changing your hours, layout or activities'],
     },
+    'trademarks': {
+        'more': 'A trademark solicitor or chartered trade mark attorney checks whether your brand is free to use and register, files and prosecutes your application at the UK IPO, and acts for you if someone copies your brand or objects to your mark. When we introduce you, the firm will explain the process, the official fees and their own charges.',
+        'who': 'Founders, small businesses, brand owners, creators and product businesses',
+        'fees': ['Many trademark firms charge fixed fees for clearance searches, filing a UK application and answering a straightforward examination report. Official UK IPO fees are paid on top and depend on how many classes your application covers.',
+                 'Oppositions, infringement claims and other disputes are usually charged in stages or by the hour. Ask the firm for an estimate for each stage, and whether a quick letter or a negotiated settlement could resolve things sooner.'],
+        'ask': ['Is my name or logo likely to be accepted?', 'Which classes do I need, and what will the official fees be?', 'Should I search before I file?', 'What happens if someone opposes my application?', 'Do I need protection outside the UK?'],
+        'act': ['Before you launch or rebrand', 'When you receive an examination report or a notice of opposition', 'If someone is using a name or logo like yours', 'When a renewal date is coming up'],
+    },
     'debt-recovery': {
         'more': 'A debt recovery solicitor can send a formal letter before action, issue a claim at court and use enforcement options if a judgment is not paid. Often the letter alone gets the invoice paid. When we introduce you, the firm will explain the steps and costs for your debt.',
         'who': 'Businesses owed money by other businesses',

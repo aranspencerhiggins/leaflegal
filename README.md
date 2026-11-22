@@ -5,12 +5,13 @@ Lead generation site for UK law firms, live at leaflegal.co (not yet pointed). S
 
 ## Practice areas
 
-Seven only: conveyancing, immigration, family law, debt recovery (business to business), motoring offences,
-licensing and lease extensions. Page copy lives in `tools/areas_content.py`.
+Eight only: conveyancing, immigration, family law, debt recovery (business to business), motoring offences,
+licensing, lease extensions and trademarks (with related IP such as copyright and design rights). Page copy lives in `tools/areas_content.py`.
 
 - Immigration is referral only. The site never gives immigration advice (Immigration and Asylum Act 1999 s84).
 - No personal injury, clinical negligence (LASPO s56 referral fee ban), housing disrepair or claims management.
 - Conveyancing, family, motoring, licensing, lease extensions and debt recovery: England and Wales only.
+- Trademarks are UK wide (one UK register). Firms are SRA solicitors or IPReg regulated chartered trade mark attorneys.
 
 ## How it works now
 

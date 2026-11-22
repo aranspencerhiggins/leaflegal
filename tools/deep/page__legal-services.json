@@ -3,10 +3,10 @@
   [
    "Overview",
    [
-    "Leaflegal introduces people and businesses to regulated law firms in seven areas of law. Six of those areas cover matters in England and Wales. The seventh is introductions to regulated immigration advisers, available anywhere in the UK. This page gives an overview of each area, the kinds of matters the firms help with and how to choose where to start.",
+    "Leaflegal introduces people and businesses to regulated law firms in eight areas of law. Six of those areas cover matters in England and Wales. The other two, trademarks and related IP and introductions to regulated immigration advisers, are available anywhere in the UK. This page gives an overview of each area, the kinds of matters the firms help with and how to choose where to start.",
     "You do not need to know which area your problem falls under before you begin. Many people start with a simple description, such as needing to sell a flat, having received a court summons or being owed money by a customer. If you are not sure, pick the closest area on the form or describe what is happening in your own words. The firm will explain what kind of help fits once it understands the details.",
     {
-     "h3": "The seven areas"
+     "h3": "The eight areas"
     },
     {
      "list": [
@@ -15,7 +15,7 @@
       "Family law, for divorce, finances, children and separation",
       "Motoring offences, for drivers facing points, a ban or court",
       "Licensing, for premises licences and related matters",
-      "Business debt recovery, for unpaid invoices between businesses",
+      "Business debt recovery, for unpaid invoices between businesses", "Trademarks and related IP, for registering and protecting a brand, copyright and designs",
       "Immigration, for introductions to a regulated adviser"
      ]
     },
@@ -173,7 +173,7 @@
     ],
     [
      "Do you cover all areas of law?",
-     "No. We focus on seven areas so that we can introduce people to firms that do that work every day. We do not cover personal injury, clinical negligence, housing disrepair, financial mis-selling, consumer debt collection, employment disputes or criminal matters other than motoring offences."
+     "No. We focus on eight areas so that we can introduce people to firms that do that work every day. We do not cover personal injury, clinical negligence, housing disrepair, financial mis-selling, consumer debt collection, employment disputes or criminal matters other than motoring offences."
     ],
     [
      "Why are some areas England and Wales only?",

@@ -31,7 +31,7 @@ def build(ICON, TICK, faq_html, faq_h2, LC, AREA_LEADS, hero_img):
 <div class="cfb-split"><div class="cfb-col in"><h3>Reaches you</h3><ul>{''.join(f'<li>{ok}{v}</li>' for v in LC.QUAL_YES)}</ul></div>
 <div class="cfb-col out"><h3>Turned away</h3><ul>{''.join(f'<li><i class="cfb-no">{x}</i>{v}</li>' for v in LC.QUAL_NO)}</ul></div></div></div></section>'''
 
-    slugs = ['conveyancing', 'immigration', 'family-law', 'debt-recovery', 'motoring-offences', 'licensing', 'lease-extensions']
+    slugs = ['conveyancing', 'immigration', 'family-law', 'debt-recovery', 'motoring-offences', 'licensing', 'lease-extensions', 'trademarks']
     fgrid = ''.join(f'<a class="cfb-fund" href="/partners/{AREA_LEADS[s]["slug"]}"><span>{ICON[ic]}</span><b>{name}</b></a>' for s, (ic, name, *_rest) in zip(slugs, LC.AREAS))
     fund = f'''<section class="cfb-sec cfb-fundsec" id="areas"><div class="cfb-wrap"><div class="cfb-head"><h2>{LC.AREAS_H2}</h2>
 <p>{LC.AREAS_LEAD}</p></div><div class="cfb-fgrid">{fgrid}<a class="cfb-fund" href="/partners/lead-generation-for-law-firms"><span>{ICON['other']}</span><b>All practice areas</b></a></div>{join}</div></section>'''
