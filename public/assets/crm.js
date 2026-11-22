@@ -1,4 +1,4 @@
-// Broker CRM (platform.leaflegal.co/crm, admins only). Loaded by platform.js, which passes its shell helpers in.
+// Firm acquisition CRM (leaflegal.co/platform/crm, admins only). Loaded by platform.js, which passes its shell helpers in.
 // API: /api/crm (api/crm.js). Email goes through Resend, SMS through Bird; stage email flows run daily.
 window.LLCRM = async (X) => {
   const { view, h, I, toast, modal, drawer, confirmBox, when, ago, empty, initials, api } = X;
@@ -122,7 +122,7 @@ window.LLCRM = async (X) => {
         <td>${stageTag(c.stage)}${c.unsubscribed_at ? '<span class="crm-warn">Unsubscribed</span>' : c.flows_paused ? '<span>Flows paused</span>' : ''}</td><td class="pf-hide-s">${h(c.source)}</td>
         <td class="pf-hide-s">${c.next_action_at ? `<b class="${overdue(c) ? 'crm-late' : ''}">${day(c.next_action_at)}</b><span>${h(c.next_action || '')}</span>` : '<span>–</span>'}</td>
         <td class="pf-hide-s">${c.last_contacted_at ? ago(c.last_contacted_at) : '–'}</td></tr>`).join('')}</tbody></table></div>`
-      : empty('team', S.q || S.source || S.stage ? 'No contacts match' : 'No contacts yet', S.q || S.source || S.stage ? 'Try a different search or filter.' : 'Broker enquiries and platform sign-ups appear here automatically. Add people you speak to yourself with Add contact, or paste a list with Import.')}`;
+      : empty('team', S.q || S.source || S.stage ? 'No contacts match' : 'No contacts yet', S.q || S.source || S.stage ? 'Try a different search or filter.' : 'Law firm enquiries and platform sign-ups appear here automatically. Add people you speak to yourself with Add contact, or paste a list with Import.')}`;
     el.querySelectorAll('[data-sf]').forEach((b) => (b.onclick = () => { S.stage = b.dataset.sf; list(el); }));
     bindOpen(el);
   }
@@ -176,7 +176,7 @@ window.LLCRM = async (X) => {
     }));
     el.querySelector('[data-run]').onclick = async (e) => { e.target.disabled = true; try { const r = await api('run-flows', {}); toast(`${r.sent} email${r.sent === 1 ? '' : 's'} sent`); flows(el); } catch (ex) { toast(ex.message, true); e.target.disabled = false; } };
   }
-  const mergeHelp = 'Merge tags: {first_name}, {company}, {sender_name}, {signup_link}, {calculator_link}, {booking_link}. Make a link with [link text]({signup_link}). Leave a blank line between paragraphs.';
+  const mergeHelp = 'Merge tags are {first_name}, {company}, {sender_name}, {signup_link}, {pricing_link} and {booking_link}. Make a link with [link text]({signup_link}). Leave a blank line between paragraphs.';
   async function preview(box, id, subject, body) {
     box.hidden = false; box.innerHTML = '<div class="pf-skel"></div>';
     try { const p = await api('preview', { id, subject, body }); box.innerHTML = `<div class="crm-pv-subj"><span>Subject</span><b>${h(p.subject)}</b></div><iframe title="Email preview" sandbox="" srcdoc="${h(p.html)}"></iframe>`; }
@@ -185,13 +185,13 @@ window.LLCRM = async (X) => {
 
   // ------------------------------------------------ add / edit contact
   function form(c = {}) {
-    return `<div class="pf-two"><label>Full name<input name="name" value="${h(c.name || '')}" autocomplete="off"></label><label>Company<input name="company" value="${h(c.company || '')}" autocomplete="off"></label></div>
+    return `<div class="pf-two"><label>Full name<input name="name" value="${h(c.name || '')}" autocomplete="off"></label><label>Firm<input name="company" value="${h(c.company || '')}" autocomplete="off"></label></div>
       <div class="pf-two"><label>Email<input name="email" type="email" value="${h(c.email || '')}" autocomplete="off"></label><label>Phone<input name="phone" type="tel" value="${h(c.phone || '')}" autocomplete="off"></label></div>
       <div class="pf-two"><label>Position<input name="position" value="${h(c.position || '')}"></label><label>Website<input name="website" value="${h(c.website || '')}" placeholder="example.co.uk"></label></div>
       <div class="pf-two"><label>How they found us<select name="source" class="pf-select">${D.sources.map((s) => `<option ${(c.source || 'LinkedIn outreach') === s ? 'selected' : ''}>${h(s)}</option>`).join('')}</select></label>
         <label>Source detail<input name="source_detail" value="${h(c.source_detail || '')}" placeholder="e.g. LinkedIn post, referred by Tom"></label></div>
       <div class="pf-two"><label>Leads a month<input name="leads_per_month" value="${h(c.leads_per_month || '')}" placeholder="e.g. 50 to 100"></label><label>Expected spend a month (£)<input name="value" inputmode="numeric" value="${c.value ?? ''}" placeholder="e.g. 2500"></label></div>
-      <label>Tags<input name="tags" value="${h((c.tags || []).join(', '))}" placeholder="Comma separated, e.g. Asset finance, London"></label>`;
+      <label>Tags<input name="tags" value="${h((c.tags || []).join(', '))}" placeholder="Comma separated, e.g. Conveyancing, London"></label>`;
   }
   function editContact() {
     modal.className = 'pf-modal pf-modal-wide'; modal.onclick = null; modal.onclose = null;
@@ -229,11 +229,11 @@ window.LLCRM = async (X) => {
   function importModal() {
     modal.className = 'pf-modal pf-modal-wide'; modal.onclick = null; modal.onclose = null;
     modal.innerHTML = `<form class="pf-modal-in pf-form" data-f><h2>Import contacts</h2>
-      <p>Paste rows from a spreadsheet or CSV, with a header row. Columns we understand: name (or first name and last name), company, email, phone, position, website. Emails already in the CRM are skipped.</p>
-      <textarea name="csv" rows="8" placeholder="name,company,email,phone&#10;Sam Taylor,Taylor Finance Ltd,sam@taylorfinance.co.uk,07700 900123" required></textarea>
+      <p>Paste rows from a spreadsheet or CSV, with a header row. Columns we understand are name (or first name and last name), company, email, phone, position, website. Emails already in the CRM are skipped.</p>
+      <textarea name="csv" rows="8" placeholder="name,company,email,phone&#10;Sam Taylor,Taylor Legal LLP,sam@taylorlegal.co.uk,07700 900123" required></textarea>
       <div class="pf-two"><label>How they found us<select name="source" class="pf-select">${D.sources.map((s) => `<option ${s === 'LinkedIn outreach' ? 'selected' : ''}>${h(s)}</option>`).join('')}</select></label>
         <label>Stage<select name="stage" class="pf-select">${D.stages.map(([k, n]) => `<option value="${k}" ${k === 'contacted' ? 'selected' : ''}>${h(n)}</option>`).join('')}</select></label></div>
-      <div class="pf-two"><label>Tags<input name="tags" placeholder="e.g. Nov outreach"></label><label>Source detail<input name="detail" placeholder="e.g. NACFB member list"></label></div>
+      <div class="pf-two"><label>Tags<input name="tags" placeholder="e.g. Nov outreach"></label><label>Source detail<input name="detail" placeholder="e.g. Law Society find a solicitor"></label></div>
       <label class="pf-check"><input type="checkbox" name="flowsPaused"> Don't send automatic flow emails to these contacts</label>
       <p class="pf-hint" data-count></p><p class="pf-err" data-err></p>
       <div class="pf-row"><button type="button" class="pf-btn" data-x>Cancel</button><button class="pf-btn pf-btn-primary">Import</button></div></form>`;
@@ -285,7 +285,7 @@ window.LLCRM = async (X) => {
           ['Found us', `${h(c.source)}${c.source_detail ? `<span>${h(c.source_detail)}</span>` : ''}`], ['Website', c.website ? `<a href="${h(/^https?:/.test(c.website) ? c.website : `https://${c.website}`)}" target="_blank" rel="noopener">${h(c.website.replace(/^https?:\/\//, ''))}</a>` : '–'],
           ...(c.tags?.length ? [['Tags', c.tags.map((t) => `<span class="crm-src">${h(t)}</span>`).join(' ')]] : []), ...(c.lost_reason ? [['Lost because', h(c.lost_reason)]] : [])]
           .map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</div>
-      ${b ? `<div class="crm-broker"><span class="pf-avatar pf-avatar-s">${initials(b.company)}</span><div><b>On Leaflegal Platform</b><span>${b.suspended_at ? 'Suspended' : b.approved ? 'Approved' : 'Waiting for approval'} · ${Number(b.credits).toLocaleString('en-GB')} credits · ${b.stripe_customer ? 'paying' : 'no plan yet'}</span></div><a class="pf-btn pf-btn-sm" href="${X.P}/admin">Admin</a></div>` : ''}
+      ${b ? `<div class="crm-firm"><span class="pf-avatar pf-avatar-s">${initials(b.company)}</span><div><b>Has a firm account</b><span>${b.suspended_at ? 'Suspended' : b.approved ? 'Approved' : 'Waiting for approval'} · ${Number(b.credits).toLocaleString('en-GB')} credits · ${b.stripe_customer ? 'paying' : 'no plan yet'}</span></div><a class="pf-btn pf-btn-sm" href="${X.P}/admin">Admin</a></div>` : ''}
       <h3 class="pf-dsec">Email flow</h3>
       <div class="crm-flowbox">${c.unsubscribed_at ? '<p class="pf-hint">Stopped: unsubscribed.</p>' : c.flows_paused ? '<p class="pf-hint">Paused for this contact.</p>'
         : d.upcoming.length ? `<ul>${d.upcoming.map((s) => `<li><b>${h(s.subject)}</b><span>${s.overdue ? 'Due now, sends on the next weekday run' : `Day ${s.day} · ${day(s.due)}`}</span></li>`).join('')}</ul>` : `<p class="pf-hint">No more flow emails while they're in ${h(stageName(c.stage))}.</p>`}
@@ -330,7 +330,7 @@ window.LLCRM = async (X) => {
       if (kind === 'sms') {
         const live = D.sms;
         box.innerHTML = `<form class="crm-compose pf-form" data-cf><b>Text ${h(c.name || c.phone)}</b><span class="pf-hint">${h(d.e164 || c.phone)}${d.mobile ? '' : ' · this doesn’t look like a UK mobile'}</span>
-          <textarea name="body" rows="4" maxlength="640" required>Hi {first_name}, it's ${h((X.me.contact_name || '').split(' ')[0] || 'Aran')} from Leaflegal. </textarea><span class="pf-hint" data-n></span>
+          <textarea name="body" rows="4" maxlength="640" required>Hi {first_name}, it's ${h((X.me.contact_name || '').split(' ')[0] || 'the team')} from Leaflegal. </textarea><span class="pf-hint" data-n></span>
           ${live ? '' : '<p class="pf-hint">SMS sending isn’t connected yet, so this opens the message on your phone and logs it here.</p>'}
           <div class="pf-row-l">${live ? '<button class="pf-btn pf-btn-primary">Send text</button>' : '<button class="pf-btn pf-btn-primary">Open on my phone and log it</button>'}<button type="button" class="pf-btn" data-cx>Cancel</button></div></form>`;
         const f = box.querySelector('[data-cf]'), n = f.querySelector('[data-n]'), count = () => { const l = f.body.value.length; n.textContent = `${l} characters · ${Math.max(1, Math.ceil(l / 153))} text${l > 160 ? 's' : ''}`; };

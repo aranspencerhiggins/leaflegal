@@ -183,3 +183,37 @@ in writing, update the stage.
 ## Out of scope for now
 
 Resend, Bird, Stripe and Google keys are set later by the owner. Code must fail soft when keys are missing (as now).
+
+## Server API notes
+
+All actions go to `/api/platform?action=…`. Only changed or new shapes are listed here.
+
+Public
+- `config` (GET) returns `{turnstile, supabaseUrl, supabaseKey}`.
+- `taxonomy` (GET, cached 300s) returns `taxonomy()` from `api/_lib/taxonomy.js`.
+- `pricing` (GET) returns `{pricing}`, the merged pricing settings.
+
+Firm
+- `me` returns `pub.allowedAreas` (the areas the firm's regulators allow), `pricing` (with `avgLead`), `taxonomy`, and `options` as `{returnReasons, cancelReasons, returnHours}`. Tiers are gone.
+- `opportunities` lists only leads in the firm's allowed areas. Each has `match` (true when it meets the saved criteria).
+- `dashboard` totals are `{leads, instructed, instructed_value}`.
+- `stage` body `{id, stage, instructed_value?}` (`funded_amount` still accepted) returns `{ok, stage, instructed_value}`.
+- `buy` returns 403 when the lead is outside the firm's allowed areas.
+- `settings` filters are `{areas, matters, regions, postcodeAreas, audiences, urgencies, grades, privatePayOnly, valueMin, valueMax, tagsAny, tagsNone, dailyLeads, dailyCredits, maxPrice, suggest, digestAt, missed, missedAt}`. Areas are limited to the allowed areas.
+- `signup` and `onboard` take `regulators: [{id, number}]` (ids SRA, CILEX, CLC, IAA). `onboard` body is `{company, company_number, regulators, address, contact_name, signer_title, phone}` and returns 400 with no valid regulator. A change clears `regulator_checked_at`.
+- Refund reasons are phone not in service, phone belongs to someone else, email bounces (ok), outside the practice area or region stated, duplicate of a lead already bought, something else (review), plus two not refundable. Decline keys are `valid, interest, brief, scope, duplicate, attempts, late` (`figures` removed).
+- Lead delivery (`leadOut`, webhooks, CRMs) carries area, matter, labels, audience, urgency, location, value, private pay, grade, score, answers, summary, contact and business details. The test webhook sends a legal sample with `test: true`.
+
+Admin
+- `admin` returns `defaults`, `taxonomy` and `examples` (each with `price` and `parts`). Brokers include `regulators` and `regulator_checked_at`. Tier and turnover lists are gone.
+- `admin-client` broker has `regulators: [{id, number, label, register}]`, `regulator_checked_at` and `allowed_areas`.
+- `admin-regulator-check` (POST `{broker, checked}`) returns `{ok, regulator_checked_at}`. `checked: false` clears it.
+- `admin-update` accepts `regulators: [{id, number}]` and clears the register check.
+- `admin-lead` (GET) returns `brokers[].can_take`, `taxonomy`, `pricing`, `list_price_now` and `discount_at`.
+- `admin-lead` (POST) op `reprice` returns `{ok, price}`. Op `relist` takes `area, matter, urgency, grade` and `price` ('full', 'half', 'recalc' or a number), and resets `instructed_value` when the lead had a buyer. Op `assign` refuses a firm whose regulators don't allow the lead's area.
+- `admin-pricing` (POST `{min, max, urgent, business, areas{slug: n}, matters{'area/matter': n}, grade{A, B, C}, value[[minPounds, mult]], reprice?}`) returns `{ok, pricing, examples, repriced?}` where `repriced` is a count.
+- `admin-reprice` (POST `{all?}`) returns `{ok, repriced, checked}`. Hand-priced leads are kept unless `all` is true.
+- Removed: `admin-tier-prices`, and the pricing switch on `admin-broker`.
+
+Enquiry intake
+- `storeLead(lead)` in `api/_lib/leads.js` always returns an object. A sale returns `{id, matched: true, firm, price, buyer}`. No sale returns `{id, matched: false, price, buyer: null, alerted, invited}`. A flagged lead returns `{id, matched: false, hidden: true}`. A repeat within 7 days returns `{id, matched, firm?, duplicateOf, again, rematch}`.

@@ -23,10 +23,10 @@ const c = { id: 1, name: 'Sam Taylor', company: 'Taylor & Co' };
 assert.equal(merge('Hi {first_name} at {company}, {unknown}', c), 'Hi Sam at Taylor & Co, {unknown}');
 assert.equal(merge('Hi {first_name}', { name: '' }), 'Hi there');
 const r = renderEmail('Hi {first_name},\n\n[Sign up here]({signup_link}) <b>x</b>', c, 'https://u.example/unsub');
-assert.match(r.html, /<a href="https:\/\/platform\.leaflegal\.co\/register"[^>]*>Sign up here<\/a>/);
+assert.match(r.html, /<a href="https:\/\/leaflegal\.co\/platform\/register"[^>]*>Sign up here<\/a>/);
 assert.match(r.html, /&lt;b&gt;x&lt;\/b&gt;/, 'body HTML is escaped');
 assert.match(r.html, /https:\/\/u\.example\/unsub/);
-assert.match(r.text, /Sign up here \(https:\/\/platform\.leaflegal\.co\/register\)/);
+assert.match(r.text, /Sign up here \(https:\/\/leaflegal\.co\/platform\/register\)/);
 
 // flows: every step points at a real stage, ids are unique, bodies have no unknown tags
 assert.equal(new Set(FLOW_DEFAULTS.map((s) => s.id)).size, FLOW_DEFAULTS.length);

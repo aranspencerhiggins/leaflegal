@@ -13,7 +13,8 @@ export const AREAS = [
   { slug: 'immigration', label: 'Immigration', ew: false, matters: [
     ['work-visas', 'Work visa'], ['spouse-and-partner-visas', 'Spouse or partner visa'], ['family-visas', 'Family visa'],
     ['settlement', 'Settlement (ILR)'], ['british-citizenship', 'British citizenship'], ['eu-settlement-scheme', 'EU Settlement Scheme'],
-    ['sponsor-licences', 'Sponsor licence (employer)'], ['refusals-and-appeals', 'Refusal or appeal'], ['other', 'Something else'],
+    ['sponsor-licences', 'Sponsor licence (employer)'], ['refusals-and-appeals', 'Refusal or appeal'], ['visitor-visas', 'Visitor visa'],
+    ['talent-and-founder-visas', 'Global Talent or Innovator Founder'], ['other', 'Something else'],
   ] },
   { slug: 'family-law', label: 'Family law', ew: true, matters: [
     ['divorce', 'Divorce'], ['civil-partnership-dissolution', 'Ending a civil partnership'], ['financial-settlements', 'Financial settlement'],
@@ -28,11 +29,11 @@ export const AREAS = [
   { slug: 'motoring-offences', label: 'Motoring offences', ew: true, matters: [
     ['speeding', 'Speeding'], ['drink-driving', 'Drink driving'], ['drug-driving', 'Drug driving'], ['careless-driving', 'Careless driving'],
     ['dangerous-driving', 'Dangerous driving'], ['driving-without-insurance', 'Driving without insurance'], ['mobile-phone', 'Using a phone while driving'],
-    ['failing-to-identify-the-driver', 'Failing to identify the driver'], ['totting-up', 'Totting up ban'], ['exceptional-hardship', 'Exceptional hardship'], ['other', 'Something else'],
+    ['failing-to-identify-the-driver', 'Failing to identify the driver'], ['totting-up', 'Totting up ban'], ['exceptional-hardship', 'Exceptional hardship'], ['other-motoring', 'Another motoring offence'], ['other', 'Something else'],
   ] },
   { slug: 'licensing', label: 'Licensing', ew: true, matters: [
     ['premises-licence-applications', 'New premises licence'], ['licence-variations', 'Licence variation'], ['transfers-and-dps', 'Transfer or DPS change'],
-    ['personal-licences', 'Personal licence'], ['licence-reviews', 'Licence review or hearing'], ['taxi-and-private-hire-licences', 'Taxi or private hire licence'], ['other', 'Something else'],
+    ['personal-licences', 'Personal licence'], ['licence-reviews', 'Licence review or hearing'], ['taxi-and-private-hire-licences', 'Taxi or private hire licence'], ['other-licensing', 'Another licence'], ['other', 'Something else'],
   ] },
   { slug: 'lease-extensions', label: 'Lease extensions', ew: true, matters: [
     ['statutory-lease-extension', 'Statutory lease extension'], ['informal-lease-extension', 'Informal lease extension'], ['short-lease', 'Flat with a short lease'],
@@ -63,7 +64,8 @@ export const REGULATORS = [
 export const regulatorOf = (id) => REGULATORS.find((r) => r.id === id) || null;
 export const allowedAreas = (regIds = []) => [...new Set(regIds.flatMap((id) => regulatorOf(id)?.areas || []))];
 
-export const REGIONS = ['London', 'South East', 'South West', 'East of England', 'East Midlands', 'West Midlands', 'Yorkshire and the Humber', 'North West', 'North East', 'Wales', 'Scotland', 'Northern Ireland'];
+export const REGIONS = ['London', 'South East', 'South West', 'East of England', 'East Midlands', 'West Midlands', 'Yorkshire and the Humber', 'North West', 'North East', 'Wales', 'Scotland', 'Northern Ireland', 'Channel Islands and Isle of Man', 'Outside the UK'];
+// Immigration enquiries from abroad have no postcode, region 'Outside the UK' and country 'outside'.
 export const URGENCY = ['Urgently', 'Within a month', 'In the next few months', 'Just looking into it'];
 // The forms thread may send short urgency codes; both are accepted.
 export const URGENCY_CODES = { urgent: 'Urgently', month: 'Within a month', months: 'In the next few months', research: 'Just looking into it' };
