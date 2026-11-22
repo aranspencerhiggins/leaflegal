@@ -459,7 +459,7 @@ def footer_html(strip=True, minimal=False):
     return f"""<footer class="llf">{cta_strip}
 <div class="llf-main"><div class="llf-in">
 <div class="llf-brand"><a href="/" aria-label="{BRAND} home"><img src="{LOGO_LIGHT}" width="170" alt="{BRAND}" loading="lazy"/></a>
-<p>Free introductions to specialist solicitors and regulated law firms in England and Wales.</p><a class="llf-mail" href="mailto:{EMAIL}">{EMAIL}</a></div>
+<p>Introductions to specialist solicitors and regulated law firms in England and Wales.</p><a class="llf-mail" href="mailto:{EMAIL}">{EMAIL}</a></div>
 {col('Legal help', areas)}{col('Resources', res)}{col('Company', comp)}{col('Legal', legal)}
 </div></div>
 <div class="llf-base"><div class="llf-in">
@@ -505,7 +505,7 @@ def header_b(page=''):
 
 
 # ---------------------------------------------------------------- shared blocks
-TRUST = [('shield', 'Free to use', 'No fees from us, ever'), ('clock', 'About two minutes', 'One short form, plain English'),
+TRUST = [('shield', 'No obligation', 'You choose whether to go ahead'), ('clock', 'About two minutes', 'One short form, plain English'),
          ('scale', 'Regulated firms', 'Matched to your type of matter'), ('doc', 'Kept private', 'Only shared with your consent')]
 TRUST_STRIP = ('<section class="ll-trust" aria-label="Why Leaflegal"><div class="ll-trust-in">' + ''.join(
     f'<div class="ll-trust-item"><span class="ll-trust-ico">{ICON[ic]}</span><div><b>{t}</b><span>{d}</span></div></div>' for ic, t, d in TRUST) + '</div></section>')
@@ -514,7 +514,7 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
 APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=4" rel="stylesheet"/>'
-APPLY_JS = '<script type="module" src="/assets/enquire.js?v=6"></script>'
+APPLY_JS = '<script type="module" src="/assets/enquire.js?v=7"></script>'
 
 
 def ENQ_URL(area, matter=None):
@@ -617,7 +617,7 @@ def seo_related(u, title, urls):
 compact = lambda body: re.sub(r'<section class="section(?! padding-btm-0| ll-compact| legal-hero)', '<section class="section ll-compact', body)
 
 HOME_FAQ = [
-    (f'Is {BRAND} a law firm?', f'No. {BRAND} is a free introduction service. We pass your enquiry to one independent, regulated law firm, and their lawyers give you the advice. We don&#39;t give legal advice ourselves.'),
+    (f'Is {BRAND} a law firm?', f'No. {BRAND} is an introduction service. We pass your enquiry to one independent, regulated law firm, and their lawyers give you the advice. We don&#39;t give legal advice ourselves.'),
     ('Does it cost anything?', 'Our service is free to use. We are paid by the law firm we introduce you to. The firm will explain its own fees before you agree to anything, and must tell you about the fee it pays us.'),
     ('Who will contact me?', 'One law firm that handles your type of matter, usually by phone. We don&#39;t pass your details to a list of firms.'),
     ('Which areas do you cover?', 'Conveyancing, family law, motoring offences, licensing, lease extensions and business debt recovery in England and Wales, plus trademarks and related IP and introductions to regulated immigration lawyers across the UK.'),
@@ -651,7 +651,7 @@ home = f'''
 <p class="ll-lead">Tell us what you need help with and we'll introduce you to a specialist, regulated law firm that handles your kind of matter.</p>
 <div class="ll-borrow ll-need"><p class="ll-borrow-q">What do you need help with?</p>
 <div class="ll-need-opts">{''.join(f'<a href="/enquire/{a["slug"]}">{a["name"]}</a>' for a in AC.AREAS)}</div></div>
-<ul class="ll-hero-points"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a call centre</li><li>{TICK}Your details are kept private</li></ul>
+<ul class="ll-hero-points"><li>{TICK}No obligation to proceed</li><li>{TICK}One regulated firm, not a call centre</li><li>{TICK}Your details are kept private</li></ul>
 </div></div></section>
 {TRUST_STRIP}
 {section(f"""<div class="ll-section-title"><h2 class="heading-two">What do you need help with?</h2><div class="large-text serif-typeface">Pick an area to start and we will introduce you to a firm that handles it.</div></div>
@@ -662,7 +662,7 @@ home = f'''
 
 {section(split(PH.photo('lawyer-desk'), f"""<h2 class="heading-two">Less searching. Better first conversations.</h2>
 <div class="large-text serif-typeface">Instead of ringing round firms, you fill in one form and speak to a lawyer who already knows what your matter is about.</div>
-{checks(['One short form instead of calling round', 'A firm that handles your kind of matter', 'Your enquiry goes to one firm, not a list', 'Free to use, with no obligation to go ahead'])}
+{checks(['One short form instead of calling round', 'A firm that handles your kind of matter', 'Your enquiry goes to one firm, not a list', 'No obligation to go ahead'])}
 <div class="ll-actions" style="margin-top:32px"><a href="#quote" class="button w-inline-block"><div>Get matched</div></a></div>""", alt='A solicitor talking with a client'))}
 
 {photo_box(PH.photo('golden-street'), f"""<div class="section-title"><h2 class="heading-two">Who we can help</h2><div class="large-text serif-typeface">People and businesses looking for paid legal help.</div><div class="horizontal-line"></div></div>
@@ -695,12 +695,12 @@ org_ld = {'@context': 'https://schema.org', '@type': 'Organization', '@id': f'{S
           'identifier': {'@type': 'PropertyValue', 'propertyID': 'Companies House company number', 'value': '14254961'},
           'address': {'@type': 'PostalAddress', 'streetAddress': '20-22 Wenlock Road', 'addressLocality': 'London', 'postalCode': 'N1 7GU', 'addressCountry': 'GB'}}
 page(f'{PUB}/index.html', f'Find a Solicitor in England and Wales | {BRAND}',
-     'Get matched with a specialist, regulated law firm for conveyancing, family law, motoring offences, licensing, lease extensions, debt recovery, trademarks or immigration. Free, no obligation.',
+     'Get matched with a specialist, regulated law firm for conveyancing, family law, motoring offences, licensing, lease extensions, debt recovery, trademarks or immigration. No obligation to proceed.',
      home, ld(org_ld, faq_ld(HOME_FAQ)))
 
 # ---------------------------------------------------------------- /apply: form-only page
 LP_TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
-LP_TICKS = ('Free to use, no obligation', 'One regulated firm, not a call centre', 'Your details are kept private')
+LP_TICKS = ('No obligation to proceed', 'One regulated firm, not a call centre', 'Your details are kept private')
 
 
 def lp_body(h1='Find the right solicitor for your matter', ticks=LP_TICKS, form=None, img=None):
@@ -713,7 +713,7 @@ def lp_body(h1='Find the right solicitor for your matter', ticks=LP_TICKS, form=
 
 LP_HEADER = f'<header class="llb-head llb-lp"><div class="llb-main"><div class="llb-in"><a href="/" class="llb-logo" aria-label="{BRAND} home"><img src="{LOGO_LIGHT}" width="150" alt="{BRAND}"/></a></div></div></header>'
 page(f'{PUB}/apply.html', f'Get Matched With a Solicitor | {BRAND}',
-     'Answer a few quick questions and we will introduce you to one specialist, regulated law firm. Free, with no obligation.',
+     'Answer a few quick questions and we will introduce you to one specialist, regulated law firm. No obligation to proceed.',
      lp_body(), APPLY_HEAD, APPLY_JS, header=LP_HEADER, backup=False)
 
 # ---------------------------------------------------------------- practice area pages + /legal-services hub
@@ -729,7 +729,7 @@ for a in AC.AREAS:
     where = 'Introductions to regulated immigration advisers across the UK' if a.get('referral_only') else ('For businesses in England and Wales' if a.get('business_only') else ('Introductions across the whole of the UK' if a.get('uk_wide') else 'For matters in England and Wales'))
     head = (f'<section class="ll-pagehead ll-hero-split"><div class="ll-hero-grid"><div><nav class="ll-crumbs" aria-label="Breadcrumb"><a href="/legal-services">Legal services</a><span>/</span><span>{a["name"]}</span></nav>'
             f'<h1>{seo_h1(AREA_URL(a["slug"]), a["h1"])}</h1><p class="ll-lead">{a["lead"]}</p>'
-            f'<ul class="ll-hero-ticks"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}{where}</li></ul>'
+            f'<ul class="ll-hero-ticks"><li>{TICK}No obligation to proceed</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}{where}</li></ul>'
             f'<div class="ll-head-btns">{enq_btn(a["slug"])}</div></div>'
             f'<div class="ll-hero-media"><img src="{PH.photo(PH.AREA[a["slug"]][0])}" alt="" loading="eager" fetchpriority="high"/></div></div></section>')
     crumb_ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
@@ -741,7 +741,7 @@ for a in AC.AREAS:
     imm_a = bool(a.get('referral_only'))
     glance = [('Who it is for', AREA_EXTRA[a['slug']]['who']), ('Who contacts you', 'One regulated immigration firm or adviser' if imm_a else 'One regulated law firm'),
               ('Where', 'Across the UK' if imm_a or a.get('uk_wide') else ('Businesses in England and Wales' if a.get('business_only') else 'England and Wales')),
-              ('Matters covered', f'{len(MAT[a["slug"]])} types, from {MAT[a["slug"]][0]["name"].lower()} to {MAT[a["slug"]][-1]["name"].lower()}'), ('Cost to use Leaflegal', 'Free, with no obligation')]
+              ('Matters covered', f'{len(MAT[a["slug"]])} types, from {MAT[a["slug"]][0]["name"].lower()} to {MAT[a["slug"]][-1]["name"].lower()}'), ('Your commitment', 'None, you choose whether to go ahead')]
     body = ''.join([
         head, TRUST_STRIP,
         cs_intro(f'About {a["name"].lower()}', a['intro'] + [AREA_EXTRA[a['slug']]['more']], glance, notice),
@@ -760,8 +760,8 @@ for a in AC.AREAS:
     # The separate enquiry page for this area (like /apply, with the area fixed). Matter pages link here with ?matter=.
     os.makedirs(f'{PUB}/enquire', exist_ok=True)
     page(f'{PUB}/enquire/{a["slug"]}.html', f'{a["name"]} Enquiry | {BRAND}',
-         f'Answer a few quick questions about your {a["name"].lower()} matter and we will introduce you to one regulated firm. Free, with no obligation.',
-         lp_body(ENQ_H1[a['slug']], ('Free, no obligation', 'One regulated firm', 'UK wide' if imm_a or a.get('uk_wide') else 'England and Wales'), form_card(a['slug'])),
+         f'Answer a few quick questions about your {a["name"].lower()} matter and we will introduce you to one regulated firm. No obligation to proceed.',
+         lp_body(ENQ_H1[a['slug']], ('No obligation to proceed', 'One regulated firm', 'UK wide' if imm_a or a.get('uk_wide') else 'England and Wales'), form_card(a['slug'])),
          APPLY_HEAD + '<meta name="robots" content="noindex"/>', APPLY_JS, header=LP_HEADER, backup=False)
     page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), APPLY_HEAD + ld(faq_ld([qa for _, g in faq_groups(seo_faqs(AREA_URL(a['slug'])) + a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
 
@@ -770,7 +770,7 @@ hub = (page_head('Legal services', 'The areas of law we introduce people and bus
        + section(title_block('Not sure which you need?', 'You don’t have to know. Tell us what is happening and we will introduce you to a firm that can help.')
                  + '<div class="ll-actions" style="justify-content:center"><a href="/apply" class="button"><div>Get matched</div></a><a href="/how-it-works" class="button bg-base-50"><div>How it works</div></a></div>'))
 page(f'{PUB}/legal-services.html', f'Legal Services from Specialist Solicitors | {BRAND}',
-     'Conveyancing, family law, debt recovery, motoring offences, licensing, lease extensions, trademarks and introductions to regulated immigration lawyers. Free to use.', hub, backup=False)
+     'Conveyancing, family law, debt recovery, motoring offences, licensing, lease extensions, trademarks and introductions to regulated immigration lawyers.', hub, backup=False)
 
 # ---------------------------------------------------------------- how it works
 HIW_STEPS = [
@@ -795,7 +795,7 @@ HIW_FAQ = [
 hiw = ''.join([
     f'<section class="ll-pagehead ll-hero-split"><div class="ll-hero-grid"><div><h1>One short form. The right specialist.</h1>'
     f'<p class="ll-lead">{BRAND} introduces people and businesses to a regulated law firm that handles their kind of matter, so the first conversation is a useful one.</p>'
-    f'<ul class="ll-hero-ticks"><li>{TICK}About two minutes to complete</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}Free, with no obligation</li></ul>'
+    f'<ul class="ll-hero-ticks"><li>{TICK}About two minutes to complete</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}No obligation to proceed</li></ul>'
     f'<div class="ll-head-btns"><a href="/apply" class="button"><div>Get matched</div></a><a href="#steps" class="ll-ghost-light">See the steps</a></div></div>'
     f'<div class="ll-hero-media"><img src="{PH.photo('desk-warm')}" alt="A woman working at a desk" loading="eager" fetchpriority="high"/></div></div></section>',
     TRUST_STRIP,
@@ -813,7 +813,7 @@ hiw = ''.join([
 howto_ld = {'@context': 'https://schema.org', '@type': 'HowTo', 'name': f'How to find a solicitor with {BRAND}', 'totalTime': 'PT2M',
             'step': [{'@type': 'HowToStep', 'position': i, 'name': t, 'text': d} for i, (t, d) in enumerate(HIW_STEPS, 1)]}
 page(f'{PUB}/how-it-works.html', f'How It Works, Find a Solicitor in 3 Steps | {BRAND}',
-     f'How {BRAND} works. Answer a few quick questions, get introduced to one regulated law firm and talk through your matter. Free, no obligation.',
+     f'How {BRAND} works. Answer a few quick questions, get introduced to one regulated law firm and talk through your matter. No obligation to proceed.',
      compact(hiw), ld(howto_ld, faq_ld(HIW_FAQ)), backup=False)
 
 # ---------------------------------------------------------------- partners (law firms): /partners and /partners/apply
@@ -875,7 +875,7 @@ about = f'''
   'Legal problems tend to arrive at stressful moments. A house sale, a separation, a court letter or an unpaid invoice all come with deadlines, and the last thing anyone wants is to spend days working out which firm to call.',
   'We built Leaflegal to make that first step simple. We focus on eight areas of law where people often need a specialist, and we work with regulated firms that handle that work every day.',
   'We are open about how we are paid. The firm pays us a fee for each introduction, it never changes what you pay them, and they will tell you about it in writing.'],
-  [('Who we are', 'Vertical Brands Ltd'), ('What we do', 'Free introductions'), ('Areas of law', 'Eight'), ('Where', 'England and Wales'), ('Paid by', 'The law firm, not you')])}
+  [('Who we are', 'Vertical Brands Ltd'), ('What we do', 'Introductions'), ('Areas of law', 'Eight'), ('Where', 'England and Wales'), ('Paid by', 'The law firm, not you')])}
 
 {section(f"""<div class="ll-section-title"><h2 class="heading-two">How we work</h2></div>
 {cards([
@@ -887,7 +887,7 @@ about = f'''
 {section(split(PH.photo('desk-warm'), f"""<h2 class="heading-two">What we are, and what we aren't</h2>
 <div class="large-text serif-typeface">We think you should know exactly who you're dealing with.</div>
 <div class="ll-isnt" style="margin-top:28px;grid-template-columns:1fr">
-<div class="ll-yes"><h3>{BRAND} is</h3><ul><li>{TICK}A free introduction service</li><li>{TICK}Run by Vertical Brands Ltd</li><li>{TICK}Paid by the firms we introduce, never by you</li></ul></div>
+<div class="ll-yes"><h3>{BRAND} is</h3><ul><li>{TICK}An introduction service</li><li>{TICK}Run by Vertical Brands Ltd</li><li>{TICK}Paid by the firms we introduce, never by you</li></ul></div>
 <div class="ll-no"><h3>{BRAND} is not</h3><ul><li>{CROSS}A law firm</li><li>{CROSS}A source of legal or immigration advice</li><li>{CROSS}Regulated by the Solicitors Regulation Authority</li></ul></div>
 </div>""", flip=True, alt='A person at a wooden table'))}
 
@@ -896,7 +896,7 @@ about = f'''
 
 {cta('Ready to find the right solicitor?', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched')}
 '''
-page(f'{PUB}/about.html', f'About Us | {BRAND}', f'{BRAND} is a free introduction service that matches people and businesses with specialist, regulated law firms.', about, backup=False)
+page(f'{PUB}/about.html', f'About Us | {BRAND}', f'{BRAND} is an introduction service that matches people and businesses with specialist, regulated law firms.', about, backup=False)
 
 # ---------------------------------------------------------------- company pages, contact, 404
 doc_page(f'{PUB}/how-we-make-money.html', f'How We Make Money | {BRAND}',

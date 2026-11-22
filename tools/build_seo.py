@@ -50,7 +50,7 @@ for a_slug, matters in MAT.items():
         if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not h1.endswith('s') and len(h1) < 20:
             h1 += ' solicitors'
         h1 = seo_h1(url, h1)
-        ticks = ['Free to use, no obligation', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
+        ticks = ['No obligation to proceed', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
                  'For businesses in England and Wales' if a.get('business_only') else 'Across the UK' if uk else 'For matters in England and Wales']
         head = hero_split(h1, mt['short'] + ' ' + ('Tell us a little about it and we will introduce you to a regulated adviser.' if imm else 'Tell us a little about it and we will introduce you to a specialist firm.'),
                           ticks, enq_btn(a_slug, mt['slug']), area_img(a_slug, i + 1), alt='')
@@ -65,7 +65,7 @@ for a_slug, matters in MAT.items():
         who = 'regulated adviser' if imm else 'firm'
         glance = [('Area of law', f'<a href="{AREA_URL(a_slug)}">{a["name"]}</a>'), ('Who it is for', AREA_EXTRA[a_slug]['who']),
                   ('Who contacts you', 'One regulated immigration firm or adviser' if imm else 'One regulated law firm'),
-                  ('Where', 'Across the UK' if uk else 'England and Wales'), ('Cost to use Leaflegal', 'Free, with no obligation')]
+                  ('Where', 'Across the UK' if uk else 'England and Wales'), ('Your commitment', 'None, you choose whether to go ahead')]
         body = ''.join([
             head, TRUST_STRIP,
             cs_intro(f'About {mt["name"].lower()}', mt['intro'] + [AREA_EXTRA[a_slug]['more']], glance, IMM_NOTE if imm else ''),
@@ -84,7 +84,7 @@ for a_slug, matters in MAT.items():
         title = f'{mt["name"]} {"Solicitors" if not imm else "Advisers"} | {a["name"]} | {BRAND}'
         if len(title) > 70:
             title = f'{mt["name"]} | {a["name"]} | {BRAND}'
-        desc = f'{mt["short"]} Answer a few quick questions and we will introduce you to {"a regulated immigration adviser" if imm else "a regulated law firm"}. Free to use, no obligation.'
+        desc = f'{mt["short"]} Answer a few quick questions and we will introduce you to {"a regulated immigration adviser" if imm else "a regulated law firm"}. No obligation to proceed.'
         page(f'{PUB}{url}.html', title, desc, compact(body),
              APPLY_HEAD + f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in faq_groups(faqs, DM) for qa in g]), svc_ld(mt['name'], url, mt['short']),
                 crumb_ld(('Legal services', '/legal-services'), (a['name'], AREA_URL(a_slug)), (mt['name'], url))),
@@ -140,9 +140,9 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         LGROUPS = local_faq_groups(a_slug, faqs, ci)
         glance = [('Area of law', f'<a href="{AREA_URL(a_slug)}">{a["name"]}</a>'), ('Who it is for', AREA_EXTRA[a_slug]['who']),
                   ('Covering', f'{c_name}, {", ".join(nearby[:-1])} and {nearby[-1]}'), ('Who contacts you', 'One regulated law firm'),
-                  ('Cost to use Leaflegal', 'Free, with no obligation')]
+                  ('Your commitment', 'None, you choose whether to go ahead')]
         body = ''.join([
-            hero_split(h1, lead, ['Free to use, no obligation', 'One regulated firm, not a list', f'Covering {c_name} and {region}'],
+            hero_split(h1, lead, ['No obligation to proceed', 'One regulated firm, not a list', f'Covering {c_name} and {region}'],
                        enq_btn(a_slug), area_img(a_slug, ci + ai)),
             TRUST_STRIP,
             cs_intro(f'{a["name"]} in {c_name}', intro + [AREA_EXTRA[a_slug]['more']], glance),
@@ -155,25 +155,25 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
             cs_links(f'Other legal help in {c_name}', [(LOC_URL(c_slug, x), LOCAL_NAME[x]) for x in MC.LOCAL_AREAS if x != a_slug] + [(AREA_URL('immigration'), 'Immigration advisers (UK wide)')]),
         ])
         page(f'{PUB}{url}.html', LOCAL_TITLE[a_slug].format(c=c_name) + f' | {BRAND}',
-             f'{LOCAL_NAME[a_slug]} in {c_name}. Answer a few quick questions and we will introduce you to a regulated firm covering {c_name} and {region}. Free, no obligation.',
+             f'{LOCAL_NAME[a_slug]} in {c_name}. Answer a few quick questions and we will introduce you to a regulated firm covering {c_name} and {region}. No obligation to proceed.',
              compact(body), APPLY_HEAD + f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in LGROUPS for qa in g]), crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)), (a['name'], url))),
              '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
         _count['local'] += 1
     # city hub
     hub = ''.join([
-        hero_split(f'Solicitors in {c_name}', f'Free introductions to regulated law firms covering {c_name}, {nearby[0]}, {nearby[1]} and the rest of {region}.',
-                   ['Free to use, no obligation', 'One regulated firm, not a list', 'Eight areas of law'],
+        hero_split(f'Solicitors in {c_name}', f'Introductions to regulated law firms covering {c_name}, {nearby[0]}, {nearby[1]} and the rest of {region}.',
+                   ['No obligation to proceed', 'One regulated firm, not a list', 'Eight areas of law'],
                    '<a href="/apply" class="button"><div>Get matched</div></a>', PH.photo('golden-street' if ci % 2 else 'street')),
         TRUST_STRIP,
         cs_intro(f'Legal help in {c_name}', [
             f'Whether you are moving home in {c_name}, going through a separation, facing a motoring charge, chasing an unpaid invoice or sorting out a licence, {BRAND} can introduce you to a regulated law firm that handles your kind of matter.',
             f'We cover {c_name}, {", ".join(nearby[:-1])}, {nearby[-1]} and the rest of {region}. Many of the firms we work with have offices in the area, and most can also work with you by phone, email or video, so you don’t need to travel.',
-            'You answer a few quick questions once, instead of ringing round. We pass your enquiry to one firm, never a list, and the firm contacts you to talk through your matter and explain their fees. It is free to use and there is no obligation.'],
-            [('Covering', f'{c_name} and {region}'), ('Areas of law', 'Eight, including conveyancing, family law and motoring offences'), ('Who contacts you', 'One regulated law firm'), ('Cost to use Leaflegal', 'Free, with no obligation')]),
+            'You answer a few quick questions once, instead of ringing round. We pass your enquiry to one firm, never a list, and the firm contacts you to talk through your matter and explain their fees. There is no obligation to proceed.'],
+            [('Covering', f'{c_name} and {region}'), ('Areas of law', 'Eight, including conveyancing, family law and motoring offences'), ('Who contacts you', 'One regulated law firm'), ('Your commitment', 'None, you choose whether to go ahead')]),
         section(f'<h2 class="cs-h2 cs-center">Pick the help you need</h2>'
                 + cards([(AREA[x]['icon'], LOCAL_NAME[x], AREA[x]['short'], LOC_URL(c_slug, x)) for x in MC.LOCAL_AREAS]
                         + [('globe', 'Immigration advisers', 'Introductions to regulated immigration advisers, wherever you are in the UK.', AREA_URL('immigration'))], 'three', more_label='Learn more'), cls='section cs-sec'),
-        cs_steps('How it works', [('Tell us what you need', 'Answer a few quick questions about your matter. It takes about two minutes.'), ('We introduce one firm', f'We pass your enquiry to one regulated firm that covers {c_name} and handles your kind of matter.'), ('The firm contacts you', 'They talk through your matter and explain their fees. You decide whether to go ahead.')], '/apply', lead='Free to use, with no obligation.'),
+        cs_steps('How it works', [('Tell us what you need', 'Answer a few quick questions about your matter. It takes about two minutes.'), ('We introduce one firm', f'We pass your enquiry to one regulated firm that covers {c_name} and handles your kind of matter.'), ('The firm contacts you', 'They talk through your matter and explain their fees. You decide whether to go ahead.')], '/apply', lead='No obligation to proceed.'),
         section(f'<h2 class="cs-h2 cs-center">Legal help in {c_name}, area by area</h2><div class="cs-things">'
                 + ''.join(f'<div class="cs-thing"><h3><a href="{LOC_URL(c_slug, x)}">{LOCAL_NAME[x]}</a></h3><p>{AREA[x]["short"]} For {AREA_EXTRA[x]["who"][0].lower() + AREA_EXTRA[x]["who"][1:]}.</p></div>' for x in MC.LOCAL_AREAS) + '</div>', cls='section cs-sec'),
         cs_intro(f'Choosing a solicitor in {c_name}', [
@@ -185,13 +185,13 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         cs_links('Other places we cover', [(CITY_URL(c[0]), c[1]) for c in others]),
         cta(f'Find a solicitor in {c_name}', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched'),
     ])
-    page(f'{PUB}/solicitors/{c_slug}.html', f'Solicitors in {c_name} | Free Introductions | {BRAND}',
-         f'Find a solicitor in {c_name} for conveyancing, family law, motoring offences, licensing, debt recovery, lease extensions and trademarks. Free introductions to regulated firms.',
+    page(f'{PUB}/solicitors/{c_slug}.html', f'Solicitors in {c_name} | {BRAND}',
+         f'Find a solicitor in {c_name} for conveyancing, family law, motoring offences, licensing, debt recovery, lease extensions and trademarks. Introductions to regulated firms.',
          compact(hub), f'<link rel="canonical" href="{SITE}{CITY_URL(c_slug)}"/>' + ld(crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)))), backup=False)
     _count['hub'] += 1
 
 page(f'{PUB}/solicitors.html', f'Find a Solicitor Near You | {BRAND}',
-     'Free introductions to regulated law firms in towns and cities across England and Wales. Pick your area to get started.',
+     'Introductions to regulated law firms in towns and cities across England and Wales. Pick your area to get started.',
      page_head('Solicitors near you', 'We introduce people and businesses to regulated law firms across England and Wales. Pick a place to see the help available.')
      + TRUST_STRIP + section(link_list([(CITY_URL(c[0]), c[1]) for c in MC.CITIES]))
      + section(title_block('By area of law') + area_cards())
@@ -215,7 +215,7 @@ for gd in CG.GUIDES:
     page(f'{PUB}/guides/{gd["slug"]}.html', gd['title'], gd['desc'],
          ghead + f'<section class="ll-docsec"><div class="ll-doc-wrap">{key[:0]}<div class="cs-docmain">{key}{blocks_html(blocks)}</div>{aside}</div></section>'
          + cs_fees(gd['area'], a['name']) + cs_things(a['considerations'])
-         + cs_steps('Need help with your own matter?', a['how'], gq, lead='We introduce you to one regulated firm. Free to use, with no obligation.')
+         + cs_steps('Need help with your own matter?', a['how'], gq, lead='We introduce you to one regulated firm. No obligation to proceed.')
          + section('<h2 class="cs-h2 cs-center">More guides</h2><div class="ll-ggrid cs-gg">' + ''.join(f'<a class="ll-pcard" href="/guides/{x["slug"]}"><img src="{area_img(x["area"], i)}" alt="" loading="lazy"/><div><span class="ll-gcat">{AREA[x["area"]]["name"]}</span><b>{x["h1"]}</b><p>{x["lead"]}</p></div></a>' for i, x in enumerate(more_g)) + '</div>', cls='section cs-sec'),
          f'<link rel="canonical" href="{SITE}/guides/{gd["slug"]}"/>', backup=False)
     _count['guide'] += 1
