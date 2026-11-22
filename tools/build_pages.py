@@ -141,9 +141,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=42', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=43', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=42" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=43" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -640,16 +640,22 @@ def cs_guides_home():
 
 
 # ---------------------------------------------------------------- homepage
+# Hero photo (Unsplash MkNnPlMThgk, solicitor greeting a client across a desk), shown mirrored so the solicitor sits on the right.
+HOME_HERO_IMG = lambda w: PH.U('1780733065500-4284d227f58c', w)
 home = f'''
-<section class="ll-hero" id="quote">
-<div class="ll-hero-in"><div>
-<h1>Legal help, matched to you</h1>
-<p class="ll-lead">Tell us what you need help with and we'll introduce you to a specialist, regulated law firm.</p>
+<section class="ll-hero ll-hero-photo ll-hero-noform" id="quote">
+<img class="ll-hero-bg" src="{HOME_HERO_IMG(1800)}" srcset="{HOME_HERO_IMG(900)} 900w, {HOME_HERO_IMG(1400)} 1400w, {HOME_HERO_IMG(2200)} 2200w" sizes="100vw" alt="" fetchpriority="high"/>
+<div class="ll-hero-in"><div class="ll-hero-copy">
+<h1>Find the right solicitor for you</h1>
+<p class="ll-lead">Tell us what you need help with and we'll introduce you to a specialist, regulated law firm that handles your kind of matter.</p>
+<div class="ll-borrow ll-need"><p class="ll-borrow-q">What do you need help with?</p>
+<div class="ll-need-opts">{''.join(f'<a href="/enquire/{a["slug"]}">{a["name"]}</a>' for a in AC.AREAS)}</div>
+<a href="/apply" class="button ll-borrow-go"><div>Not sure? Tell us what is happening</div></a></div>
 <ul class="ll-hero-points"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a call centre</li><li>{TICK}Your details are kept private</li></ul>
-</div>{FORM}</div></section>
+</div></div></section>
 {TRUST_STRIP}
-{section(f"""<div class="ll-section-title"><h2 class="heading-two">What do you need help with?</h2><div class="large-text serif-typeface">Pick an area to start, or go straight to the form.</div></div>
-{cards([(a['icon'], a['name'], a['short'], '#quote') for a in AC.AREAS] + [('other', 'Not sure', 'Tell us what is happening and we will point you in the right direction.', '#quote')], more_label='Get matched')}""")}
+{section(f"""<div class="ll-section-title"><h2 class="heading-two">What do you need help with?</h2><div class="large-text serif-typeface">Pick an area to start, or tell us what is happening if you are not sure.</div></div>
+{cards([(a['icon'], a['name'], a['short'], f"/enquire/{a['slug']}") for a in AC.AREAS] + [('other', 'Not sure', 'Tell us what is happening and we will point you in the right direction.', '/apply')], more_label='Get matched')}""")}
 
 <div id="how-it-works"></div>
 {process(STEPS3, '#quote', 'Get matched')}
@@ -690,7 +696,7 @@ org_ld = {'@context': 'https://schema.org', '@type': 'Organization', '@id': f'{S
           'address': {'@type': 'PostalAddress', 'streetAddress': '20-22 Wenlock Road', 'addressLocality': 'London', 'postalCode': 'N1 7GU', 'addressCountry': 'GB'}}
 page(f'{PUB}/index.html', f'Find a Solicitor in England and Wales | {BRAND}',
      'Get matched with a specialist, regulated law firm for conveyancing, family law, motoring offences, licensing, lease extensions, debt recovery or immigration. Free, no obligation.',
-     home, APPLY_HEAD + ld(org_ld, faq_ld(HOME_FAQ)), APPLY_JS)
+     home, ld(org_ld, faq_ld(HOME_FAQ)))
 
 # ---------------------------------------------------------------- /apply: form-only page
 LP_TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
