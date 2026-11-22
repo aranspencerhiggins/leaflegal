@@ -3,26 +3,22 @@ import { createHash } from 'node:crypto';
 import { configured as platformOn, allow, resendSlot } from './_lib/platform.js';
 import { checkPhone, checkEmail, problem } from './_lib/verify.js';
 import { human } from './_lib/turnstile.js';
+import { buildLead, finishLead } from './_lib/lead-schema.js';
 
-// POST /api/enquiry: a legal enquiry from the form (assets/apply.js). Emailed to the team (ENQUIRY_TO), who pick one regulated
-// firm by hand; the person gets a short confirmation. No platform yet, so nothing is stored here beyond the email.
+// POST /api/enquiry: a legal enquiry from the qualifying form (assets/enquire.js). Stored in the lawyer platform, emailed to
+// the team only if that fails, and the person gets a short confirmation.
 // Matter details are special category or criminal offence data (UK GDPR Art. 9/10): they go in the team email only,
 // never to Meta or LinkedIn, and never in the confirmation to the person (a mistyped address must not leak them).
 // Env: RESEND_API_KEY (required), ENQUIRY_TO (default aran@verticalbrands.co), ENQUIRY_FROM (default onboarding@resend.dev).
 // Meta Conversions API (only with marketing consent): META_CAPI_TOKEN, META_PIXEL_ID, META_TEST_EVENT_CODE (optional).
 
-// Must match the form's options (assets/apply.js).
-export const AREAS = ['Buying or selling a home', 'Immigration', 'Family law', 'Recovering a business debt', 'A motoring offence', 'Licensing', 'Extending a lease', 'Not sure yet'];
-const URGENCY = ['Urgently', 'Within a month', 'In the next few months', 'Just looking into it'];
-const PAY = ['Yes', 'Yes, if the cost is right'];
-const EW_ONLY = ['Buying or selling a home', 'Family law', 'Recovering a business debt', 'A motoring offence', 'Licensing', 'Extending a lease'];
-const NOT_EW = /^(AB|DD|DG|EH|FK|G|HS|IV|KA|KW|KY|ML|PA|PH|ZE|BT)\d/i;
-const POSTCODE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
-
+// The form's areas, matters and questions live in public/assets/form-options.js. The lead is rebuilt and checked from
+// them in api/_lib/lead-schema.js, handed to the lawyer platform (storeLead in api/_lib/leads.js), and emailed to the
+// team as a fallback when the platform is missing or fails, so nothing is lost.
 const FIELDS = [
-  ['area', 'Help with'], ['matter', 'Matter'], ['audience', 'For'], ['debtor', 'Owed by'], ['urgency', 'Urgency'], ['postcode', 'Postcode'],
-  ['privatePay', 'Can pay privately'], ['business', 'Business'], ['summary', 'Summary'],
-  ['fullName', 'Full name'], ['email', 'Email'], ['phone', 'Mobile'],
+  ['areaLabel', 'Help with'], ['matterLabel', 'Matter'], ['audience', 'For'], ['urgency', 'Urgency'], ['deadline', 'Key date'], ['postcode', 'Postcode'], ['region', 'Region'],
+  ['valueText', 'Value'], ['privatePay', 'Ready to instruct'], ['businessText', 'Business'], ['summary', 'Summary'],
+  ['fullName', 'Full name'], ['email', 'Email'], ['phone', 'Mobile'], ['grade', 'Quality'], ['tagsText', 'Tags'],
   ['consentAt', 'Consent given at'], ['consentVersion', 'Consent wording version'], ['consentText', 'Consent wording'],
   ['page', 'Page'], ['referrer', 'Referrer'],
 ];
@@ -93,12 +89,13 @@ export function teamEmail(b, checkLine) {
   const utm = Object.entries(b.utm || {}).map(([k, v]) => `${esc(k)}=${esc(v)}`).join(', ');
   const rows = FIELDS.filter(([k]) => b[k]).map(([k, l]) => `<tr><td style="padding:6px 12px;color:#579e83;vertical-align:top">${l}</td><td style="padding:6px 12px;font-weight:700;color:#244237;white-space:pre-wrap">${esc(b[k])}</td></tr>`).join('')
     + (utm ? `<tr><td style="padding:6px 12px;color:#579e83">UTM</td><td style="padding:6px 12px">${utm}</td></tr>` : '')
-    + `<tr><td style="padding:6px 12px;color:#579e83">Checks</td><td style="padding:6px 12px">${esc(checkLine)}</td></tr>`;
-  const notes = [b.area === 'Immigration' && 'Immigration: refer only to an SRA, CILEx or IAA regulated adviser.', 'Introduce to one regulated firm only. The firm must tell the client about the referral fee in writing.'].filter(Boolean);
+    + `<tr><td style="padding:6px 12px;color:#579e83">Checks</td><td style="padding:6px 12px">${esc(checkLine)}</td></tr>`
+    + (b.answers || []).map((x) => `<tr><td style="padding:6px 12px;color:#579e83;vertical-align:top">${esc(x.q)}</td><td style="padding:6px 12px;color:#244237">${esc(x.a)}</td></tr>`).join('');
+  const notes = [b.area === 'immigration' && 'Immigration: refer only to an SRA, CILEx or IAA regulated adviser.', 'Introduce to one regulated firm only. The firm must tell the client about the referral fee in writing.'].filter(Boolean);
   return {
     to: (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(','),
     reply_to: b.email,
-    subject: `New enquiry: ${b.area}${b.matter ? ` (${b.matter})` : ''}, ${b.urgency}`.slice(0, 200),
+    subject: `New enquiry: ${b.areaLabel}${b.matterLabel ? ` (${b.matterLabel})` : ''}, ${b.urgency}`.slice(0, 200),
     html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">New Leaflegal enquiry</h2><table style="border-collapse:collapse">${rows}</table>`
       + `<p style="color:#5a6f66;font-size:13px">${notes.join('<br>')}<br>This email contains special category or criminal offence data. Do not forward it beyond the firm you introduce.</p></div>`,
   };
@@ -118,30 +115,27 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   const raw = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
 
-  // Only the fields we expect, trimmed and capped.
+  const utm = raw.utm && typeof raw.utm === 'object' ? Object.fromEntries(Object.entries(raw.utm).slice(0, 20).map(([k, v]) => [t(k, 40), t(v, 200)])) : {};
+  const hdr = (k) => { try { return decodeURIComponent(String(req.headers[k] || '')); } catch { return ''; } };
+  const built = buildLead(raw, { utm, geo: { country: hdr('x-vercel-ip-country'), postal: hdr('x-vercel-ip-postal-code') } });
+  if (built.error) return res.status(400).json(built);
+  const lead = built.lead, c = lead.contact;
+  // Fields the email and Meta helpers use.
   const b = {
-    area: t(raw.area, 60), matter: t(raw.matter, 80), audience: raw.audience === 'business' ? 'business' : 'individual', debtor: t(raw.debtor, 40),
-    urgency: t(raw.urgency, 40), postcode: t(raw.postcode, 10).toUpperCase(), privatePay: t(raw.privatePay, 40), summary: t(raw.summary, 500),
-    business: t(raw.business, 160), firstName: t(raw.firstName, 60), lastName: t(raw.lastName, 80), fullName: t(raw.fullName, 140),
-    email: t(raw.email, 200), phone: t(raw.phone, 20), phoneConfirmed: !!raw.phoneConfirmed, emailConfirmed: !!raw.emailConfirmed,
-    consentTerms: raw.consentTerms === true, consentShare: raw.consentShare === true, consentVersion: t(raw.consentVersion, 20), consentAt: t(raw.consentAt, 40), consentText: t(raw.consentText, 1000),
-    marketing: raw.marketing === true, fbc: t(raw.fbc, 300), fbp: t(raw.fbp, 120), eventId: t(raw.eventId, 80),
-    website: t(raw.website, 200), _ms: Number(raw._ms) || 0, page: t(raw.page, 500), referrer: t(raw.referrer, 500),
-    utm: raw.utm && typeof raw.utm === 'object' ? Object.fromEntries(Object.entries(raw.utm).slice(0, 20).map(([k, v]) => [t(k, 40), t(v, 200)])) : {}, first: raw.first && typeof raw.first === 'object' ? raw.first : null,
+    ...c, area: lead.area, areaLabel: lead.areaLabel, matterLabel: lead.matterLabel, audience: lead.audience, urgency: lead.urgency, deadline: lead.deadline,
+    postcode: lead.postcode || (lead.locationSource === 'ip' ? 'Not asked' : 'Outside the UK'), region: lead.region, privatePay: lead.privatePay, summary: lead.summary, answers: lead.answers,
+    valueText: lead.value ? `${lead.valueLabel}: ${lead.value.band}` : '', businessText: lead.business ? [lead.business.name, lead.business.number].filter(Boolean).join(', ') : '',
+    tagsText: lead.tags.join(', '), consentAt: lead.consent.at, consentVersion: lead.consent.version, consentText: lead.consent.text, consentTerms: lead.consent.terms, consentShare: lead.consent.share,
+    phoneConfirmed: !!raw.phoneConfirmed, emailConfirmed: !!raw.emailConfirmed, marketing: lead.consent.marketing,
+    fbc: t(raw.fbc, 300), fbp: t(raw.fbp, 120), eventId: t(raw.eventId, 80), website: t(raw.website, 200), _ms: Number(raw._ms) || 0,
+    page: lead.source.page, referrer: lead.source.referrer, utm, first: lead.source.first,
   };
 
-  if (!b.firstName || !b.lastName) return res.status(400).json({ field: 'fullName', error: 'Please enter your first and last name' });
-  if (!b.consentTerms || !b.consentShare) return res.status(400).json({ error: 'Please tick both boxes so we can pass your enquiry to a law firm.' });
-  if (!AREAS.includes(b.area) || !URGENCY.includes(b.urgency)) return res.status(400).json({ error: 'Please go back and answer every question.' });
-  if (!POSTCODE.test(b.postcode)) return res.status(400).json({ error: 'Please go back and enter a full UK postcode.' });
-  // Out of scope: the form stops these first, so these only catch tampered requests.
-  if (b.area === 'Recovering a business debt' && (b.audience !== 'business' || b.debtor !== 'Another business')) return res.status(400).json({ error: 'We can only help businesses recover money owed by other businesses.' });
-  if (EW_ONLY.includes(b.area) && NOT_EW.test(b.postcode)) return res.status(400).json({ error: 'For this area of law we can only help with matters in England and Wales.' });
-  if (b.audience === 'individual' && !PAY.includes(b.privatePay)) return res.status(400).json({ error: 'The firms we work with charge privately for their work.' });
-  if (b.area === 'Not sure yet' && !b.summary) return res.status(400).json({ error: 'Please go back and tell us briefly what you need help with.' });
-  if (!/^\+447\d{9}$/.test(b.phone)) return res.status(400).json({ field: 'phone', error: 'Please enter a UK mobile number, e.g. 07700 900123' });
-  if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(b.email)) return res.status(400).json({ field: 'email', error: 'Please enter a valid email address' });
-  if (!(await canReceiveMail(b.email.split('@')[1]))) return res.status(400).json({ field: 'email', error: "That email domain doesn't seem to accept mail. Please check it." });
+  if (!c.firstName || !c.lastName) return res.status(400).json({ field: 'fullName', error: 'Please enter your first and last name' });
+  if (!b.consentTerms || !b.consentShare) return res.status(400).json({ error: 'Please refresh the page and try again.' });
+  if (!/^\+447\d{9}$/.test(c.phone)) return res.status(400).json({ field: 'phone', error: 'Please enter a UK mobile number, for example 07700 900123' });
+  if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(c.email)) return res.status(400).json({ field: 'email', error: 'Please enter a valid email address' });
+  if (!(await canReceiveMail(c.email.split('@')[1]))) return res.status(400).json({ field: 'email', error: "That email domain doesn't seem to accept mail. Please check it." });
 
   // Bot check first, before any paid lookups (Bird).
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
@@ -166,14 +160,26 @@ export default async function handler(req, res) {
   const meta = flags.length ? 'skipped: flagged' : !b.marketing ? 'skipped: no marketing consent' : await sendMetaLead(b, req);
   console.log('meta lead', meta);
 
+  finishLead(lead, { pc, ec, flags, phoneConfirmed: b.phoneConfirmed, emailConfirmed: b.emailConfirmed });
+  b.grade = `${lead.quality.grade} (${lead.quality.score})`;
+
+  // The lawyer platform stores, prices and routes the lead. Flagged leads are stored hidden for review, never sold.
+  let stored = null;
   try {
-    const team = teamEmail(b, checkLine);
-    if (flags.length) team.subject = `[${test ? 'TEST' : 'CHECK'}] ${team.subject}`;
-    await send(team);
-  } catch (e) {
-    console.error('enquiry email', e.message);
-    return res.status(500).json({ error: 'Sorry, something went wrong sending your details.' });
+    const mod = await import('./_lib/leads.js').catch((e) => { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e; return null; });
+    if (mod?.storeLead) stored = await mod.storeLead(lead);
+  } catch (e) { console.error('storeLead', e.message); }
+
+  if (!stored) {
+    try {
+      const team = teamEmail(b, checkLine);
+      if (flags.length) team.subject = `[${test ? 'TEST' : 'CHECK'}] ${team.subject}`;
+      await send(team);
+    } catch (e) {
+      console.error('enquiry email', e.message);
+      return res.status(500).json({ error: 'Sorry, something went wrong sending your details.' });
+    }
   }
   if (!flags.length) await send(confirmEmail(b)).catch((e) => console.error('confirmation email', e.message));
-  return res.status(200).json({ ok: true, meta: { lead: !flags.length } });
+  return res.status(200).json({ ok: true, id: stored?.id || null, meta: { lead: !flags.length } });
 }
