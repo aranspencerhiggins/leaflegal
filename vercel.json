@@ -19,6 +19,11 @@
       "source": "/index-b",
       "destination": "/",
       "permanent": false
+    },
+    {
+      "source": "/legal-services/:path+",
+      "destination": "/:path+",
+      "permanent": true
     }
   ],
   "headers": [

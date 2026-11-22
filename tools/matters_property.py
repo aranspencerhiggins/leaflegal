@@ -1,4 +1,4 @@
-# Matter pages: property (conveyancing, lease extensions). Each becomes /legal-services/<area>/<matter> plus a partner page
+# Matter pages: property (conveyancing, lease extensions). Each becomes /<area>/<matter> plus a partner page
 # /partners/<area>-leads/<matter>. Plain, factual copy. No em dashes. No fee figures or promises: the firm quotes.
 
 def m(slug, name, short, intro, help, ready, faqs, firm):

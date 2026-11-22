@@ -36,10 +36,10 @@ def short_name(n):
     return SHORT_NAMES.get(n, n)
 
 
-# ---------------------------------------------------------------- client matter pages: /legal-services/<area>/<matter>
+# ---------------------------------------------------------------- client matter pages: /<area>/<matter>
 for a_slug, matters in MAT.items():
     a = AREA[a_slug]
-    os.makedirs(f'{PUB}/legal-services/{a_slug}', exist_ok=True)
+    os.makedirs(f'{PUB}/{a_slug}', exist_ok=True)
     imm = a_slug == 'immigration'
     for i, mt in enumerate(matters):
         url = M_URL(a_slug, mt['slug'])
