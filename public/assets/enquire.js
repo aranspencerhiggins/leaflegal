@@ -46,8 +46,7 @@ function init() {
   // "Not sure" has no qualifying questions of its own: they tell us in a sentence or two.
   const UNSURE = 'not-sure';
   const AREA_STEP = { id: 'area', q: 'What do you need help with?', type: 'single', grid: true, icons: true,
-    options: AREAS.map((x) => ({ v: x.slug, label: x.label === 'Conveyancing' ? 'Buying or selling a home' : x.label, sub: x.short, ico: x.icon }))
-      .concat({ v: UNSURE, label: 'Not sure', sub: 'Tell us what is happening', ico: 'other' }) };
+    options: AREAS.map((x) => ({ v: x.slug, label: x.label === 'Conveyancing' ? 'Buying or selling a home' : x.label, sub: x.short, ico: x.icon })) };
   const UNSURE_STEPS = [{ ...SHARED_STEPS.summary, q: 'What do you need help with?', optional: false }, SHARED_STEPS.urgency,
     { ...SHARED_STEPS.pay, note: 'fees' }, SHARED_STEPS.details];
 
