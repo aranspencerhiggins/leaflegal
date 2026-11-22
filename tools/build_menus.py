@@ -4,7 +4,7 @@ import matters_content as MC, partner_seo_content as PS, client_guides as CG, ph
 
 MAT = MC.MATTERS
 AREA = AC.BY_SLUG
-M_URL = lambda a, s: f'/legal-services/{a}/{s}'
+M_URL = lambda a, s: f'/{a}/{s}'
 CITY_URL = lambda c: f'/solicitors/{c}'
 LOC_URL = lambda c, a: f'/solicitors/{c}/{a}'
 CITY = {c[0]: c for c in MC.CITIES}

@@ -6,7 +6,7 @@ from matters_business import MOTORING, LICENSING, DEBT
 MATTERS = {'conveyancing': CONVEYANCING, 'lease-extensions': LEASE, 'family-law': FAMILY, 'immigration': IMMIGRATION,
            'motoring-offences': MOTORING, 'licensing': LICENSING, 'debt-recovery': DEBT}
 
-# Location pages: /solicitors/<city> hub and /legal-services/<area>/<city>. England and Wales only (Leaflegal's scope).
+# Location pages: /solicitors/<city> hub and /<area>/<city>. England and Wales only (Leaflegal's scope).
 # Immigration is deliberately left out: introductions are national and not tied to a town.
 LOCAL_AREAS = ['conveyancing', 'family-law', 'motoring-offences', 'licensing', 'debt-recovery', 'lease-extensions']
 # (slug, name, region, nearby places)

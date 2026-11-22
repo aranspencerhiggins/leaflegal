@@ -291,7 +291,7 @@ SITE = 'https://leaflegal.co'
 EMAIL = 'hello@leaflegal.co'
 LOGO_LIGHT = asset('Leaflegal_Logo_White')       # on dark surfaces
 LOGO_DARK = asset('Leaflegal_Logo_Deep_Green')   # on light surfaces
-AREA_URL = lambda s: f'/legal-services/{s}'
+AREA_URL = lambda s: f'/{s}'
 # homepage card / ?area= value -> the option in the form's first step (assets/apply.js)
 PURPOSE = {a['name']: a['form'] for a in AC.AREAS}
 
@@ -514,7 +514,7 @@ for a in AC.AREAS:
         cs_links(f'{LOCAL_NAME[a["slug"]]} near you', [(LOC_URL(c[0], a['slug']), c[1]) for c in MC.CITIES]) if a['slug'] in MC.LOCAL_AREAS else '',
         section('<h2 class="cs-h2 cs-center">Other legal services</h2>' + area_cards(others), cls='section cs-sec'),
     ])
-    page(f'{PUB}/legal-services/{a["slug"]}.html', a['title'], a['desc'], compact(body), ld(faq_ld(a['faqs']), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>', backup=False)
+    page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), ld(faq_ld(a['faqs']), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>', backup=False)
 
 hub = (page_head('Legal services', 'The areas of law we introduce people and businesses to. Pick one to find out more, or answer a few quick questions and we will do the matching.')
        + TRUST_STRIP + section(area_cards())
