@@ -24,12 +24,20 @@
 .ap-lp.ap-has-photo .ap-wrap{position:relative;z-index:1}
 @media (max-width:767px){.ap-lp-photo{bottom:auto;height:420px}
   .ap-lp-photo::after{background:linear-gradient(180deg,rgba(24,48,42,.5) 0%,rgba(24,48,42,.72) 55%,#18302a 100%)}}
-/* Enquiry pages on desktop, headline pinned to the top beside the form (not centred halfway down), and long option lists kept compact */
-@media (min-width:1000px){.ap-lp.ap-enq{padding:64px 0 88px}
-  .ap-enq .ap-lp-grid{align-items:start}
-  .ap-enq .ap-lp-head{position:sticky;top:40px;padding-top:44px}
-  .ap-enq .ap-q{font-size:28px;margin-bottom:22px}
-  .ap-enq .ap-opts:has(>.ap-opt:nth-child(6)){gap:8px}
-  .ap-enq .ap-opts:has(>.ap-opt:nth-child(6)) .ap-opt{padding:7px 14px 7px 8px;border-radius:13px;gap:12px;min-height:0}
-  .ap-enq .ap-opts:has(>.ap-opt:nth-child(6)) .ap-opt b{font-size:15.5px;line-height:1.25}
-  .ap-enq .ap-opts:has(>.ap-opt:nth-child(6)) .ap-ico{width:32px;height:32px;border-radius:9px}}
+/* Enquiry pages, stacked layout. Headline and four ticks (2x2) on top, a wide form below */
+.ap-lp.ap-enq .ap-lp-grid{display:block}
+.ap-enq .ap-lp-head{text-align:center;margin:0 auto 26px;max-width:760px}
+.ap-enq .ap-card{max-width:960px;margin:0 auto}
+@media (min-width:768px){.ap-lp.ap-enq{padding:72px 0 96px}
+  .ap-enq .ap-lp-head{margin:28px auto 40px}
+  .ap-enq .ap-body,.ap-enq .ap-head{padding-left:0;padding-right:0}
+  .ap-enq .ap-lp-head h1{font-size:46px;margin:0 0 26px}
+  .ap-enq .ap-lp-head ul{display:grid;grid-template-columns:repeat(2,max-content);justify-content:center;column-gap:40px;row-gap:14px;margin:0 auto;width:auto}
+  .ap-enq .ap-lp-head li{font-size:17px;align-items:center}
+  .ap-enq .ap-card{padding-left:clamp(28px,4vw,48px);padding-right:clamp(28px,4vw,48px)}
+  .ap-enq .ap-opts{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .ap-enq .ap-opt.wide{grid-column:auto}
+  .ap-enq .ap-opt{min-height:0;padding:12px 16px}
+  .ap-enq .ap-opts>.ap-opt:last-child:nth-child(odd){grid-column:1/-1}}
+@media (max-width:767px){.ap-enq .ap-lp-head ul{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}
+  .ap-enq .ap-lp-head li{width:auto;max-width:none;font-size:12.5px;line-height:1.25;padding:7px 10px 7px 7px;border-radius:12px;white-space:normal}}

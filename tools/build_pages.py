@@ -513,7 +513,7 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
-APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=5" rel="stylesheet"/>'
+APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=6" rel="stylesheet"/>'
 APPLY_JS = '<script type="module" src="/assets/enquire.js?v=7"></script>'
 
 
@@ -761,7 +761,7 @@ for a in AC.AREAS:
     os.makedirs(f'{PUB}/enquire', exist_ok=True)
     page(f'{PUB}/enquire/{a["slug"]}.html', f'{a["name"]} Enquiry | {BRAND}',
          f'Answer a few quick questions about your {a["name"].lower()} matter and we will introduce you to one regulated firm. No obligation to proceed.',
-         lp_body(ENQ_H1[a['slug']], ('No obligation to proceed', 'One regulated firm', 'UK wide' if imm_a or a.get('uk_wide') else 'England and Wales'), form_card(a['slug']), cls='ap-enq'),
+         lp_body(ENQ_H1[a['slug']], ('No obligation', 'One regulated firm', 'UK wide' if imm_a or a.get('uk_wide') else 'England and Wales', 'Details kept private'), form_card(a['slug']), cls='ap-enq'),
          APPLY_HEAD + '<meta name="robots" content="noindex"/>', APPLY_JS, header=LP_HEADER, backup=False)
     page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), APPLY_HEAD + ld(faq_ld([qa for _, g in faq_groups(seo_faqs(AREA_URL(a['slug'])) + a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
 
