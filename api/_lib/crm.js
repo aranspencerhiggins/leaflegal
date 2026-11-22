@@ -142,7 +142,7 @@ export async function sendCrmEmail(c, subject, body, { by = null, flowStep = nul
   await resendSlot();
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST', headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(8000),
-    body: JSON.stringify({ from: `Leaflegal <${process.env.CRM_FROM || process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, to: [c.email], reply_to: REPLY_TO(), subject: subj, html, text,
+    body: JSON.stringify({ from: `Leaflegal <${process.env.CRM_FROM || process.env.ENQUIRY_FROM || 'hello@leaflegal.co'}>`, to: [c.email], reply_to: REPLY_TO(), subject: subj, html, text,
       headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' }, tags: [{ name: 'kind', value: flowStep ? 'crm_flow' : 'crm' }] }),
   }).catch((e) => ({ ok: false, text: async () => e.message }));
   if (!r.ok) { const t = await r.text(); console.error('crm resend', r.status, t); throw new Error('The email couldn’t be sent. Please try again.'); }

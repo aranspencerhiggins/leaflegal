@@ -374,6 +374,10 @@ export const unsuppress = (email) => db(`email_suppressions?email=eq.${encodeURI
 // Invites, round-ups and lead emails to invited firms go from BULK_FROM (alerts.leaflegal.co) when it's set, so cold-email
 // complaints don't touch the reputation of leaflegal.co, which carries account and lead emails. Otherwise the usual address.
 export const BULK_FROM = () => process.env.BULK_FROM || null;
+// Senders: platform emails to firms (alerts, purchases, account) come from alerts.leaflegal.co; emails to the public
+// (enquiry confirmations, matched-firm emails, contact and partner forms) from leaflegal.co. Both domains are verified in Resend.
+export const ALERTS_FROM = () => `Leaflegal <${process.env.ALERTS_FROM || 'alerts@alerts.leaflegal.co'}>`;
+export const MAIL_FROM = () => `Leaflegal <${process.env.ENQUIRY_FROM || 'hello@leaflegal.co'}>`;
 export async function sendEmail(to, subject, html, replyTo, attachments, unsub, scheduledAt, retry = true, from = null) {
   if (!process.env.RESEND_API_KEY || !to?.length) return false;
   if (retry) { const blocked = await suppressedSet(to); if (blocked.size) to = to.filter((e) => !blocked.has(String(e).trim().toLowerCase())); if (!to.length) return 'suppressed'; }
@@ -381,7 +385,7 @@ export async function sendEmail(to, subject, html, replyTo, attachments, unsub, 
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: from || `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}), ...(attachments ? { attachments } : {}), ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
+    body: JSON.stringify({ from: from || ALERTS_FROM(), to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}), ...(attachments ? { attachments } : {}), ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
       // One-click unsubscribe (RFC 8058): Gmail and Outlook show an Unsubscribe button and POST to this link.
       ...(unsub ? { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } } : {}) }),
     signal: AbortSignal.timeout(6000),
@@ -451,7 +455,7 @@ export async function sendBatch(items, fromOverride = null) {
   const blocked = await suppressedSet(items.flatMap((x) => x.to));
   items = items.filter((x) => !x.to.some((e) => blocked.has(String(e).trim().toLowerCase())));
   if (!items.length) return 0;
-  const from = fromOverride || `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`;
+  const from = fromOverride || ALERTS_FROM();
   let ok = 0;
   for (let i = 0; i < items.length; i += 100) {
     const chunk = items.slice(i, i + 100).map(({ to, subject, opts }) => ({ from, to, subject, html: emailHtml(opts), ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
@@ -1050,7 +1054,7 @@ ${m.about ? `<div style="margin-top:10px;font-size:14px;line-height:1.6;color:#2
       ['They explain their fees', 'The firm will tell you how they work and what they charge before you agree to anything.'],
       ['You decide', 'You choose whether to instruct them. There is no obligation.']],
     note: 'Leaflegal receives a fee from the firm for introducing you. It does not change what the firm charges you.',
-    footer: `Leaflegal introduces people and businesses to law firms. Leaflegal is not a law firm and does not give legal advice. Any arrangement is between you and the firm, which is responsible for the advice it gives you.</p><p style="margin:0 0 12px">You're receiving this because you asked Leaflegal to put you in touch with a law firm.`, nav: false, replyTo: 'hello@leaflegal.co' };
+    footer: `Leaflegal introduces people and businesses to law firms. Leaflegal is not a law firm and does not give legal advice. Any arrangement is between you and the firm, which is responsible for the advice it gives you.</p><p style="margin:0 0 12px">You're receiving this because you asked Leaflegal to put you in touch with a law firm.`, nav: false, replyTo: 'hello@leaflegal.co', from: MAIL_FROM() };
 }
 
 // Previews for the Profile tab: the real email, and the form's thank-you page as the client sees it.

@@ -146,7 +146,7 @@ export default async function handler(req, res) {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`,
+      from: `Leaflegal <${process.env.ENQUIRY_FROM || 'hello@leaflegal.co'}>`,
       to: (process.env.ENQUIRY_TO || 'hello@leaflegal.co').split(','),
       reply_to: b.email,
       subject: `${flags.length ? '[Check] ' : ''}Law firm enquiry from ${b.company}${b.volume ? ` (${b.volume} leads a month)` : ''}`.slice(0, 200),

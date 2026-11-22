@@ -1320,12 +1320,12 @@ await t('pause stops an upload, resume re-times what is left at the new pace, le
 });
 
 await t('invites come from BULK_FROM when set; account emails stay on the main address', async () => {
-  const was = process.env.BULK_FROM; process.env.BULK_FROM = 'Leaflegal <invites@alerts.leaflegal.co>';
+  const was = process.env.BULK_FROM; process.env.BULK_FROM = 'Leaflegal <invites@outreach.leaflegal.co>';
   try {
     await api('admin-invite', { method: 'POST', token: tok.admin, body: { name: 'Bea Bulk', email: 'bea@bulk.test', kind: 'cold' } });
-    assert.equal(mails.find((m) => m.to.includes('bea@bulk.test')).from, 'Leaflegal <invites@alerts.leaflegal.co>');
+    assert.equal(mails.find((m) => m.to.includes('bea@bulk.test')).from, 'Leaflegal <invites@outreach.leaflegal.co>');
     reset(); await P.lowCredits(people[BROKER], 400, 60);
-    assert.ok(mails.length && !mails.some((m) => /alerts\.leaflegal/.test(m.from)), 'account email sent from the bulk address');
+    assert.ok(mails.length && !mails.some((m) => /outreach\.leaflegal/.test(m.from)), 'account email sent from the bulk address');
   } finally { if (was === undefined) delete process.env.BULK_FROM; else process.env.BULK_FROM = was; }
 });
 

@@ -9,7 +9,7 @@ import { buildLead, finishLead } from './_lib/lead-schema.js';
 // the team only if that fails, and the person gets a short confirmation.
 // Matter details are special category or criminal offence data (UK GDPR Art. 9/10): they go in the team email only,
 // never to Meta or LinkedIn, and never in the confirmation to the person (a mistyped address must not leak them).
-// Env: RESEND_API_KEY (required), ENQUIRY_TO (default aran@verticalbrands.co), ENQUIRY_FROM (default onboarding@resend.dev).
+// Env: RESEND_API_KEY (required), ENQUIRY_TO (default aran@verticalbrands.co), ENQUIRY_FROM (default hello@leaflegal.co).
 // Meta Conversions API (only with marketing consent): META_CAPI_TOKEN, META_PIXEL_ID, META_TEST_EVENT_CODE (optional).
 
 // The form's areas, matters and questions live in public/assets/form-options.js. The lead is rebuilt and checked from
@@ -80,7 +80,7 @@ async function send(msg) {
   await resendSlot();
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, ...msg }),
+    body: JSON.stringify({ from: `Leaflegal <${process.env.ENQUIRY_FROM || 'hello@leaflegal.co'}>`, ...msg }),
   });
   if (!r.ok) throw new Error(`resend ${r.status} ${await r.text()}`);
 }
