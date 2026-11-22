@@ -16,18 +16,27 @@ const jwt = (sub, { key = good, exp = 3600, role = 'authenticated', kid = 'k1' }
   return `${h}.${p}.${sign('sha256', Buffer.from(`${h}.${p}`), { key: createPrivateKey(key.privateKey.export({ format: 'pem', type: 'pkcs8' })), dsaEncoding: 'ieee-p1363' }).toString('base64url')}`;
 };
 
+// ---- DNS: no real lookups in tests
+{ const { promises: dns } = await import('node:dns');
+  dns.lookup = async (host) => [{ address: /^[\d.]+$|^\[?[0-9a-f:]+\]?$/i.test(host) ? host.replace(/[[\]]/g, '') : /localhost|internal/.test(host) ? '10.0.0.1' : '93.184.216.34', family: 4 }]; }
+
 // ---- mock world
 const ADMIN = 'aaaaaaaa-0000-4000-8000-000000000001', BROKER = 'bbbbbbbb-0000-4000-8000-000000000002', NEWB = 'cccccccc-0000-4000-8000-000000000003', UNV = 'eeeeeeee-0000-4000-8000-000000000005';
 const V = new Date().toISOString();
+const SRA = [{ id: 'SRA', number: '612345' }];
+const ALL_AREAS = ['conveyancing', 'immigration', 'family-law', 'debt-recovery', 'motoring-offences', 'licensing', 'lease-extensions'];
 const people = {
   [ADMIN]: { id: ADMIN, email_verified_at: V, email: 'admin@test', company: 'Leaflegal', approved: true, is_admin: true, credits: 0, filters: {} },
-  [BROKER]: { id: BROKER, email_verified_at: V, email: 'jo@broker.test', company: 'Broker Ltd', approved: true, is_admin: false, credits: 500, mode: 'manual', notify: true, filters: {}, stripe_customer: 'cus_1' },
-  [NEWB]: { id: NEWB, email_verified_at: V, email: 'new@broker.test', company: 'New Ltd', approved: false, is_admin: false, credits: 0, filters: {} },
-  [UNV]: { id: UNV, email: 'unv@broker.test', company: 'Unconfirmed Ltd', approved: true, is_admin: false, credits: 900, filters: {} },
+  [BROKER]: { id: BROKER, email_verified_at: V, email: 'jo@firm.test', company: 'Firm LLP', approved: true, is_admin: false, credits: 500, mode: 'manual', notify: true, filters: { areas: ALL_AREAS }, stripe_customer: 'cus_1', regulators: SRA },
+  [NEWB]: { id: NEWB, email_verified_at: V, email: 'new@firm.test', company: 'New Ltd', approved: false, is_admin: false, credits: 0, filters: {}, regulators: SRA },
+  [UNV]: { id: UNV, email: 'unv@firm.test', company: 'Unconfirmed Ltd', approved: true, is_admin: false, credits: 900, filters: { areas: ALL_AREAS }, regulators: SRA },
 };
-const leadRow = (o = {}) => ({ id: 7, created_at: new Date().toISOString(), amount: 50000, purpose: 'Cash flow', timeline: 'Within 2 weeks', structure: 'Limited company', turnover: '£250k to £500k',
-  trading: '2 to 5 years', credit: 'No', debt: 'No', business: 'SECRET TRADING LTD', full_name: 'Secret Person', email: 'secret@trading.test', phone: '+447700900999', price: 95, buyer: null,
-  company: { number: '01234567', type: 'ltd', incorporated: '2015-01-01', address: '1 Secret Street', director: 'Secret Person', directorListed: true, profile: { title: 'SECRET TRADING LTD', locality: 'Leeds', industries: ['Construction'] } }, ...o });
+// A business debt recovery enquiry (so the Companies House masking is covered too).
+const leadRow = (o = {}) => ({ id: 7, created_at: new Date().toISOString(), area: 'debt-recovery', area_label: 'Recovering a business debt', matter: 'unpaid-invoices', matter_label: 'Unpaid invoices',
+  audience: 'business', urgency: 'Within a month', deadline: null, postcode: 'LS1 4AB', postcode_district: 'LS1', postcode_area: 'LS', region: 'Yorkshire and the Humber', country: 'england',
+  value_band: '£40,000', value_label: 'Amount owed', value_min: 40000, value_max: 40000, private_pay: 'yes', answers: [{ id: 'age', q: 'How old is the debt?', a: '3 to 6 months' }], tags: [],
+  grade: 'B', score: 64, summary: 'SECRET SUMMARY', business_name: 'SECRET TRADING LTD', company_number: '01234567', full_name: 'Secret Person', email: 'secret@trading.test', phone: '+447700900999', price: 50, buyer: null,
+  company: { number: '01234567', type: 'ltd', incorporated: '2015-01-01', address: '1 Secret Street', profile: { title: 'SECRET TRADING LTD', locality: 'Leeds', industries: ['Construction'] } }, ...o });
 const storedInvites = {};
 let patches = [], returnRow = null;
 let waived = null;
@@ -96,6 +105,7 @@ globalThis.fetch = async (url, o = {}) => {
   if (u.includes('/rest/v1/brokers?id=eq.')) { const id = u.match(/id=eq\.([0-9a-f-]+)/)[1]; return J(people[id] ? [m === 'PATCH' ? { ...people[id], ...JSON.parse(o.body || '{}') } : people[id]] : []); }
   if (u.includes('/rest/v1/brokers?stripe_customer=eq.')) { const cus = u.match(/stripe_customer=eq\.([^&]+)/)[1]; return J(Object.values(people).filter((p) => p.stripe_customer === cus)); }
   if (u.includes('/rest/v1/brokers?approved=eq.true')) return J(Object.values(people).filter((p) => p.approved && !p.is_admin));
+  if (m === 'GET' && u.includes('/rest/v1/brokers?select=')) return J(Object.values(people));
   if (u.includes('/rest/v1/agreements')) return J(m === 'POST' ? [{ id: 1, created_at: new Date().toISOString(), version: 'v', ...JSON.parse(o.body) }] : signedAgreement ? [{ id: 1, broker: BROKER }] : []);
   if (u.includes('/rest/v1/returns')) { if (m !== 'GET') patches.push({ u, b: JSON.parse(o.body || '{}') }); return J(m === 'GET' && returnRow ? [returnRow] : m === 'POST' ? [{}] : []); }
   if (u.includes('/rest/v1/leads') && m === 'PATCH') {
@@ -206,12 +216,12 @@ await t('signup: bot honeypot gets a fake success, no account made', async () =>
   assert.equal(r.c, 200); assert.ok(!calls.some((c) => c.includes('/auth/v1/admin/users')));
 });
 await t('signup: new broker is created unapproved, you get the approve email', async () => {
-  const r = await api('signup', { method: 'POST', body: { email: 'new@broker.test', password: 'Long-enough-123', company: 'New Ltd', contactName: 'Sam Lee', phone: '07700 900125', approved: true, is_admin: true, credits: 9999 } });
+  const r = await api('signup', { method: 'POST', body: { email: 'new@firm.test', password: 'Long-enough-123', company: 'New Ltd', contactName: 'Sam Lee', phone: '07700 900125', approved: true, is_admin: true, credits: 9999 } });
   assert.equal(r.c, 200);
   const insert = calls.find((c) => c.startsWith('POST') && c.includes('/rest/v1/brokers'));
   assert.ok(insert, 'broker row inserted');
   assert.ok(mails.some((m) => m.subject.includes('signup to approve') && m.html.includes('action=approve')), 'approve email');
-  assert.ok(mails.some((m) => m.to.includes('new@broker.test') && m.html.includes('action=verify-email')), 'confirm-your-email email');
+  assert.ok(mails.some((m) => m.to.includes('new@firm.test') && m.html.includes('action=verify-email')), 'confirm-your-email email');
 });
 await t('signup ignores approved / is_admin / credits sent by the browser', async () => {
   // the insert body is built field by field on the server
@@ -330,7 +340,8 @@ console.log('\nBuying leads');
 await t('opportunities never include name, email, phone, business or company number', async () => {
   const r = await api('opportunities', { token: tok.broker }); assert.equal(r.c, 200);
   const s = JSON.stringify(r.b);
-  for (const secret of ['Secret Person', 'secret@trading.test', '+447700900999', 'SECRET TRADING', '01234567', '1 Secret Street']) assert.ok(!s.includes(secret), `leaked ${secret}`);
+  for (const secret of ['Secret Person', 'secret@trading.test', '+447700900999', 'SECRET TRADING', '01234567', '1 Secret Street', 'SECRET SUMMARY', 'LS1 4AB']) assert.ok(!s.includes(secret), `leaked ${secret}`);
+  assert.equal(r.b.leads[0].has_summary, true); assert.equal(r.b.leads[0].postcode_district, 'LS1');
   assert.ok(r.b.leads[0].companies_house?.type, 'Companies House preview present');
 });
 await t('preview gives only the incorporation year, first initial, no email domain letters', async () => {
@@ -339,7 +350,7 @@ await t('preview gives only the incorporation year, first initial, no email doma
 });
 await t('brokers not yet approved see no contact hints or company details', async () => {
   const l = (await api('opportunities', { token: tok.newb })).b.leads[0];
-  assert.equal(l.contact, null); assert.equal(l.companies_house, null); assert.ok(l.amount && l.price);
+  assert.equal(l.contact, null); assert.equal(l.companies_house, null); assert.ok(l.matter && l.price);
 });
 await t('dashboard top leads are masked too', async () => {
   const s = JSON.stringify((await api('dashboard', { token: tok.broker })).b);
@@ -366,7 +377,7 @@ await t('My leads only queries the signed-in broker\'s leads', async () => {
 await t('notes, stages and refunds only work on your own leads', async () => {
   leads = [leadRow({ buyer: ADMIN, bought_at: new Date().toISOString() })];
   assert.equal((await api('note', { method: 'POST', token: tok.broker, body: { id: 7, body: 'hi' } })).c, 404);
-  assert.equal((await api('stage', { method: 'POST', token: tok.broker, body: { id: 7, stage: 'funded' } })).c, 404);
+  assert.equal((await api('stage', { method: 'POST', token: tok.broker, body: { id: 7, stage: 'instructed' } })).c, 404);
   assert.equal((await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'Phone number is not in service' } })).c, 404);
 });
 await t('refund: only the allowed reasons, only within 72 hours', async () => {
@@ -378,12 +389,13 @@ await t('refund: only the allowed reasons, only within 72 hours', async () => {
   assert.equal((await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'Phone number is not in service' } })).c, 200);
   assert.ok(!rpcCalls.some((c) => c.fn === 'add_credits'), 'a request must not refund by itself');
 });
-await t('refund reasons: not-interested is logged as auto-declined feedback, figures need details', async () => {
+await t('refund reasons: not-interested is logged as auto-declined feedback, outside the area needs details', async () => {
   leads = [leadRow({ buyer: BROKER, bought_at: new Date().toISOString() })];
-  const no = await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'They’re no longer interested', details: 'Went with their bank' } });
+  const no = await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'They’re no longer interested', details: 'Went with another solicitor' } });
   assert.equal(no.c, 200, JSON.stringify(no.b)); assert.equal(no.b.declined, true); assert.match(no.b.note, /nature of lead generation/);
-  assert.equal((await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'Revenue or trading figures don’t match' } })).c, 400);
-  assert.equal((await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'Revenue or trading figures don’t match', details: 'They said revenue is £40k, not £250k+' } })).c, 200);
+  assert.equal((await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'Outside the practice area or region stated' } })).c, 400);
+  assert.equal((await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'Outside the practice area or region stated', details: 'They need a personal injury lawyer, not debt recovery' } })).c, 200);
+  assert.equal((await api('refund', { method: 'POST', token: tok.broker, body: { id: 7, reason: 'Revenue or trading figures don’t match', details: 'old finance reason' } })).c, 400, 'old finance reasons are gone');
 });
 await t('decline a refund: needs a reason, emails it, no credits', async () => {
   returnRow = { id: 3, lead_id: 7, broker: BROKER, status: 'pending', reason: 'x', leads: { price: 95, buyer: BROKER }, brokers: { email: 'b@x.co', company: 'B Ltd' } };
@@ -402,13 +414,18 @@ await t('decline a refund: needs a reason, emails it, no credits', async () => {
   assert.equal((await api('admin-refund', { method: 'POST', token: tok.admin, body: { id: 3, approve: true } })).c, 409, 'lead already moved on');
   returnRow = null;
 });
-await t('relist: takes a sold lead back, fixes figures, 50% off, no auto-discount', async () => {
-  leads = [leadRow({ buyer: BROKER, bought_at: new Date().toISOString(), price: 95 })]; patches = [];
-  const r = await api('admin-lead', { method: 'POST', token: tok.admin, body: { id: 7, op: 'relist', turnover: '£50k to £100k', trading: '1 to 2 years', price: 'half' } });
+await t('relist: takes a sold lead back, fixes the matter and grade, 50% off, no auto-discount', async () => {
+  leads = [leadRow({ buyer: BROKER, bought_at: new Date().toISOString(), price: 95, stage: 'instructed', instructed_value: 4000 })]; patches = [];
+  const r = await api('admin-lead', { method: 'POST', token: tok.admin, body: { id: 7, op: 'relist', matter: 'court-claims', grade: 'C', price: 'half' } });
   assert.equal(r.c, 200, JSON.stringify(r.b)); assert.equal(r.b.price, 48);
   const p = patches.find((x) => x.u.includes('leads?id=eq.7')).b;
-  assert.equal(p.buyer, null); assert.equal(p.turnover, '£50k to £100k'); assert.equal(p.price, 48); assert.equal(p.list_price, 95); assert.equal(p.price_fixed, true); assert.equal(p.stage, 'new');
-  assert.equal((await api('admin-lead', { method: 'POST', token: tok.admin, body: { id: 7, op: 'relist', turnover: '£9bn', price: 'full' } })).c, 400);
+  assert.equal(p.buyer, null); assert.equal(p.grade, 'C'); assert.equal(p.price, 48); assert.equal(p.list_price, 95); assert.equal(p.price_fixed, true); assert.equal(p.stage, 'new'); assert.equal(p.instructed_value, null);
+  assert.ok(!('turnover' in p) && !('trading' in p) && !('funded_amount' in p), 'no finance columns written');
+  assert.equal((await api('admin-lead', { method: 'POST', token: tok.admin, body: { id: 7, op: 'relist', grade: 'Z', price: 'full' } })).c, 400);
+  assert.equal((await api('admin-lead', { method: 'POST', token: tok.admin, body: { id: 7, op: 'relist', matter: 'divorce', price: 'full' } })).c, 400, 'matter must belong to the area');
+  patches = [];
+  const re = await api('admin-lead', { method: 'POST', token: tok.admin, body: { id: 7, op: 'relist', grade: 'A', price: 'recalc' } });
+  assert.equal(re.c, 200); assert.equal(re.b.price, P.price({ ...leads[0], grade: 'A' }), 'recalc uses the new grade');
 });
 await t('suppress a lead’s email, then remove it', async () => {
   leads = [leadRow({})]; const e = leads[0].email.toLowerCase();
@@ -437,8 +454,8 @@ await t('relist straight to another broker, free', async () => {
 await t('sale price: relisted leads aren’t discounted again', async () => {
   const { salePrice } = await import('../api/_lib/platform.js');
   const old = new Date(Date.now() - 10 * 864e5).toISOString();
-  assert.deepEqual(salePrice({ price: 48, list_price: 95, price_fixed: true, created_at: old, turnover: '£50k to £100k' }), { price: 48, list_price: 95, discounted: true });
-  assert.equal(salePrice({ price: 95, price_fixed: false, created_at: old, turnover: '£50k to £100k' }).price, 48);
+  assert.deepEqual(salePrice({ price: 48, list_price: 95, price_fixed: true, created_at: old }), { price: 48, list_price: 95, discounted: true });
+  assert.equal(salePrice({ price: 95, price_fixed: false, created_at: old }).price, 48);
 });
 await t('CRM webhook to internal addresses refused (SSRF)', async () => {
   for (const w of ['http://localhost:3000', 'https://127.0.0.1/x', 'https://169.254.169.254/latest', 'https://10.0.0.1/', 'file:///etc/passwd'])
@@ -452,7 +469,7 @@ await t('settings: several alert/delivery emails and webhooks; bad ones refused'
   assert.equal((await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'auto', webhook_urls: ['https://example.com/a', 'https://127.0.0.1/x'] } })).c, 400);
 });
 await t('delivery: emails and every webhook, each with its own on/off switch', async () => {
-  const b = { id: BROKER, email: 'jo@broker.test', deliver_emails: 'c@x.co, d@x.co', notify_emails: 'a@x.co', webhook_urls: ['https://example.com/a', 'https://example.org/b'] };
+  const b = { id: BROKER, email: 'jo@firm.test', deliver_emails: 'c@x.co, d@x.co', notify_emails: 'a@x.co', webhook_urls: ['https://example.com/a', 'https://example.org/b'] };
   const hooks = () => calls.filter((c) => c.startsWith('POST https://example.')).length;
   const toBroker = () => mails.filter((m) => !/matched with/.test(m.subject));
   await P.deliver(b, leadRow({ buyer: BROKER }));
@@ -463,15 +480,21 @@ await t('delivery: emails and every webhook, each with its own on/off switch', a
   assert.equal(toBroker().length, 1); assert.equal(hooks(), 0);
   reset(); await P.deliver({ ...b, mode: 'manual' }, leadRow({ buyer: BROKER, auto: false }));
   assert.equal(hooks(), 2, 'manual buys go to the webhooks too');
-  assert.deepEqual(P.recipients(b, 'alert'), ['a@x.co']); assert.deepEqual(P.recipients({ email: 'jo@broker.test' }, 'alert'), ['jo@broker.test']);
+  assert.deepEqual(P.recipients(b, 'alert'), ['a@x.co']); assert.deepEqual(P.recipients({ email: 'jo@firm.test' }, 'alert'), ['jo@firm.test']);
 });
-await t('matched business is emailed the broker profile, hidden lines left out', async () => {
+await t('matched client is emailed the firm profile, hidden lines left out, no matter details', async () => {
   reset();
-  const b = { id: BROKER, email: 'jo@broker.test', company: 'Acme Ltd', deliver_on: false, profile: { name: 'Acme Finance', person: 'Jo Patel', phone: '0161 496 0000', whatsapp: '07700 900123', email: 'jo@acme.test', show: { person: true, phone: true, whatsapp: false, email: true } } };
+  const b = { id: BROKER, email: 'jo@firm.test', company: 'Acme Ltd', deliver_on: false, profile: { name: 'Acme Law', person: 'Jo Patel', phone: '0161 496 0000', whatsapp: '07700 900123', email: 'jo@acme.test', show: { person: true, phone: true, whatsapp: false, email: true } } };
   const l = leadRow({ buyer: BROKER }); await P.deliver(b, l);
-  const m = mails.find((x) => /matched with Acme Finance/.test(x.subject));
+  const m = mails.find((x) => /matched with Acme Law/.test(x.subject));
   assert.ok(m, 'matched email sent'); assert.deepEqual(m.to, [l.email]);
   assert.ok(m.html.includes('Jo Patel') && m.html.includes('0161 496 0000') && !m.html.includes('wa.me'), 'shows chosen lines only');
+  for (const x of ['Unpaid invoices', 'SECRET SUMMARY', 'How old is the debt', '3 to 6 months', '£40,000']) assert.ok(!m.html.includes(x) && !m.html.includes(encodeURIComponent(x)), `client email must not include ${x}`);
+  assert.ok(/explain their fees/.test(m.html) && /receives a fee from the firm/.test(m.html) && /not a law firm/.test(m.html), 'fee disclosure and not a law firm');
+  reset(); await P.deliver({ ...b, deliver_on: true }, l);
+  const firm = mails.find((x) => x.to.includes('jo@firm.test') && /^New lead: Secret Person, Unpaid invoices/.test(x.subject));
+  assert.ok(firm && /conflict/i.test(firm.html) && /referral fee/i.test(firm.html), 'firm tips: conflicts and referral fee disclosure');
+  assert.ok(firm && firm.html.includes('SECRET SUMMARY') && firm.html.includes('How old is the debt?'), 'the firm gets the full details');
   assert.deepEqual(P.publicProfile({ company: 'Plain Ltd' }), { company: 'Plain Ltd', person: null, role: null, about: null, logo: null, website: null, phone: null, whatsapp: null, email: null, sms: null });
   const c = P.cleanProfile({ name: 'X', website: 'javascript:alert(1)', email: 'nope', show: { phone: false } }, { logo: 'https://l/x.png' });
   assert.equal(c.website, ''); assert.equal(c.email, ''); assert.equal(c.show.phone, false); assert.equal(c.logo, 'https://l/x.png');
@@ -511,13 +534,13 @@ await t('admin: LinkedIn leads get a cost per lead from LinkedIn spend for their
   const keep = leads, day = new Date().toISOString().slice(0, 10), [y, mo, d] = day.split('-').map(Number);
   leads = [leadRow({ id: 1, source: { utm: { utm_source: 'linkedin', utm_id: '777' } } }), leadRow({ id: 2, source: { utm: { utm_source: 'linkedin', utm_id: '777' } } }), leadRow({ id: 3, source: { utm: {} } })];
   liSpendRows = [{ costInLocalCurrency: '90.00', dateRange: { start: { year: y, month: mo, day: d } }, pivotValues: ['urn:li:sponsoredCampaign:777'] }];
-  process.env.LINKEDIN_ADS_TOKEN = 'li-ads';
+  process.env.LINKEDIN_ADS_TOKEN = 'li-ads'; process.env.LINKEDIN_AD_ACCOUNT = '1';
   try {
     const r = await api('admin', { token: tok.admin });
     assert.deepEqual(r.b.leads.map((l) => [l.id, l.channel, l.ad_cost ?? null]), [[1, 'LinkedIn', 45], [2, 'LinkedIn', 45], [3, 'Direct or unknown', null]]);
     assert.equal(r.b.adStatus.LinkedIn, 'ok');
-    assert.ok(/sponsoredAccount(:|%3A)560716965/.test(liGets[0]), liGets[0]);
-  } finally { delete process.env.LINKEDIN_ADS_TOKEN; leads = keep; liSpendRows = []; }
+    assert.ok(/sponsoredAccount(:|%3A)1\b/.test(liGets[0]), liGets[0]);
+  } finally { delete process.env.LINKEDIN_ADS_TOKEN; delete process.env.LINKEDIN_AD_ACCOUNT; leads = keep; liSpendRows = []; }
 });
 await t('admin: each lead shows where it came from (first page of the visit wins over the form page)', async () => {
   const keep = leads;
@@ -536,8 +559,17 @@ await t('admin: leads for sale totalled at today’s price (1 credit = £1)', as
 });
 console.log('\nLeads coming in');
 const enq = (b) => req(enquiry, { method: 'POST', body: b });
-const form = { firstName: 'Sam', lastName: 'Lee', fullName: 'Sam Lee', business: 'Lee Ltd', consentTerms: true, consentShare: true, phone: '+447700900123', email: 'sam@gmail.com', amount: '£50,000', purpose: 'Cash flow',
-  timeline: 'Within 2 weeks', structure: 'Limited company', turnover: '£250k to £500k', trading: '2 to 5 years', credit: 'No', debt: 'No', _ms: 60000, company: { number: '01234567', status: 'active', type: 'ltd', incorporated: '2015-01-01', director: 'Sam Lee', directorListed: true } };
+// The enquiry form body (api/enquiry.js validates it) and the normalised lead it hands to storeLead (api/_lib/leads.js).
+const form = { firstName: 'Sam', lastName: 'Lee', fullName: 'Sam Lee', business: 'Lee Ltd', consentTerms: true, consentShare: true, phone: '+447700900123', email: 'sam@gmail.com',
+  area: 'Recovering a business debt', matter: 'unpaid-invoices', audience: 'business', debtor: 'Another business', urgency: 'Within a month', postcode: 'LS1 4AB', summary: 'Two invoices unpaid since June.', _ms: 60000 };
+const lead = { area: 'debt-recovery', areaLabel: 'Recovering a business debt', matter: 'unpaid-invoices', matterLabel: 'Unpaid invoices', audience: 'business', urgency: 'Within a month',
+  postcode: 'ls14ab', region: 'Yorkshire and the Humber', country: 'england', value: { band: '£40,000', min: 40000, max: 40000, label: 'Amount owed' }, privatePay: 'Yes',
+  business: { name: 'LEE TRADING LTD', number: '01234567' }, answers: [{ id: 'age', q: 'How old is the debt?', a: '3 to 6 months' }], quality: { score: 64, grade: 'B' },
+  summary: 'Two invoices unpaid since June.', contact: { firstName: 'Sam', lastName: 'Lee', fullName: 'Sam Lee', phone: '+447700900123', email: 'sam@gmail.com', phoneVerified: true, emailVerified: true },
+  consent: { terms: true, share: true, marketing: false, version: 'v1', at: new Date().toISOString(), text: 'I agree' }, checks: {}, source: { page: 'https://leaflegal.co/debt-recovery', utm: {} }, flags: [], createdAt: new Date().toISOString() };
+const { storeLead, toRow } = await import('../api/_lib/leads.js');
+const ingest = ({ email, phone, ...o } = {}) => storeLead({ ...lead, ...o, contact: { ...lead.contact, ...(email ? { email } : {}), ...(phone ? { phone } : {}) } });
+const wants = (o = {}) => ({ areas: ALL_AREAS, ...o });
 await t('enquiry: consent boxes required', async () => assert.equal((await enq({ ...form, consentShare: false })).c, 400));
 await t('enquiry: non-UK-mobile and bad email refused', async () => {
   assert.equal((await enq({ ...form, phone: '+441234567890' })).c, 400); assert.equal((await enq({ ...form, email: 'sam@' })).c, 400);
@@ -545,116 +577,122 @@ await t('enquiry: non-UK-mobile and bad email refused', async () => {
 await t('enquiry: bot (honeypot or under 5 seconds) is flagged and never sold', async () => {
   await enq({ ...form, website: 'spam' });
   assert.ok(!calls.some((c) => c.startsWith('POST') && c.includes('/rest/v1/leads')), 'spam lead listed');
+  reset(); leads = [];
+  const r = await ingest({ flags: ['honeypot filled'], email: 'bot@b.co', phone: '+447700900140' });
+  assert.deepEqual(r, { id: 99, matched: false, hidden: true });
+  assert.ok(leadPosts[0].hidden_at, 'kept hidden for the team'); assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'flagged lead sold');
+  assert.ok(!mails.some((m) => /^New lead/.test(m.subject)), 'flagged lead alerted');
 });
 await t('enquiry: genuine lead is listed with a server-set price', async () => {
   leads = [];
-  const r = await enq({ ...form, price: 1 }); assert.equal(r.c, 200, JSON.stringify(r.b));
-  assert.ok(calls.some((c) => c.startsWith('POST') && c.includes('/rest/v1/leads')), 'lead listed');
-  assert.ok(!mails.some((m) => /enquiry/i.test(m.subject) && [].concat(m.to).includes('admin@test')), 'admin emailed per lead');
+  const r = await ingest({ price: 1 });
+  assert.ok(r && r.id === 99 && r.matched === false, JSON.stringify(r));
+  assert.equal(leadPosts.length, 1, 'lead listed');
+  assert.equal(leadPosts[0].price, P.price(leadPosts[0]), 'price from the server');
+  assert.ok(leadPosts[0].price !== 1);
+  assert.ok(mails.some((m) => /^New lead: Unpaid invoices, Yorkshire and the Humber \(\d+ credits\)$/.test(m.subject) && m.to.includes('jo@firm.test')), 'firm alerted');
 });
-await t('£500k page: CompleteRegistration for £500k+ revenue on any page, Lead for all, variant tagged on the lead', async () => {
-  process.env.META_CAPI_TOKEN = 'test';
-  const sent = () => metaPosts.flatMap((p) => p.data.map((d) => `${d.event_name}:${d.event_id}`));
-  try {
-    for (const [i, [variant, turnover, want, premium]] of [
-      ['500k', '£250k to £500k', ['Lead:e0', 'TierCLead:e0-TierCLead', 'TierBLead:e0-TierBLead'], false], // £250k to £500k: Lead + TierBLead
-      ['500k', '£1m to £5m', ['Lead:e1', 'CompleteRegistration:e1-q', 'TierCLead:e1-TierCLead', 'TierBLead:e1-TierBLead', 'TierALead:e1-TierALead'], true],
-      [undefined, '£250k to £500k', ['Lead:e2', 'TierCLead:e2-TierCLead', 'TierBLead:e2-TierBLead'], false], // homepage: Lead as before
-      [undefined, '£5m+', ['Lead:e3', 'CompleteRegistration:e3-q', 'TierCLead:e3-TierCLead', 'TierBLead:e3-TierBLead', 'TierALead:e3-TierALead'], true], // homepage £500k+: both too
-    ].entries()) {
-      reset(); leads = [];
-      const r = await enq({ ...form, variant, turnover, eventId: `e${i}`, email: `v${i}@gmail.com`, phone: `+44770090020${i}` });
-      assert.equal(r.c, 200, JSON.stringify(r.b));
-      assert.deepEqual(sent(), want.map((w) => w.replace(/e\d/g, `e${i}`)), `${variant} ${turnover}`);
-      assert.deepEqual(r.b.meta, { lead: true, qualified: premium, revenue: premium ? ['TierCLead', 'TierBLead', 'TierALead'] : ['TierCLead', 'TierBLead'] });
-      assert.equal(leadPosts[0].source.landing_variant, variant || null);
-      assert.equal(leadPosts[0].source.premium_tier, premium);
-      assert.equal(leadPosts[0].turnover, turnover);
-    }
-    reset(); await enq({ ...form, variant: 'evil', turnover: '£5m+', email: 'v9@gmail.com', phone: '+447700900209' });
-    assert.equal(leadPosts[0].source.landing_variant, null, 'unknown variant stored');
-  } finally { delete process.env.META_CAPI_TOKEN; }
+await t('stored lead: area, urgency, value, private pay, grade and contact are normalised by the server', async () => {
+  leads = []; await ingest({ area: 'Recovering a business debt', urgency: 'Within a month', quality: { score: 81 } });
+  const row = leadPosts[0];
+  assert.equal(row.area, 'debt-recovery'); assert.equal(row.matter_label, 'Unpaid invoices'); assert.equal(row.urgency, 'Within a month');
+  assert.equal(row.postcode, 'LS1 4AB'); assert.equal(row.postcode_district, 'LS1'); assert.equal(row.postcode_area, 'LS');
+  assert.equal(row.value_min, 40000); assert.equal(row.value_band, '£40,000'); assert.equal(row.private_pay, 'yes');
+  assert.equal(row.score, 81); assert.equal(row.grade, 'A', 'grade worked out from the score when missing');
+  assert.equal(row.full_name, 'Sam Lee'); assert.equal(row.email, 'sam@gmail.com'); assert.deepEqual(row.checks, { verified: { phone: true, email: true } });
+  assert.equal(row.business_name, 'LEE TRADING LTD'); assert.equal(row.company_number, '01234567');
+  assert.equal(toRow({ ...lead, privatePay: 'Yes, if the cost is right' }).private_pay, 'quote');
+  // Immigration from abroad: no postcode, region Outside the UK.
+  const abroad = toRow({ ...lead, area: 'immigration', matter: 'visitor-visas', audience: 'individual', postcode: '', region: 'Outside the UK', country: 'outside', business: null });
+  assert.equal(abroad.postcode, null); assert.equal(abroad.postcode_area, null); assert.equal(abroad.region, 'Outside the UK');
+  const notSure = toRow({ ...lead, area: 'not-sure', matter: null }); assert.equal(notSure.matter, null);
 });
-await t('enquiry: a repeat enquiry sends no Meta events (server or pixel) and is not listed again', async () => {
-  process.env.META_CAPI_TOKEN = 'test';
-  try {
-    reset(); leads = [{ id: 65 }]; // the mock returns this for the duplicate lookup
-    const r = await enq({ ...form, turnover: '£1m to £5m', eventId: 'r1', email: 'r1@gmail.com', phone: '+447700900401' });
-    assert.equal(r.c, 200, JSON.stringify(r.b));
-    assert.deepEqual(r.b.meta, { lead: false, qualified: false, revenue: [] });
-    assert.equal(metaPosts.length, 0, 'meta sent for a repeat');
-    assert.equal(leadPosts.length, 0, 'repeat listed');
-  } finally { delete process.env.META_CAPI_TOKEN; leads = []; }
+await t('enquiry: a repeat enquiry is not listed again', async () => {
+  reset(); leads = [{ id: 65 }]; // the mock returns this for the duplicate lookup
+  const r = await ingest({ email: 'r1@gmail.com', phone: '+447700900401' });
+  assert.equal(r.duplicateOf, 65); assert.equal(r.matched, false);
+  assert.equal(leadPosts.length, 0, 'repeat listed');
+  leads = [];
 });
 await t('enquiry: where the visit started is stored, known keys only', async () => {
   reset(); leads = [];
-  await req(enquiry, { method: 'POST', body: { ...form, email: 'ft@gmail.com', phone: '+447700900701', first: { utm_source: 'linkedin', utm_campaign: 'c9', landing: '/', evil: 'x', gclid: 5 } } });
+  await ingest({ email: 'ft@gmail.com', phone: '+447700900701', source: { ...lead.source, first: { utm_source: 'linkedin', utm_campaign: 'c9', landing: '/', evil: 'x', gclid: 5 } } });
   assert.deepEqual(leadPosts[0].source.first, { utm_source: 'linkedin', utm_campaign: 'c9', landing: '/' });
 });
-await t('enquiry: a director picked from the list gets their month/year of birth from Companies House (not the browser), shown to the buyer', async () => {
-  const had = process.env.COMPANIESHOUSE_API; process.env.COMPANIESHOUSE_API = 'ch-test';
-  chOfficers = [{ name: 'LEE, Sam', officer_role: 'director', date_of_birth: { month: 3, year: 1978 } }, { name: 'OLD, Gone', officer_role: 'director', resigned_on: '2020-01-01', date_of_birth: { month: 1, year: 1950 } }];
-  try {
-    reset(); leads = [];
-    await enq({ ...form, email: 'dob@gmail.com', phone: '+447700900801', company: { number: '01234567', director: 'Sam Lee', directorListed: true, directorDob: '1999-01' } });
-    assert.equal(leadPosts[0].company.directorDob, '1978-03');
-    reset(); leads = [];
-    await enq({ ...form, email: 'dob2@gmail.com', phone: '+447700900802', company: { number: '01234567', director: '', directorListed: false, directorDob: '1999-01' } });
-    assert.equal(leadPosts[0].company.directorDob, undefined, 'dob taken from the browser');
-    const out = P.leadOut({ ...leadRow(), company: { number: '01234567', director: 'Sam Lee', directorListed: true, directorDob: '1978-03' } });
-    assert.equal(out.companies_house.director_dob, '1978-03');
-    assert.equal(P.companyInfo({ number: '01234567', directorListed: true, directorDob: '1978-03' }, false).director_dob, '1978-03', 'not in the pre-purchase preview');
-  } finally { chOfficers = []; if (had === undefined) delete process.env.COMPANIESHOUSE_API; else process.env.COMPANIESHOUSE_API = had; leads = []; }
+await t('business enquiry: company name and number reach the firm only after purchase; the preview shows the year it was set up', async () => {
+  reset(); leads = [];
+  await ingest({ email: 'co@gmail.com', phone: '+447700900801', company: { number: '01234567', type: 'ltd', incorporated: '2015-06-01', profile: { title: 'LEE TRADING LTD' } } });
+  assert.equal(leadPosts[0].company.number, '01234567');
+  const out = P.leadOut({ ...leadRow(), buyer: BROKER });
+  assert.equal(out.business_name, 'SECRET TRADING LTD'); assert.equal(out.company_number, '01234567'); assert.equal(out.matter_label, 'Unpaid invoices');
+  assert.equal(P.companyInfo({ number: '01234567', incorporated: '2015-06-01' }, false).incorporated, '2015', 'year only before purchase');
+  assert.equal(P.companyInfo({ number: '01234567', incorporated: '2015-06-01' }, true).number, '01234567');
+  leads = [leadRow()];
 });
-await t('enquiry: ?test=1 submissions are never saved or matched', async () => {
+await t('enquiry: ?test=1 submissions are never sold or matched', async () => {
   leads = [];
-  const r = await enq({ ...form, utm: { test: '1' }, email: 't1@gmail.com', phone: '+447700900301' });
-  assert.equal(r.c, 200);
-  assert.ok(!leadPosts.length && !rpcCalls.some((c) => c.fn === 'buy_lead'), 'test lead saved or bought');
+  const r = await ingest({ flags: ['test submission'], email: 't1@gmail.com', phone: '+447700900301' });
+  assert.equal(r.hidden, true);
+  assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'test lead bought');
 });
-await t('auto-buy: skips brokers over their per-lead maximum or without enough credits', async () => {
-  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, filters: { maxPrice: 10 } };
-  await P.ingestLead({ ...form, email: 'a@b.co', phone: '+447700900111' });
+await t('auto-buy: skips firms over their per-lead maximum or without enough credits', async () => {
+  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, filters: wants({ maxPrice: 10 }) };
+  await ingest({ email: 'a@b.co', phone: '+447700900111' });
   assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'bought over max');
-  people[BROKER] = { ...people[BROKER], filters: {}, credits: 5 };
-  await P.ingestLead({ ...form, email: 'a2@b.co', phone: '+447700900112' });
+  people[BROKER] = { ...people[BROKER], filters: wants(), credits: 5 };
+  await ingest({ email: 'a2@b.co', phone: '+447700900112' });
   assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'bought without credits');
-  people[BROKER] = { ...people[BROKER], mode: 'manual', credits: 500 };
+  people[BROKER] = { ...people[BROKER], credits: 500 };
+  const r = await ingest({ email: 'a5@b.co', phone: '+447700900116' });
+  assert.ok(rpcCalls.some((c) => c.fn === 'buy_lead' && c.args.p_broker === BROKER && c.args.p_auto === true), 'matching lead not auto-bought');
+  assert.equal(r.matched, true); assert.equal(r.buyer, BROKER); assert.equal(r.firm.company, 'Firm LLP');
+  people[BROKER] = { ...people[BROKER], mode: 'manual', credits: 500, filters: wants() };
 });
-await t('smaller/newer businesses (under £50k or under 6 months) go straight to Aureum (Daniel) free, never sold', async () => {
-  const D = P.STARTER_BROKER; people[D] = { ...people[BROKER], id: D, company: 'Aureum Finance', mode: 'manual', credits: 0 };
-  const keep = leads; leads = []; patches = []; rpcCalls.length = 0;
-  const r = await P.ingestLead({ ...form, turnover: 'Under £50k', property: 'Homeowner', email: 'starter@b.co', phone: '+447700900131' });
-  assert.equal(r.buyer, D, 'not assigned to Daniel'); assert.equal(r.price, 0);
-  assert.ok(patches.some((x) => x.u.includes('/leads?id=eq.') && x.b.buyer === D), 'lead not given to Daniel');
-  assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'charged or sold to someone');
-  assert.ok(P.isStarter({ trading: 'Under 6 months' }) && !P.isStarter({ turnover: '£50k to £100k', trading: '6 to 12 months' }));
-  leads = keep; delete people[D];
+await t('immigration leads only go to firms regulated by the SRA, CILEx or the IAA', async () => {
+  const CLC = 'ffffffff-0000-4000-8000-000000000006', IAA = 'ffffffff-0000-4000-8000-000000000007', was = people[BROKER];
+  people[BROKER] = { ...was, approved: false };
+  people[CLC] = { ...was, id: CLC, email: 'clc@firm.test', company: 'Conveyancers Ltd', mode: 'auto', regulators: [{ id: 'CLC', number: '1234' }], filters: wants(), last_auto_at: '2000-01-01' };
+  people[IAA] = { ...was, id: IAA, email: 'iaa@firm.test', company: 'Visa Advisers Ltd', mode: 'auto', regulators: [{ id: 'IAA', number: 'F201900123' }], filters: wants(), last_auto_at: '2020-01-01' };
+  const keep = leads; leads = []; waived = [CLC, IAA];
+  try {
+    const r = await ingest({ area: 'immigration', matter: 'spouse-visas', audience: 'individual', business: null, postcode: '', region: 'Outside the UK', country: 'outside', email: 'imm@b.co', phone: '+447700900131' });
+    const buys = rpcCalls.filter((c) => c.fn === 'buy_lead').map((c) => c.args.p_broker);
+    assert.ok(!buys.includes(CLC), 'CLC firm auto-bought an immigration lead');
+    assert.deepEqual(buys, [IAA]); assert.equal(r.buyer, IAA);
+    reset(); people[IAA].mode = 'manual'; people[CLC].mode = 'manual';
+    await ingest({ area: 'immigration', matter: 'spouse-visas', audience: 'individual', business: null, email: 'imm2@b.co', phone: '+447700900132' });
+    assert.ok(mails.some((m) => m.to.includes('iaa@firm.test') && /^New lead/.test(m.subject)), 'IAA firm alerted');
+    assert.ok(!mails.some((m) => m.to.includes('clc@firm.test')), 'CLC firm told about an immigration lead');
+    // Buying by hand and assigning are refused too.
+    leads = [leadRow({ area: 'immigration', matter: 'spouse-visas' })];
+    people[BROKER] = { ...was, regulators: [{ id: 'CLC', number: '1234' }] };
+    assert.equal((await api('buy', { method: 'POST', token: tok.broker, body: { id: 7 } })).c, 403, 'CLC firm bought an immigration lead');
+    assert.equal((await api('opportunities', { token: tok.broker })).b.leads.length, 0, 'shown to a CLC firm');
+  } finally { people[BROKER] = was; delete people[CLC]; delete people[IAA]; leads = keep; waived = null; }
 });
-await t('auto-buy: budget tiers buy only within each tier\'s share of the monthly limit', async () => {
-  const tier = (share, turnovers) => ({ name: 'T', share, turnovers });
-  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 5000, monthly_cap: 1000, filters: { tiers: [tier(75, [form.turnover])] } };
-  const keep = leads; leads = []; // no earlier buys of this business
-  rpcCalls.length = 0; await P.ingestLead({ ...form, email: 'tier1@b.co', phone: '+447700900121' });
-  assert.ok(rpcCalls.some((c) => c.fn === 'buy_lead'), 'matching tier not bought');
-  people[BROKER].filters = { tiers: [tier(75, ['£5m+'].filter((x) => x !== form.turnover))] };
-  rpcCalls.length = 0; await P.ingestLead({ ...form, email: 'tier2@b.co', phone: '+447700900122' });
-  assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'bought outside every tier');
-  people[BROKER] = { ...people[BROKER], monthly_cap: 20, filters: { tiers: [tier(10, [form.turnover])] } }; // 2 credits for the tier
-  rpcCalls.length = 0; await P.ingestLead({ ...form, email: 'tier3@b.co', phone: '+447700900123' });
-  assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'bought over the tier budget');
-  people[BROKER] = { ...people[BROKER], mode: 'manual', monthly_cap: 0, filters: {} }; leads = keep;
+await t('auto-buy: monthly and daily limits are kept', async () => {
+  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 5000, monthly_cap: 20, filters: wants() }; // cap below one lead
+  const keep = leads; leads = [];
+  rpcCalls.length = 0; await ingest({ email: 'cap1@b.co', phone: '+447700900121' });
+  assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'bought over the monthly limit');
+  people[BROKER] = { ...people[BROKER], monthly_cap: 1000, filters: wants({ dailyCredits: 10 }) };
+  rpcCalls.length = 0; await ingest({ email: 'cap2@b.co', phone: '+447700900122' });
+  assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'bought over the daily credit limit');
+  people[BROKER] = { ...people[BROKER], filters: wants({ dailyLeads: 3 }) };
+  rpcCalls.length = 0; await ingest({ email: 'cap3@b.co', phone: '+447700900123' });
+  assert.ok(rpcCalls.some((c) => c.fn === 'buy_lead'), 'within limits but not bought');
+  people[BROKER] = { ...people[BROKER], mode: 'manual', monthly_cap: 0, filters: wants() }; leads = keep;
 });
 await t('commission clients: no manual buying and auto-buy rules stay as Leaflegal set them', async () => {
   const before = people[BROKER];
-  people[BROKER] = { ...before, plan: { name: 'Commission', credits: 0, commission: true }, mode: 'auto', monthly_cap: 900, filters: { turnovers: ['£5m+'] } };
+  people[BROKER] = { ...before, plan: { name: 'Commission', credits: 0, commission: true }, mode: 'auto', monthly_cap: 900, filters: { areas: ['family-law'] } };
   try {
     const r = await api('buy', { method: 'POST', token: tok.broker, body: { id: 7 } });
     assert.equal(r.c, 403, 'commission client bought a lead');
     patches.length = 0;
-    const s = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: { turnovers: [] }, deliver_on: true } });
+    const s = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: { areas: [] }, deliver_on: true } });
     assert.equal(s.c, 200);
-    assert.deepEqual(s.b.filters.turnovers, ['£5m+'], 'criteria changed');
+    assert.deepEqual(s.b.filters.areas, ['family-law'], 'criteria changed');
     const sent = calls.filter((c) => c.startsWith('PATCH') && c.includes('/rest/v1/brokers?id=eq.')).length;
     assert.ok(sent, 'settings not saved');
     const me = await api('me', { token: tok.broker });
@@ -686,25 +724,25 @@ await t('team: owner invites a user, they join with the link, and permissions li
   team = [];
 });
 await t('auto-buy: never buys a lead whose phone or email failed checks', async () => {
-  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, filters: {} };
-  await P.ingestLead({ ...form, email: 'a3@b.co', phone: '+447700900113', checks: { phone: { allocated: false } } });
+  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, filters: wants() };
+  await ingest({ email: 'a3@b.co', phone: '+447700900113', checks: { phone: { allocated: false } } });
   assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'));
   people[BROKER] = { ...people[BROKER], mode: 'manual' };
 });
 await t('auto-buy: only brokers who accepted the agreement', async () => {
-  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, filters: {} }; signedAgreement = false;
-  await P.ingestLead({ ...form, email: 'a4@b.co', phone: '+447700900114' });
+  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, filters: wants() }; signedAgreement = false;
+  await ingest({ email: 'a4@b.co', phone: '+447700900114' });
   signedAgreement = true; assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'));
   people[BROKER] = { ...people[BROKER], mode: 'manual' };
 });
 await t('repeat enquiry: within 7 days is a duplicate; after 7 days a new lead the earlier buyer never gets (auto-buy, opportunities, buying)', async () => {
   const old = (d) => new Date(Date.now() - d * 864e5).toISOString(), was = leads;
   reset(); leads = [leadRow({ id: 5, buyer: BROKER, created_at: old(2) })];
-  assert.equal((await P.ingestLead({ ...form, email: 'rep@b.co', phone: '+447700900501' })).duplicateOf, 5);
+  assert.equal((await ingest({ email: 'rep@b.co', phone: '+447700900501' })).duplicateOf, 5);
   reset(); leads = [leadRow({ id: 5, buyer: BROKER, created_at: old(10) })];
-  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, filters: {} };
+  people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, filters: wants() };
   try {
-    const r = await P.ingestLead({ ...form, email: 'rep@b.co', phone: '+447700900501' });
+    const r = await ingest({ email: 'rep@b.co', phone: '+447700900501' });
     assert.ok(!r.duplicateOf, 'still a duplicate after 7 days');
     assert.deepEqual(leadPosts[0].exclude_brokers, [BROKER]);
     assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead' && c.args.p_broker === BROKER), 'auto-bought by the earlier buyer');
@@ -717,18 +755,18 @@ await t('repeat enquiry: within 7 days is a duplicate; after 7 days a new lead t
   assert.equal(b.c, 409); assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'bought anyway');
   leads = was;
 });
-await t('repeat enquiry already matched: business told who its broker is (with a different-broker link), broker told they followed up; the link re-matches once, never to the same broker', async () => {
+await t('repeat enquiry already matched: client told who their firm is (with a different-firm link), firm told they followed up; the link re-matches once, never to the same firm', async () => {
   const was = leads, mine = leadRow({ id: 5, email: 'rep2@gmail.com', phone: '+447700900601', buyer: BROKER, bought_at: new Date().toISOString(), created_at: new Date(Date.now() - 2 * 864e5).toISOString() });
   try {
     reset(); leads = [mine];
-    const r = await enq({ ...form, email: mine.email, phone: mine.phone });
-    assert.equal(r.c, 200, JSON.stringify(r.b));
-    assert.ok(r.b.again && r.b.match?.company && /action=rematch&id=5&/.test(r.b.rematch), JSON.stringify(r.b));
+    const r = await ingest({ email: mine.email, phone: mine.phone });
+    assert.ok(r.again && r.matched && r.firm?.company && /action=rematch&id=5&/.test(r.rematch), JSON.stringify(r));
     assert.equal(leadPosts.length, 0, 'listed again');
     const biz = mails.find((m) => [].concat(m.to).includes(mine.email)), brk = mails.find((m) => /followed up/.test(m.subject));
-    assert.ok(biz && /already been matched/.test(biz.subject) && biz.html.includes('Match me with a different broker'), 'business email');
-    assert.ok(brk && brk.html.includes(mine.phone), 'broker email');
-    const Q = Object.fromEntries(new URL(r.b.rematch).searchParams);
+    assert.ok(biz && /already been matched/.test(biz.subject) && biz.html.includes('Match me with a different firm'), 'client email');
+    assert.ok(!biz.html.includes('SECRET SUMMARY') && !biz.html.includes('How old is the debt'), 'no matter details to the client');
+    assert.ok(brk && brk.html.includes(mine.phone), 'firm email');
+    const Q = Object.fromEntries(new URL(r.rematch).searchParams);
     const get = await req(handler, { method: 'GET', query: Q });
     assert.ok(get.c === 200 && /<form method="post">/.test(get.b), 'confirmation page');
     assert.equal(leadPosts.length, 0, 'GET re-matched');
@@ -744,29 +782,34 @@ await t('repeat enquiry already matched: business told who its broker is (with a
   } finally { leads = was; }
 });
 await t('duplicate check quotes input, so a crafted email cannot change the filter', async () => {
-  await P.ingestLead({ ...form, email: 'a,email.like.*@gmail.com', phone: '+447700900115' });
+  await ingest({ email: 'a,email.like.*@gmail.com', phone: '+447700900115' });
   const dq = calls.find((c) => c.includes('or=(phone.eq.'));
   assert.ok(dq.includes('email.eq."a,email.like.*@gmail.com"'), dq);
 });
 
 await t('outside-criteria leads: emailed to brokers they don’t fit (saying why), not to ones they fit or who switched them off', async () => {
-  const only = { turnovers: ['£1m to £5m'] }; // the form lead is £250k to £500k
+  const only = wants({ regions: ['London'] }); // the lead is in Yorkshire and the Humber
   people[BROKER] = { ...people[BROKER], mode: 'auto', credits: 500, notify: true, filters: only };
-  await P.ingestLead({ ...form, email: 'o1@b.co', phone: '+447700900121' });
+  await ingest({ email: 'o1@b.co', phone: '+447700900121' });
   const m = mails.find((x) => /^Outside your criteria/.test(x.subject));
-  assert.ok(m, 'no suggestion sent'); assert.match(m.html, /Annual revenue of £250k to £500k/); assert.match(m.html, /action=suggest-off/);
+  assert.ok(m, 'no suggestion sent'); assert.match(m.html, /Yorkshire and the Humber is outside the regions selected/); assert.match(m.html, /action=suggest-off/);
   assert.ok(!rpcCalls.some((c) => c.fn === 'buy_lead'), 'auto-bought a lead outside the criteria');
   reset(); people[BROKER] = { ...people[BROKER], filters: { ...only, suggest: 'off' } };
-  await P.ingestLead({ ...form, email: 'o2@b.co', phone: '+447700900122' });
+  await ingest({ email: 'o2@b.co', phone: '+447700900122' });
   assert.ok(!mails.some((x) => /Outside your criteria/.test(x.subject)), 'sent after switching off');
-  reset(); people[BROKER] = { ...people[BROKER], mode: 'manual', filters: {} };
-  await P.ingestLead({ ...form, email: 'o3@b.co', phone: '+447700900123' });
+  reset(); people[BROKER] = { ...people[BROKER], mode: 'manual', filters: wants() };
+  await ingest({ email: 'o3@b.co', phone: '+447700900123' });
   assert.ok(!mails.some((x) => /Outside your criteria/.test(x.subject)), 'matching lead sent as a suggestion');
   assert.ok(mails.some((x) => /^New lead:/.test(x.subject)), 'matching alert missing');
+  // Outside its regulator's areas: never suggested, even to a firm that wants suggestions.
+  reset(); const was = people[BROKER]; people[BROKER] = { ...was, regulators: [{ id: 'IAA', number: 'F1' }], filters: { areas: ['immigration'] } };
+  await ingest({ email: 'o4@b.co', phone: '+447700900124' });
+  people[BROKER] = was;
+  assert.ok(!mails.some((x) => /Outside your criteria/.test(x.subject)), 'suggested a lead the regulator does not allow');
 });
 await t('outside-criteria: daily summary lists unsold leads once, and the unsubscribe link needs a valid signature', async () => {
-  leads = [leadRow({ id: 31 }), leadRow({ id: 32, turnover: '£1m to £5m' })];
-  people[BROKER] = { ...people[BROKER], filters: { turnovers: ['£1m to £5m'], suggest: 'daily' } };
+  leads = [leadRow({ id: 31 }), leadRow({ id: 32, region: 'London' })];
+  people[BROKER] = { ...people[BROKER], filters: wants({ regions: ['London'], suggest: 'daily' }) };
   const sent = await P.suggestDigest();
   assert.equal(sent, 1); const m = mails.find((x) => /outside your criteria are still available|^Outside your criteria/.test(x.subject)); assert.ok(m);
   assert.ok(calls.some((c) => c.startsWith('PATCH') && c.includes(`brokers?id=eq.${BROKER}`)), 'digestAt not saved');
@@ -776,20 +819,100 @@ await t('outside-criteria: daily summary lists unsold leads once, and the unsubs
   const exp = String(Date.now() + 864e5), sig = createHmac('sha256', 'test').update(`suggest-off:${BROKER}:${exp}`).digest('hex').slice(0, 40);
   assert.equal((await api('suggest-off', { query: { id: BROKER, exp, sig } })).c, 200);
   assert.ok(calls.some((c) => c.startsWith('PATCH') && c.includes(`brokers?id=eq.${BROKER}`)));
-  people[BROKER] = { ...people[BROKER], filters: {} }; leads = [leadRow()];
+  people[BROKER] = { ...people[BROKER], filters: wants() }; leads = [leadRow()];
 });
 await t('settings: suggestion choice saved without touching criteria; other saves keep it', async () => {
-  people[BROKER] = { ...people[BROKER], filters: { purposes: ['Cash flow'], suggest: 'daily' } };
-  const r = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: { purposes: ['Cash flow'] } } });
-  assert.equal(r.b.filters.suggest, 'daily', 'auto-buy save dropped the choice');
-  const r2 = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: { purposes: ['Cash flow'] }, suggest: 'off' } });
-  assert.equal(r2.b.filters.suggest, 'off'); assert.deepEqual(r2.b.filters.purposes, ['Cash flow']);
+  people[BROKER] = { ...people[BROKER], filters: { areas: ['family-law'], suggest: 'daily' } };
+  const r = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: { areas: ['family-law'], matters: { 'family-law': ['divorce'] } } } });
+  assert.equal(r.c, 200, JSON.stringify(r.b)); assert.equal(r.b.filters.suggest, 'daily', 'auto-buy save dropped the choice');
+  const r2 = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: { areas: ['family-law'] }, suggest: 'off' } });
+  assert.equal(r2.b.filters.suggest, 'off'); assert.deepEqual(r2.b.filters.areas, ['family-law']);
+  const r4 = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: { areas: ['family-law', 'nonsense'], matters: { 'family-law': ['divorce', 'made-up'] }, postcodeAreas: ['ls', 'TOOLONG'], valueMin: 1000 } } });
+  assert.deepEqual(r4.b.filters.areas, ['family-law'], 'unknown areas dropped'); assert.deepEqual(r4.b.filters.matters, { 'family-law': ['divorce'] }, 'unknown matters dropped');
+  assert.deepEqual(r4.b.filters.postcodeAreas, ['LS']); assert.equal(r4.b.filters.valueMin, 1000);
+  people[BROKER] = { ...people[BROKER], regulators: [{ id: 'IAA', number: 'F1' }] };
+  const r5 = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: { areas: ['family-law', 'immigration'] } } });
+  assert.deepEqual(r5.b.filters.areas, ['immigration'], 'areas outside the regulator kept');
+  people[BROKER] = { ...people[BROKER], regulators: SRA };
   const r3 = await api('settings', { method: 'POST', token: tok.broker, body: { mode: 'manual', monthly_cap: 0, filters: {}, suggest: 'weekly' } });
   assert.equal(r3.b.filters.suggest, 'daily', 'accepted an unknown choice'); // falls back to the saved one (people[] isn't updated by the mock)
-  people[BROKER] = { ...people[BROKER], filters: {} };
+  people[BROKER] = { ...people[BROKER], filters: wants() };
 });
 
 console.log('\nAdmin');
+await t('taxonomy and pricing are public; me carries allowed areas, taxonomy and pricing', async () => {
+  const tx = await api('taxonomy'); assert.equal(tx.c, 200); assert.ok(tx.b.areas.length && tx.b.regulators.some((r) => r.id === 'IAA'));
+  const pr = await api('pricing'); assert.equal(pr.c, 200); assert.ok(pr.b.pricing.areas['family-law']);
+  const me = await api('me', { token: tok.broker }); assert.equal(me.c, 200);
+  assert.ok(me.b.broker.allowedAreas.includes('immigration')); assert.ok(me.b.taxonomy.areas.length); assert.ok(me.b.pricing.areas);
+  assert.ok(me.b.options.returnReasons.some((r) => r.reason === 'Outside the practice area or region stated'));
+  assert.ok(!JSON.stringify(me.b.options).includes('Revenue'), 'finance refund reasons left');
+});
+await t('onboard needs a regulator and number; a change clears the register check', async () => {
+  reset();
+  assert.equal((await api('onboard', { method: 'POST', token: tok.newb, body: { company: 'New Ltd', regulators: [{ id: 'SRA', number: '' }] } })).c, 400);
+  assert.equal((await api('onboard', { method: 'POST', token: tok.newb, body: { company: 'New Ltd', regulators: [{ id: 'FCA', number: '123' }] } })).c, 400, 'unknown regulator accepted');
+  const r = await api('onboard', { method: 'POST', token: tok.newb, body: { company: 'New Ltd', company_number: 'oc123456', regulators: [{ id: 'iaa', number: 'F2019' }, { id: 'IAA', number: 'dup' }], address: '1 High St', contact_name: 'Ann New', signer_title: 'Partner', phone: '07700 900150' } });
+  assert.equal(r.c, 200, JSON.stringify(r.b));
+  const sent = []; const real = globalThis.fetch;
+  globalThis.fetch = (u, o = {}) => { if (o.method === 'PATCH' && String(u).includes(`brokers?id=eq.${NEWB}`)) sent.push(JSON.parse(o.body)); return real(u, o); };
+  try {
+    people[NEWB] = { ...people[NEWB], regulators: [{ id: 'IAA', number: 'F2019' }], regulator_checked_at: V };
+    await api('onboard', { method: 'POST', token: tok.newb, body: { company: 'New Ltd', regulators: [{ id: 'IAA', number: 'F2019' }] } });
+    assert.equal('regulator_checked_at' in sent.at(-1), false, 'same regulators cleared the check');
+    await api('onboard', { method: 'POST', token: tok.newb, body: { company: 'New Ltd', regulators: [{ id: 'SRA', number: '612345' }] } });
+    assert.deepEqual(sent.at(-1).regulators, [{ id: 'SRA', number: '612345' }]); assert.equal(sent.at(-1).regulator_checked_at, null, 'change kept the old check');
+    assert.equal((await api('onboard', { method: 'POST', token: tok.newb, body: { company: 'New Ltd' } })).c, 200, 'saved regulators reused when none sent');
+  } finally { globalThis.fetch = real; people[NEWB] = { ...people[NEWB], regulators: SRA, regulator_checked_at: undefined }; }
+});
+await t('admin: regulator check, regulators edit, client view with allowed areas, lead view with can_take', async () => {
+  const was = people[BROKER];
+  try {
+    assert.equal((await api('admin-regulator-check', { method: 'POST', token: tok.broker, body: { broker: BROKER, checked: true } })).c, 403);
+    const c = await api('admin-regulator-check', { method: 'POST', token: tok.admin, body: { broker: BROKER, checked: true } });
+    assert.equal(c.c, 200, JSON.stringify(c.b)); assert.ok(c.b.regulator_checked_at);
+    const u = await api('admin-regulator-check', { method: 'POST', token: tok.admin, body: { broker: BROKER, checked: false } });
+    assert.equal(u.b.regulator_checked_at, null);
+    people[BROKER] = { ...was, regulators: [] };
+    assert.equal((await api('admin-regulator-check', { method: 'POST', token: tok.admin, body: { broker: BROKER, checked: true } })).c, 400, 'checked a firm with no regulator');
+    people[BROKER] = was;
+    assert.equal((await api('admin-update', { method: 'POST', token: tok.admin, body: { broker: BROKER, regulators: [{ id: 'X', number: '1' }] } })).c, 400);
+    assert.equal((await api('admin-update', { method: 'POST', token: tok.admin, body: { broker: BROKER, regulators: [{ id: 'CILEX', number: '9876' }] } })).c, 200);
+    const cl = await api('admin-client', { token: tok.admin, query: { id: BROKER } });
+    assert.equal(cl.c, 200, JSON.stringify(cl.b)); assert.ok(cl.b.broker.allowed_areas.includes('immigration'));
+    assert.equal(cl.b.broker.regulators[0].id, 'SRA'); assert.ok(cl.b.broker.regulators[0].register.startsWith('https://'));
+    leads = [leadRow({ area: 'immigration', matter: 'spouse-visas' })];
+    const CLC = 'ffffffff-0000-4000-8000-000000000008'; people[CLC] = { ...was, id: CLC, company: 'CLC Ltd', regulators: [{ id: 'CLC', number: '1' }] };
+    const al = await api('admin-lead', { token: tok.admin, query: { id: 7 } });
+    assert.equal(al.c, 200, JSON.stringify(al.b));
+    assert.equal(al.b.brokers.find((x) => x.id === BROKER).can_take, true); assert.equal(al.b.brokers.find((x) => x.id === CLC).can_take, false);
+    assert.ok(al.b.taxonomy && al.b.pricing && al.b.list_price_now > 0);
+    const as = await api('admin-lead', { method: 'POST', token: tok.admin, body: { id: 7, op: 'relist', price: 'full', broker: CLC, charge: false } });
+    assert.equal(as.c, 400, 'assigned an immigration lead to a CLC firm');
+    delete people[CLC];
+  } finally { people[BROKER] = was; leads = [leadRow()]; }
+});
+await t('admin pricing: saved within limits, examples returned, unsold leads repriced on request', async () => {
+  reset();
+  assert.equal((await api('admin-pricing', { method: 'POST', token: tok.broker, body: {} })).c, 403);
+  const r = await api('admin-pricing', { method: 'POST', token: tok.admin, body: { min: 20, max: 300, urgent: 1.2, business: 1.1, areas: { 'family-law': 90, bogus: 5 }, matters: { 'family-law/divorce': 100, 'family-law/nope': 3 }, grade: { A: 1.5, B: 1, C: 0.5 }, value: [[250000, 1.1], [1000000, 9]] } });
+  assert.equal(r.c, 200, JSON.stringify(r.b));
+  assert.equal(r.b.pricing.areas['family-law'], 90); assert.ok(!('bogus' in r.b.pricing.areas));
+  assert.deepEqual(r.b.pricing.matters, { 'family-law/divorce': 100 }, 'unknown matter kept');
+  assert.deepEqual(r.b.pricing.value, [[1000000, 3], [250000, 1.1]], 'multipliers capped and sorted');
+  assert.ok(r.b.examples.every((e) => e.price >= 20 && e.price <= 300 && e.parts));
+  assert.equal(r.b.repriced, undefined);
+  leads = [leadRow({ id: 41, price: 999 }), leadRow({ id: 42, price: 10, price_fixed: true })]; patches = [];
+  const rp = await api('admin-reprice', { method: 'POST', token: tok.admin, body: {} });
+  assert.equal(rp.c, 200, JSON.stringify(rp.b)); assert.equal(typeof rp.b.repriced, 'number'); assert.equal(typeof rp.b.checked, 'number');
+  assert.ok(calls.some((c) => c.startsWith('GET') && c.includes('buyer=is.null') && c.includes('price_fixed=not.is.true')), 'hand-priced leads not left out');
+  assert.ok(patches.some((x) => x.u.includes('id=eq.41') && x.b.price === P.price(leads[0], r.b.pricing)), 'unsold lead not repriced');
+  reset(); await api('admin-reprice', { method: 'POST', token: tok.admin, body: { all: true } });
+  assert.ok(!calls.some((c) => c.includes('price_fixed=not.is.true')), 'all: true still skipped hand prices');
+  const r2 = await api('admin-pricing', { method: 'POST', token: tok.admin, body: { min: 20, max: 300, areas: {}, reprice: true } });
+  assert.equal(typeof r2.b.repriced, 'number', 'repriced is a count');
+  leads = [leadRow()];
+});
 await t('admin can approve and adjust credits (audited)', async () => {
   assert.equal((await api('admin-broker', { method: 'POST', token: tok.admin, body: { id: NEWB, approved: true } })).c, 200);
   assert.equal((await api('admin-broker', { method: 'POST', token: tok.admin, body: { id: BROKER, credits: 100, reason: 'test' } })).c, 200);
@@ -828,7 +951,7 @@ await t('delete: refused for a broker who bought leads, needs the exact company 
   assert.equal((await api('admin-delete', { method: 'POST', token: tok.admin, body: { broker: NEWB, confirm: 'wrong' } })).c, 400);
   reset();
   assert.equal((await api('admin-delete', { method: 'POST', token: tok.admin, body: { broker: NEWB, confirm: 'new ltd' } })).c, 200);
-  assert.ok(calls.some((c) => c === `DELETE https://tefpljuzuvdchczcfjlz.supabase.co/auth/v1/admin/users/${NEWB}`), 'login not deleted');
+  assert.ok(calls.some((c) => c === `DELETE https://qrdpvsqsfifmgkxinank.supabase.co/auth/v1/admin/users/${NEWB}`), 'login not deleted');
   assert.equal((await api('admin-delete', { method: 'POST', token: tok.admin, body: { broker: ADMIN, confirm: 'Leaflegal' } })).c, 400);
 });
 await t('invoiced plan: starting today adds the first credits once per due date, keyed so reruns do nothing', async () => {
@@ -868,10 +991,12 @@ await t('sign-up hand-off token: round-trips, refuses tampering, readable only b
   const r = await api('handoff', { query: { h: tok } }); assert.equal(r.b.email, 'jo@acme.test');
   assert.deepEqual((await api('handoff', { query: { h: 'junk' } })).b, {});
 });
-await t('emails link to platform.leaflegal.co/<page>, never /platform/<page>', async () => {
-  assert.equal(P.PLATFORM_URL, 'https://platform.leaflegal.co');
-  const src = (await import('node:fs')).readFileSync(new URL('../api/platform.js', import.meta.url), 'utf8') + (await import('node:fs')).readFileSync(new URL('../api/_lib/platform.js', import.meta.url), 'utf8');
-  assert.ok(!/platform\.leaflegal\.co\/platform/.test(src));
+await t('emails link to platform.leaflegal.co/<page> and the API at leaflegal.co/api/platform; never the old domain or project', async () => {
+  assert.equal(P.PLATFORM_URL, 'https://platform.leaflegal.co'); assert.equal(P.API_URL, 'https://leaflegal.co/api/platform');
+  assert.ok(P.signedUrl('approve', BROKER, 1).startsWith('https://leaflegal.co/api/platform?action=approve&'));
+  const fs = await import('node:fs'), src = ['../api/platform.js', '../api/_lib/platform.js', '../api/_lib/leads.js', '../api/_lib/whats-new.js', '../api/_lib/terms.js'].map((f) => fs.readFileSync(new URL(f, import.meta.url), 'utf8')).join('');
+  assert.ok(!/tefpljuzuvdchczcfjlz/.test(src), 'old domain or Supabase project referenced');
+  assert.ok(!/\/platform\/api\/platform/.test(src), 'API under the platform path');
 });
 
 await t('scheduled invite: email id saved; can be cancelled before it sends, not after', async () => {
@@ -944,29 +1069,29 @@ await t('invite edit: queued invite gets a new link for the new email; a sent on
 await t('meta: a platform sign-up sends PartnerInterest with hashed contact details', async () => {
   process.env.META_CAPI_TOKEN = 'test'; const before = metaPosts.length;
   try {
-    assert.equal((await api('signup', { method: 'POST', body: { email: 'pi@broker.test', password: 'Long-enough-123', company: 'PI Ltd', contactName: 'Pat Ives', phone: '07700 900130', fbp: 'fb.1.1.2', turnstile: 'good-token' } })).c, 200);
+    assert.equal((await api('signup', { method: 'POST', body: { email: 'pi@firm.test', password: 'Long-enough-123', company: 'PI Ltd', contactName: 'Pat Ives', phone: '07700 900130', fbp: 'fb.1.1.2', turnstile: 'good-token' } })).c, 200);
     const ev = metaPosts.slice(before).flatMap((p) => p.data).find((d) => d.event_name === 'PartnerInterest');
     assert.ok(ev, 'PartnerInterest sent'); assert.equal(ev.custom_data.content_name, 'Platform signup'); assert.equal(ev.user_data.fbp, 'fb.1.1.2');
     assert.ok(metaPosts.slice(before).flatMap((p) => p.data).some((d) => d.event_name === 'PartnerRegistered'), 'PartnerRegistered sent');
-    assert.ok(/^[a-f0-9]{64}$/.test(ev.user_data.em[0]) && !JSON.stringify(ev).includes('pi@broker.test'), 'email hashed, never sent plain');
+    assert.ok(/^[a-f0-9]{64}$/.test(ev.user_data.em[0]) && !JSON.stringify(ev).includes('pi@firm.test'), 'email hashed, never sent plain');
   } finally { delete process.env.META_CAPI_TOKEN; }
 });
 
 await t('website partner invite: lead emails on, mobile prefilled, signup confirms the email but still needs approval', async () => {
   const { partnerInvite } = await import('../api/platform.js'); reset();
-  const r = await partnerInvite({ email: 'Web@Broker.test', name: 'Wes Broker', company: 'Web Ltd', phone: '07700 900140', call: 'https://leaflegal.co/partners/apply?call=1' });
+  const r = await partnerInvite({ email: 'Web@Firm.test', name: 'Wes Brown', company: 'Web Ltd', phone: '07700 900140', call: 'https://leaflegal.co/partners/apply?call=1' });
   assert.ok(r?.token, JSON.stringify(r));
-  const inv = storedInvites['web@broker.test']; assert.ok(inv && inv.alerts === true && inv.digest === false, 'invite row with every-new-lead emails');
-  const theirs = mails.filter((m) => m.to.includes('web@broker.test'));
+  const inv = storedInvites['web@firm.test']; assert.ok(inv && inv.alerts === true && inv.digest === false, 'invite row with every-new-lead emails');
+  const theirs = mails.filter((m) => m.to.includes('web@firm.test'));
   assert.ok(/Thanks for your enquiry/.test(theirs[0]?.subject) && /Book a call/.test(theirs[0].html) && /Join Leaflegal Platform/.test(theirs[0].html), 'thank-you email first, with both next steps');
   const mail = theirs.find((m) => /invitation to Leaflegal Platform/.test(m.subject)); assert.ok(mail && !/approved/i.test(mail.subject) && !/Book a call/.test(mail.html), 'separate invite email, not an approved-supplier one');
   const d = JSON.parse(Buffer.from(r.token.split('.')[0], 'base64url')); assert.equal(d.na, 1); assert.equal(d.m, '07700 900140');
   reset();
-  assert.equal((await api('signup', { method: 'POST', body: { email: 'web@broker.test', password: 'Long-enough-123', company: 'Web Ltd', contactName: 'Wes Broker', phone: '07700 900140', invite: r.token } })).c, 200);
+  assert.equal((await api('signup', { method: 'POST', body: { email: 'web@firm.test', password: 'Long-enough-123', company: 'Web Ltd', contactName: 'Wes Brown', phone: '07700 900140', invite: r.token } })).c, 200);
   assert.ok(!posts[0].approved, 'website invite must not approve'); assert.ok(posts[0].email_verified_at, 'email confirmed by the invite link');
   assert.ok(mails.some((m) => m.html.includes('action=approve')), 'admin asked to approve');
   assert.ok(!mails.some((m) => m.html.includes('action=verify-email')), 'no separate confirm-email');
-  delete storedInvites['web@broker.test'];
+  delete storedInvites['web@firm.test'];
 });
 
 await t('resend webhook: hard bounces and complaints are suppressed; soft bounces and bad signatures are not', async () => {
@@ -987,7 +1112,7 @@ await t('resend webhook: hard bounces and complaints are suppressed; soft bounce
 });
 
 await t('admin edits a broker’s profile for them (?as=); brokers can’t, and only profile/settings are allowed', async () => {
-  const r = await api('profile', { method: 'POST', token: tok.admin, query: { as: BROKER }, body: { name: 'Broker Ltd', about: 'Asset finance' } });
+  const r = await api('profile', { method: 'POST', token: tok.admin, query: { as: BROKER }, body: { name: 'Firm LLP', about: 'Family and immigration law' } });
   assert.equal(r.c, 200, JSON.stringify(r.b));
   assert.ok(calls.some((c) => c.startsWith('PATCH') && c.includes(`brokers?id=eq.${BROKER}`)), 'saved to the broker');
   assert.ok(!calls.some((c) => c.startsWith('PATCH') && c.includes(`brokers?id=eq.${ADMIN}`)), 'not to the admin');
@@ -1046,7 +1171,7 @@ await t('bulk send times: N a day between 08:00 and 17:00 UTC, never in the past
 });
 await t('bulk upload: queues cold invites at the chosen daily pace, never touches existing accounts', async () => {
   const start = new Date(Date.now() + 864e5).toISOString();
-  people[BROKER].email = 'jo@broker.test';
+  people[BROKER].email = 'jo@firm.test';
   const r = await api('admin-invite-bulk', { method: 'POST', token: tok.admin, body: { batch: 'csv-1', perDay: 1, leads: 'weekly', kind: 'cold', start, offset: 0,
     rows: [{ email: 'a@firm1.test', name: 'Ann Lee', company: 'Firm 1' }, { email: 'nope', name: 'X' }, { email: 'a@firm1.test', name: 'Dup' }, { email: 'b@firm2.test', name: '' }] } });
   assert.equal(r.c, 200, JSON.stringify(r.b));
@@ -1117,9 +1242,9 @@ await t('admin can excuse a client from the agreement; they can then buy without
 });
 
 console.log('\nMatched message to the business');
-await t('matched WhatsApp, else SMS, else nothing', async () => {
-  const b = { company: 'Aureum Finance', profile: { name: 'Aureum Finance', person: 'Daniel McCaffrey', phone: '0161 496 0000', email: 'daniel@aureum.test', show: {} } };
-  const l = { id: 9, full_name: 'Sam Taylor', amount: 150000, phone: '+447700900123' };
+await t('matched WhatsApp, else SMS, else nothing; no matter details either way', async () => {
+  const b = { company: 'Patel Law', profile: { name: 'Patel Law LLP', person: 'Jo Patel', phone: '0161 496 0000', email: 'jo@patellaw.test', show: {} } };
+  const l = { id: 9, full_name: 'Sam Taylor', area: 'family-law', matter: 'divorce', matter_label: 'Divorce', summary: 'SECRET SUMMARY', phone: '+447700900123' };
   const real = globalThis.fetch, env = { ...process.env }, sent = [];
   let waOk = true;
   globalThis.fetch = async (u, o) => { const url = String(u); if (!url.includes('platform.bird.com')) return real(u, o); sent.push({ url, body: JSON.parse(o.body) });
@@ -1130,11 +1255,15 @@ await t('matched WhatsApp, else SMS, else nothing', async () => {
     assert.equal(await P.matchedMessage(b, l), null, 'sent with nothing set up');
     process.env.BIRD_WA_FROM = '+442000000000'; process.env.BIRD_SMS_FROM = 'Leaflegal';
     assert.equal(await P.matchedMessage(b, l), 'whatsapp');
-    const wa = sent.at(-1).body; assert.equal(wa.template.slug, 'leaflegal_matched_v2'); assert.equal(wa.template.parameters.broker, 'Aureum Finance'); assert.equal(wa.template.parameters.first_name, 'Sam'); assert.equal(wa.template.parameters.business, 'your business'); assert.ok(!('whatsapp' in wa.template.parameters));
-    await P.matchedMessage({ ...b, profile: { ...b.profile, whatsapp: '07700 900999' } }, { ...l, business: 'ACME TRADING LTD' });
-    const w2 = sent.at(-1).body.template; assert.equal(w2.slug, 'leaflegal_matched_wa'); assert.equal(w2.parameters.whatsapp, '07700 900999'); assert.equal(w2.parameters.business, 'Acme Trading Ltd');
+    const wa = sent.at(-1).body; assert.equal(wa.template.slug, 'leaflegal_firm_matched'); assert.equal(wa.template.parameters.firm, 'Patel Law LLP');
+    assert.equal(wa.template.parameters.first_name, 'Sam'); assert.equal(wa.template.parameters.contact, 'Jo Patel'); assert.ok(!('whatsapp' in wa.template.parameters));
+    assert.ok(!/Divorce|SECRET/.test(JSON.stringify(wa)), 'matter details in the WhatsApp');
+    await P.matchedMessage({ ...b, profile: { ...b.profile, whatsapp: '07700 900999' } }, l);
+    const w2 = sent.at(-1).body.template; assert.equal(w2.slug, 'leaflegal_firm_matched_wa'); assert.equal(w2.parameters.whatsapp, '07700 900999');
     waOk = false; assert.equal(await P.matchedMessage(b, l), 'sms', 'no SMS fallback');
-    const sms = sent.at(-1).body; assert.equal(sms.category, 'transactional'); assert.ok(/Hi Sam/.test(sms.text) && /Aureum Finance/.test(sms.text) && /Call: 0161 496 0000/.test(sms.text), sms.text);
+    const sms = sent.at(-1).body; assert.equal(sms.category, 'transactional');
+    assert.ok(/Hi Sam/.test(sms.text) && /Patel Law LLP/.test(sms.text) && /Call 0161 496 0000/.test(sms.text) && /receives a fee from the firm/.test(sms.text), sms.text);
+    assert.ok(!/Divorce|SECRET/.test(sms.text), 'matter details in the text');
     assert.equal(await P.matchedMessage(b, { ...l, phone: '' }), null, 'texted a lead with no number');
     console.log('\n' + sms.text.replace(/^/gm, '        ') + '\n');
   } finally { globalThis.fetch = real; process.env = env; }
@@ -1160,11 +1289,11 @@ await t('unsubscribing from an invite stops every future email until they regist
   assert.ok(!suppressedEmails.has('una@sub.test'), 'registering did not lift the unsubscribe');
 });
 await t('registered brokers are never added to the list', async () => {
-  people[BROKER].email = 'jo@broker.test';
+  people[BROKER].email = 'jo@firm.test';
   const realGet = globalThis.fetch;
-  globalThis.fetch = (u, o) => (String(u).includes('/rest/v1/brokers?email=eq.jo%40broker.test') || String(u).includes('/rest/v1/brokers?email=eq.jo@broker.test') ? Promise.resolve(new Response(JSON.stringify([{ id: BROKER }]))) : realGet(u, o));
-  try { assert.equal(await P.suppress('jo@broker.test', 'test', 'crm'), false); } finally { globalThis.fetch = realGet; }
-  assert.ok(!suppressedEmails.has('jo@broker.test'));
+  globalThis.fetch = (u, o) => (String(u).includes('/rest/v1/brokers?email=eq.jo%40firm.test') || String(u).includes('/rest/v1/brokers?email=eq.jo@firm.test') ? Promise.resolve(new Response(JSON.stringify([{ id: BROKER }]))) : realGet(u, o));
+  try { assert.equal(await P.suppress('jo@firm.test', 'test', 'crm'), false); } finally { globalThis.fetch = realGet; }
+  assert.ok(!suppressedEmails.has('jo@firm.test'));
 });
 
 console.log('\nPausing and re-pacing an upload');
@@ -1191,12 +1320,12 @@ await t('pause stops an upload, resume re-times what is left at the new pace, le
 });
 
 await t('invites come from BULK_FROM when set; account emails stay on the main address', async () => {
-  const was = process.env.BULK_FROM; process.env.BULK_FROM = 'Leaflegal <invites@alerts.leaflegal.co>';
+  const was = process.env.BULK_FROM; process.env.BULK_FROM = 'Leaflegal <invites@outreach.leaflegal.co>';
   try {
     await api('admin-invite', { method: 'POST', token: tok.admin, body: { name: 'Bea Bulk', email: 'bea@bulk.test', kind: 'cold' } });
-    assert.equal(mails.find((m) => m.to.includes('bea@bulk.test')).from, 'Leaflegal <invites@alerts.leaflegal.co>');
+    assert.equal(mails.find((m) => m.to.includes('bea@bulk.test')).from, 'Leaflegal <invites@outreach.leaflegal.co>');
     reset(); await P.lowCredits(people[BROKER], 400, 60);
-    assert.ok(mails.length && !mails.some((m) => /alerts\.leaflegal/.test(m.from)), 'account email sent from the bulk address');
+    assert.ok(mails.length && !mails.some((m) => /outreach\.leaflegal/.test(m.from)), 'account email sent from the bulk address');
   } finally { if (was === undefined) delete process.env.BULK_FROM; else process.env.BULK_FROM = was; }
 });
 
@@ -1222,13 +1351,14 @@ await t('invited firms get every lead incl. matched ones, at most 3 a day each',
     if (url.includes('/rest/v1/email_suppressions')) return new Response('[]');
     if (url.includes('resend.com/emails/batch')) { sent.push(...JSON.parse(o.body)); return new Response('{"data":[]}'); }
     return real(u, o); };
-  try { assert.equal(await P.inviteLeadAlerts({ id: 1, amount: 150000, purpose: 'Equipment or vehicles', price: 120, turnover: '£500k to £1m', trading: '5+ years' }, true), 1); }
+  try { assert.equal(await P.inviteLeadAlerts({ id: 1, area: 'immigration', matter: 'sponsor-licences', matter_label: 'Sponsor licence', audience: 'business', region: 'London', price: 120, created_at: new Date().toISOString() }, true), 1); }
   finally { globalThis.fetch = real; }
   assert.deepEqual(sent.map((m) => m.to[0]), ['fresh@inv.test'], 'the person at 3 today was emailed again');
-  assert.match(sent[0].subject, /^Matched in seconds: £150,000 for equipment/);
+  assert.match(sent[0].subject, /^Matched in seconds: Sponsor licence, London/);
   assert.ok(/matched within seconds/.test(sent[0].html) && /no longer available/.test(sent[0].html), 'matched wording missing');
-  const full = { id: 2, amount: 50000, purpose: 'Cash flow', price: 60, full_name: 'Secret Person', email: 'secret@trading.test', phone: '+447700900999', checks: { phone: { reachable: true }, email: { result: 'valid' } },
-    company: { number: '01234567', incorporated: '2015-01-01', directorListed: true, profile: { title: 'SECRET TRADING LTD', locality: 'Leeds', industries: ['Construction'] } } };
+  assert.ok(sent[0].html.includes('platform.leaflegal.co/register?invite=tk1'), 'finish-signup link');
+  const full = { id: 2, area: 'debt-recovery', matter: 'unpaid-invoices', audience: 'business', price: 60, full_name: 'Secret Person', email: 'secret@trading.test', phone: '+447700900999', checks: { phone: { reachable: true }, email: { result: 'valid' } },
+    company: { number: '01234567', incorporated: '2015-01-01', profile: { title: 'SECRET TRADING LTD', locality: 'Leeds', industries: ['Construction'] } } };
   const tips = P.inviteCheckTips(full).join(' ');
   assert.ok(/Phone number verified/.test(tips) && /Companies House/.test(tips), tips);
   assert.ok(!/Secret|secret@|\*|Leeds|Construction|SECRET|7700/.test(tips), 'details leaked to invited firms: ' + tips);
@@ -1236,17 +1366,21 @@ await t('invited firms get every lead incl. matched ones, at most 3 a day each',
 });
 
 await t('missed summary: counts what held auto-buy back, sole blockers and who got the lead', async () => {
-  const b = { id: 'me', mode: 'auto', filters: { trading: ['2 to 5 years', '5+ years'], cleanCredit: true, amountMin: 30000 } };
-  const L = [{ amount: 50000, trading: '1 to 2 years', credit: 'Yes', buyer: 'other' }, { amount: 50000, trading: '1 to 2 years', credit: 'No', buyer: 'me' },
-    { amount: 50000, trading: '5+ years', credit: 'No', buyer: null }, { amount: 10000, trading: '5+ years', credit: 'No', buyer: null }];
+  const b = { id: 'me', mode: 'auto', regulators: SRA, filters: { areas: ['family-law'], urgencies: ['Urgently', 'Within a month'], grades: ['A', 'B'] } };
+  const F = (o) => ({ area: 'family-law', matter: 'divorce', urgency: 'Urgently', grade: 'A', ...o });
+  const L = [F({ urgency: 'In the next few months', grade: 'C', buyer: 'other' }), F({ urgency: 'In the next few months', buyer: 'me' }),
+    F({ buyer: null }), F({ grade: 'C', buyer: null }), F({ area: 'immigration', matter: 'spouse-visas', buyer: null })];
   const S = P.missedSummary(b, L);
-  assert.equal(S.missed.length, 3); assert.deepEqual([S.sold, S.mine, S.live], [1, 1, 1]);
-  const tr = S.groups.find((g) => g.k === 'trading');
-  assert.deepEqual([tr.n, tr.only, tr.v], [2, 1, '1 to 2 years']);
-  assert.equal(S.groups.find((g) => g.k === 'cleanCredit').label, 'Missed payments or CCJs');
+  assert.equal(S.missed.length, 4); assert.deepEqual([S.sold, S.mine, S.live], [1, 1, 2]);
+  const ur = S.groups.find((g) => g.k === 'urgencies');
+  assert.deepEqual([ur.n, ur.only, ur.v], [2, 1, 'In the next few months']);
+  assert.equal(S.groups.find((g) => g.k === 'grades').label, 'Grade C leads');
+  assert.equal(S.groups.find((g) => g.k === 'areas').label, 'Immigration');
+  const iaa = P.missedSummary({ ...b, regulators: [{ id: 'CLC', number: '1' }], filters: { areas: ['conveyancing'] } }, [F({})]);
+  assert.equal(iaa.missed.length, 0, 'leads its regulator does not allow are not counted as missed');
   assert.ok(P.missedEmailOn(b) && !P.missedEmailOn({ ...b, filters: { missed: 'off' } }) && !P.missedEmailOn({ ...b, mode: 'manual' }));
   assert.equal(P.missedEmail(b, [L[2]]), null, 'no email when nothing was missed');
-  const sent0 = mails.length, many = Array.from({ length: 8 }, (_, i) => ({ id: i + 1, amount: 50000, purpose: `P${i}`, trading: '1 to 2 years', credit: 'No', price: [40, 90, 30, 120, 60, 20, 75, 50][i], created_at: new Date().toISOString(), buyer: i % 2 ? 'other' : null }));
+  const sent0 = mails.length, many = Array.from({ length: 8 }, (_, i) => F({ id: i + 1, matter_label: `P${i}`, grade: 'C', price: [40, 90, 30, 120, 60, 20, 75, 50][i], created_at: new Date().toISOString(), buyer: i % 2 ? 'other' : null }));
   await P.missedEmail({ ...b, email: 'b@x.test', company: 'B Ltd' }, many);
   const html = mails.at(-1).html, pos = (p) => html.indexOf(`>P${p}<`);
   assert.ok(mails.length > sent0, 'no email sent');

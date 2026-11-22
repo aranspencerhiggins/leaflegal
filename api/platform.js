@@ -1,8 +1,12 @@
 import { createHmac, timingSafeEqual, createPublicKey, verify as cryptoVerify, randomBytes } from 'node:crypto';
 import {
-  db, rpc, configured, secretKey, SUPABASE_URL, PUBLISHABLE_KEY, PACKS, PREVIEW, FULL, TURNOVERS, TRADING, PURPOSES, PROPERTY, STRUCTURES, tierSpend, parseHubspot, postHubspot, parsePipedrive, postPipedrive,
-  onTiers, critOf, asPriced, tierPlanOf, tierSpendOf, getTierPrices, TIER_NAMES, DEFAULT_TIER_PRICES, leadTier, deliver, sendEmail, notify, openHandoff, cleanProfile, scanSite, matchedPreviews, webhooksOf, lowCredits, esc, postWebhook, leadOut, quality, matches, suggestMode, SUGGEST, suggestDigest, missedDigest, missedSummary, excluded, rematchLead, linkedinSpend, STAGES, getPricing, DEFAULT_PRICING, gbp, price, PRICE_EXAMPLES, CUSTOM, customPack, REVENUE_MID, withMask, PREVIEW_SELECT, DISCOUNT, salePrice, discountable, BULK_FROM, resendSlot, waivedIds, recentEnquiries, metaEvent, suppress, unsuppress, suppressedSet, leadAdCosts, weekOf, inviteDigest,
+  db, rpc, configured, secretKey, SUPABASE_URL, PUBLISHABLE_KEY, PACKS, PREVIEW, FULL, parseHubspot, postHubspot, parsePipedrive, postPipedrive,
+  deliver, sendEmail, notify, openHandoff, cleanProfile, scanSite, matchedPreviews, webhooksOf, lowCredits, esc, postWebhook, leadOut, quality, matches, fits, canTake, missGroups, regIds,
+  suggestMode, SUGGEST, suggestDigest, missedDigest, missedSummary, excluded, rematchLead, linkedinSpend, STAGES, getPricing, mergePricing, DEFAULT_PRICING, gbp, price, priceParts, PRICE_EXAMPLES,
+  CUSTOM, customPack, withMask, PREVIEW_SELECT, DISCOUNT, discountAt, salePrice, BULK_FROM, resendSlot, waivedIds, recentEnquiries, metaEvent, suppress, unsuppress, suppressedSet, leadAdCosts, weekOf,
+  inviteDigest, matterName, areaName, API_URL, SITE_URL,
 } from './_lib/platform.js';
+import { taxonomy, AREAS, AREA_SLUGS, REGIONS, URGENCY, GRADES, AUDIENCES, REGULATORS, regulatorOf, allowedAreas, areaOf, STAGE_LABELS } from './_lib/taxonomy.js';
 import { waOrSms, emailHtml } from './_lib/platform.js';
 import { whatsNew } from './_lib/whats-new.js';
 import { TRIAL, LOW_CREDITS, isUuid, allow, safeWebhookUrl, PLATFORM_URL, linkSig, signedUrl } from './_lib/platform.js';
@@ -13,25 +17,27 @@ import { signedPdf } from './_lib/agreement-pdf.js';
 import { human, turnstileSiteKey } from './_lib/turnstile.js';
 const pounds2 = (pence) => '£' + (pence / 100).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const CANCEL_REASONS = ['Lead quality wasn’t good enough', 'Leads didn’t turn into deals', 'Not enough leads matching my criteria', 'Too expensive', 'Taking a break for now', 'Moving to another lead source', 'Something else'];
-const ADMIN_TO = () => (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(',');
-// Refunds only for invalid contact details (partner agreement clause 7).
-// Refund reasons brokers can pick. ok: refunded once we confirm it. review: they can ask, not guaranteed. no: not refundable (note says why).
+const ADMIN_TO = () => (process.env.ENQUIRY_TO || 'hello@leaflegal.co').split(',');
+// Refunds for invalid contact details (referral agreement, refunds clause), and two reasons the team reviews.
+// Refund reasons firms can pick. ok: refunded once we confirm it. review: they can ask, not guaranteed. no: not refundable (note says why).
 const RETURN_REASONS = [
   { reason: 'Phone number is not in service', kind: 'ok', note: 'If we confirm the number isn’t in service, we’ll refund the lead in full.' },
   { reason: 'Phone number belongs to someone else', kind: 'ok', note: 'If we confirm the number belongs to someone else, we’ll refund the lead in full.' },
   { reason: 'Email address bounces or does not exist', kind: 'ok', note: 'If we confirm the email address doesn’t exist, we’ll refund the lead in full.' },
-  { reason: 'Revenue or trading figures don’t match', kind: 'review', note: 'Tell us what the business told you. We’ll look into it, but a refund isn’t guaranteed.' },
+  { reason: 'Outside the practice area or region stated', kind: 'review', note: 'Tell us what the client told you. We’ll look into it, but a refund isn’t guaranteed.' },
+  { reason: 'Duplicate of a lead already bought', kind: 'review', note: 'Tell us the number of the lead you already have. We’ll check it, but a refund isn’t guaranteed.' },
   { reason: 'Something else', kind: 'review', note: 'Tell us what happened. We’ll look into it, but a refund isn’t guaranteed.' },
-  { reason: 'They’re no longer interested', kind: 'no', note: 'Sorry, we can’t refund this. Every lead is a real inbound enquiry, but not every business will go ahead. That’s the nature of lead generation.' },
-  { reason: 'They’ve changed what they need or no longer want funding', kind: 'no', note: 'Sorry, we can’t refund this. Plans change after a business enquires, and that’s outside our control.' },
+  { reason: 'They’re no longer interested', kind: 'no', note: 'Sorry, we can’t refund this. Every lead is a real inbound enquiry, but not every client will go ahead. That’s the nature of lead generation.' },
+  { reason: 'They decided not to instruct a firm', kind: 'no', note: 'Sorry, we can’t refund this. Plans change after someone enquires, and that’s outside our control.' },
 ];
-// Why an admin declined a refund: shown to the broker in the decision email.
+// Why an admin declined a refund: shown to the firm in the decision email.
 const DECLINE_REASONS = {
   valid: 'We checked the phone number and email address and both are valid. Refunds are for leads we can’t reach because the contact details are wrong.',
-  interest: 'The business is no longer interested. Every lead is a real inbound enquiry, but not every business will go ahead, so we can’t refund leads that change their mind.',
-  brief: 'The business has changed what it needs or no longer wants funding. Plans change after an enquiry and that’s outside our control, so we can’t refund it.',
-  figures: 'We checked the business’s revenue and trading time and they match what was given in the enquiry.',
-  attempts: 'The contact details look right, so the business may just be busy. Please make a few more attempts by phone, text and email over the next few days.',
+  interest: 'The client is no longer interested. Every lead is a real inbound enquiry, but not every client will go ahead, so we can’t refund leads that change their mind.',
+  brief: 'The client has changed what they need or decided not to instruct a firm. Plans change after an enquiry and that’s outside our control, so we can’t refund it.',
+  scope: 'We checked the enquiry and the practice area and region match what the client told us.',
+  duplicate: 'We checked and this is a separate enquiry, not a copy of a lead you already have.',
+  attempts: 'The contact details look right, so the client may just be busy. Please make a few more attempts by phone, text and email over the next few days.',
   late: 'The request came in after the 72-hour refund window.',
 };
 const RETURN_HOURS = 72;
@@ -87,7 +93,7 @@ async function authUser(req) {
 }
 
 // Team members: extra sign-ins on a broker account. Everyone can see and work leads; these permissions unlock the rest.
-const PERMS = { buy: 'Buy leads and request refunds', settings: 'Change auto-buy, delivery, profile and notifications', billing: 'Manage billing, plans and the partner agreement', team: 'Add and remove users' };
+const PERMS = { buy: 'Buy leads and request refunds', settings: 'Change auto-buy, delivery, profile and notifications', billing: 'Manage billing, plans and the referral agreement', team: 'Add and remove users' };
 const NEED = { buy: 'buy', refund: 'buy', backlog: 'buy', settings: 'settings', 'test-webhook': 'settings', profile: 'settings', 'profile-logo': 'settings', 'profile-preview': 'settings', 'profile-scan': 'settings',
   billing: 'billing', ledger: 'billing', checkout: 'billing', 'change-plan': 'billing', 'cancel-plan': 'billing', 'resume-plan': 'billing', coupon: 'billing', invoices: 'billing', subscription: 'billing',
   'enterprise-request': 'billing', sign: 'billing', onboard: 'billing', team: 'team', 'team-invite': 'team', 'team-update': 'team', 'team-remove': 'team' };
@@ -95,7 +101,7 @@ const cleanPerms = (p = {}) => Object.fromEntries(Object.keys(PERMS).map((k) => 
 const INVITE_DAYS = 14;
 const teamInviteEmail = (m, owner, by) => notify([m.email], `${owner.company} has added you to Leaflegal Platform`, {
   title: `Join ${owner.company} on Leaflegal`, preheader: `${by} has given you a sign-in to ${owner.company}’s Leaflegal Platform account.`,
-  intro: `${esc(by)} has added you to <b>${esc(owner.company)}</b>’s account on Leaflegal Platform, where the team buys and manages business finance leads. Choose a password to get started.`,
+  intro: `${esc(by)} has added you to <b>${esc(owner.company)}</b>’s account on Leaflegal Platform, where the team buys and manages legal enquiries. Choose a password to get started.`,
   rows: Object.entries(PERMS).map(([k, label]) => [label, m.perms?.[k] ? 'Yes' : 'No']).concat([['See leads and update their stages', 'Yes']]), rowsTitle: 'What you can do',
   cta: { label: 'Accept and choose a password', url: `${PLATFORM_URL}/join?t=${m.token}` },
   note: `This link works for ${INVITE_DAYS} days. If you weren’t expecting it, you can ignore this email.` });
@@ -204,17 +210,17 @@ async function adCostsSince(since) {
 }
 const audit = (admin, action, target, detail) => db('audit_log', { method: 'POST', body: { admin, action, target: String(target ?? ''), detail } }).catch(() => {});
 const signed = async (uid) => (await waivedIds()).has(uid) || (await db(`agreements?broker=eq.${uid}&version=eq.${TERMS_VERSION}&select=id&limit=1`)).length > 0; // or excused by an admin
-// Leads already waiting that fit a broker's criteria, picked as auto-buy would (good contact checks, under their per-lead max), newest first at today's price.
+// Leads already waiting that fit a firm's criteria, picked as auto-buy would (good contact checks, under their per-lead max), newest first at today's price.
 async function backlogOf(b) {
   const since = new Date(Date.now() - 30 * 864e5).toISOString(), f = b.filters || {};
   const rows = await db(`leads?buyer=is.null&hidden_at=is.null&exclude_brokers=not.cs.{${b.id}}&or=(created_at.gte.${since},price_fixed.is.true)&select=${PREVIEW_SELECT}&order=created_at.desc&limit=200`);
-  return rows.map((l) => asPriced(l, b)).filter((l) => { const c = l.checks || {};
-    return l.price != null && matches(critOf(b), l) && !(c.phone?.allocated === false || c.phone?.reachable === false || c.email?.result === 'undeliverable')
-      && (onTiers(b) || !f.maxPrice || salePrice(l).price <= f.maxPrice); }).map((l) => ({ id: l.id, price: salePrice(l).price }));
+  return rows.filter((l) => { const c = l.checks || {};
+    return l.price != null && fits(b, l) && !(c.phone?.allocated === false || c.phone?.reachable === false || c.email?.result === 'undeliverable')
+      && (!f.maxPrice || salePrice(l).price <= f.maxPrice); }).map((l) => ({ id: l.id, price: salePrice(l).price }));
 }
 const canBuy = async (b) => b.approved && !b.suspended_at && !b.plan?.commission && (await signed(b.id));
-// "Yes, match me with these": buys the waiting leads within the broker's credits and monthly auto-buy limit, then clears the request.
-// ponytail: daily limits and tier budgets aren't applied here (the broker said yes to this batch); add them if a client asks.
+// "Yes, match me with these": buys the waiting leads within the firm's credits and monthly auto-buy limit, then clears the request.
+// ponytail: daily limits aren't applied here (the firm said yes to this batch); add them if a client asks.
 async function claimBacklog(b) {
   if (!(await canBuy(b)) || b.credits <= 0) return null; // asked during onboarding: kept until the account can buy
   let credits = b.credits, used = b.monthly_cap ? await rpc('auto_spend_this_month', { p_broker: b.id }) : 0, bought = 0, spent = 0;
@@ -303,6 +309,19 @@ function verifyStripe(raw, header, secret) {
 
 const sub = (list, allowed) => (Array.isArray(list) ? list.filter((v) => allowed.includes(v)) : []);
 const money = (v) => { const n = Math.round(Number(String(v ?? '').replace(/[^\d.]/g, ''))); return n > 0 ? n : null; };
+// A firm's lead criteria from the settings form (see docs/PLATFORM-LEGAL-SPEC.md, Firm criteria). Areas are limited to the
+// ones its regulators allow; matters to known matter slugs of the chosen areas; tags to short plain words.
+const tagList = (v) => [...new Set((Array.isArray(v) ? v : []).map((t) => String(t || '').trim().toLowerCase().slice(0, 40)).filter((t) => /^[a-z0-9][a-z0-9 -]*$/.test(t)))].slice(0, 30);
+function cleanFilters(f = {}, b = {}) {
+  const allowed = allowedAreas(regIds(b)), areas = sub(f.areas, AREA_SLUGS).filter((a) => allowed.includes(a));
+  const matters = {};
+  for (const a of areas) { const known = (areaOf(a)?.matters || []).map(([m]) => m), list = sub(f.matters?.[a], known); if (list.length) matters[a] = list; }
+  const postcodeAreas = [...new Set((Array.isArray(f.postcodeAreas) ? f.postcodeAreas : []).map((x) => String(x || '').trim().toUpperCase()).filter((x) => /^[A-Z]{1,2}$/.test(x)))].slice(0, 130);
+  const valueMin = money(f.valueMin), valueMax = money(f.valueMax);
+  return { areas, matters, regions: sub(f.regions, REGIONS), postcodeAreas, audiences: sub(f.audiences, AUDIENCES.map(([k]) => k)), urgencies: sub(f.urgencies, URGENCY),
+    grades: sub(f.grades, GRADES), privatePayOnly: !!f.privatePayOnly, valueMin, valueMax: valueMin && valueMax && valueMax < valueMin ? null : valueMax,
+    tagsAny: tagList(f.tagsAny), tagsNone: tagList(f.tagsNone), dailyLeads: money(f.dailyLeads), dailyCredits: money(f.dailyCredits), maxPrice: money(f.maxPrice) };
+}
 
 
 // Approve or pause a broker, and email them. Shared by Admin → Clients and the approve link in the signup email.
@@ -343,6 +362,18 @@ async function avgLeadPrice() {
   return avgCache.v;
 }
 
+// Price unsold, visible leads again from P. Returns { checked, changed }.
+async function repriceUnsold(P, all = false) {
+  const rows = await db(`leads?buyer=is.null&hidden_at=is.null${all ? '' : '&price_fixed=not.is.true'}&select=id,area,matter,grade,urgency,audience,value_min,price,price_fixed&limit=10000`);
+  let changed = 0;
+  for (const l of rows) {
+    const p = price(l, P);
+    if (p === l.price && !l.price_fixed) continue;
+    await db(`leads?id=eq.${l.id}&buyer=is.null`, { method: 'PATCH', body: { price: p, list_price: null, price_fixed: false } });
+    changed++;
+  }
+  return { checked: rows.length, changed };
+}
 async function setApproved(b, approved, by) {
   if (approved === b.approved) return false;
   await db(`brokers?id=eq.${b.id}`, { method: 'PATCH', body: { approved } });
@@ -350,10 +381,10 @@ async function setApproved(b, approved, by) {
   if (approved) await pendingBacklog(b.id).catch((e) => console.error('backlog', e.message));
   await notify([b.email], approved ? 'Your Leaflegal Platform account is approved' : 'Your Leaflegal Platform account has been paused', approved ? {
     title: 'You’re approved', preheader: `${b.company} can now buy exclusive leads on Leaflegal Platform.`,
-    intro: `Good news: ${esc(b.company)} is approved on Leaflegal Platform. You can now buy leads${b.mode === 'auto' ? ', and auto-buy will start picking up leads that match your criteria the moment they arrive' : ''}.`,
+    intro: `Good news. ${esc(b.company)} is approved on Leaflegal Platform. You can now buy leads${b.mode === 'auto' ? ', and auto-buy will start picking up leads that match your criteria the moment they arrive' : ''}.`,
     ...(b.credits ? { highlight: { value: `${b.credits.toLocaleString('en-GB')} credits`, label: 'ready to spend' } } : {}),
     stepsTitle: 'Start here',
-    steps: [['Browse live opportunities', 'See every live lead with its amount, purpose, revenue, trading time and price before you buy.'],
+    steps: [['Browse live opportunities', 'See every live lead with its practice area, matter, location, urgency and price before you buy.'],
       [b.mode === 'auto' ? 'Check your auto-buy limits' : 'Try auto-buy', 'Set the leads you want and your daily, monthly and per-lead limits, and we’ll buy them for you.'],
       ['Call every lead quickly', 'Leads are delivered instantly by email and on the platform. The faster you call, the better they convert.']],
     cta: { label: 'Go to opportunities', url: `${PLATFORM_URL}/opportunities` } } : {
@@ -392,41 +423,41 @@ export function bulkSendTime(start, perDay, i) {
 }
 const sendInvite = (p, link) => {
   const first = String(p.n || '').split(' ')[0], tok = link.split('invite=')[1] || '';
-  const unsub = `${PLATFORM_URL}/api/platform?action=invite-stop&t=${encodeURIComponent(tok)}`;
+  const unsub = `${API_URL}?action=invite-stop&t=${encodeURIComponent(tok)}`;
   if (p.k === 'cold') return sendColdInvite(p, link, first, unsub);
   if (p.k === 'partner') return notify([p.e], first ? `${first}, your invitation to Leaflegal Platform` : 'Your invitation to Leaflegal Platform', {
     title: 'Your invitation to Leaflegal Platform',
     preheader: 'Your details are filled in. Setting up takes about five minutes.',
     greeting: first ? `Hi ${esc(first)},` : 'Hello,',
-    intro: `Here’s your invitation to Leaflegal Platform${p.c ? ` for <b>${esc(String(p.c).replace(/\.+$/, ''))}</b>` : ''}. Leaflegal brings you UK limited companies and LLPs that have asked to speak to a broker about business finance, and every lead goes to one firm only.`,
+    intro: `Here’s your invitation to Leaflegal Platform${p.c ? ` for <b>${esc(String(p.c).replace(/\.+$/, ''))}</b>` : ''}. Leaflegal brings you people and businesses who have asked to be put in touch with a law firm, and every lead goes to one firm only.`,
     highlight: { value: 'About five minutes', label: 'To set up. Your details are filled in, and we check every new account, usually within one working day.' },
     cta: { label: 'Join Leaflegal Platform', url: link },
     stepsTitle: 'What happens next',
     steps: [['Choose a password', 'Your name, company, email and mobile are already filled in.'],
-      ['Tell us what you fund', 'The loan sizes, purposes and types of business you want to hear about.'],
+      ['Tell us about your firm', 'Your regulator and number, and the practice areas, matters and regions you want leads for.'],
       ['We check your account', 'Usually within one working day. Then you can buy leads or switch on auto-buy.']],
     tipsTitle: 'While you wait',
     tips: ['<b>New leads by email.</b> We\'ll send you new leads as they come in, so you can see what\'s on offer.',
       '<b>Exclusive leads.</b> Each enquiry goes to one firm, never a shared list.',
-      '<b>Full details before you buy.</b> Amount, purpose, revenue, trading time and Companies House checks.'],
+      '<b>Full details before you buy.</b> Practice area, matter, location, urgency and what the client told us.'],
     note: `This invitation is for ${esc(p.e)} and works until ${new Date(p.x).toLocaleDateString('en-GB', { dateStyle: 'long' })}. Questions? Just reply to this email.`,
     footer: `You're receiving this because ${esc(p.e)} asked about becoming a Leaflegal partner on leaflegal.co. <a href="${unsub}" style="color:#86998f">Don't want these emails?</a>`, unsub, nav: false, replyTo: 'hello@leaflegal.co' }); // no account links yet: fewer links reads less like bulk mail
   return notify([p.e], first ? `${first}, you're invited to join Leaflegal as an approved supplier` : 'You’re invited to join Leaflegal as an approved supplier', {
     title: 'You’re invited to join Leaflegal',
     preheader: `Your account is already approved. Setting up takes about five minutes.`,
     greeting: first ? `Hi ${esc(first)},` : 'Hello,',
-    intro: `We'd like ${p.c ? `<b>${esc(p.c)}</b>` : 'you'} to join Leaflegal as an approved supplier. Leaflegal brings you UK limited companies and LLPs that have asked to speak to someone about business finance today, and every lead is sold to one firm only. When you buy it, it's yours.`,
+    intro: `We'd like ${p.c ? `<b>${esc(p.c)}</b>` : 'you'} to join Leaflegal as an approved supplier. Leaflegal brings you people and businesses who have asked to be put in touch with a law firm, and every lead is sold to one firm only. When you buy it, it's yours.`,
     highlight: { value: 'Already approved', label: 'No waiting for a review. You can start as soon as your account is set up.' },
     rowsTitle: 'Your invitation', rows: [...(p.n ? [['Name', p.n]] : []), ['Email', p.e], ...(p.c ? [['Firm', p.c]] : []), ['Valid until', new Date(p.x).toLocaleDateString('en-GB', { dateStyle: 'long' })]],
     cta: { label: 'Accept your invitation', url: link },
     stepsTitle: 'Getting set up takes about five minutes',
     steps: [['Choose a password', 'Your name and email are already filled in.'],
-      ['Tell us what you fund', 'The loan sizes, purposes and types of business you want to hear about.'],
+      ['Tell us about your firm', 'Your regulator and number, and the practice areas, matters and regions you want leads for.'],
       ['Pick a monthly plan', 'Plans start at £2,500 + VAT a month, and new partners can take their first month for £1,000 + VAT.'],
-      ['Accept the partner agreement', 'Tick two boxes to accept online. We email you a copy and keep one in your account.']],
+      ['Accept the referral agreement', 'Tick two boxes to accept online. We email you a copy and keep one in your account.']],
     tipsTitle: 'What you get',
     tips: ['<b>Exclusive leads.</b> Each enquiry goes to one firm, never a shared list.',
-      '<b>Full details before you buy.</b> Amount, purpose, revenue, trading time and Companies House checks.',
+      '<b>Full details before you buy.</b> Practice area, matter, location, urgency and what the client told us.',
       '<b>Auto-buy.</b> Set your criteria and limits, and we pick up matching leads the moment they arrive.',
       '<b>Straight into your workflow.</b> Leads land in your inbox, on the platform and in your CRM.',
       ...(p.alerts ? ['<b>See leads straight away.</b> We\'ll email you new leads as they come in, so you can see what\'s on offer while you set up.'] : [])],
@@ -436,17 +467,17 @@ const sendInvite = (p, link) => {
 // Cold invite: for firms who haven't heard of Leaflegal. Explains what it is, how it works and how to join.
 const sendColdInvite = async (p, link, first, unsub) => notify([p.e], p.c ? `${p.c} is invited to join Leaflegal` : 'You’re invited to join Leaflegal', {
   title: p.c ? `${p.c} is invited to join Leaflegal` : 'You’re invited to join Leaflegal', // title is escaped by emailHtml
-  preheader: 'Exclusive business finance leads, sold to one broker only. Your account is already approved.',
+  preheader: 'Exclusive legal enquiries, sold to one firm only. Your account is already approved.',
   greeting: first ? `Hi ${esc(first)},` : 'Hello,',
-  intro: 'You’ve been invited to join Leaflegal. UK businesses come to us looking for finance, and we pass each enquiry to one approved broker only.',
+  intro: 'You’ve been invited to join Leaflegal. People and businesses come to us looking for a solicitor, and we pass each enquiry to one law firm only.',
   tipsTitle: 'What you get', ticks: true,
-  tips: ['<b>Inbound, genuine enquiries</b> from UK businesses looking for finance.',
-    '<b>Verified details.</b> Every company is checked on Companies House, and phone numbers and email addresses are checked live.',
-    '<b>The full picture up front.</b> Revenue, loan amount, CCJs and existing finance are declared before you buy.',
+  tips: ['<b>Inbound, genuine enquiries</b> from people and businesses who need a law firm.',
+    '<b>Verified details.</b> Phone numbers and email addresses are checked live.',
+    '<b>The full picture up front.</b> Practice area, matter, location, urgency and the client’s answers before you buy.',
     '<b>Pay per lead.</b> Only for the leads you take, using credits from a monthly plan you can cancel any time.',
     '<b>Auto-match.</b> Set your criteria and leads that fit are bought for you the moment they arrive.',
     '<b>Straight to your inbox and CRM.</b> Every lead you buy is sent to your email, your CRM, or both, the moment it’s yours.',
-    '<b>One lead, one broker.</b> Never a shared list. When you buy a lead, it’s yours alone.'],
+    '<b>One lead, one firm.</b> Never a shared list. When you buy a lead, it’s yours alone.'],
   cta: { label: 'Accept invite', url: link }, after: (await recentEnquiries()).replace('{{more}}', esc(link)), // their invite link: accepting it opens the live opportunities
   note: `Joining takes about five minutes, and your account is already approved. This invitation is for ${esc(p.e)} and works until ${new Date(p.x).toLocaleDateString('en-GB', { dateStyle: 'long' })}. Questions? Just reply to this email.`,
   footer: `You're receiving this because we think Leaflegal could help ${esc(p.c || 'your firm')} find new clients. <a href="${unsub}" style="color:#86998f">Unsubscribe</a> and we won't email you again.`,
@@ -510,13 +541,13 @@ async function flushInvites(budgetMs = 40000) {
 // "Confirm your email" (sent at signup, and again on request).
 const sendVerify = (b, first = true) => notify([b.email], first ? 'Confirm your email to start using Leaflegal Platform' : 'Your Leaflegal confirmation link', {
   title: first ? `Welcome to Leaflegal, ${esc(String(b.contact_name || '').split(' ')[0] || b.company)}` : 'Confirm your email address',
-  preheader: 'Confirm your email address to finish setting up your broker account.',
-  intro: `${first ? `Thanks for signing up. ` : ''}Please confirm this is your email address so we know it's really you. Your broker account for <b>${esc(b.company)}</b> is ready once you do.`,
+  preheader: 'Confirm your email address to finish setting up your firm account.',
+  intro: `${first ? `Thanks for signing up. ` : ''}Please confirm this is your email address so we know it's really you. Your firm account for <b>${esc(b.company)}</b> is ready once you do.`,
   cta: { label: 'Confirm my email address', url: verifyUrl(b.id) },
   ...(first ? { stepsTitle: 'Then finish setting up (about five minutes)',
-    steps: [['Tell us what you fund', 'Add your company details and the loan sizes, purposes and business types you want.'],
+    steps: [['Tell us about your firm', 'Add your regulator and number, and the practice areas, matters and regions you want.'],
       ['Choose a monthly plan', 'Plans start at £2,500 + VAT a month. New partners can take their first month for £1,000 + VAT.'],
-      ['Accept the partner agreement', 'Tick the boxes to accept online. We email you a copy and keep it in your account.']] } : {}),
+      ['Accept the referral agreement', 'Tick the boxes to accept online. We email you a copy and keep it in your account.']] } : {}),
   note: `The link works for 7 days. If you didn't create a Leaflegal account, you can ignore this email.`, replyTo: 'hello@leaflegal.co' });
 const page = (res, status, title, inner) => res.status(status).setHeader('Content-Type', 'text/html; charset=utf-8').setHeader('Cache-Control', 'no-store').setHeader('X-Robots-Tag', 'noindex')
   .send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | Leaflegal</title>
@@ -525,12 +556,22 @@ const page = (res, status, title, inner) => res.status(status).setHeader('Conten
 td{padding:10px 14px;font-size:14px;vertical-align:top}td:first-child{color:#5d7a6e;width:40%}tr+tr td{border-top:1px solid #e2ebe7}a{color:#3d6656}
 button{border:0;border-radius:999px;background:#244237;color:#fff;font:700 16px Arial,sans-serif;padding:14px 30px;cursor:pointer}.ok{color:#1f8a55;font-weight:700}.m{color:#5d7a6e;font-size:14px}</style></head>
 <body><div class="w"><div class="c"><div class="h"><img src="https://leaflegal.co/assets/Leaflegal_Logo_White.svg" width="128" height="26" alt="Leaflegal"></div><div class="b">${inner}</div></div></div></body></html>`);
+// Register links for each regulator (admin checks the number by hand, then ticks it as checked).
+const REGISTER_LINKS = { SRA: 'https://www.sra.org.uk/consumers/register/', CILEX: 'https://cilexregulation.org.uk/', CLC: 'https://www.clc-uk.org/', IAA: 'https://www.gov.uk/find-an-immigration-adviser' };
+const regulatorsOut = (b) => (Array.isArray(b?.regulators) ? b.regulators : []).filter((r) => r && regulatorOf(r.id)).map((r) => ({ id: r.id, number: r.number || '', label: regulatorOf(r.id).label, register: REGISTER_LINKS[r.id] }));
+const regulatorText = (b) => regulatorsOut(b).map((r) => `${r.id} ${r.number}`).join(', ') || 'Not given';
+const regulatorHtml = (b) => regulatorsOut(b).map((r) => `${esc(r.id)} ${esc(r.number)} · <a href="${r.register}">check the register</a>`).join('<br>') || 'Not given';
+// Regulators from a form: [{ id, number }], known ids only, one per regulator, number required. Returns null if none.
+const cleanRegulators = (v) => { const seen = new Set(), out = [];
+  for (const r of Array.isArray(v) ? v : []) { const id = String(r?.id || '').toUpperCase(), number = String(r?.number || '').trim().slice(0, 30);
+    if (regulatorOf(id) && number && !seen.has(id)) { seen.add(id); out.push({ id, number }); } }
+  return out.length ? out : null; };
 const brokerRows = (b, agreed) => `<table>${[['Firm', esc(b.company)], ['Contact', esc(b.contact_name || '–')], ['Email', `<a href="mailto:${esc(b.email)}">${esc(b.email)}</a>`],
-  ['Phone', esc(b.phone || '–')], ['FCA number', b.fca_number ? `${esc(b.fca_number)} · <a href="https://register.fca.org.uk/s/search?q=${encodeURIComponent(b.fca_number)}&type=Companies">check the FCA register</a>` : 'Not given'],
+  ['Phone', esc(b.phone || '–')], ['Regulators', regulatorHtml(b)], ['Register checked', b.regulator_checked_at ? new Date(b.regulator_checked_at).toLocaleDateString('en-GB', { dateStyle: 'medium' }) : 'Not yet'],
   ['Company number', b.company_number ? `<a href="https://find-and-update.company-information.service.gov.uk/company/${encodeURIComponent(b.company_number)}">${esc(b.company_number)}</a>` : `Not given yet · <a href="https://find-and-update.company-information.service.gov.uk/search/companies?q=${encodeURIComponent(b.company)}">search Companies House</a>`],
   ['Email confirmed', b.email_verified_at ? 'Yes' : '<b>Not yet</b>'],
   ['Signed up', new Date(b.created_at || Date.now()).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/London' })],
-  ['Partner agreement', agreed === undefined ? '–' : agreed ? 'Accepted' : 'Not accepted yet'], ['Status', b.approved ? '<span class="ok">Approved</span>' : 'Waiting for approval']]
+  ['Referral agreement', agreed === undefined ? '–' : agreed ? 'Accepted' : 'Not accepted yet'], ['Status', b.approved ? '<span class="ok">Approved</span>' : 'Waiting for approval']]
   .map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>`;
 
 export default async function handler(req, res) {
@@ -549,9 +590,11 @@ export default async function handler(req, res) {
     // ------------------------------------------------ public
     // Approve link from the admin signup email (GET = confirmation page, POST = approve).
     // Public settings the pages need (the Turnstile site key is public by design).
-    if (action === 'config') { res.setHeader('Cache-Control', 'public, max-age=300'); return res.json({ turnstile: turnstileSiteKey() }); }
-    // Lead pricing settings for the public cost per lead calculator (/partners/cost-per-lead-calculator).
-    if (action === 'pricing') { res.setHeader('Cache-Control', 'public, max-age=300'); return res.json({ pricing: await getPricing(), revenueMid: REVENUE_MID }); }
+    if (action === 'config') { res.setHeader('Cache-Control', 'public, max-age=300'); return res.json({ turnstile: turnstileSiteKey(), supabaseUrl: SUPABASE_URL, supabaseKey: PUBLISHABLE_KEY }); }
+    // Practice areas, matters, regions, regulators and the other shared lists (api/_lib/taxonomy.js).
+    if (action === 'taxonomy') { res.setHeader('Cache-Control', 'public, max-age=300'); return res.json(taxonomy()); }
+    // Lead pricing settings for the Credits page examples and any public cost per lead calculator.
+    if (action === 'pricing') { res.setHeader('Cache-Control', 'public, max-age=300'); return res.json({ pricing: await getPricing() }); }
 
     // Unsubscribe link (and Gmail/Outlook one-click POST) in new-lead emails to brokers: turns off "Email me when a matching lead arrives".
     if (action === 'alerts-off') {
@@ -570,19 +613,19 @@ export default async function handler(req, res) {
       return page(res, 200, 'Unsubscribed', `<h1>You're unsubscribed</h1><p>We won't email you about leads outside your criteria any more. Leads that fit your criteria are handled as before.</p><p class="m">Changed your mind? Turn these emails back on under <a href="${PLATFORM_URL}/notifications">Notifications</a>.</p>`);
     }
 
-    // "Match me with a different broker" link for a business already matched (follow-up email, thank-you page).
+    // "Match me with a different firm" link for a client already matched (follow-up email, thank-you page).
     // GET = confirmation page; only its button (a POST) re-matches, so email scanners that open links can't.
     if (action === 'rematch') {
       const q = new URL(req.url, 'http://x').searchParams, id = q.get('id');
-      if (!sigOk(id, q.get('exp'), q.get('sig'), 'rematch')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a> and we'll match you with a different broker.</p>`);
-      if (req.method !== 'POST') return page(res, 200, 'A different broker', `<h1>Match me with a different broker</h1><p>We'll pass your enquiry to another of our brokers, using the details you gave us. Your current broker won't be sent it again.</p><form method="post"><button type="submit">Match me with someone else</button></form><p class="m">No obligation, as before.</p>`);
+      if (!sigOk(id, q.get('exp'), q.get('sig'), 'rematch')) return page(res, 403, 'Link expired', `<h1>This link has expired</h1><p>Email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a> and we'll match you with a different firm.</p>`);
+      if (req.method !== 'POST') return page(res, 200, 'A different firm', `<h1>Match me with a different firm</h1><p>We'll pass your enquiry to another law firm, using the details you gave us. The firm you were matched with won't be sent it again.</p><form method="post"><button type="submit">Match me with someone else</button></form><p class="m">There is no obligation, as before.</p>`);
       const r = await rematchLead(Number(id));
-      if (r.error === 'done') return page(res, 200, 'Already done', `<h1>We're already on it</h1><p>You've already asked for a different broker. If nobody has been in touch, email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.</p>`);
-      if (r.error || r.duplicateOf) return page(res, 200, 'Something went wrong', `<h1>We couldn't do that automatically</h1><p>Please email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a> and we'll match you with a different broker.</p>`);
+      if (r.error === 'done') return page(res, 200, 'Already done', `<h1>We're already on it</h1><p>You've already asked for a different firm. If nobody has been in touch, email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.</p>`);
+      if (r.error || r.duplicateOf) return page(res, 200, 'Something went wrong', `<h1>We couldn't do that automatically</h1><p>Please email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a> and we'll match you with a different firm.</p>`);
       await audit(null, 'lead-rematch', String(id), { lead: r.id, buyer: r.buyer || undefined }).catch(() => {});
-      return page(res, 200, 'Done', r.match
-        ? `<h1>You've been matched with ${esc(r.match.company)}</h1><p>${esc(r.match.person || 'They')} will be in touch shortly, usually by phone. We've emailed you their details.</p>`
-        : `<h1>Thanks, we're on it</h1><p>We're passing your enquiry to a different broker. They'll be in touch shortly, usually by phone, and we'll email you their details.</p>`);
+      return page(res, 200, 'Done', r.firm
+        ? `<h1>You've been matched with ${esc(r.firm.company)}</h1><p>${esc(r.firm.person || 'They')} will be in touch shortly, usually by phone. We've emailed you their details.</p>`
+        : `<h1>Thanks, we're on it</h1><p>We're passing your enquiry to a different firm. They'll be in touch shortly, usually by phone, and we'll email you their details.</p>`);
     }
     if (action === 'missed-off') {
       const q = new URL(req.url, 'http://x').searchParams, id = q.get('id');
@@ -619,7 +662,7 @@ export default async function handler(req, res) {
       if (v) await db(`invites?token=eq.${encodeURIComponent(t)}`, { method: 'PATCH', body: { alerts: false } });
       if (email) { await suppress(email, req.method === 'POST' ? 'One-click unsubscribe' : 'Unsubscribe link', 'invite'); await audit(null, 'unsubscribe', email, { from: 'invite' });
         await markNotInterested(email).catch((x) => console.error('crm not interested', x.message)); }
-      return page(res, email ? 200 : 404, 'Unsubscribed', email ? '<h1>You’re unsubscribed</h1><p>We won’t email you again. If you ever decide to join Leaflegal, you’re welcome to sign up at <a href="https://platform.leaflegal.co/register">platform.leaflegal.co</a>.</p>'
+      return page(res, email ? 200 : 404, 'Unsubscribed', email ? '<h1>You’re unsubscribed</h1><p>We won’t email you again. If you ever decide to join Leaflegal, you’re welcome to sign up at <a href="' + PLATFORM_URL + '/register">platform.leaflegal.co</a>.</p>'
         : '<h1>We couldn\'t find that invitation</h1><p>If you\'re still getting emails, reply to one and we\'ll stop them.</p>');
     }
 
@@ -644,7 +687,7 @@ export default async function handler(req, res) {
         return page(res, 200, 'Approved', `<h1>${esc(b.company)} is approved</h1><p class="ok">${changed ? `We've emailed ${esc(b.email)} to let them know they can start buying leads.` : 'They were already approved.'}</p>${brokerRows({ ...b, approved: true }, agreed)}<p class="m"><a href="${PLATFORM_URL}/admin">Open the Admin panel</a></p>`);
       }
       return page(res, 200, `Approve ${b.company}`, `<h1>Approve ${esc(b.company)}?</h1>${brokerRows(b, agreed)}${b.approved ? '<p class="ok">Already approved. Nothing to do.</p>'
-        : `<form method="post"><button type="submit">Approve and email them</button></form><p class="m">They'll be able to buy leads straight away${agreed ? '' : ' once they accept the partner agreement'}.</p>`}`);
+        : `<form method="post"><button type="submit">Approve and email them</button></form><p class="m">They'll be able to buy leads straight away${agreed ? '' : ' once they accept the referral agreement'}.</p>`}`);
     }
 
     // Resend → hard bounces and spam complaints go on the suppression list, so nothing is sent to them again.
@@ -698,7 +741,7 @@ export default async function handler(req, res) {
               highlight: { value: `${credits.toLocaleString('en-GB')} credits added`, label: `New balance: ${b.credits.toLocaleString('en-GB')} credits` },
               rowsTitle: 'Payment details',
               ...(kind === 'first' ? { stepsTitle: 'Getting your first leads', steps: [
-                ['Check your lead criteria', 'Set the loan sizes, revenue, purposes and trading time you want under Auto-buy.'],
+                ['Check your lead criteria', 'Set the practice areas, matters and regions you want under Auto-buy.'],
                 ['Choose manual or auto-buy', 'Buy leads yourself from Opportunities, or let auto-buy take matching leads the moment they arrive, within your daily and monthly limits.'],
                 ['Connect your CRM (optional)', 'Add a webhook under Auto-buy to send every lead straight to HubSpot, Pipedrive, Zapier, Make or your own system.']] } : {}),
               rows: [['Plan', first && m.trial_credits ? 'First month offer (then Starter)' : m.pack], ['Credits added', credits.toLocaleString('en-GB')], ['New balance', `${b.credits.toLocaleString('en-GB')} credits`],
@@ -782,7 +825,7 @@ export default async function handler(req, res) {
           tips: ['Adjust their credits in Admin → Clients if needed.', ...(ev.type === 'charge.dispute.created' ? ['Their account has been paused automatically, so they can’t buy leads. Re-approve them in Admin → Clients once it’s resolved.', 'Respond to the dispute in Stripe before the deadline.'] : [])],
           cta: { label: 'Open Admin', url: `${PLATFORM_URL}/admin` } });
       }
-      // Subscription has fully ended: unused credits expire (partner agreement clause 4.3).
+      // Subscription has fully ended: unused credits expire (referral agreement, credits clause).
       if (ev.type === 'customer.subscription.deleted') {
         const [b] = o.customer ? await db(`brokers?stripe_customer=eq.${encodeURIComponent(o.customer)}&select=id,email,company,credits`) : [];
         if (b) {
@@ -790,7 +833,7 @@ export default async function handler(req, res) {
           await notify([b.email], 'Your Leaflegal subscription has ended', {
             title: 'Your subscription has ended', preheader: `Your Leaflegal plan has ended. You can restart any time.`,
             intro: `The ${esc(o.metadata?.pack || '')} plan for ${esc(b.company)} has now ended${b.credits > 0 ? ` and the ${b.credits.toLocaleString('en-GB')} unused credits have expired` : ''}. You won't be charged again, and auto-buy has stopped.`,
-            tipsTitle: 'What we’ve kept for you', tips: ['Every lead you bought, with contact details, notes and stages.', 'Your lead criteria, auto-buy limits and CRM settings.', 'Your partner agreement and invoices.'],
+            tipsTitle: 'What we’ve kept for you', tips: ['Every lead you bought, with contact details, notes and stages.', 'Your lead criteria, auto-buy limits and CRM settings.', 'Your referral agreement and invoices.'],
             cta: { label: 'Restart your plan', url: `${PLATFORM_URL}/billing` },
             note: 'Restarting takes a minute and your credits are added as soon as you pay. Thanks for working with us.' });
           await notify(ADMIN_TO(), `Subscription ended: ${b.company}`, {
@@ -842,15 +885,15 @@ export default async function handler(req, res) {
       if (!r.ok) return fail(res, 400, /already/i.test(u.msg || u.message || '') ? 'An account with this email already exists. Please sign in.' : 'Could not create the account');
       await unsuppress(email); // registering overrides an earlier unsubscribe
       const [fn, ...ln] = String(body.contactName || '').trim().split(/\s+/);
-      await metaEvent('PartnerInterest', { req, email, phone: body.phone, first: fn, last: ln.join(' '), page: 'https://platform.leaflegal.co/register', fbp: body.fbp,
+      await metaEvent('PartnerInterest', { req, email, phone: body.phone, first: fn, last: ln.join(' '), page: `${PLATFORM_URL}/register`, fbp: body.fbp,
         custom: { content_name: invited ? 'Platform signup (invited)' : 'Platform signup' } });
-      await metaEvent('PartnerRegistered', { req, email, company, phone: body.phone, first: fn, last: ln.join(' '), page: 'https://platform.leaflegal.co/register', fbp: body.fbp, eventId: `reg-${u.id}`,
+      await metaEvent('PartnerRegistered', { req, email, company, phone: body.phone, first: fn, last: ln.join(' '), page: `${PLATFORM_URL}/register`, fbp: body.fbp, eventId: `reg-${u.id}`,
         custom: { content_name: invited ? 'Platform signup (invited)' : 'Platform signup' } });
       await db('brokers', { method: 'POST', body: {
         id: u.id, email, company, contact_name: String(body.contactName || '').slice(0, 120), phone: String(body.phone || '').slice(0, 40),
-        fca_number: String(body.fca || '').slice(0, 20) || null, ...(invited ? { email_verified_at: new Date().toISOString() } : {}), ...(approve ? { approved: true } : {}),
+        regulators: cleanRegulators(body.regulators) || [], ...(invited ? { email_verified_at: new Date().toISOString() } : {}), ...(approve ? { approved: true } : {}),
       } });
-      const fca = String(body.fca || '').slice(0, 20), contact = String(body.contactName || '').slice(0, 120), phone = String(body.phone || '').slice(0, 40);
+      const regs = regulatorText({ regulators: cleanRegulators(body.regulators) || [] }), contact = String(body.contactName || '').slice(0, 120), phone = String(body.phone || '').slice(0, 40);
       await crmCapture({ email, name: contact, company, phone, brokerId: u.id, stage: 'onboarding', source: invited ? 'Invited to platform' : 'Platform sign-up',
         note: invited ? 'Accepted their platform invite and created an account' : 'Created a Leaflegal Platform account' }).catch((e) => console.error('crm signup', e.message));
       if (invited) {
@@ -859,20 +902,20 @@ export default async function handler(req, res) {
       }
       if (approve) {
         await notify(ADMIN_TO(), `${company} accepted your invite`, { title: `${company} has joined`, preheader: `${contact || email} accepted your supplier invite and is setting up.`,
-          intro: 'They accepted your invitation, so their account is already approved. They still need to choose a plan and accept the partner agreement before they can buy.',
-          rows: [['Firm', company], ['Contact', contact || '–'], ['Email', email], ['Phone', phone || '–'], ['FCA number', fca || 'Not given']], cta: { label: 'Open Admin → Clients', url: `${PLATFORM_URL}/admin` }, replyTo: email });
+          intro: 'They accepted your invitation, so their account is already approved. They still need to choose a plan and accept the referral agreement before they can buy.',
+          rows: [['Firm', company], ['Contact', contact || '–'], ['Email', email], ['Phone', phone || '–'], ['Regulators', regs]], cta: { label: 'Open Admin → Clients', url: `${PLATFORM_URL}/admin` }, replyTo: email });
         return res.status(200).json({ ok: true });
       }
-      await notify(ADMIN_TO(), `New broker signup to approve: ${company}`, {
-        title: `${company} has signed up`, preheader: `${contact || email} · ${fca ? `FCA ${fca}` : 'no FCA number'} · waiting for your approval`,
-        intro: 'A new broker firm has created a Leaflegal Platform account. Check them over, then approve them so they can buy leads.',
+      await notify(ADMIN_TO(), `New firm signup to approve: ${company}`, {
+        title: `${company} has signed up`, preheader: `${contact || email} · ${regs} · waiting for your approval`,
+        intro: 'A new law firm has created a Leaflegal Platform account. Check them over, then approve them so they can buy leads.',
         rowsTitle: 'Their details',
-        rows: [['Firm', company], ['Contact', contact || '–'], ['Email', email], ['Phone', phone || '–'], ['FCA number', fca || 'Not given'],
+        rows: [['Firm', company], ['Contact', contact || '–'], ['Email', email], ['Phone', phone || '–'], ['Regulators', regs],
           ['Signed up', new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/London' })]],
         tipsTitle: 'Quick checks',
-        tips: [fca ? `<a href="https://register.fca.org.uk/s/search?q=${encodeURIComponent(fca)}&type=Companies" style="color:#3d6656">Look up FCA ${esc(fca)} on the FCA register</a>` : 'No FCA number given: ask them if their work needs authorisation.',
+        tips: [regs !== 'Not given' ? `Check ${esc(regs)} on the regulator's register. The links are on the approval page and in Admin → Clients.` : 'No regulator given yet. They add it during onboarding, so check it before approving.',
           `<a href="https://find-and-update.company-information.service.gov.uk/search/companies?q=${encodeURIComponent(company)}" style="color:#3d6656">Search for ${esc(company)} on Companies House</a>`,
-          'They still need to choose a plan and accept the partner agreement before they can buy.'],
+          'They still need to choose a plan and accept the referral agreement before they can buy.'],
         cta: { label: 'Review and approve', url: approveUrl(u.id) },
         link: { label: 'Or open Admin → Clients', url: `${PLATFORM_URL}/admin` },
         note: 'The button opens a confirmation page showing their latest details, with an Approve button. The link works for 14 days.', replyTo: email });
@@ -888,7 +931,7 @@ export default async function handler(req, res) {
       [member] = await db(`team_members?user_id=eq.${user.id}&removed_at=is.null&select=*`);
       if (member) { const [owner] = await db(`brokers?id=eq.${member.broker}&select=*`); me = owner && { ...owner, is_admin: false }; }
     }
-    if (!me) return fail(res, 403, 'No broker account');
+    if (!me) return fail(res, 403, 'No firm account');
     const can = (p) => !member || !!member.perms?.[p];
     if (NEED[action] && !can(NEED[action])) return fail(res, 403, 'Your sign-in doesn’t have permission for this. Ask the account owner.');
     // Admins can edit a broker's own profile, settings and team for them (?as=<broker id>). Only these actions, always logged.
@@ -897,7 +940,7 @@ export default async function handler(req, res) {
       if (!me.is_admin) return fail(res, 403, 'Admins only');
       if (!['profile', 'profile-logo', 'profile-preview', 'profile-scan', 'settings', 'team', 'team-invite', 'team-update', 'team-remove'].includes(action) || !isUuid(asId)) return fail(res, 400, 'Not allowed');
       const [target] = await db(`brokers?id=eq.${asId}&select=*`);
-      if (!target) return fail(res, 404, 'Broker not found');
+      if (!target) return fail(res, 404, 'Firm not found');
       if (action !== 'profile-preview' && action !== 'profile-scan') await audit(me.id, `edit-${action}`, asId, { company: target.company });
       me = target;
     }
@@ -917,18 +960,18 @@ export default async function handler(req, res) {
       if (pub.plan?.commission) { const { commission, ...plan } = pub.plan; pub.plan = plan; } // admin-only flag
       const [P, [ag], avgLead] = await Promise.all([getPricing(), db(`agreements?broker=eq.${uid}&select=id,version,created_at&order=created_at.desc&limit=1`), avgLeadPrice()]);
       pub.agreement = ag || null; pub.agreementWaived = (await waivedIds()).has(uid); pub.agreementCurrent = ag?.version === TERMS_VERSION || pub.agreementWaived;
-      if (me.filters?.tiers?.length) pub.tierSpend = await tierSpend(me).catch(() => null);
-      if (onTiers(me)) pub.tierUsed = Object.fromEntries(await Promise.all(TIER_NAMES.map(async (t) => [t, await tierSpendOf(me, t).catch(() => 0)])));
+      pub.allowedAreas = allowedAreas(regIds(me)); // practice areas the firm's regulators let it take
       pub.restricted = restricted;
       pub.member = member ? { id: member.id, email: member.email, name: member.name, perms: cleanPerms(member.perms) } : null;
       pub.trialEligible = !me.trial_used && !me.stripe_customer; // anyone who has ever paid has a Stripe customer
-      return res.json({ broker: { ...pub, billing: !!stripe_customer }, tiers: { names: TIER_NAMES, prices: await getTierPrices() }, lowCredits: LOW_CREDITS, packs: PACKS, custom: CUSTOM, trial: TRIAL, termsVersion: TERMS_VERSION, pricing: { ...P, revenueMid: REVENUE_MID, avgLead }, options: { turnovers: TURNOVERS, trading: TRADING, purposes: PURPOSES, property: PROPERTY, structures: STRUCTURES, returnReasons: RETURN_REASONS, cancelReasons: CANCEL_REASONS, returnHours: RETURN_HOURS } });
+      return res.json({ broker: { ...pub, billing: !!stripe_customer }, lowCredits: LOW_CREDITS, packs: PACKS, custom: CUSTOM, trial: TRIAL, termsVersion: TERMS_VERSION, pricing: { ...P, avgLead }, taxonomy: taxonomy(), options: { returnReasons: RETURN_REASONS, cancelReasons: CANCEL_REASONS, returnHours: RETURN_HOURS } });
     }
 
     if (action === 'opportunities') {
       const since = new Date(Date.now() - 30 * 864e5).toISOString();
       const leads = await db(`leads?buyer=is.null&hidden_at=is.null&exclude_brokers=not.cs.{${uid}}&or=(created_at.gte.${since},price_fixed.is.true)&select=${PREVIEW_SELECT}&order=created_at.desc&limit=200`);
-      return res.json({ discount: DISCOUNT, preview: !me.approved, leads: leads.map((l) => asPriced(l, me)).filter((l) => l.price != null).map((l) => { const v = withMask(l, me.approved); return { ...v, quality: quality(l), match: matches(critOf(me), v) }; }) });
+      // Only leads the firm's regulators allow it to take (immigration needs SRA, CILEx or IAA).
+      return res.json({ discount: DISCOUNT, preview: !me.approved, leads: leads.filter((l) => canTake(me, l)).map((l) => { const v = withMask(l, me.approved); return { ...v, quality: quality(l), match: matches(me.filters || {}, l) }; }) });
     }
 
     // Auto-buy page: leads from the last 30 days that the saved criteria would have skipped, and what held them back.
@@ -963,8 +1006,8 @@ export default async function handler(req, res) {
       const month = new Date(); month.setUTCDate(1); month.setUTCHours(0, 0, 0, 0);
       const since = new Date(Date.now() - 30 * 864e5).toISOString();
       const [mine, live, recent, autoSpend] = await Promise.all([
-        db(`leads?buyer=eq.${uid}&select=id,bought_at,price,stage,funded_amount,amount,auto&order=bought_at.desc&limit=2000`),
-        db(`leads?buyer=is.null&hidden_at=is.null&exclude_brokers=not.cs.{${uid}}&or=(created_at.gte.${since},price_fixed.is.true)&select=${PREVIEW_SELECT}&order=created_at.desc&limit=200`).then((x) => x.map((l) => asPriced(l, me)).filter((l) => l.price != null).map((l) => withMask(l, me.approved))),
+        db(`leads?buyer=eq.${uid}&select=id,bought_at,price,stage,instructed_value,auto&order=bought_at.desc&limit=2000`),
+        db(`leads?buyer=is.null&hidden_at=is.null&exclude_brokers=not.cs.{${uid}}&or=(created_at.gte.${since},price_fixed.is.true)&select=${PREVIEW_SELECT}&order=created_at.desc&limit=200`).then((x) => x.filter((l) => canTake(me, l)).map((l) => ({ ...withMask(l, me.approved), quality: quality(l) }))),
         db(`ledger?broker=eq.${uid}&select=created_at,delta,reason,lead_id&order=created_at.desc&limit=8`),
         rpc('auto_spend_this_month', { p_broker: uid }),
       ]);
@@ -972,22 +1015,23 @@ export default async function handler(req, res) {
       const days = Array.from({ length: 30 }, (_, i) => { const d = new Date(Date.now() - (29 - i) * 864e5); return { day: d.toISOString().slice(0, 10), n: 0 }; });
       for (const l of mine) { const d = days.find((x) => x.day === String(l.bought_at).slice(0, 10)); if (d) d.n++; }
       const stages = Object.fromEntries(STAGES.map((k) => [k, mine.filter((l) => l.stage === k).length]));
-      const matching = live.filter((l) => matches(critOf(me), l)).map((l) => ({ ...l, quality: quality(l), match: true }));
+      const matching = live.filter((l) => matches(me.filters || {}, l)).map((l) => ({ ...l, match: true }));
       return res.json({
         credits: me.credits, mode: me.mode, monthly_cap: me.monthly_cap, auto_spend: autoSpend,
         month: { leads: thisMonth.length, spent: thisMonth.reduce((a, l) => a + l.price, 0), auto: thisMonth.filter((l) => l.auto).length },
-        total: { leads: mine.length, funded: stages.funded, funded_value: mine.reduce((a, l) => a + (l.stage === 'funded' ? l.funded_amount || l.amount || 0 : 0), 0) },
-        live: live.length, matching: matching.length, top: matching.concat(live.filter((l) => !matches(critOf(me), l)).map((l) => ({ ...l, quality: quality(l), match: false }))).slice(0, 3),
+        total: { leads: mine.length, instructed: stages.instructed, instructed_value: mine.reduce((a, l) => a + (l.stage === 'instructed' ? l.instructed_value || 0 : 0), 0) },
+        live: live.length, matching: matching.length, top: matching.concat(live.filter((l) => !matches(me.filters || {}, l)).map((l) => ({ ...l, match: false }))).slice(0, 3),
         days, stages, recent,
       });
     }
 
     if (action === 'stage' && req.method === 'POST') {
       if (!STAGES.includes(body.stage)) return fail(res, 400, 'Unknown stage');
-      const patch = { stage: body.stage, stage_at: new Date().toISOString(), ...(body.stage === 'funded' ? { funded_amount: Math.max(0, Math.round(Number(body.funded_amount) || 0)) || null } : {}) };
+      const fee = body.instructed_value ?? body.funded_amount; // funded_amount: old name, still accepted
+      const patch = { stage: body.stage, stage_at: new Date().toISOString(), ...(body.stage === 'instructed' ? { instructed_value: Math.max(0, Math.round(Number(fee) || 0)) || null } : {}) };
       const r = await db(`leads?id=eq.${Number(body.id)}&buyer=eq.${uid}`, { method: 'PATCH', body: patch, prefer: 'return=representation' });
       if (!r.length) return fail(res, 404, 'Lead not found');
-      return res.json({ ok: true, stage: r[0].stage, funded_amount: r[0].funded_amount });
+      return res.json({ ok: true, stage: r[0].stage, instructed_value: r[0].instructed_value });
     }
 
     if (action === 'archive' && req.method === 'POST') {
@@ -1009,7 +1053,7 @@ export default async function handler(req, res) {
       const rr = RETURN_REASONS.find((x) => x.reason === body.reason);
       if (!rr) return fail(res, 400, 'Choose a reason');
       if (rr.kind === 'review' && String(body.details || '').trim().length < 10) return fail(res, 400, 'Tell us what happened so we can look into it');
-      const [l] = await db(`leads?id=eq.${Number(body.id)}&buyer=eq.${uid}&select=id,bought_at,business,price`);
+      const [l] = await db(`leads?id=eq.${Number(body.id)}&buyer=eq.${uid}&select=id,bought_at,full_name,price`);
       if (!l) return fail(res, 404, 'Lead not found');
       if (Date.now() - new Date(l.bought_at) > RETURN_HOURS * 36e5) return fail(res, 400, `Refunds must be requested within ${RETURN_HOURS} hours of purchase`);
       // Reasons we never refund (no longer interested, changed plans): logged as an automatic decline so admins still see the feedback.
@@ -1023,14 +1067,14 @@ export default async function handler(req, res) {
       } catch { return fail(res, 409, 'A refund has already been requested for this lead'); }
       await notify(ADMIN_TO(), `Refund request: lead #${l.id} (${l.price} credits)`, {
         title: `Refund request for lead #${l.id}`, signoff: false, intro: `${esc(me.company)} has asked for a refund. Check the contact details, then approve or decline in Admin → Refunds.`,
-        rows: [['Broker', me.company], ['Lead', `#${l.id} ${l.business}`], ['Credits', `${l.price}`], ['Reason', body.reason], ...(body.details ? [['Details', String(body.details).slice(0, 300)]] : [])],
+        rows: [['Firm', me.company], ['Lead', `#${l.id} ${l.full_name || ''}`], ['Credits', `${l.price}`], ['Reason', body.reason], ...(body.details ? [['Details', String(body.details).slice(0, 300)]] : [])],
         cta: { label: 'Review refund', url: `${PLATFORM_URL}/admin` }, replyTo: me.email });
       await notify([me.email], `Refund request received: lead #${l.id}`, {
         title: 'We’ve received your refund request', preheader: `We'll review lead #${l.id} within one working day.`,
         intro: rr.kind === 'ok' ? `Thanks for letting us know. We'll check the contact details on lead #${l.id} and email you the outcome within one working day. You don't need to do anything else.`
           : `Thanks for letting us know. We'll look into lead #${l.id} and email you the outcome within one working day. A refund for this reason isn't guaranteed, but we'll check everything you've told us.`,
-        rowsTitle: 'Your request', rows: [['Lead', `#${l.id} ${l.business}`], ['Reason', body.reason], ['Credits', l.price]],
-        steps: [['We check the details', 'We test the phone number and email address the business gave us.'], ['You hear back', 'If the number isn’t in service or belongs to someone else, or the email doesn’t exist, the credits go straight back on your balance.']],
+        rowsTitle: 'Your request', rows: [['Lead', `#${l.id} ${l.full_name || ''}`], ['Reason', body.reason], ['Credits', l.price]],
+        steps: [['We check the details', 'We test the phone number and email address the client gave us.'], ['You hear back', 'If the number isn’t in service or belongs to someone else, or the email doesn’t exist, the credits go straight back on your balance.']],
         cta: { label: 'Go to My leads', url: `${PLATFORM_URL}/leads` },
         note: 'Refunds are available within 72 hours of purchase, only when the phone number is not in service or belongs to someone else, or the email address doesn’t exist.' });
       return res.json({ ok: true });
@@ -1045,15 +1089,14 @@ export default async function handler(req, res) {
       if (restricted) return fail(res, 403, 'Leads for this account are assigned by Leaflegal. Contact hello@leaflegal.co if one here looks right for you.');
       if (me.suspended_at) return fail(res, 403, 'Your account is suspended. Please contact hello@leaflegal.co.');
       if (!me.approved) return fail(res, 403, 'Your account is waiting for approval');
-      if (!(await signed(uid))) return fail(res, 403, 'Please sign the partner agreement first (Account → Partner agreement)');
-      const [hid] = await db(`leads?id=eq.${id}&select=hidden_at,exclude_brokers`);
+      if (!(await signed(uid))) return fail(res, 403, 'Please sign the referral agreement first (Account → Referral agreement)');
+      const [hid] = await db(`leads?id=eq.${id}&select=hidden_at,exclude_brokers,area`);
       if (hid?.hidden_at || hid?.exclude_brokers?.includes(uid)) return fail(res, 409, 'Sorry, this lead is no longer available');
+      if (hid && !canTake(me, hid)) return fail(res, 403, 'The regulators on your account don’t cover this practice area. Add your regulator under Account if they do.');
       if (!(await rpc('buy_lead', { p_lead: id, p_broker: uid, p_auto: false }))) {
         const [l] = await db(`leads?id=eq.${id}&select=${PREVIEW},buyer`);
         if (!l || l.buyer) return fail(res, 409, 'Sorry, this lead has just been taken');
-        const p = asPriced(l, me);
-        if (p.price == null) return fail(res, 409, 'Sorry, this lead isn’t available on your plan');
-        return fail(res, 402, `You need ${salePrice(p).price} credits for this lead. Upgrade your plan under Billing to get more credits.`);
+        return fail(res, 402, `You need ${salePrice(l).price} credits for this lead. Upgrade your plan under Billing to get more credits.`);
       }
       const [l] = await db(`leads?id=eq.${id}&select=${FULL}`);
       await Promise.allSettled([deliver(me, l), lowCredits(me, me.credits, me.credits - l.price)]);
@@ -1072,7 +1115,7 @@ export default async function handler(req, res) {
       return res.json({ pending: true });
     }
 
-    // Public profile: what a business sees when it's matched with this broker.
+    // Public profile: what a client sees when it's matched with this firm.
     if (action === 'profile' && req.method === 'POST') {
       const profile = cleanProfile(body, me.profile || {});
       await db(`brokers?id=eq.${uid}`, { method: 'PATCH', body: { profile } });
@@ -1159,15 +1202,6 @@ export default async function handler(req, res) {
         if (webhookList.length > 5) return fail(res, 400, 'Add up to 5 webhooks');
         for (const w of webhookList) if (w.length > 500 || !(await safeWebhookUrl(w))) return fail(res, 400, `${w.slice(0, 80)} isn’t a public https:// address`);
       }
-      let tiers = null;
-      if (Array.isArray(f.tiers) && f.tiers.length) {
-        tiers = f.tiers.slice(0, 4).map((t, i) => ({ name: String(t.name || '').trim().slice(0, 40) || `Tier ${i + 1}`, share: Math.max(0, Math.min(100, Math.round(Number(t.share) || 0))),
-          amountMin: money(t.amountMin), amountMax: money(t.amountMax), turnovers: sub(t.turnovers, TURNOVERS), purposes: sub(t.purposes, PURPOSES), trading: sub(t.trading, TRADING),
-          cleanCredit: !!t.cleanCredit, structures: sub(t.structures, STRUCTURES), property: sub(t.property, PROPERTY) }));
-        const total = tiers.reduce((a, t) => a + t.share, 0);
-        if (tiers.some((t) => !t.share) || total > 100) return fail(res, 400, `Tier shares must each be above 0% and add up to 100% at most (now ${total}%)`);
-        if (!(Math.round(Number(body.monthly_cap) || 0) > 0)) return fail(res, 400, 'Set a monthly auto-buy limit so the tiers have a budget to split');
-      }
       let webhookSecret;
       if (body.webhook_secret !== undefined) {
         webhookSecret = String(body.webhook_secret || '').trim() || null;
@@ -1201,9 +1235,7 @@ export default async function handler(req, res) {
         ...(hubspot !== undefined ? { hubspot } : {}),
         ...(pipedrive !== undefined ? { pipedrive } : {}),
         ...(webhookSecret !== undefined ? { webhook_secret: webhookSecret } : {}),
-        filters: { dailyLeads: money(f.dailyLeads), dailyCredits: money(f.dailyCredits), maxPrice: money(f.maxPrice), amountMin: money(f.amountMin), amountMax: money(f.amountMax), turnovers: sub(f.turnovers, TURNOVERS), purposes: sub(f.purposes, PURPOSES), trading: sub(f.trading, TRADING), cleanCredit: !!f.cleanCredit, property: sub(f.property, PROPERTY), structures: sub(f.structures, STRUCTURES), tiers,
-          tenant: f.tenant && typeof f.tenant === 'object' ? { amountMin: money(f.tenant.amountMin), amountMax: money(f.tenant.amountMax), turnovers: sub(f.tenant.turnovers, TURNOVERS), purposes: sub(f.tenant.purposes, PURPOSES), trading: sub(f.tenant.trading, TRADING), cleanCredit: !!f.tenant.cleanCredit } : null,
-          tierPlan: tierPlanOf(f.tierPlan ? { filters: { tierPlan: f.tierPlan } } : me),
+        filters: { ...cleanFilters(f, me),
           suggest: SUGGEST.includes(body.suggest) ? body.suggest : suggestMode(me), ...(me.filters?.digestAt ? { digestAt: me.filters.digestAt } : {}),
           missed: body.missed === 'off' || (body.missed === undefined && me.filters?.missed === 'off') ? 'off' : 'on', ...(me.filters?.missedAt ? { missedAt: me.filters.missedAt } : {}) },
         ...(body.company ? { company: String(body.company).slice(0, 120) } : {}),
@@ -1215,10 +1247,12 @@ export default async function handler(req, res) {
 
     if (action === 'test-webhook' && req.method === 'POST') {
       const urls = webhooksOf(me);
-      const sample = { id: 0, received_at: new Date().toISOString(), business: 'Sample Trading Ltd', contact_name: 'Sam Sample', email: 'sam@example.com', phone: '+447700900123', amount: 100000, purpose: 'Cash flow', timeline: 'Within 2 weeks', structure: 'Limited company', annual_revenue: '£500k to £1m', trading_for: '2 to 5 years', adverse_credit: 'No', test: true };
+      const sample = { ...leadOut({ id: 0, created_at: new Date().toISOString(), bought_at: new Date().toISOString(), auto: false, price: 0, area: 'family-law', matter: 'divorce', audience: 'individual',
+        urgency: 'Within a month', full_name: 'Sam Sample', email: 'sam@example.com', phone: '+447700900123', postcode: 'SW1A 1AA', region: 'London', private_pay: 'yes', grade: 'A', score: 82,
+        tags: ['children'], summary: 'Sample lead sent to test your connection.', answers: [{ id: 'children', q: 'Are there children involved?', a: 'Yes' }], stage: 'new' }), test: true };
       if (body.to === 'hubspot') {
         if (!me.hubspot?.form) return fail(res, 400, 'Save your HubSpot form first');
-        const result = await postHubspot(me.hubspot, { ...sample, quality: 80, price_credits: 0 });
+        const result = await postHubspot(me.hubspot, sample);
         return res.json({ result, results: [{ url: 'hubspot', result }] });
       }
       if (body.to === 'pipedrive') {
@@ -1236,7 +1270,7 @@ export default async function handler(req, res) {
       const trial = body.pack === 'trial';
       const pack = trial ? PACKS[TRIAL.then] : body.pack === 'custom' ? customPack(body.amount) : PACKS[body.pack];
       if (!pack) return fail(res, 400, body.pack === 'custom' ? `Custom plans run from £${CUSTOM.min.toLocaleString('en-GB')} a month in £1,000 steps, up to ${CUSTOM.maxCredits.toLocaleString('en-GB')} credits. For more, contact ${CUSTOM.contact}.` : 'Unknown plan');
-      if (!(await signed(uid))) return fail(res, 403, 'Please sign the partner agreement first');
+      if (!(await signed(uid))) return fail(res, 403, 'Please sign the referral agreement first');
       if (trial && (me.trial_used || await currentSub(me.stripe_customer))) return fail(res, 400, 'The first month offer is only for new partners');
       if (!process.env.STRIPE_SECRET_KEY) return fail(res, 503, 'Payments are not switched on yet');
       if (await currentSub(me.stripe_customer)) return fail(res, 409, 'You already have a subscription. Change your plan instead.');
@@ -1301,7 +1335,7 @@ export default async function handler(req, res) {
       await notify(ADMIN_TO(), `Custom plan request: ${me.company} (£${pounds.toLocaleString('en-GB')} a month)`, {
         title: `${me.company} wants a custom plan`, signoff: false, intro: 'Get in touch to agree the details, then set up their plan and credits from the Admin panel.',
         highlight: { value: `£${pounds.toLocaleString('en-GB')} + VAT a month`, label: `${credits.toLocaleString('en-GB')} credits a month` },
-        rows: [['Contact', me.contact_name || '–'], ['Email', me.email], ['Phone', me.phone || '–'], ['Partner agreement', (await signed(uid)) ? 'Accepted' : 'Not accepted yet']],
+        rows: [['Contact', me.contact_name || '–'], ['Email', me.email], ['Phone', me.phone || '–'], ['Referral agreement', (await signed(uid)) ? 'Accepted' : 'Not accepted yet']],
         cta: { label: 'Open Admin', url: `${PLATFORM_URL}/admin` }, replyTo: me.email });
       await notify([me.email], 'We’ve received your custom plan request', {
         title: 'Thanks, we’ll be in touch', preheader: 'We’ve received your custom plan request and will contact you shortly.',
@@ -1315,8 +1349,13 @@ export default async function handler(req, res) {
     if (action === 'onboard' && req.method === 'POST') {
       const t = (v, n) => String(v ?? '').trim().slice(0, n);
       const patch = { company: t(body.company, 120) || me.company, company_number: body.company_number === undefined ? me.company_number : t(body.company_number, 12).toUpperCase() || null, address: t(body.address, 300) || null,
-        contact_name: t(body.contact_name, 120) || me.contact_name, signer_title: t(body.signer_title, 80) || null, phone: t(body.phone, 40) || me.phone, fca_number: t(body.fca_number, 20) || me.fca_number };
+        contact_name: t(body.contact_name, 120) || me.contact_name, signer_title: t(body.signer_title, 80) || null, phone: t(body.phone, 40) || me.phone };
       if (patch.company_number && !/^[A-Z0-9]{6,10}$/.test(patch.company_number)) return fail(res, 400, 'Enter a valid Companies House number');
+      // At least one regulator with its number (SRA, CILEx, CLC or IAA). A change means the admin checks the register again.
+      const regs = body.regulators === undefined ? cleanRegulators(me.regulators) : cleanRegulators(body.regulators);
+      if (!regs) return fail(res, 400, 'Add your regulator and your firm’s number with them');
+      patch.regulators = regs;
+      if (JSON.stringify(regs) !== JSON.stringify(cleanRegulators(me.regulators))) patch.regulator_checked_at = null;
       await db(`brokers?id=eq.${uid}`, { method: 'PATCH', body: patch });
       return res.json({ ok: true });
     }
@@ -1335,14 +1374,14 @@ export default async function handler(req, res) {
         ip: String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || null, user_agent: String(req.headers['user-agent'] || '').slice(0, 300), signature: sig } });
       await db(`brokers?id=eq.${uid}`, { method: 'PATCH', body: { onboarded_at: new Date().toISOString(), signer_title: title } });
       await pendingBacklog(uid).catch((e) => console.error('backlog', e.message));
-      const copy = Buffer.from(await signedPdf(a)), ref = `LL-PA-${String(a.id).padStart(5, '0')}`;
-      await notify([me.email], `Your Leaflegal Partner Agreement (${ref})`, { // admins see signed agreements in Admin → Agreements, not by email
-        title: 'Your partner agreement', preheader: `Your copy of the Leaflegal Partner Agreement (${ref}) is attached.`,
-        intro: `Thanks, ${esc(name.split(' ')[0])}. Your copy of the Leaflegal Partner Agreement for <b>${esc(fresh.company)}</b> is attached. Please keep it for your records. You can also view it any time under Account on the platform.`,
+      const copy = Buffer.from(await signedPdf(a)), ref = `LL-RA-${String(a.id).padStart(5, '0')}`;
+      await notify([me.email], `Your Leaflegal Law Firm Referral Agreement (${ref})`, { // admins see signed agreements in Admin → Agreements, not by email
+        title: 'Your referral agreement', preheader: `Your copy of the Leaflegal Law Firm Referral Agreement (${ref}) is attached.`,
+        intro: `Thanks, ${esc(name.split(' ')[0])}. Your copy of the Leaflegal Law Firm Referral Agreement for <b>${esc(fresh.company)}</b> is attached. Please keep it for your records. You can also view it any time under Account on the platform.`,
         rowsTitle: 'Acceptance record',
         rows: [['Reference', ref], ['Version', TERMS_VERSION], ['Accepted by', `${name}, ${title}`], ['Date', new Date(a.created_at).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Europe/London' })]],
         cta: { label: 'Open Leaflegal Platform', url: `${PLATFORM_URL}/account` } },
-        [{ filename: `${ref}-leaflegal-partner-agreement.pdf`, content: copy.toString('base64') }]);
+        [{ filename: `${ref}-leaflegal-referral-agreement.pdf`, content: copy.toString('base64') }]);
       return res.json({ ok: true, agreement: { id: a.id, version: a.version, created_at: a.created_at } });
     }
 
@@ -1351,7 +1390,7 @@ export default async function handler(req, res) {
       const [a] = await db(`agreements?broker=eq.${uid}${id ? `&id=eq.${id}` : ''}&select=*&order=created_at.desc&limit=1`);
       if (!a) return fail(res, 404, 'No signed agreement yet');
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="LL-PA-${String(a.id).padStart(5, '0')}-leaflegal-partner-agreement.pdf"`);
+      res.setHeader('Content-Disposition', `inline; filename="LL-RA-${String(a.id).padStart(5, '0')}-leaflegal-referral-agreement.pdf"`);
       return res.status(200).send(Buffer.from(await signedPdf(a)));
     }
 
@@ -1429,9 +1468,9 @@ export default async function handler(req, res) {
       if (action === 'admin') {
         let adStatus = null; // Meta spend lookup for cost per lead
         const [brokers, returns, leads, pricing] = await Promise.all([
-          db('brokers?select=id,email,company,contact_name,phone,fca_number,approved,credits,mode,is_admin,created_at,suspended_at,plan,stripe_customer,pricing&order=created_at.desc'),
-          db('returns?select=id,lead_id,broker,reason,details,status,decision,created_at,leads!returns_lead_id_fkey(business,price,amount),brokers!returns_broker_fkey(company)&order=created_at.desc&limit=100'),
-          db('leads?select=id,created_at,amount,purpose,turnover,trading,price,list_price,price_fixed,tier,tier_price,business,bought_at,auto,stage,archived_at,buyer,email,hidden_at,source,brokers!leads_buyer_fkey(company,pricing)&order=created_at.desc&limit=500')
+          db('brokers?select=id,email,company,contact_name,phone,regulators,regulator_checked_at,approved,credits,mode,is_admin,created_at,suspended_at,plan,stripe_customer&order=created_at.desc'),
+          db('returns?select=id,lead_id,broker,reason,details,status,decision,created_at,leads!returns_lead_id_fkey(full_name,area,matter,matter_label,price),brokers!returns_broker_fkey(company)&order=created_at.desc&limit=100'),
+          db('leads?select=id,created_at,area,area_label,matter,matter_label,audience,urgency,region,postcode_district,value_band,private_pay,grade,score,flags,price,list_price,price_fixed,full_name,business_name,bought_at,auto,stage,instructed_value,archived_at,buyer,email,hidden_at,source,brokers!leads_buyer_fkey(company)&order=created_at.desc&limit=500')
             .then(async (x) => { const off = new Set((await db('email_suppressions?select=email&limit=20000').catch(() => [])).map((r) => r.email)); // only a suppressed flag goes to the browser, not the email
               const rows = x.map(({ email, source, ...l }) => ({ ...l, ...(l.buyer ? {} : salePrice(l)), ...leadOrigin(source || {}), suppressed: off.has(String(email || '').trim().toLowerCase()) }));
               const [ad] = await Promise.all([adLeadCosts(rows).catch((e) => ({ status: { error: e.message }, costs: {} })), withAdNames(rows)]);
@@ -1445,7 +1484,7 @@ export default async function handler(req, res) {
         const invites = (await db('invites?select=email,name,company,send_at,expires_at,alerts,digest,batch,created_at,email_id,token&order=created_at.desc,email.asc&limit=20000').catch(() => []))
           .map(({ token, ...v }) => ({ ...v, kind: tokenData(token)?.k === 'cold' ? 'cold' : 'warm', queued: v.email_id === 'queued', paused: v.email_id === 'paused', accepted: v.email_id === 'accepted' }));
         const accepted = (await db('audit_log?action=eq.invite-accepted&select=at,target,detail&order=at.desc&limit=5000').catch(() => [])).map((a) => ({ email: String(a.detail?.email || '').toLowerCase(), at: a.at, broker: a.target }));
-        const clients = brokers.filter((b) => !b.is_admin); // admin accounts aren't brokers: left out of counts and the Clients list
+        const clients = brokers.filter((b) => !b.is_admin); // admin accounts aren't client firms: left out of counts and the Clients list
         const agreements = await db('agreements?select=id,broker,version,created_at,signer_name,signer_title,signer_email,company&order=created_at.desc&limit=500').catch(() => []);
         // Leads for sale = unsold and still listed on Opportunities (last 30 days), at today's price (after any 72h discount). 1 credit = £1.
         const listed = await db(`leads?buyer=is.null&hidden_at=is.null&created_at=gte.${new Date(Date.now() - 30 * 864e5).toISOString()}&select=created_at,price,buyer&limit=10000`);
@@ -1480,7 +1519,7 @@ export default async function handler(req, res) {
         return res.json({
           uploads: (await db('settings?key=eq.invite_batches&select=value').catch(() => []))[0]?.value || {},
           suppressed: await db('email_suppressions?select=email,reason,source,created_at&order=created_at.desc,email.asc&limit=5000').catch(() => []),
-          accepted, brokers, invites, agreements, waived: [...(await waivedIds())], termsVersion: TERMS_VERSION, returns, leads, adStatus, pricing, audit: auditLog, defaults: DEFAULT_PRICING, turnovers: TURNOVERS, ages: TRADING, examples: PRICE_EXAMPLES.map((e) => ({ ...e, price: price(e, pricing) })), tierPrices: await getTierPrices(), tierNames: TIER_NAMES,
+          accepted, brokers, invites, agreements, waived: [...(await waivedIds())], termsVersion: TERMS_VERSION, returns, leads, adStatus, pricing, audit: auditLog, defaults: DEFAULT_PRICING, taxonomy: taxonomy(), examples: PRICE_EXAMPLES.map((e) => ({ ...e, price: price(e, pricing), parts: priceParts(e, pricing) })),
           stats: { brokers: clients.length, pending: clients.filter((b) => !b.approved).length,
             active: clients.filter((b) => !b.suspended_at && !b.plan?.commission && (b.plan || (b.stripe_customer && (live || []).some((x) => x.customer === b.stripe_customer)))).length,
             commission: clients.filter((b) => !b.suspended_at && b.plan?.commission).length, leads: leads.length, sold: sold.length,
@@ -1495,9 +1534,9 @@ export default async function handler(req, res) {
         const q = (k) => req.query?.[k] ?? new URL(req.url, 'http://x').searchParams.get(k);
         const until = day(q('to'), new Date().toISOString().slice(0, 10)), from = day(q('from'), new Date(Date.now() - 6 * 864e5).toISOString().slice(0, 10));
         const token = (process.env.META_ADS_TOKEN || process.env.META_CAPI_TOKEN || '').trim(), acct = String(process.env.META_AD_ACCOUNT || '957353369466280').replace(/^act_/, '');
-        const leads = await db(`leads?created_at=gte.${from}T00:00:00Z&created_at=lte.${until}T23:59:59Z&select=id,source,business,created_at,buyer,stage,brokers!leads_buyer_fkey(company)&order=created_at.desc&limit=50000`);
+        const leads = await db(`leads?created_at=gte.${from}T00:00:00Z&created_at=lte.${until}T23:59:59Z&select=id,source,matter_label,area,matter,created_at,buyer,stage,brokers!leads_buyer_fkey(company)&order=created_at.desc&limit=50000`);
         const attrib = {}, metaLeads = [];
-        for (const l of leads) { const o = leadOrigin(l.source || {}); if (o.channel !== 'Meta ads') continue; attrib[l.id] = [o.campaign_name, o.adset, o.ad]; metaLeads.push({ id: l.id, business: l.business, created_at: l.created_at, buyer: l.brokers?.company || null, stage: l.stage }); }
+        for (const l of leads) { const o = leadOrigin(l.source || {}); if (o.channel !== 'Meta ads') continue; attrib[l.id] = [o.campaign_name, o.adset, o.ad]; metaLeads.push({ id: l.id, matter: matterName(l), created_at: l.created_at, buyer: l.brokers?.company || null, stage: l.stage }); }
         if (!token) return res.json({ status: 'no token', ads: [], campaigns: [], attrib, leads: metaLeads, from, to: until });
         const G = `https://graph.facebook.com/v21.0/`, tk = `access_token=${encodeURIComponent(token)}`;
         // Every campaign (live, paused or off) with budgets and when it last changed, so live ones show even with no spend
@@ -1571,7 +1610,7 @@ export default async function handler(req, res) {
         const [[b], ledger, bought, [ag]] = await Promise.all([
           db(`brokers?id=eq.${id}&select=*`),
           db(`ledger?broker=eq.${id}&select=created_at,delta,reason,lead_id&order=created_at.desc&limit=100`),
-          db(`leads?buyer=eq.${id}&select=id,price,stage,bought_at,auto,created_at&order=bought_at.desc&limit=1000`),
+          db(`leads?buyer=eq.${id}&select=id,price,stage,instructed_value,bought_at,auto,created_at,area,matter,matter_label&order=bought_at.desc&limit=1000`),
           db(`agreements?broker=eq.${id}&select=id,version,created_at,signer_name,signer_title&order=created_at.desc&limit=1`),
         ]);
         if (!b) return fail(res, 404, 'Not found');
@@ -1580,7 +1619,7 @@ export default async function handler(req, res) {
         const [sub, entries, ads] = await Promise.all([currentSub(b.stripe_customer).catch(() => null), commissionEntries(`broker=eq.${id}`),
           bought.length ? adCostsSince(since).catch(() => ({ status: 'error', costs: {} })) : { status: 'ok', costs: {} }]);
         const withCost = bought.map((l) => ({ ...l, ad_cost: ads.costs[l.id]?.cost ?? null, ad_by: ads.costs[l.id]?.by ?? 'none' }));
-        return res.json({ broker: b, subscription: subOut(sub), ledger, bought: withCost, agreement: ag || null, waived: (await waivedIds()).has(id), commission: entries, meta: ads.status });
+        return res.json({ broker: { ...b, regulators: regulatorsOut(b), regulator_checked_at: b.regulator_checked_at || null, allowed_areas: allowedAreas(regIds(b)) }, subscription: subOut(sub), ledger, bought: withCost, agreement: ag || null, waived: (await waivedIds()).has(id), commission: entries, meta: ads.status });
       }
 
       if (action === 'admin-agreement') {
@@ -1588,17 +1627,34 @@ export default async function handler(req, res) {
         const [a] = await db(`agreements?id=eq.${id || 0}&select=*`);
         if (!a) return fail(res, 404, 'Not found');
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `inline; filename="LL-PA-${String(a.id).padStart(5, '0')}-leaflegal-partner-agreement.pdf"`);
+        res.setHeader('Content-Disposition', `inline; filename="LL-RA-${String(a.id).padStart(5, '0')}-leaflegal-referral-agreement.pdf"`);
         return res.status(200).send(Buffer.from(await signedPdf(a)));
+      }
+
+      // Admin has checked the firm's regulator numbers on the registers (links in the client drawer). checked: false clears it.
+      if (action === 'admin-regulator-check' && req.method === 'POST') {
+        if (!isUuid(body.broker)) return fail(res, 400, 'Bad id');
+        const [b] = await db(`brokers?id=eq.${body.broker}&select=id,regulators`);
+        if (!b) return fail(res, 404, 'Firm not found');
+        if (body.checked !== false && !cleanRegulators(b.regulators)) return fail(res, 400, 'This firm hasn’t given a regulator yet');
+        const at = body.checked === false ? null : new Date().toISOString();
+        await db(`brokers?id=eq.${b.id}`, { method: 'PATCH', body: { regulator_checked_at: at } });
+        await audit(uid, 'regulator-check', b.id, { checked: !!at, regulators: b.regulators });
+        return res.json({ ok: true, regulator_checked_at: at });
       }
 
       if (action === 'admin-update' && req.method === 'POST') {
         if (!isUuid(body.broker)) return fail(res, 400, 'Bad id');
         const t = (v, n) => (v === undefined ? undefined : String(v).trim().slice(0, n) || null);
-        const patch = Object.fromEntries(Object.entries({ company: t(body.company, 120), contact_name: t(body.contact_name, 120), phone: t(body.phone, 40), fca_number: t(body.fca_number, 20),
+        const patch = Object.fromEntries(Object.entries({ company: t(body.company, 120), contact_name: t(body.contact_name, 120), phone: t(body.phone, 40),
           company_number: t(body.company_number, 12), address: t(body.address, 300), signer_title: t(body.signer_title, 80),
           ...(typeof body.is_admin === 'boolean' && body.broker !== uid ? { is_admin: body.is_admin } : {}) }).filter(([, v]) => v !== undefined));
         if (patch.company === null) delete patch.company;
+        if (body.regulators !== undefined) { // admin can correct the regulators; a change clears the register check
+          const regs = cleanRegulators(body.regulators);
+          if (!regs) return fail(res, 400, 'Add at least one regulator with its number');
+          patch.regulators = regs; patch.regulator_checked_at = null;
+        }
         // Login email: change it in Supabase Auth first (it must be unique there), then on the broker record.
         const email = body.email === undefined ? null : String(body.email).trim().toLowerCase();
         if (email) {
@@ -1633,7 +1689,7 @@ export default async function handler(req, res) {
       if (action === 'admin-delete' && req.method === 'POST') {
         if (!isUuid(body.broker) || body.broker === uid) return fail(res, 400, 'You can’t delete your own account');
         const [[b], bought] = await Promise.all([db(`brokers?id=eq.${body.broker}&select=id,company,email,stripe_customer`), db(`leads?buyer=eq.${body.broker}&select=id&limit=1`)]);
-        if (!b) return fail(res, 404, 'Broker not found');
+        if (!b) return fail(res, 404, 'Firm not found');
         if (bought.length) return fail(res, 409, `${b.company} has bought leads, so their account can’t be deleted. Suspend it instead.`);
         if (String(body.confirm || '').trim().toLowerCase() !== String(b.company).trim().toLowerCase()) return fail(res, 400, 'Type the company name exactly to confirm');
         const sub = await currentSub(b.stripe_customer).catch(() => null);
@@ -1649,7 +1705,7 @@ export default async function handler(req, res) {
       if (action === 'admin-plan' && req.method === 'POST') {
         if (!isUuid(body.broker)) return fail(res, 400, 'Bad id');
         const [b] = await db(`brokers?id=eq.${body.broker}&select=id,email,company,plan`);
-        if (!b) return fail(res, 404, 'Broker not found');
+        if (!b) return fail(res, 404, 'Firm not found');
         if (body.remove) { await db(`brokers?id=eq.${b.id}`, { method: 'PATCH', body: { plan: null } }); await audit(uid, 'plan-remove', b.id, { plan: b.plan?.name }); return res.json({ ok: true }); }
         const name = String(body.name || '').trim().slice(0, 60), credits = Math.round(Number(body.credits)), price = Math.round(Number(body.price || 0) * 100) / 100;
         if (!name) return fail(res, 400, 'Give the plan a name');
@@ -1675,11 +1731,11 @@ export default async function handler(req, res) {
         catch { return fail(res, 404, 'Email previews haven’t been built yet'); }
       }
 
-      // Excuse a client from the partner agreement (or require it again). They can then buy without signing.
+      // Excuse a client from the referral agreement (or require it again). They can then buy without signing.
       if (action === 'admin-agreement-waive' && req.method === 'POST') {
         if (!isUuid(body.broker)) return fail(res, 400, 'Bad id');
         const [b] = await db(`brokers?id=eq.${body.broker}&select=id,company`);
-        if (!b) return fail(res, 404, 'Broker not found');
+        if (!b) return fail(res, 404, 'Firm not found');
         const ids = await waivedIds(), on = body.waive !== false;
         on ? ids.add(b.id) : ids.delete(b.id);
         await db('settings', { method: 'POST', prefer: 'resolution=merge-duplicates', body: { key: 'agreement_waived', value: { ids: [...ids] } } });
@@ -1753,7 +1809,7 @@ export default async function handler(req, res) {
         if (!(amount > 0 && amount <= 1e7)) return fail(res, 400, 'Enter an amount in pounds');
         if (!date || new Date(date) > Date.now() + 864e5) return fail(res, 400, 'Pick a date, today or earlier');
         const [b] = wide ? [{ id: null }] : await db(`brokers?id=eq.${body.broker}&select=id`);
-        if (!b) return fail(res, 404, 'Broker not found');
+        if (!b) return fail(res, 404, 'Firm not found');
         const note = String(body.note || '').trim().slice(0, 200) || null, channel = String(body.channel || '').trim().slice(0, 40) || null;
         try { await db('commission_entries', { method: 'POST', body: { broker: b.id, kind, amount, date, note, channel } }); }
         catch (e) { console.error('commission', e.message); return fail(res, 503, 'Commission tracking isn’t switched on yet (the database table is missing).'); }
@@ -2007,13 +2063,7 @@ export default async function handler(req, res) {
 
       if (action === 'admin-broker' && req.method === 'POST') {
         const [b] = await db(`brokers?id=eq.${encodeURIComponent(body.id)}&select=*`);
-        if (!b) return fail(res, 404, 'Broker not found');
-        // Pricing system: 'credit' (original calculated price per lead) or 'tier' (flat price per tier, tier-based auto-buy).
-        if ((body.pricing === 'credit' || body.pricing === 'tier') && body.pricing !== b.pricing) {
-          await db(`brokers?id=eq.${b.id}`, { method: 'PATCH', body: { pricing: body.pricing } });
-          await audit(uid, 'broker-pricing', b.id, { company: b.company, from: b.pricing, to: body.pricing });
-          return res.json({ ok: true, pricing: body.pricing });
-        }
+        if (!b) return fail(res, 404, 'Firm not found');
         if (typeof body.approved === 'boolean') await setApproved(b, body.approved, uid);
         const delta = Math.round(Number(body.credits) || 0);
         await audit(uid, 'broker', b.id, { approved: body.approved, credits: delta || undefined, reason: body.reason, invoiced: Number(body.invoiced) || undefined });
@@ -2038,7 +2088,7 @@ export default async function handler(req, res) {
         if (!r) return fail(res, 404, 'Refund already decided');
         const approve = !!body.approve, why = approve ? '' : [DECLINE_REASONS[body.why] || '', String(body.note || '').trim().slice(0, 1000)].filter(Boolean).join('\n\n');
         if (!approve && !why) return fail(res, 400, 'Choose a reason or write one');
-        if (approve && r.leads.buyer && r.leads.buyer !== r.broker) return fail(res, 409, 'This lead has moved to another broker since. Add credits by hand instead.');
+        if (approve && r.leads.buyer && r.leads.buyer !== r.broker) return fail(res, 409, 'This lead has moved to another firm since. Add credits by hand instead.');
         await audit(uid, approve ? 'refund-approve' : 'refund-decline', r.id, { lead: r.lead_id, credits: r.leads.price, ...(approve ? {} : { why: body.why || 'custom' }) });
         if (approve) await rpc('add_credits', { p_broker: r.broker, p_delta: r.leads.price, p_reason: `Refund for lead #${r.lead_id}`, p_ref: `return-${r.id}` });
         await db(`returns?id=eq.${r.id}`, { method: 'PATCH', body: { status: approve ? 'approved' : 'rejected', decided_at: new Date().toISOString(), ...(approve ? { credits: r.leads.price } : { decision: why }) } });
@@ -2048,18 +2098,18 @@ export default async function handler(req, res) {
           intro: approve ? `We've looked into lead #${r.lead_id} and agree it should be refunded. Sorry about that. The credits are back on your balance and ready to use.`
             : `We've looked into your refund request for lead #${r.lead_id} and can't refund it this time.<br><br>${esc(why).replace(/\n/g, '<br>')}<br><br>If you think we've got this wrong, just reply to this email and we'll take another look.`,
           ...(approve ? { highlight: { value: `+${r.leads.price} credits`, label: 'returned to your balance' } } : {
-            tipsTitle: 'Tips for hard-to-reach leads', tips: ['Try calling at a different time of day, and leave a short voicemail saying you’re following up their Leaflegal enquiry.', 'Send a text and an email as well. Many business owners reply in writing first.', 'Make three or four attempts over a few days before marking the lead as lost.'] }),
+            tipsTitle: 'Tips for hard-to-reach leads', tips: ['Try calling at a different time of day, and leave a short voicemail saying you’re following up their Leaflegal enquiry.', 'Send a text and an email as well. Many people reply in writing first.', 'Make three or four attempts over a few days before marking the lead as lost.'] }),
           cta: { label: 'Go to My leads', url: `${PLATFORM_URL}/leads` }, replyTo: 'hello@leaflegal.co' });
         return res.json({ ok: true, lead: r.lead_id });
       }
 
-      // One lead in full (contact details, consent and source), plus the brokers it can be assigned to.
+      // One lead in full (contact details, consent and source), plus the firms it can be assigned to.
       if (action === 'admin-lead' && req.method === 'GET') {
         const id = Number(req.query?.id ?? new URL(req.url, 'http://x').searchParams.get('id'));
         if (!Number.isInteger(id) || id < 1) return fail(res, 400, 'Bad id');
         const [[l], brokers] = await Promise.all([
-          db(`leads?id=eq.${id}&select=*,brokers!leads_buyer_fkey(company,email,pricing)`),
-          db('brokers?select=id,company,contact_name,email,credits,approved,plan&order=company.asc'),
+          db(`leads?id=eq.${id}&select=*,brokers!leads_buyer_fkey(company,email)`),
+          db('brokers?select=id,company,contact_name,email,credits,approved,plan,regulators&order=company.asc'),
         ]);
         if (!l) return fail(res, 404, 'Lead not found');
         await withPaid([l], new Set(brokers.filter((b) => b.plan?.commission).map((b) => b.id)));
@@ -2067,11 +2117,11 @@ export default async function handler(req, res) {
           db(`returns?lead_id=eq.${l.id}&select=reason,details,status,decision,created_at,brokers!returns_broker_fkey(company)&order=created_at.desc`).catch(() => [])]) : [[], []];
         const [off] = l.email ? await db(`email_suppressions?email=eq.${encodeURIComponent(l.email.trim().toLowerCase())}&select=reason,source,created_at`).catch(() => []) : [];
         const [origin] = await withAdNames([leadOrigin(l.source || {})]);
-        return res.json({ notes, refunds: rets, lead: { ...l, ...origin, quality: quality(l), suppressed: off || null, ...(l.buyer ? {} : { ...salePrice(l), discount_at: discountable(l) && !l.price_fixed ? new Date(new Date(l.created_at).getTime() + DISCOUNT.hours * 36e5).toISOString() : null }) },
-          brokers, turnovers: TURNOVERS, trading: TRADING, pricing: await getPricing() });
+        return res.json({ notes, refunds: rets, lead: { ...l, ...origin, quality: quality(l), suppressed: off || null, ...(l.buyer ? {} : { ...salePrice(l), discount_at: !l.price_fixed ? discountAt(l).toISOString() : null }) },
+          brokers: brokers.map(({ regulators, ...b }) => ({ ...b, can_take: canTake({ regulators }, l) })), taxonomy: taxonomy(), pricing: await getPricing(), list_price_now: price(l, await getPricing()) });
       }
 
-      // Change a lead's price, assign it to a broker, or delete it.
+      // Change a lead's price, assign it to a firm, or delete it.
       if (action === 'admin-lead' && req.method === 'POST') {
         const id = Number(body.id);
         if (!Number.isInteger(id) || id < 1) return fail(res, 400, 'Bad id');
@@ -2087,17 +2137,29 @@ export default async function handler(req, res) {
           return res.json({ ok: true });
         }
 
-        // Take a lead back (after a refund, or to correct it): fix its figures, set a new price, and either put it back in
-        // Opportunities or hand it straight to another broker (falls through to 'assign' below).
+        // Price an unsold lead again from the current pricing (Admin → Pricing). Clears a hand-set price.
+        if (body.op === 'reprice') {
+          if (l.buyer) return fail(res, 409, 'This lead has already been sold');
+          const p = price(l, await getPricing());
+          await db(`leads?id=eq.${id}&buyer=is.null`, { method: 'PATCH', body: { price: p, list_price: null, price_fixed: false } });
+          await audit(uid, 'lead-reprice', String(id), { from: l.price, to: p });
+          return res.json({ ok: true, price: p });
+        }
+
+        // Take a lead back (after a refund, or to correct it): fix its practice area, matter, urgency or grade, set a new
+        // price, and either put it back in Opportunities or hand it straight to another firm (falls through to 'assign' below).
         if (body.op === 'relist') {
-          const turnover = body.turnover || l.turnover, trading = body.trading || l.trading;
-          if (turnover !== l.turnover && !TURNOVERS.includes(turnover)) return fail(res, 400, 'Choose a revenue band');
-          if (trading !== l.trading && !TRADING.includes(trading)) return fail(res, 400, 'Choose a trading time');
-          const full = l.list_price || l.price, next = { ...l, turnover, trading };
+          const area = body.area || l.area, matter = body.matter === undefined ? l.matter : body.matter || null, urgency = body.urgency || l.urgency, grade = body.grade || l.grade;
+          if (area !== l.area && !AREA_SLUGS.includes(area)) return fail(res, 400, 'Choose a practice area');
+          if (matter !== l.matter && matter && !(areaOf(area)?.matters || []).some(([m]) => m === matter)) return fail(res, 400, 'Choose a matter in that practice area');
+          if (urgency !== l.urgency && !URGENCY.includes(urgency)) return fail(res, 400, 'Choose how urgent it is');
+          if (grade !== l.grade && !GRADES.includes(grade)) return fail(res, 400, 'Choose a grade');
+          const fix = { area, matter, urgency, grade, ...(area !== l.area || matter !== l.matter ? { area_label: areaOf(area)?.label || l.area_label, matter_label: (areaOf(area)?.matters || []).find(([m]) => m === matter)?.[1] || null } : {}) };
+          const full = l.list_price || l.price, next = { ...l, ...fix };
           const p = body.price === 'half' ? Math.max(1, Math.ceil(full / 2)) : body.price === 'recalc' ? price(next, await getPricing()) : body.price === 'full' || body.price == null ? full : Math.round(Number(body.price));
           if (!(p >= 1 && p <= 1000)) return fail(res, 400, 'Price must be between 1 and 1,000 credits');
-          const patch = { turnover, trading, price: p, list_price: body.price === 'half' ? full : null, price_fixed: true,
-            ...(l.buyer ? { buyer: null, bought_at: null, auto: false, stage: 'new', stage_at: null, funded_amount: null } : {}) };
+          const patch = { ...fix, price: p, list_price: body.price === 'half' ? full : null, price_fixed: true,
+            ...(l.buyer ? { buyer: null, bought_at: null, auto: false, stage: 'new', stage_at: null, instructed_value: null } : {}) };
           let refunded = 0;
           if (body.refund && l.buyer) { // credit the buyer back what they paid for it, less anything already refunded
             const rows = await db(`ledger?broker=eq.${l.buyer}&or=(lead_id.eq.${id},reason.eq.${encodeURIComponent(`"Refund for lead #${id}"`)})&select=delta`);
@@ -2113,19 +2175,20 @@ export default async function handler(req, res) {
             } else refunded = 0;
           }
           await db(`leads?id=eq.${id}`, { method: 'PATCH', body: patch });
-          await audit(uid, 'lead-relist', String(id), { from: { buyer: l.buyer || undefined, price: l.price, turnover: l.turnover, trading: l.trading }, to: { price: p, turnover, trading }, broker: body.broker || undefined, refunded: refunded || undefined });
+          await audit(uid, 'lead-relist', String(id), { from: { buyer: l.buyer || undefined, price: l.price, area: l.area, matter: l.matter, urgency: l.urgency, grade: l.grade }, to: { price: p, ...fix }, broker: body.broker || undefined, refunded: refunded || undefined });
           if (!body.broker) return res.json({ ok: true, price: p, refunded });
           Object.assign(l, patch);
           body.op = 'assign';
         }
 
         if (body.op === 'assign') {
-          if (!isUuid(body.broker)) return fail(res, 400, 'Choose a broker');
+          if (!isUuid(body.broker)) return fail(res, 400, 'Choose a firm');
           if (l.buyer) return fail(res, 409, 'This lead has already been sold');
           const [b] = await db(`brokers?id=eq.${body.broker}&select=*`);
-          if (!b) return fail(res, 404, 'Broker not found');
+          if (!b) return fail(res, 404, 'Firm not found');
+          if (!canTake(b, l)) return fail(res, 400, `${b.company}'s regulators don't cover ${areaName(l).toLowerCase()}, so this lead can't go to them`);
           if (body.charge) {
-            if (!(await signed(b.id))) return fail(res, 400, `${b.company} hasn't accepted the partner agreement yet. Assign it free instead, or ask them to accept it.`);
+            if (!(await signed(b.id))) return fail(res, 400, `${b.company} hasn't accepted the referral agreement yet. Assign it free instead, or ask them to accept it.`);
             if (!(await rpc('buy_lead', { p_lead: id, p_broker: b.id, p_auto: false }))) {
               return fail(res, 402, b.approved ? `${b.company} doesn't have enough credits (${b.credits}). Assign it free instead, or add credits first.` : `${b.company} isn't approved yet`);
             }
@@ -2149,13 +2212,13 @@ export default async function handler(req, res) {
           return res.json({ ok: true });
         }
 
-        // Tell a broker the credits for this lead are back on their balance (when the refund was made by hand).
+        // Tell a firm the credits for this lead are back on their balance (when the refund was made by hand).
         if (body.op === 'refund-notice') {
-          if (!isUuid(body.broker)) return fail(res, 400, 'Choose a broker');
+          if (!isUuid(body.broker)) return fail(res, 400, 'Choose a firm');
           const credits = Math.round(Number(body.credits));
           if (!(credits >= 1 && credits <= 1000)) return fail(res, 400, 'Credits must be between 1 and 1,000');
           const [b] = await db(`brokers?id=eq.${body.broker}&select=email`);
-          if (!b) return fail(res, 404, 'Broker not found');
+          if (!b) return fail(res, 404, 'Firm not found');
           const ids = [id, ...(Array.isArray(body.also) ? body.also.map(Number).filter((n) => Number.isInteger(n) && n > 0 && n !== id) : [])], names = ids.map((n) => `#${n}`).join(', ').replace(/, ([^,]*)$/, ' and $1'), one = ids.length === 1;
           await notify([b.email], `Refund approved: lead${one ? '' : 's'} ${names}`, {
             title: 'Refund approved', preheader: `${credits} credits are back on your balance.`,
@@ -2166,10 +2229,10 @@ export default async function handler(req, res) {
           return res.json({ ok: true });
         }
 
-        // Suppression list: no more emails to this business from Leaflegal or any broker's CRM. Takes effect on the next send.
+        // Suppression list: no more emails to this person from Leaflegal or any firm's CRM. Takes effect on the next send.
         if (body.op === 'suppress') {
           if (!l.email) return fail(res, 400, 'This lead has no email address');
-          if (!(await suppress(l.email, String(body.why || 'Suppressed by Leaflegal').slice(0, 200), 'admin'))) return fail(res, 400, `${l.email} belongs to a broker account, so it can’t be suppressed`);
+          if (!(await suppress(l.email, String(body.why || 'Suppressed by Leaflegal').slice(0, 200), 'admin'))) return fail(res, 400, `${l.email} belongs to a firm account, so it can’t be suppressed`);
           await audit(uid, 'lead-suppress', String(id), { email: l.email });
           return res.json({ ok: true });
         }
@@ -2187,35 +2250,44 @@ export default async function handler(req, res) {
         if (body.op === 'delete') {
           if (body.confirm !== id) return fail(res, 400, 'Confirm the lead number to delete it');
           await db(`leads?id=eq.${id}`, { method: 'DELETE' });
-          await audit(uid, 'lead-delete', String(id), { business: l.business, price: l.price, buyer: l.buyer });
+          await audit(uid, 'lead-delete', String(id), { name: l.full_name, matter: l.matter_label, price: l.price, buyer: l.buyer });
           return res.json({ ok: true });
         }
         return fail(res, 400, 'Unknown action');
       }
 
       // Tier prices (credits per lead). Unsold leads take the new price straight away; sold leads keep what was paid.
-      if (action === 'admin-tier-prices' && req.method === 'POST') {
-        const value = Object.fromEntries(TIER_NAMES.map((t) => [t, Math.round(Number(body.prices?.[t]))]));
-        if (Object.values(value).some((v) => !(v >= 1 && v <= 1000))) return fail(res, 400, 'Each tier price must be between 1 and 1,000 credits');
-        await db('settings', { method: 'POST', body: { key: 'tier_prices', value, updated_at: new Date().toISOString() }, prefer: 'resolution=merge-duplicates' });
-        await Promise.all(TIER_NAMES.map((t) => db(`leads?buyer=is.null&tier=eq.${encodeURIComponent(t)}`, { method: 'PATCH', body: { tier_price: value[t] } })));
-        await audit(uid, 'tier-prices', 'tier_prices', value);
-        return res.json({ ok: true, prices: value });
-      }
-
+      // Pricing editor: base credits per practice area, matter overrides ('area/matter'), and the multipliers.
+      // Returns the saved pricing and worked examples. reprice: true also prices every unsold lead again (as admin-reprice).
       if (action === 'admin-pricing' && req.method === 'POST') {
-        const n = (v, lo, hi, d) => { const x = Number(v); return Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d; };
-        const min = Math.round(n(body.min, 1, 1000, DEFAULT_PRICING.min)), max = Math.round(n(body.max, min, 5000, 250));
+        const n = (v, lo, hi, d) => { const x = Number(v); return v !== null && v !== '' && Number.isFinite(x) ? Math.min(hi, Math.max(lo, x)) : d; };
+        const D = DEFAULT_PRICING, min = Math.round(n(body.min, 1, 1000, D.min)), max = Math.round(n(body.max, min, 5000, D.max));
+        const matters = {};
+        for (const [k, v] of Object.entries(body.matters && typeof body.matters === 'object' ? body.matters : {})) {
+          const [a, m] = String(k).split('/');
+          if ((areaOf(a)?.matters || []).some(([x]) => x === m) && Number(v) > 0) matters[`${a}/${m}`] = Math.round(n(v, 1, 5000, 50));
+        }
         const value = {
           min, max,
-          age: Object.fromEntries(TRADING.map((t) => [t, n(body.age?.[t], 0, 1.5, DEFAULT_PRICING.age[t])])),
-          revenue: Object.fromEntries(TURNOVERS.map((t) => [t, n(body.revenue?.[t], 0, 1.5, DEFAULT_PRICING.revenue[t])])),
-          adverse: n(body.adverse, 0, 1.5, 0.75), unsure: n(body.unsure, 0, 1.5, 1),
-          sizeFrom: 50000, sizeFloor: n(body.sizeFloor, 0, 1, DEFAULT_PRICING.sizeFloor), floorPrime: Math.round(n(body.floorPrime, 0, 1000, DEFAULT_PRICING.floorPrime)),
+          areas: Object.fromEntries(AREA_SLUGS.map((a) => [a, Math.round(n(body.areas?.[a], 1, 5000, D.areas[a] ?? 50))])),
+          matters,
+          grade: Object.fromEntries(GRADES.map((g) => [g, n(body.grade?.[g], 0.1, 3, D.grade[g])])),
+          urgent: n(body.urgent, 0.5, 3, D.urgent), business: n(body.business, 0.5, 3, D.business),
+          value: (Array.isArray(body.value) ? body.value : D.value).map((x) => [Math.round(n(x?.[0], 1, 1e9, 0)), n(x?.[1], 0.5, 3, 1)]).filter(([at]) => at > 0).sort((x, y) => y[0] - x[0]).slice(0, 6),
         };
         await audit(uid, 'pricing', 'pricing', value);
         await db('settings', { method: 'POST', body: { key: 'pricing', value, updated_at: new Date().toISOString() }, prefer: 'resolution=merge-duplicates' });
-        return res.json({ ok: true, pricing: value });
+        const P = mergePricing(value), repriced = body.reprice ? (await repriceUnsold(P)).changed : undefined;
+        if (repriced !== undefined) await audit(uid, 'reprice', 'leads', { repriced });
+        return res.json({ ok: true, pricing: P, examples: PRICE_EXAMPLES.map((e) => ({ ...e, price: price(e, P), parts: priceParts(e, P) })), ...(repriced !== undefined ? { repriced } : {}) });
+      }
+
+      // Price every unsold, listed lead again from the saved pricing. Leads priced by hand (price_fixed) keep their price
+      // unless all: true. Returns { ok, repriced, checked }.
+      if (action === 'admin-reprice' && req.method === 'POST') {
+        const P = await getPricing(), r = await repriceUnsold(P, body.all === true);
+        await audit(uid, 'reprice', 'leads', { repriced: r, all: body.all === true });
+        return res.json({ ok: true, repriced: r.changed, checked: r.checked });
       }
     }
 

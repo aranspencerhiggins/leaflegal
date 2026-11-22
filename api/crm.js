@@ -1,4 +1,4 @@
-// Broker CRM API (admin only, except the unsubscribe link and the daily flow cron). UI: public/assets/crm.js.
+// Firm acquisition CRM API (admin only, except the unsubscribe link and the daily flow cron). UI: public/assets/crm.js.
 import { db, esc, configured, SUPABASE_URL, PUBLISHABLE_KEY, suppress, birdMsgKey } from './_lib/platform.js';
 import { STAGES, STAGE_KEYS, SOURCES, LINKS, FLOW_DEFAULTS, capture, activity, setStage, sendCrmEmail, sendCrmSms, smsReady, getFlows, runFlows, renderEmail, merge,
   unsubOk, normEmail, e164, isMobile } from './_lib/crm.js';
@@ -144,7 +144,7 @@ export default async function handler(req, res) {
     }
 
     if (action === 'preview' && req.method === 'POST') {
-      const c = id ? await one() : { id: 0, name: 'Sam Taylor', company: 'Taylor Finance Ltd' };
+      const c = id ? await one() : { id: 0, name: 'Sam Taylor', company: 'Taylor Legal LLP' };
       return res.json({ subject: merge(b.subject, c), html: renderEmail(b.body, c, '#').html });
     }
 
@@ -198,7 +198,7 @@ export default async function handler(req, res) {
 
     if (action === 'run-flows' && req.method === 'POST') return res.json({ ok: true, ...(await runFlows(id ? { contactIds: [id] } : {})) });
 
-    // Invite a CRM contact to the platform (reuses the platform's own invite).
+    // Link a CRM contact to the firm account that uses the same email.
     if (action === 'link-broker' && req.method === 'POST') {
       const c = await one();
       const [br] = c.email ? await db(`brokers?email=eq.${encodeURIComponent(c.email)}&select=id`) : [];

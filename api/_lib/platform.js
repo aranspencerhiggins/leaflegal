@@ -1,14 +1,17 @@
 import { createHmac, createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
-import { typeLabel, chUrl, dobLabel } from './ch.js';
-// Shared logic for the broker platform (platform.leaflegal.co): database access, lead pricing,
-// auto-buy matching and lead delivery. Files under api/_lib are not deployed as endpoints.
-// Env: SUPABASE_SECRET_KEY (required; the project's secret or service_role key), SUPABASE_URL (optional),
-//      RESEND_API_KEY, ENQUIRY_FROM, ENQUIRY_TO (admin alerts).
-export const SUPABASE_URL = process.env.SUPABASE_URL || 'https://tefpljuzuvdchczcfjlz.supabase.co';
-export const PUBLISHABLE_KEY = 'sb_publishable_xkOwkkbg3qYYJukThYnHDw_Q_oqo-hm';
-export const PLATFORM_URL = (process.env.PLATFORM_URL || 'https://platform.leaflegal.co').replace(/\/platform\/?$/, '');
-// Sign-up hand-off from the leaflegal.co partner form to platform.leaflegal.co/register (different origins, so no shared
-// browser storage). The details travel encrypted and expire after 30 days; nothing readable goes in the URL.
+import { typeLabel, chUrl } from './ch.js';
+import { AUDIENCES, areaLabel, matterLabel, allowedAreas, STAGES as TAX_STAGES } from './taxonomy.js';
+// Shared logic for the Leaflegal law firm platform (platform.leaflegal.co): database access, lead pricing,
+// auto-buy matching and lead delivery. Files under api/_lib are not deployed as endpoints. "brokers" is the firm table.
+// Env: SUPABASE_SECRET_KEY (required; the project's secret or service_role key), SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY,
+//      SITE_URL, PLATFORM_URL (optional), RESEND_API_KEY, ENQUIRY_FROM, ENQUIRY_TO (admin alerts).
+export const SITE_URL = (process.env.SITE_URL || 'https://leaflegal.co').replace(/\/+$/, '');
+export const SUPABASE_URL = (process.env.SUPABASE_URL || 'https://qrdpvsqsfifmgkxinank.supabase.co').replace(/\/+$/, '');
+export const PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_vZL7kU5KjOGWKSfcAAsnbg_9p9BBTUM';
+export const PLATFORM_URL = (process.env.PLATFORM_URL || 'https://platform.leaflegal.co').replace(/\/+$/, '');
+export const API_URL = `${SITE_URL}/api/platform`;
+// Sign-up hand-off from the leaflegal.co partner form to the platform's register page. The details travel encrypted
+// and expire after 30 days; nothing readable goes in the URL.
 const handKey = () => createHash('sha256').update(`handoff:${key()}`).digest();
 export const sealHandoff = (data) => {
   const iv = randomBytes(12), c = createCipheriv('aes-256-gcm', handKey(), iv);
@@ -26,7 +29,7 @@ const key = () => (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVI
 export const secretKey = key;
 // Signed links (approve, confirm email, unsubscribe): HMAC with the server key, with an expiry.
 export const linkSig = (kind, id, exp) => createHmac('sha256', key()).update(`${kind}:${id}:${exp}`).digest('hex').slice(0, 40);
-export const signedUrl = (kind, id, days) => { const exp = Date.now() + days * 864e5; return `https://platform.leaflegal.co/api/platform?action=${kind}&id=${id}&exp=${exp}&sig=${linkSig(kind, id, exp)}`; };
+export const signedUrl = (kind, id, days) => { const exp = Date.now() + days * 864e5; return `${API_URL}?action=${kind}&id=${id}&exp=${exp}&sig=${linkSig(kind, id, exp)}`; };
 export const configured = () => !!key();
 
 // PostgREST call with the server key. Throws on HTTP errors.
@@ -59,116 +62,65 @@ async function dbOne(path, { method = 'GET', body, prefer } = {}) {
 export const allow = (key, windowSec, max) => rpc('hit_rate', { p_key: key, p_window: windowSec, p_max: max }).catch(() => true); // fail open if the limiter itself errors
 export const rpc = (fn, args) => db(`rpc/${fn}`, { method: 'POST', body: args });
 
-// ---------------------------------------------------------------- pricing (credits per lead)
-// Bigger loans and bigger businesses are worth more to a broker. Edit these two tables to re-price.
-// Bands brokers can buy. Under £50k revenue goes to Aureum, not the marketplace. Under 6 months trading is opt-in (see checks()).
-export const TURNOVERS = ['£50k to £100k', '£100k to £250k', '£250k to £500k', '£500k to £1m', '£1m to £5m', '£5m+'];
-export const TRADING = ['Under 6 months', '6 to 12 months', '1 to 2 years', '2 to 5 years', '5+ years'];
-export const PROPERTY = ['Homeowner', 'Tenant'];
-export const STRUCTURES = ['Limited company', 'Limited liability partnership (LLP)'];
-export const PURPOSES = ['Growth and expansion', 'Cash flow', 'Equipment or vehicles', 'Stock and inventory', 'Commercial property', 'Refinance existing debt', 'Tax or VAT bill', 'Something else'];
-// ---------------------------------------------------------------- lead pricing algorithm (1 credit = £1)
-// price = min + (max - min) × size × affordability × age × revenue × credit, rounded to £5.
-//  size:          bigger loans are worth more (log scale: ~£10k → 0.1, £100k → 0.45, £1m → 0.9, £1.6m+ → 1)
-//  affordability: how realistic the ask is versus revenue. Asking for up to ~half a year's revenue is normal;
-//                 asking for many times revenue is unfundable and worth almost nothing (smooth fall-off around 1× revenue).
-//  age / revenue: older, bigger businesses are easier to place.
-// e.g. 6–12 months old, £100k–£250k revenue, wants £5m → £40 (the floor for £100k+ revenue; under £100k revenue the minimum is £20). 2–5 years old, £1m–£5m revenue, wants £1m → about £230. Everything at the top → £250.
-export const REVENUE_MID = { 'Under £50k': 35000, '£50k to £100k': 75000, '£100k to £250k': 175000, '£250k to £500k': 375000, '£500k to £1m': 750000, '£1m to £5m': 2500000, '£5m+': 10000000 }; // £5m+ is open-ended, so its midpoint is set high
+// ---------------------------------------------------------------- pricing (credits per lead, 1 credit = £1 + VAT)
+// price = clamp(round5(base × grade × urgency × business × value), min, max)
+//  base:     matters['area/matter'] if set, else areas[area], else 50
+//  grade:    the form's quality grade (A, B, C)
+//  urgency:  'Urgently' leads cost more (urgent)
+//  business: business clients cost more (business)
+//  value:    value_min at or above a threshold gives that multiplier, first match wins (property price, debt, estate)
+// Admin → Pricing edits these (settings.pricing). Keep in step with price() in public/assets/platform.js.
 export const DEFAULT_PRICING = {
-  min: 20, max: 300,
-  age: { 'Under 6 months': 0.3, '6 to 12 months': 0.5, '1 to 2 years': 0.75, '2 to 5 years': 1, '5+ years': 1 },
-  revenue: { 'Under £50k': 0.25, '£50k to £100k': 0.33, '£100k to £250k': 0.7, '£250k to £500k': 0.8, '£500k to £1m': 0.9, '£1m to £5m': 1, '£5m+': 1 },
-  adverse: 0.75, unsure: 1, // 'Not sure' counts as clean credit (user, 18 Nov 2026)
-  floor100k: 40, // leads from businesses with £100k+ revenue never cost less than this
-  // Loan size matters much less from £50k up (user, 17 Nov 2026): the size score is at least sizeFloor at £50k, rising to 1 by £2m.
-  sizeFrom: 50000, sizeFloor: 0.4,
-  // £500k+ revenue, trading 5+ years, clean credit: never less than this (0 = off; 150 was tried and judged too pricey).
-  floorPrime: 0,
+  min: 15, max: 400,
+  areas: { conveyancing: 35, immigration: 60, 'family-law': 55, 'debt-recovery': 45, 'motoring-offences': 50, licensing: 55, 'lease-extensions': 60 },
+  matters: { 'immigration/sponsor-licences': 120, 'family-law/financial-settlements': 75, 'motoring-offences/drink-driving': 70,
+    'motoring-offences/dangerous-driving': 80, 'licensing/premises-licence-applications': 70, 'lease-extensions/collective-enfranchisement': 110 },
+  grade: { A: 1.3, B: 1, C: 0.7 }, urgent: 1.15, business: 1.1,
+  value: [[1000000, 1.4], [500000, 1.25], [250000, 1.1]],
 };
-// Clients an admin has excused from the partner agreement (Admin → client → Agreement). They can buy and be auto-bought for
-// without signing. Kept in settings (key agreement_waived), so it needs no column and brokers can't change it.
+export const BASE_PRICE = 50; // an area with no price set
+// Clients an admin has excused from the referral agreement (Admin → client → Agreement). They can buy and be auto-bought for
+// without signing. Kept in settings (key agreement_waived), so it needs no column and firms can't change it.
 export async function waivedIds() {
   try { const [r] = await db('settings?key=eq.agreement_waived&select=value'); return new Set(r?.value?.ids || []); } catch { return new Set(); }
 }
-
-export async function getPricing() {
-  try { const [r] = await db('settings?key=eq.pricing&select=value'); return r?.value?.age ? { ...DEFAULT_PRICING, ...r.value } : DEFAULT_PRICING; } catch { return DEFAULT_PRICING; }
+// Saved pricing merged over the defaults. Saved matter overrides replace the default list (so one can be removed).
+export function mergePricing(v) {
+  if (!v || typeof v !== 'object' || !v.areas) return DEFAULT_PRICING;
+  const D = DEFAULT_PRICING;
+  return { ...D, ...v, areas: { ...D.areas, ...v.areas }, matters: { ...(v.matters && typeof v.matters === 'object' ? v.matters : D.matters) },
+    grade: { ...D.grade, ...(v.grade || {}) }, value: Array.isArray(v.value) ? v.value : D.value };
 }
-const AFF_FULL = 1 + Math.pow(0.5, 2.2);
+export async function getPricing() {
+  try { const [r] = await db('settings?key=eq.pricing&select=value'); return mergePricing(r?.value); } catch { return DEFAULT_PRICING; }
+}
+const num = (v, d) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : d);
 export function priceParts(l, P = DEFAULT_PRICING) {
-  const amount = Math.max(1000, l.amount || 0), rev = REVENUE_MID[l.turnover] || 100000, ratio = amount / rev;
-  let size = Math.min(1, Math.max(0, (Math.log10(amount) - 4) / 2.2)); // £10k or less scores 0 on size (user, 18 Nov 2026: a £5k loan at £50k–£100k revenue should be about 20)
-  const from = P.sizeFrom ?? 50000, sf = P.sizeFloor ?? 0.4;
-  if (amount >= from) size = Math.max(size, sf + (1 - sf) * Math.min(1, (Math.log10(amount) - Math.log10(from)) / (Math.log10(2e6) - Math.log10(from))));
-  const affordability = Math.min(1, AFF_FULL / (1 + Math.pow(ratio, 2.2))); // full marks up to half a year's revenue
-  const age = P.age[l.trading] ?? 0.6, revenue = P.revenue[l.turnover] ?? 0.7;
-  const credit = l.credit === 'Yes' ? P.adverse : l.credit === 'Not sure' ? P.unsure : 1;
-  return { size, affordability, age, revenue, credit, ratio, score: size * affordability * age * revenue * credit };
+  const base = num(P.matters?.[`${l.area}/${l.matter}`], num(P.areas?.[l.area], BASE_PRICE));
+  const grade = num(P.grade?.[l.grade], 1);
+  const urgent = l.urgency === 'Urgently' ? num(P.urgent, 1) : 1;
+  const business = l.audience === 'business' ? num(P.business, 1) : 1;
+  const vm = Number(l.value_min) || 0, step = (P.value || []).find(([at]) => vm > 0 && vm >= at);
+  const value = step ? num(step[1], 1) : 1;
+  return { base, grade, urgent, business, value };
 }
 export function price(l, P = DEFAULT_PRICING) {
-  const p = P.min + (P.max - P.min) * priceParts(l, P).score;
-  const rev = REVENUE_MID[l.turnover] || 0, prime = rev >= 750000 && l.trading === '5+ years' && l.credit !== 'Yes';
-  const floor = Math.max(P.min, rev >= 100000 ? P.floor100k ?? 40 : 0, prime ? P.floorPrime ?? 0 : 0);
-  return Math.min(P.max, Math.max(floor, Math.round(p / 5) * 5));
+  const x = priceParts(l, P), raw = x.base * x.grade * x.urgent * x.business * x.value;
+  return Math.min(P.max ?? 400, Math.max(P.min ?? 15, Math.round(raw / 5) * 5));
 }
-// Worked examples shown to brokers on the Credits page.
+// Worked examples shown to firms on the Credits page.
 export const PRICE_EXAMPLES = [
-  { amount: 25000, turnover: '£100k to £250k', trading: '1 to 2 years', credit: 'No' },
-  { amount: 100000, turnover: '£250k to £500k', trading: '2 to 5 years', credit: 'No' },
-  { amount: 250000, turnover: '£1m to £5m', trading: '5+ years', credit: 'No' },
-  { amount: 1000000, turnover: '£1m to £5m', trading: '2 to 5 years', credit: 'No' },
-  { amount: 2000000, turnover: '£5m+', trading: '5+ years', credit: 'No' },
-  { amount: 5000000, turnover: '£100k to £250k', trading: '6 to 12 months', credit: 'No' },
+  { area: 'conveyancing', matter: 'buying-a-home', grade: 'B', urgency: 'Within a month', audience: 'individual', value_min: 250000 },
+  { area: 'family-law', matter: 'divorce', grade: 'A', urgency: 'Urgently', audience: 'individual' },
+  { area: 'family-law', matter: 'financial-settlements', grade: 'B', urgency: 'In the next few months', audience: 'individual', value_min: 500000 },
+  { area: 'motoring-offences', matter: 'drink-driving', grade: 'A', urgency: 'Urgently', audience: 'individual' },
+  { area: 'immigration', matter: 'sponsor-licences', grade: 'A', urgency: 'Within a month', audience: 'business' },
+  { area: 'debt-recovery', matter: 'unpaid-invoices', grade: 'C', urgency: 'Just looking into it', audience: 'business' },
 ];
 
-// ---------------------------------------------------------------- lead tiers (brokers with pricing = 'tier')
-// Each lead's tier and tier_price are set in the database (trigger leads_tier, tools/platform-schema-17.sql) from its revenue,
-// trading age and homeownership. Brokers on 'credit' pricing (paid before Nov 2026) pay leads.price as before; brokers on
-// 'tier' pricing pay leads.tier_price, choose tiers instead of detailed criteria, and give each tier a monthly auto-buy budget.
-export const TIER_NAMES = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Platinum+'];
-export const DEFAULT_TIER_PRICES = { Bronze: 25, Silver: 50, Gold: 80, Platinum: 150, 'Platinum+': 220 };
-export async function getTierPrices() {
-  try { const [r] = await db('settings?key=eq.tier_prices&select=value'); return { ...DEFAULT_TIER_PRICES, ...(r?.value || {}) }; } catch { return DEFAULT_TIER_PRICES; }
-}
-// Same rule as lead_tier() in SQL (tools/platform-schema-18.sql); used for examples and checks only (the database is the record).
-const TIER_BASE = { '£50k to £100k': 0, '£100k to £250k': 1, '£250k to £500k': 2, '£500k to £1m': 3, '£1m to £5m': 4, '£5m+': 4 };
-const DECLARED_AGE = { 'Under 6 months': 0.25, '6 to 12 months': 0.75, '1 to 2 years': 1.5, '2 to 5 years': 3, '5+ years': 6 };
-export function leadTier(l, at = l.created_at || Date.now()) {
-  const base = TIER_BASE[l.turnover];
-  if (base == null) return null;
-  const inc = /^\d{4}-\d{2}-\d{2}/.test(l.company?.incorporated || '') ? Date.parse(l.company.incorporated.slice(0, 10)) : null;
-  const age = inc != null ? (new Date(at).setUTCHours(0, 0, 0, 0) - inc) / 864e5 / 365.25 : DECLARED_AGE[l.trading];
-  const drop = (age != null && (age < 1 || (age < 2 && l.property !== 'Homeowner')) ? 1 : 0) + (l.credit === 'Yes' ? 1 : 0); // missed payments / CCJs: one more
-  return TIER_NAMES[Math.max(0, base - drop)];
-}
-export const onTiers = (b) => b?.pricing === 'tier';
-// A tier broker's choices: on = wanted (alerts, "fits your criteria"), credits = monthly auto-buy budget for that tier (0 = none).
-export const tierPlanOf = (b) => Object.fromEntries(TIER_NAMES.map((t) => { const p = b?.filters?.tierPlan?.[t] || {};
-  return [t, { on: p.on !== false, credits: Math.max(0, Math.round(Number(p.credits) || 0)) }]; }));
-// What a broker's criteria are for matching: tiers for tier brokers, the detailed filters for everyone else.
-// A saved tierPlan stays in filters after a broker leaves tier pricing (settings always writes it); drop it, or missGroups would match on tiers and skip the real criteria.
-export const critOf = (b) => { if (onTiers(b)) return { tierPlan: tierPlanOf(b) }; const { tierPlan, ...f } = b?.filters || {}; return f; };
-// An unsold lead priced for this broker: tier brokers see the tier price (prices set by hand don't apply; the 72-hour discount does).
-export const asPriced = (l, b) => (onTiers(b) && !l.buyer ? { ...l, price: l.tier_price ?? null, price_fixed: false, list_price: null } : l);
-// Auto-buy spend on one tier this calendar month.
-export async function tierSpendOf(b, tier) {
-  const from = new Date(); from.setUTCDate(1); from.setUTCHours(0, 0, 0, 0);
-  const rows = await db(`leads?buyer=eq.${b.id}&auto=is.true&tier=eq.${encodeURIComponent(tier)}&bought_at=gte.${from.toISOString()}&select=price`);
-  return rows.reduce((a, r) => a + (r.price || 0), 0);
-}
-
-// Lead quality 0-100: clean credit, time trading, urgency, no existing debt, revenue.
-export function quality(l) {
-  let s = 40;
-  s += l.credit === 'Yes' ? 0 : 20;
-  s += { '5+ years': 15, '2 to 5 years': 12, '1 to 2 years': 8, '6 to 12 months': 3 }[l.trading] || 0;
-  s += { 'As soon as possible': 10, 'Within 2 weeks': 10, 'Within a month': 6, 'Just exploring options': 0 }[l.timeline] ?? 4;
-  s += l.debt === 'No' ? 5 : 0;
-  s += ['£250k to £500k', '£500k to £1m', '£1m to £5m', '£5m+'].includes(l.turnover) ? 10 : 0;
-  return Math.min(100, s);
-}
-export const STAGES = ['new', 'contacted', 'application', 'funded', 'lost'];
+// Lead quality 0-100: the score the enquiry form worked out (stored on the lead with its grade).
+export const quality = (l) => (Number.isFinite(l?.score) ? l.score : null);
+export const STAGES = TAX_STAGES;
 
 // Monthly plans (subscription only, prices exclude VAT). 1 credit = £1 of lead value. Unused credits roll over.
 export const PACKS = {
@@ -179,7 +131,7 @@ export const PACKS = {
 export const TRIAL = { pence: 100000, credits: 1000, then: 'starter' };
 export const isUuid = (v) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
 // Custom plans: more than £5,000 a month in £1,000 steps (e.g. £50,000), 1 credit per £1.
-// Above maxCredits a month we talk to the broker instead of selling online.
+// Above maxCredits a month we talk to the firm instead of selling online.
 export const CUSTOM = { min: 6000, max: 250000, step: 1000, bonus: 0, maxCredits: 20000, contact: 'hello@leaflegal.co' };
 export function customPack(pounds) {
   const n = Math.round(Number(pounds));
@@ -189,59 +141,60 @@ export function customPack(pounds) {
   return { name: 'Custom', credits, pence: n * 100, bonus: CUSTOM.bonus };
 }
 
-// ---------------------------------------------------------------- filters
-// filters: { amountMin, amountMax, turnovers[], purposes[], trading[], cleanCredit, structures[], property[], tenant }. Empty list = any.
-// tenant: optional separate criteria (same keys) for tenant leads; the main criteria then cover homeowners. Leads without an answer use the main ones.
-// Under 6 months trading and £50k to £100k revenue are opt-in (user, 18 Nov 2026): never matched unless the broker ticks them.
-// 'Not sure' about missed payments / CCJs counts as clean credit and is shown as a dash (user, 18 Nov 2026).
-export const creditShown = (v) => (v === 'Not sure' ? '–' : v);
-export const OPT_IN = ['Under 6 months', '£50k to £100k'];
-// £50k–£100k revenue leads are only emailed to brokers whose criteria they match: never in invite alerts, round-ups,
-// "outside your criteria" or missed-lead emails (user, 20 Nov 2026).
-export const unmatchedOk = (l) => l.turnover !== '£50k to £100k';
-export const TENANT_KEYS = ['amountMin', 'amountMax', 'turnovers', 'purposes', 'trading', 'cleanCredit'];
-const forLead = (f, l) => (l.property === 'Tenant' && f.tenant ? [{ ...f, ...f.tenant }, 't_', 'Tenants: '] : [f, '', '']);
-// One criteria set's checks as { k, v, label, why }; p = form field prefix, t = label prefix.
-function checks(c, l, p = '', t = '') {
-  // Opt-in values: an empty list ("any") doesn't include them, the broker has to tick them.
-  const out = (list, v) => (OPT_IN.includes(v) ? !(list || []).includes(v) : Array.isArray(list) && list.length && !list.includes(v));
-  return [out(c.structures, l.structure) && { k: p + 'structures', v: l.structure, label: t + (l.structure === 'Limited company' ? 'Limited companies' : 'LLPs'), why: `${t}Business type: ${l.structure}` },
-    l.property && out(c.property, l.property) && { k: p + 'property', v: l.property, label: `${t}${l.property}s`, why: `${t}${l.property}s not accepted` },
-    c.amountMin && l.amount < c.amountMin && { k: p + 'amountMin', label: `${t}Loans under ${gbp(c.amountMin)}`, why: `${t}${gbp(l.amount)} is below the ${gbp(c.amountMin)} minimum loan` },
-    c.amountMax && l.amount > c.amountMax && { k: p + 'amountMax', label: `${t}Loans over ${gbp(c.amountMax)}`, why: `${t}${gbp(l.amount)} is above the ${gbp(c.amountMax)} maximum loan` },
-    c.cleanCredit && l.credit === 'Yes' && { k: p + 'cleanCredit', v: l.credit, label: t + 'Missed payments or CCJs', why: `${t}Missed payments or CCJs: ${l.credit || 'not given'}` },
-    out(c.turnovers, l.turnover) && { k: p + 'turnovers', v: l.turnover, label: `${t}Revenue ${l.turnover}`, why: `${t}Annual revenue of ${l.turnover}` },
-    out(c.purposes, l.purpose) && { k: p + 'purposes', v: l.purpose, label: `${t}Purpose: ${l.purpose}`, why: `${t}Purpose: ${l.purpose}` },
-    out(c.trading, l.trading) && { k: p + 'trading', v: l.trading, label: `${t}Trading ${l.trading}`, why: `${t}Trading for ${l.trading}` }].filter(Boolean);
-}
-// Budget tiers (filters.tiers, optional): each tier is a full criteria set with a share of monthly_cap. A lead fits if any tier fits.
-// Credits auto-buy has spent on each budget tier this calendar month.
-export async function tierSpend(b) {
-  const from = new Date(); from.setUTCDate(1); from.setUTCHours(0, 0, 0, 0);
-  const rows = await db(`leads?buyer=eq.${b.id}&auto=is.true&auto_tier=not.is.null&bought_at=gte.${from.toISOString()}&select=auto_tier,price`);
-  return (b.filters?.tiers || []).map((_, i) => rows.filter((r) => r.auto_tier === i).reduce((a, r) => a + (r.price || 0), 0));
-}
-export const tierMatches = (f, l) => (f?.tiers || []).map((t, i) => (checks(t, l).length ? -1 : i)).filter((i) => i >= 0);
-// The checks as { k, v, label } so they can be counted and undone (k = the form field, v = the value to allow).
+// ---------------------------------------------------------------- lead wording
+export const matterName = (l) => l.matter_label || matterLabel(l.area, l.matter) || (l.matter && l.matter !== 'other' ? l.matter : null) || l.area_label || areaLabel(l.area) || 'Legal enquiry';
+export const areaName = (l) => l.area_label || areaLabel(l.area) || 'Legal enquiry';
+export const audienceLabel = (v) => (v === 'business' ? 'Business' : v === 'individual' ? 'Individual' : null);
+export const privatePayLabel = (v) => (v === 'yes' ? 'Yes' : v === 'quote' ? 'If the cost is right' : null);
+export const placeOf = (l) => [l.postcode_district, l.region].filter(Boolean).join(', ') || null;
+export const dateLabel = (d) => (/^\d{4}-\d{2}-\d{2}/.test(String(d || '')) ? new Date(`${String(d).slice(0, 10)}T00:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : null);
+const valueText = (l) => l.value_band || (l.value_min ? gbp(l.value_min) : null);
+
+// ---------------------------------------------------------------- firm criteria (brokers.filters) and matching
+// filters: { areas[], matters{area: [matter]}, regions[], postcodeAreas[], audiences[], urgencies[], grades[], privatePayOnly,
+//            valueMin, valueMax, tagsAny[], tagsNone[], maxPrice, dailyLeads, dailyCredits, suggest, digestAt, missed, missedAt }
+// Empty list = any, except areas: no areas = no leads. matters missing or empty for an area = every matter in it.
+// Hard rule (not a filter): a firm only gets areas its regulators allow (allowedAreas). Immigration needs SRA, CILEx or IAA.
+const list = (v) => (Array.isArray(v) ? v : []);
+export const regIds = (b) => list(b?.regulators).map((r) => r?.id).filter(Boolean);
+export const canTake = (b, l) => allowedAreas(regIds(b)).includes(l.area);
+// The checks as { k, v, label, why } so they can be counted and undone (k = the filter key, v = the value to allow).
 export function missGroups(f = {}, l) {
-  if (f.tierPlan) return f.tierPlan[l.tier]?.on ? [] : [{ k: 'tierOn', v: l.tier || '', label: l.tier ? `${l.tier} leads` : 'Leads under £50k revenue', why: l.tier ? `${l.tier} lead: not one of your tiers` : 'Under £50k revenue, so it has no tier' }];
-  if (f.tiers?.length) { // nearest tier's reasons
-    if (tierMatches(f, l).length) return [];
-    return f.tiers.map((t, i) => checks(t, l, `x${i}_`, `${t.name || `Tier ${i + 1}`}: `)).sort((a, b) => a.length - b.length)[0];
+  f = f || {};
+  const out = [], aName = areaName(l), mName = matterName(l);
+  if (!list(f.areas).includes(l.area)) out.push({ k: 'areas', v: l.area, label: aName, why: `${aName} is not one of the practice areas selected` });
+  else {
+    const ms = list(f.matters?.[l.area]);
+    if (ms.length && !ms.includes(l.matter)) out.push({ k: 'matters', v: `${l.area}/${l.matter}`, label: `${mName} (${aName})`, why: `${mName} is not one of the ${aName.toLowerCase()} matters selected` });
   }
-  const [c, p, t] = forLead(f, l);
-  const own = checks(c, l, p, t);
-  return [...checks({ structures: f.structures, property: f.property }, l).filter((g) => /(structures|property)$/.test(g.k)), ...own.filter((g) => !/(structures|property)$/.test(g.k))];
+  if (list(f.regions).length && !list(f.regions).includes(l.region)) out.push({ k: 'regions', v: l.region || '', label: l.region || 'No region given', why: l.region ? `${l.region} is outside the regions selected` : 'The enquiry has no region' });
+  if (list(f.postcodeAreas).length && !list(f.postcodeAreas).includes(l.postcode_area)) out.push({ k: 'postcodeAreas', v: l.postcode_area || '', label: l.postcode_area ? `Postcode area ${l.postcode_area}` : 'No postcode given', why: l.postcode_area ? `Postcode area ${l.postcode_area} is outside the postcode areas selected` : 'The enquiry has no postcode' });
+  if (list(f.audiences).length && !list(f.audiences).includes(l.audience)) { const a = AUDIENCES.find(([k]) => k === l.audience)?.[1] || 'Unknown client type';
+    out.push({ k: 'audiences', v: l.audience || '', label: a, why: `${a} are not selected` }); }
+  if (list(f.urgencies).length && !list(f.urgencies).includes(l.urgency)) out.push({ k: 'urgencies', v: l.urgency || '', label: l.urgency ? `Needed ${l.urgency.toLowerCase()}` : 'No urgency given', why: l.urgency ? `Urgency ${l.urgency.toLowerCase()} is not selected` : 'The enquiry has no urgency' });
+  if (list(f.grades).length && !list(f.grades).includes(l.grade)) out.push({ k: 'grades', v: l.grade || '', label: l.grade ? `Grade ${l.grade} leads` : 'Ungraded leads', why: l.grade ? `Grade ${l.grade} is not selected` : 'The lead has no grade' });
+  if (f.privatePayOnly && l.private_pay === 'quote') out.push({ k: 'privatePayOnly', v: false, label: 'Will pay if the cost is right', why: 'The client will only pay privately if the cost is right' });
+  const hasValue = l.value_min != null || l.value_max != null, top = l.value_max ?? l.value_min, bottom = l.value_min ?? l.value_max;
+  if (f.valueMin && hasValue && top < f.valueMin) out.push({ k: 'valueMin', label: `Value under ${gbp(f.valueMin)}`, why: `${valueText(l) || gbp(top)} is below the ${gbp(f.valueMin)} minimum value` });
+  if (f.valueMax && hasValue && bottom > f.valueMax) out.push({ k: 'valueMax', label: `Value over ${gbp(f.valueMax)}`, why: `${valueText(l) || gbp(bottom)} is above the ${gbp(f.valueMax)} maximum value` });
+  const tags = list(l.tags);
+  if (list(f.tagsAny).length && !list(f.tagsAny).some((t) => tags.includes(t))) out.push({ k: 'tagsAny', v: '', label: 'Without the tags required', why: `None of the tags required (${list(f.tagsAny).join(', ')})` });
+  for (const t of list(f.tagsNone).filter((x) => tags.includes(x))) out.push({ k: 'tagsNone', v: t, label: `Tagged ${t}`, why: `Tagged ${t}, which is excluded` });
+  return out;
 }
-// misses: why a lead falls outside a broker's criteria, in plain words (empty = it matches).
+// misses: why a lead falls outside a firm's criteria, in plain words (empty = it matches).
 export const misses = (f, l) => missGroups(f, l).map((g) => g.why);
-export const matches = (f, l) => !misses(f, l).length;
-// Leads auto-buy skipped for a broker because of its criteria, and which criteria held them back.
+export const matches = (f, l) => !missGroups(f, l).length;
+// A firm and a lead: allowed by its regulators and inside its criteria.
+export const fits = (b, l) => canTake(b, l) && matches(b?.filters || {}, l);
+// Leads auto-buy skipped for a firm because of its criteria, and which criteria held them back. Leads its regulators
+// don't allow are left out (widening the criteria couldn't change those).
 // groups: n = leads that criterion blocked, only = leads it alone blocked (allowing it would have let auto-buy buy them).
 export function missedSummary(b, leads) {
   const missed = [], G = {};
   for (const l of leads) {
-    const why = missGroups(critOf(b), l);
+    if (!canTake(b, l)) continue;
+    const why = missGroups(b.filters || {}, l);
     if (!why.length) continue;
     missed.push({ l, why });
     for (const w of why) { const g = (G[w.label] ||= { ...w, n: 0, only: 0 }); g.n++; if (why.length === 1) g.only++; }
@@ -250,17 +203,18 @@ export function missedSummary(b, leads) {
   return { missed, groups: Object.values(G).sort((x, y) => y.only - x.only || y.n - x.n), status,
     sold: missed.filter((m) => status(m.l) === 'sold').length, mine: missed.filter((m) => status(m.l) === 'mine').length, live: missed.filter((m) => status(m.l) === 'live').length };
 }
-// Emails about leads outside a broker's criteria: 'instant' (default), 'daily' summary or 'off'.
+// Emails about leads outside a firm's criteria: 'instant' (default), 'daily' summary or 'off'.
 // Kept in brokers.filters (suggest, digestAt) so it needs no extra column; matches() ignores those keys.
 export const SUGGEST = ['instant', 'daily', 'off'];
 export const suggestMode = (b) => (SUGGEST.includes(b.filters?.suggest) ? b.filters.suggest : 'instant');
 
-// Fields a broker sees before buying (no names or contact details).
-export const PREVIEW = 'id,created_at,amount,purpose,timeline,structure,turnover,trading,property,credit,debt,debt_left,debt_monthly,price,list_price,price_fixed,tier,tier_price';
-// Masked contact shown before purchase, e.g. J*** S****, a*****@b****.co.uk, +447******90. Raw values never leave the server.
+// Fields a firm sees before buying (nothing that names or locates the person: no name, contact details, full postcode,
+// business name or summary). postcode_area (letters only) is selected for matching.
+export const PREVIEW = 'id,created_at,area,area_label,matter,matter_label,audience,urgency,deadline,postcode_district,postcode_area,region,country,location_source,value_band,value_label,value_min,value_max,private_pay,answers,tags,grade,score,price,list_price,price_fixed';
+// Masked contact shown before purchase, e.g. J*** S****, a*****@*****.co.uk, +447******90. Raw values never leave the server.
 const stars = (n) => '*'.repeat(Math.max(3, Math.min(n, 8)));
 export function maskContact(l) {
-  // First initial only, and no letters of the email domain: together with the Companies House preview, more would let someone identify the business.
+  // First initial only, and no letters of the email domain.
   const name = String(l.full_name || '').trim().split(/\s+/).filter(Boolean).map((w, i) => (i ? '' : w[0].toUpperCase()) + stars(w.length - (i ? 0 : 1))).join(' ');
   const [local = '', domain = ''] = String(l.email || '').toLowerCase().split('@');
   const dot = domain.indexOf('.');
@@ -269,14 +223,11 @@ export function maskContact(l) {
   const phone = ph.length > 6 ? `${ph.slice(0, 4)}${'*'.repeat(ph.length - 6)}${ph.slice(-2)}` : '';
   const c = l.checks || {};
   return { name, email, phone, phoneValid: /^\+447\d{9}$/.test(ph), emailChecked: !!email,
-    phoneLive: c.phone?.reachable === true, emailVerified: c.email?.result === 'valid' };
+    phoneLive: c.phone?.reachable === true || c.verified?.phone === true, emailVerified: c.email?.result === 'valid' || c.verified?.email === true };
 }
-// Leads still unsold after DISCOUNT.hours cost DISCOUNT.pct% less. The charge itself happens in buy_lead
-// (tools/platform-schema-8.sql), which uses the same rule: keep the two in step.
+// Leads still unsold after DISCOUNT.hours cost DISCOUNT.pct% less (every lead, unless priced by hand). The charge itself
+// happens in buy_lead (tools/platform-schema-legal.sql), which uses the same rule: keep the two in step.
 export const DISCOUNT = { hours: 72, pct: 50 };
-// Leads from businesses with £250k+ revenue are never discounted (buy_lead in tools/platform-schema-8.sql matches this).
-export const NO_DISCOUNT_TURNOVERS = ['£250k to £500k', '£500k to £1m', '£1m to £5m', '£5m+'];
-export const discountable = (l) => !NO_DISCOUNT_TURNOVERS.includes(l.turnover);
 export const discountAt = (l) => new Date(new Date(l.created_at).getTime() + DISCOUNT.hours * 36e5);
 // Ad cost of each lead. Leads carry their Meta campaign id (utm_campaign on the ad link): cost = that campaign's spend in the
 // lead's week (Mon–Sun) ÷ that campaign's leads that week. Leads with no campaign, or a campaign with no spend that week,
@@ -293,32 +244,32 @@ export function leadAdCosts(leads, rows) {
 export function salePrice(l) {
   // Priced by hand (relisted): no automatic discount; show the old price struck through if it was cut.
   if (!l.buyer && l.price_fixed) return { price: l.price, list_price: l.list_price > l.price ? l.list_price : null, discounted: l.list_price > l.price };
-  if (l.buyer || !discountable(l) || Date.now() < discountAt(l).getTime()) return { price: l.price, list_price: null, discounted: false };
+  if (l.buyer || Date.now() < discountAt(l).getTime()) return { price: l.price, list_price: null, discounted: false };
   return { price: Math.max(1, Math.ceil(l.price * (100 - DISCOUNT.pct) / 100)), list_price: l.price, discounted: true };
 }
-// Unsold lead as brokers see it: masked contact, current price (after any discount) and when the discount starts.
-// Companies House record for brokers. Before purchase: nothing that identifies the company (no name, number or address),
-// so a broker can't find the business without buying the lead. After purchase: the full record and a link.
+// Companies House record of a business client. Before purchase: nothing that identifies the company (no name, number,
+// address or exact date), so a firm can't find the business without buying the lead. After purchase: the full record and a link.
 export function companyInfo(c, full) {
   if (!c?.number) return null;
   const p = c.profile || {};
   const info = { source: 'Companies House', type: typeLabel(c.type), status: c.status || null, incorporated: full ? c.incorporated || null : c.incorporated?.slice(0, 4) || null, // year only before purchase
     locality: p.locality || null, industries: p.industries || [], accounts_overdue: !!p.accounts_overdue, confirmation_overdue: !!p.confirmation_overdue,
-    insolvency_history: !!p.insolvency_history, charges: !!p.charges, director_listed: !!c.directorListed, listed_as: c.directorListed ? (c.role === 'Secretary' ? 'company secretary' : 'director') : null, director_dob: c.directorDob || null, checked: !!c.profile }; // dob (month/year) shown before purchase too
-  return full ? { ...info, name: p.title || null, number: c.number, address: c.address || null, sic: p.sic || [], director: c.director || null, url: chUrl(c.number) } : info;
+    insolvency_history: !!p.insolvency_history, checked: !!c.profile };
+  return full ? { ...info, name: p.title || null, number: c.number, address: c.address || null, sic: p.sic || [], url: chUrl(c.number) } : info;
 }
-// Unsold lead as brokers see it: masked contact, Companies House preview, current price (after any discount) and when the discount starts.
-// Brokers not yet approved (anyone can sign up) only see the loan, the business profile and the price.
-export const withMask = ({ full_name, email, phone, business, checks, company, ...rest }, trusted = true) => ({ ...rest, ...salePrice(rest), discount_at: discountable(rest) ? discountAt(rest).toISOString() : null,
-  contact: trusted ? maskContact({ full_name, email, phone, checks }) : null, companies_house: trusted ? companyInfo(company, false) : null });
-export const PREVIEW_SELECT = PREVIEW + ',full_name,email,phone,checks,company';
+// Unsold lead as firms see it: masked contact, Companies House preview (business clients), current price (after any
+// discount) and when the discount starts. Firms not yet approved (anyone can sign up) only see the matter and the price.
+export const withMask = ({ full_name, email, phone, checks, company, summary, postcode, business_name, company_number, consent, source, flags, ...rest }, trusted = true) => ({
+  ...rest, ...salePrice(rest), has_summary: !!summary, discount_at: rest.price_fixed ? null : discountAt(rest).toISOString(),
+  contact: trusted ? maskContact({ full_name, email, phone, checks }) : null,
+  companies_house: trusted && rest.audience === 'business' ? companyInfo(company, false) : null });
+export const PREVIEW_SELECT = PREVIEW + ',summary,full_name,email,phone,checks,company';
 
-export const FULL = PREVIEW + ',business,full_name,email,phone,bought_at,auto,stage,stage_at,funded_amount,company,archived_at';
-
+export const FULL = PREVIEW + ',full_name,email,phone,postcode,business_name,company_number,summary,company,consent,bought_at,auto,stage,stage_at,instructed_value,archived_at';
 // ---------------------------------------------------------------- email + delivery
 export const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 export const gbp = (n) => '£' + Number(n || 0).toLocaleString('en-GB');
-// Resend allows 10 requests a second. New-lead alerts fan out to many brokers at once, so space sends out
+// Resend allows 10 requests a second. New-lead alerts fan out to many firms at once, so space sends out
 // (8 a second per instance) and retry a 429 once. ponytail: per-instance limiter; a shared queue if volume grows.
 let sentAt = [];
 export async function resendSlot() {
@@ -329,12 +280,12 @@ export async function resendSlot() {
   }
 }
 // Suppression list: people who unsubscribed from an invite or CRM email. Nothing from the platform or CRM goes to them again,
-// unless they register an account (signup removes them). Registered brokers are never added. Fails open if the table is missing.
+// unless they register an account (signup removes them). Registered firms are never added. Fails open if the table is missing.
 const emailIn = (list) => list.map((e) => encodeURIComponent(`"${String(e).trim().toLowerCase().replace(/"/g, '')}"`)).join(',');
-// LinkedIn (Campaign Manager account 560716965). Conversions API events and ad spend. Tokens are added in Vercel:
+// LinkedIn (Campaign Manager account in LINKEDIN_AD_ACCOUNT). Conversions API events and ad spend. Tokens are added in Vercel:
 // LINKEDIN_CAPI_TOKEN (Signals manager → Direct API → Generate access token) and LINKEDIN_ADS_TOKEN (Advertising API, r_ads_reporting;
 // falls back to the CAPI token). LinkedIn member tokens expire, so failures are logged, never thrown.
-export const LI_ACCOUNT = process.env.LINKEDIN_AD_ACCOUNT || '560716965';
+const liAccount = () => process.env.LINKEDIN_AD_ACCOUNT || '';
 // LinkedIn API versions are monthly (YYYYMM) and retire after about a year: use last month's, and if LinkedIn says a
 // version isn't active (426), step back a month, up to 3 times. LINKEDIN_API_VERSION pins one.
 const liVersions = () => { if (process.env.LINKEDIN_API_VERSION) return [process.env.LINKEDIN_API_VERSION];
@@ -372,8 +323,9 @@ export async function linkedinSpend(since) {
   // Needs its own token with r_ads_reporting: the Conversions API token can't read ad spend (every call was a 403).
   const token = process.env.LINKEDIN_ADS_TOKEN;
   if (!token) return { status: 'no token', rows: [] };
+  if (!liAccount()) return { status: 'no account', rows: [] };
   const d = new Date(since), range = `(start:(year:${d.getUTCFullYear()},month:${d.getUTCMonth() + 1},day:${d.getUTCDate()}))`;
-  const url = `https://api.linkedin.com/rest/adAnalytics?q=analytics&pivot=CAMPAIGN&timeGranularity=DAILY&dateRange=${range}&accounts=List(${encodeURIComponent(`urn:li:sponsoredAccount:${LI_ACCOUNT}`)})&fields=costInLocalCurrency,dateRange,pivotValues`;
+  const url = `https://api.linkedin.com/rest/adAnalytics?q=analytics&pivot=CAMPAIGN&timeGranularity=DAILY&dateRange=${range}&accounts=List(${encodeURIComponent(`urn:li:sponsoredAccount:${liAccount()}`)})&fields=costInLocalCurrency,dateRange,pivotValues`;
   try {
     const r = await liFetch(url, token, { timeout: 8000 }), j = await r.json().catch(() => ({}));
     if (!r.ok) { console.error('linkedin spend', r.status, JSON.stringify(j).slice(0, 300)); return { status: `error: ${String(j.message || r.status).slice(0, 120)}`, rows: [] }; }
@@ -422,6 +374,10 @@ export const unsuppress = (email) => db(`email_suppressions?email=eq.${encodeURI
 // Invites, round-ups and lead emails to invited firms go from BULK_FROM (alerts.leaflegal.co) when it's set, so cold-email
 // complaints don't touch the reputation of leaflegal.co, which carries account and lead emails. Otherwise the usual address.
 export const BULK_FROM = () => process.env.BULK_FROM || null;
+// Senders: platform emails to firms (alerts, purchases, account) come from alerts.leaflegal.co; emails to the public
+// (enquiry confirmations, matched-firm emails, contact and partner forms) from leaflegal.co. Both domains are verified in Resend.
+export const ALERTS_FROM = () => `Leaflegal <${process.env.ALERTS_FROM || 'alerts@alerts.leaflegal.co'}>`;
+export const MAIL_FROM = () => `Leaflegal <${process.env.ENQUIRY_FROM || 'hello@leaflegal.co'}>`;
 export async function sendEmail(to, subject, html, replyTo, attachments, unsub, scheduledAt, retry = true, from = null) {
   if (!process.env.RESEND_API_KEY || !to?.length) return false;
   if (retry) { const blocked = await suppressedSet(to); if (blocked.size) to = to.filter((e) => !blocked.has(String(e).trim().toLowerCase())); if (!to.length) return 'suppressed'; }
@@ -429,7 +385,7 @@ export async function sendEmail(to, subject, html, replyTo, attachments, unsub, 
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: from || `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}), ...(attachments ? { attachments } : {}), ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
+    body: JSON.stringify({ from: from || ALERTS_FROM(), to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}), ...(attachments ? { attachments } : {}), ...(scheduledAt ? { scheduled_at: scheduledAt } : {}),
       // One-click unsubscribe (RFC 8058): Gmail and Outlook show an Unsubscribe button and POST to this link.
       ...(unsub ? { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } } : {}) }),
     signal: AbortSignal.timeout(6000),
@@ -499,7 +455,7 @@ export async function sendBatch(items, fromOverride = null) {
   const blocked = await suppressedSet(items.flatMap((x) => x.to));
   items = items.filter((x) => !x.to.some((e) => blocked.has(String(e).trim().toLowerCase())));
   if (!items.length) return 0;
-  const from = fromOverride || `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`;
+  const from = fromOverride || ALERTS_FROM();
   let ok = 0;
   for (let i = 0; i < items.length; i += 100) {
     const chunk = items.slice(i, i + 100).map(({ to, subject, opts }) => ({ from, to, subject, html: emailHtml(opts), ...(opts.replyTo ? { reply_to: opts.replyTo } : {}),
@@ -523,7 +479,7 @@ export async function lowCredits(b, before, after) {
   await notify([b.email], `Your Leaflegal credits are running low (${after} left)`, {
     title: 'Your credits are running low',
     preheader: `${after} credits left. Top up your plan so you don't miss matching leads.`,
-    intro: `${esc(b.company)} has dropped below ${LOW_CREDITS} credits. Leads cost between ${onTiers(b) ? `${DEFAULT_TIER_PRICES.Bronze} and ${DEFAULT_TIER_PRICES['Platinum+']}` : `${DEFAULT_PRICING.min} and ${DEFAULT_PRICING.max}`} credits each, so some of the leads that match your criteria may now be out of reach${b.mode === 'auto' ? ', and auto-buy will skip any lead you can’t afford' : ''}.`,
+    intro: `${esc(b.company)} has dropped below ${LOW_CREDITS} credits. Leads cost between ${DEFAULT_PRICING.min} and ${DEFAULT_PRICING.max} credits each, so some of the leads that match your criteria may now be out of reach${b.mode === 'auto' ? ', and auto-buy will skip any lead you can’t afford' : ''}.`,
     highlight: { value: `${after.toLocaleString('en-GB')} credits`, label: 'left on your account' },
     tipsTitle: 'Your options',
     tips: ['<b>Upgrade your plan.</b> The new plan starts today and its credits are added straight away.',
@@ -532,21 +488,35 @@ export async function lowCredits(b, before, after) {
     cta: { label: 'Upgrade your plan', url: `${PLATFORM_URL}/billing` },
     link: { label: 'Review auto-buy settings', url: `${PLATFORM_URL}/autobuy` } });
 }
-const table = (rows) => `<table style="border-collapse:collapse;font-family:Arial,sans-serif">${rows.map(([k, v]) =>
-  `<tr><td style="padding:6px 12px;color:#579e84">${k}</td><td style="padding:6px 12px;font-weight:700;color:#244237">${esc(v) || '–'}</td></tr>`).join('')}</table>`;
-const leadRows = (l) => [['Amount', gbp(l.amount)], ['Purpose', l.purpose], ['Needed', l.timeline], ['Structure', l.structure], ['Annual revenue', l.turnover],
-  ['Trading for', l.trading], ['Homeowner or tenant', l.property], ['Missed payments / CCJs', creditShown(l.credit)], ['Existing finance', l.debt], ['Left to repay', l.debt_left], ['Monthly repayments', l.debt_monthly]];
+// Facts about a lead that are safe before purchase (nothing that names or locates the person), as [label, value] rows.
+export const leadRows = (l) => [['Practice area', areaName(l)], ['Matter', matterName(l)], ['Client', audienceLabel(l.audience)], ['Urgency', l.urgency],
+  ['Deadline', dateLabel(l.deadline)], ['Location', placeOf(l)], [l.value_label || 'Value', l.value_band], ['Paying privately', privatePayLabel(l.private_pay)],
+  ['Grade', l.grade ? `${l.grade}${Number.isFinite(l.score) ? ` (${l.score} out of 100)` : ''}` : null]].filter(([, v]) => v != null && v !== '');
+// A plain two-column table for email bodies (labels without colons).
+export function factsTable(rows, title = '') {
+  const F = 'font-family:Arial,Helvetica,sans-serif;';
+  rows = rows.filter(([, v]) => v != null && v !== '');
+  if (!rows.length) return '';
+  return `${title ? `<p style="${F}margin:30px 0 14px;font-size:16px;line-height:1.3;font-weight:bold;color:#14271f">${esc(title)}</p>` : ''}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border:1px solid #dde5e1;border-collapse:collapse">${rows.map(([k, v], i) =>
+    `<tr><td style="${F}padding:11px 18px;${i ? 'border-top:1px solid #edf1ef;' : ''}font-size:14px;color:#62786f;width:42%;vertical-align:top">${esc(k)}</td><td style="${F}padding:11px 18px;${i ? 'border-top:1px solid #edf1ef;' : ''}font-size:14px;color:#14271f;vertical-align:top">${esc(v)}</td></tr>`).join('')}</table>`;
+}
+// What the client answered on the form, as rows (firm emails after purchase only).
+export const answerRows = (answers) => (Array.isArray(answers) ? answers : []).filter((a) => a && a.q && a.a != null && a.a !== '').slice(0, 40).map((a) => [String(a.q), Array.isArray(a.a) ? a.a.join(', ') : String(a.a)]);
 // Where emails go: alerts (new matching lead) and delivery (a bought lead) have their own lists; both fall back to the account email.
 export const recipients = (b, kind = 'deliver') => String((kind === 'alert' ? b.notify_emails : b.deliver_emails) || b.email).split(/[,;\s]+/).filter((e) => /@/.test(e)).slice(0, 10);
 export const webhooksOf = (b) => (b.webhook_urls?.length ? b.webhook_urls : b.webhook_url ? [b.webhook_url] : []).slice(0, 5);
 
-// Clean lead object for CRMs (webhook body) and the portal.
+// Clean lead object for CRMs (webhook body, HubSpot, Pipedrive) and the CSV export.
 export const leadOut = (l) => ({
-  id: l.id, received_at: l.created_at, purchased_at: l.bought_at, auto_bought: l.auto, price_credits: l.price, tier: l.tier || null,
-  business: l.business, company_number: l.company?.number || null, director_listed: l.company ? !!l.company.directorListed : null, contact_name: l.full_name, email: l.email, phone: l.phone,
-  amount: l.amount, purpose: l.purpose, timeline: l.timeline, structure: l.structure, annual_revenue: l.turnover,
-  trading_for: l.trading, property: l.property || null, adverse_credit: l.credit, existing_finance: l.debt, left_to_repay: l.debt_left, monthly_repayments: l.debt_monthly,
-  quality: quality(l), stage: l.stage, stage_at: l.stage_at, funded_amount: l.funded_amount, archived_at: l.archived_at || null, companies_house: companyInfo(l.company, true),
+  id: l.id, received_at: l.created_at, purchased_at: l.bought_at || null, auto_bought: !!l.auto, price_credits: l.price,
+  practice_area: l.area || null, practice_area_label: areaName(l), matter: l.matter || null, matter_label: matterName(l),
+  audience: l.audience || null, urgency: l.urgency || null, deadline: l.deadline || null,
+  contact_name: l.full_name || null, email: l.email || null, phone: l.phone || null, postcode: l.postcode || null, region: l.region || null,
+  business_name: l.business_name || null, company_number: l.company_number || l.company?.number || null,
+  value_band: l.value_band || null, value_label: l.value_label || null, private_pay: l.private_pay || null,
+  grade: l.grade || null, quality_score: quality(l), tags: l.tags || [], summary: l.summary || null, answers: Array.isArray(l.answers) ? l.answers : [],
+  consent: l.consent ? { version: l.consent.version || null, at: l.consent.at || null, text: l.consent.text || null } : null,
+  stage: l.stage || 'new', stage_at: l.stage_at || null, instructed_value: l.instructed_value ?? null, archived_at: l.archived_at || null,
 });
 
 // Webhooks may only go to public internet addresses (no localhost, private networks or cloud metadata endpoints).
@@ -582,13 +552,14 @@ export function parseHubspot(text) {
   return portal && form ? { portal, form: form.toLowerCase(), ...(region && region !== 'na1' ? { region } : {}) } : null;
 }
 // o = leadOut(l). Standard HubSpot contact properties only, so any form with these fields works; the rest goes in "message".
-const leadLines = (o) => [['Leaflegal lead', `#${o.id}${o.test ? ' (test)' : ''}`], ['Loan amount', o.amount != null ? gbp(o.amount) : ''], ['Purpose', o.purpose], ['Needed', o.timeline], ['Business type', o.structure],
-    ['Company number', o.company_number], ['Annual revenue', o.annual_revenue], ['Trading for', o.trading_for], ['Homeowner or tenant', o.property], ['Missed payments / CCJs', creditShown(o.adverse_credit)],
-    ['Existing finance', o.existing_finance], ['Left to repay', o.left_to_repay], ['Monthly repayments', o.monthly_repayments], ['Quality score', o.quality], ['Credits used', o.price_credits]].filter(([, v]) => v != null && v !== '');
+const leadLines = (o) => [['Leaflegal lead', `#${o.id}${o.test ? ' (test)' : ''}`], ['Practice area', o.practice_area_label], ['Matter', o.matter_label], ['Client', audienceLabel(o.audience)],
+    ['Urgency', o.urgency], ['Deadline', dateLabel(o.deadline)], ['Postcode', o.postcode], ['Region', o.region], ['Business', o.business_name], ['Company number', o.company_number],
+    [o.value_label || 'Value', o.value_band], ['Paying privately', privatePayLabel(o.private_pay)], ['Grade', o.grade], ['Quality score', o.quality_score], ['Summary', o.summary],
+    ...answerRows(o.answers), ['Credits used', o.price_credits]].filter(([, v]) => v != null && v !== '');
 export const hubspotFields = (o) => {
   const [first, ...rest] = String(o.contact_name || '').trim().split(/\s+/);
   const lines = leadLines(o);
-  return [['email', o.email], ['firstname', first], ['lastname', rest.join(' ')], ['phone', o.phone], ['company', o.business],
+  return [['email', o.email], ['firstname', first], ['lastname', rest.join(' ')], ['phone', o.phone], ['company', o.business_name], ['zip', o.postcode],
     ['message', lines.map(([k, v]) => `${k}: ${v}`).join('\n')]].filter(([, v]) => v).map(([name, value]) => ({ name, value: String(value) }));
 };
 export async function postHubspot(h, o) {
@@ -596,15 +567,15 @@ export async function postHubspot(h, o) {
   const host = h.region ? `api-${h.region}.hsforms.com` : 'api.hsforms.com';
   try {
     const r = await fetch(`https://${host}/submissions/v3/integration/submit/${h.portal}/${h.form}`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fields: hubspotFields(o), context: { pageName: 'Leaflegal lead', pageUri: 'https://platform.leaflegal.co/leads' } }), signal: AbortSignal.timeout(8000) });
+      body: JSON.stringify({ fields: hubspotFields(o), context: { pageName: 'Leaflegal lead', pageUri: `${PLATFORM_URL}/leads` } }), signal: AbortSignal.timeout(8000) });
     if (r.ok) return 'ok';
     const j = await r.json().catch(() => ({}));
     return (j.errors || []).map((e) => e.message).filter(Boolean).join('; ').slice(0, 300) || j.message || `HTTP ${r.status}`;
   } catch (e) { return e.name === 'TimeoutError' ? 'timed out' : 'failed'; }
 }
 
-// Pipedrive: the partner pastes their personal API token (Settings → Personal preferences → API). Each bought lead
-// becomes an organisation, a person, a deal (value = loan amount) and a note on the deal with everything else.
+// Pipedrive: the firm pastes its personal API token (Settings → Personal preferences → API). Each bought lead becomes a
+// person (and an organisation for business clients), a deal and a note on the deal with everything else.
 export const parsePipedrive = (t) => { const m = String(t || '').trim().match(/^[0-9a-f]{40}$/i); return m ? { token: m[0].toLowerCase() } : null; };
 export async function postPipedrive(p, o) {
   if (!p?.token) return 'not set up';
@@ -615,30 +586,34 @@ export async function postPipedrive(p, o) {
     return j.data.id;
   };
   try {
-    const org_id = o.business ? await call('organizations', { name: o.business }) : undefined;
+    const org_id = o.business_name ? await call('organizations', { name: o.business_name }) : undefined;
     const person_id = await call('persons', { name: o.contact_name || o.email || 'Leaflegal lead', org_id,
       ...(o.email ? { email: [{ value: o.email, primary: true, label: 'work' }] } : {}), ...(o.phone ? { phone: [{ value: o.phone, primary: true, label: 'work' }] } : {}) });
-    const deal_id = await call('deals', { title: `${o.business || o.contact_name} – ${gbp(o.amount)}${o.test ? ' (test)' : ''}`, value: o.amount || 0, currency: 'GBP', person_id, org_id });
-    await call('notes', { deal_id, content: leadLines(o).map(([k, v]) => `<b>${esc(k)}:</b> ${esc(v)}`).join('<br>') });
+    const deal_id = await call('deals', { title: `${o.business_name || o.contact_name || 'Leaflegal lead'}, ${o.matter_label}${o.test ? ' (test)' : ''}`, value: o.instructed_value || 0, currency: 'GBP', person_id, org_id });
+    await call('notes', { deal_id, content: leadLines(o).map(([k, v]) => `<b>${esc(k)}</b> ${esc(v)}`).join('<br>') });
     return 'ok';
   } catch (e) { return e.name === 'TimeoutError' ? 'timed out' : e.message || 'failed'; }
 }
 
-// Send a purchased lead to the broker: email + their CRM webhook. Never throws.
+// Send a purchased lead to the firm: email, the "you've been matched" email and message to the client, and the firm's
+// webhooks and CRMs. Never throws.
 export async function deliver(b, l) {
-  const tasks = [b.deliver_on === false ? null : notify(recipients(b), `New lead: ${l.business} – ${gbp(l.amount)}`, {
-    title: `New lead: ${l.business}`,
-    preheader: `${gbp(l.amount)} for ${String(l.purpose || 'business finance').toLowerCase()}. ${l.full_name} is expecting your call.`,
-    intro: `${l.auto ? 'Auto-buy has picked up' : 'You’ve bought'} lead #${l.id}. <b>${esc(l.full_name)}</b> at ${esc(l.business)} asked to be contacted about business finance and is expecting a call from a broker. The lead is yours alone: nobody else can buy it.`,
-    highlight: { value: gbp(l.amount), label: `${l.purpose || 'Business finance'} · needed ${String(l.timeline || '').toLowerCase() || 'soon'}` },
-    rowsTitle: 'Contact details', rows: [['Business', l.business], ...(l.company?.number ? [['Company number', l.company.number]] : []), ['Name', l.full_name + (l.company?.directorListed ? ` (listed ${l.company.role === 'Secretary' ? 'company secretary' : 'director'})` : '')], ...(dobLabel(l.company?.directorDob) ? [['Date of birth', dobLabel(l.company.directorDob)]] : []), ['Mobile', l.phone], ['Email', l.email]],
+  const mName = matterName(l), first = String(l.full_name || '').trim().split(/\s+/)[0] || 'The client';
+  const tasks = [b.deliver_on === false ? null : notify(recipients(b), `New lead: ${l.full_name}, ${mName}`, {
+    title: `New lead: ${l.full_name}`,
+    preheader: `${mName}${l.region ? ` in ${l.region}` : ''}. ${first} is expecting to hear from you.`,
+    intro: `${l.auto ? 'Auto-buy has picked up' : 'You’ve bought'} lead #${l.id}. <b>${esc(l.full_name)}</b> asked to be put in touch with a law firm about ${esc(mName.toLowerCase())} and is expecting to hear from you. The lead is yours alone and nobody else can buy it.`,
+    highlight: { value: mName, label: [areaName(l), l.urgency].filter(Boolean).join(' · ') },
+    rowsTitle: 'Contact details', rows: [['Name', l.full_name], ['Mobile', l.phone], ['Email', l.email], ['Postcode', l.postcode],
+      ...(l.business_name ? [['Business', l.business_name]] : []), ...(l.company_number || l.company?.number ? [['Company number', l.company_number || l.company.number]] : [])],
     stepsTitle: 'Make the most of it',
-    steps: [['Call within the hour', 'Leads called quickly convert far better. They have just told us what they need and are often still at their desk.'],
-      ['Confirm the basics', 'Check the business, the amount and what it’s for, then qualify anything the form doesn’t ask, such as sector, card takings or security.'],
-      ['Update the stage', 'Move the lead through New, Contacted, Application and Funded on the platform so you can see what converts.']],
-    tipsTitle: 'What they told us', tips: [...leadRows(l), ['Credits used', l.price]].filter(([, v]) => v != null && v !== '').map(([k, v]) => `${esc(k)}: <b>${esc(v)}</b>`),
+    steps: [['Call quickly', 'Enquiries called within the hour turn into instructions far more often. They have just told us what they need.'],
+      ['Check for conflicts first', 'Run your conflict check before you discuss the matter in any detail.'],
+      ['Disclose the referral fee', 'Tell the client in writing that Leaflegal introduced them and that your firm pays Leaflegal a fee for the introduction, before or when you take instructions.'],
+      ['Update the stage', 'Move the lead through New, Contacted, Consultation and Instructed on the platform so you can see what converts.']],
+    after: factsTable([...leadRows(l), ['Summary', l.summary], ...answerRows(l.answers), ['Credits used', l.price]], 'What they told us'),
     cta: { label: 'Open lead on the platform', url: `${PLATFORM_URL}/leads` },
-    ...(l.company?.number ? { link: { label: `View ${l.business} on Companies House`, url: chUrl(l.company.number) } } : {}),
+    ...(l.company?.number ? { link: { label: 'View the business on Companies House', url: chUrl(l.company.number) } } : {}),
     note: `If the phone number is not in service or belongs to someone else, or the email address doesn’t exist, you can request a refund on the platform within 72 hours. Reply to this email to contact ${esc(l.full_name)} directly.`, replyTo: l.email })];
   tasks.push(matchedEmail(b, l), matchedMessage(b, l));
   if (b.webhook_on !== false) for (const u of webhooksOf(b)) tasks.push(postWebhook(u, { event: 'lead.purchased', lead: leadOut(l) }, b.webhook_secret).then((s) => console.log('webhook', b.id, new URL(u).hostname, s)));
@@ -647,179 +622,107 @@ export async function deliver(b, l) {
   await Promise.allSettled(tasks.filter(Boolean));
 }
 
-// ---------------------------------------------------------------- new enquiry → platform
-// Stores the lead, auto-buys it for the first matching broker (fair rotation: whoever auto-bought longest ago),
-// otherwise emails matching manual-mode brokers that a new opportunity is live.
-// PostgREST value quoted, so commas or brackets in user input can't change the filter.
 // "Checked for you" lines in new-lead emails: contact details masked as on Opportunities (raw values only after purchase),
-// plus what our live checks and Companies House confirmed. Nothing that names the business.
+// plus what our live checks and Companies House confirmed. Nothing that names the person or the business.
 export function checkTips(l) {
-  const m = maskContact(l), c = l.checks || {}, ch = companyInfo(l.company, false), ok = (t) => `<b style="color:#1f8a55">&#10003;</b> ${t}`, no = (t) => `<b style="color:#b26a00">!</b> ${t}`;
+  const m = maskContact(l), c = l.checks || {}, ch = l.audience === 'business' ? companyInfo(l.company, false) : null, ok = (t) => `<b style="color:#1f8a55">&#10003;</b> ${t}`, no = (t) => `<b style="color:#b26a00">!</b> ${t}`;
   const tips = [];
-  if (m.name) tips.push(`Contact: <b>${esc(m.name)}</b>`);
-  if (m.phone) tips.push(c.phone?.reachable === false ? no(`Mobile <b>${esc(m.phone)}</b>: switched off when checked, the applicant confirmed it's right`) : ok(`Mobile <b>${esc(m.phone)}</b>: checked`));
-  if (m.email) tips.push(ok(`Email <b>${esc(m.email)}</b>: checked`));
+  if (m.name) tips.push(`Contact <b>${esc(m.name)}</b>`);
+  if (m.phone) tips.push(c.phone?.reachable === false ? no(`Mobile <b>${esc(m.phone)}</b> was switched off when checked, the client confirmed it is right`) : ok(`Mobile <b>${esc(m.phone)}</b> checked`));
+  if (m.email) tips.push(m.emailVerified ? ok(`Email <b>${esc(m.email)}</b> verified`) : `Email <b>${esc(m.email)}</b>`);
   if (ch) {
-    tips.push(ok(`Verified on Companies House: ${esc(ch.status ? `${ch.status[0].toUpperCase()}${ch.status.slice(1)} ` : '')}${esc((ch.type || 'company').toLowerCase())}${ch.incorporated ? `, incorporated ${esc(ch.incorporated)}` : ''}${ch.locality ? `, registered in ${esc(ch.locality)}` : ''}`));
-    if (ch.industries.length) tips.push(`Industry: <b>${esc(ch.industries.join(', '))}</b>`);
-    if (ch.director_listed) tips.push(ok(`Applicant is a listed ${ch.listed_as}`));
-    if (ch.checked) tips.push(ch.accounts_overdue || ch.confirmation_overdue ? no('Filings overdue at Companies House') : ok('Filings up to date'),
-      ch.insolvency_history ? no('Has insolvency history') : ok('No insolvency history'));
-  } else tips.push('Company typed in by hand, not matched on Companies House');
+    tips.push(ok(`Business verified on Companies House${ch.status ? `, ${esc(ch.status)}` : ''}${ch.incorporated ? `, incorporated ${esc(ch.incorporated)}` : ''}`));
+    if (ch.checked) tips.push(ch.insolvency_history ? no('Has insolvency history') : ok('No insolvency history'));
+  }
   return tips;
 }
-// For people who haven't signed up (invited firms): only what was verified, no contact details, place or industry.
+// For people who haven't signed up (invited firms): only what was verified, no contact details or place.
 export function inviteCheckTips(l) {
-  const c = l.checks || {}, ch = companyInfo(l.company, false), ok = (t) => `<b style="color:#1f8a55">&#10003;</b> ${t}`, tips = [];
-  if (c.phone?.reachable === true || c.phone?.allocated === true) tips.push(ok('Phone number verified'));
-  if (c.email?.result === 'valid') tips.push(ok('Email address verified'));
-  if (ch) { tips.push(ok(`Verified on Companies House${ch.incorporated ? `, trading since ${String(ch.incorporated).slice(0, 4)}` : ''}`));
-    if (ch.director_listed) tips.push(ok(`Applicant is a listed ${ch.listed_as}`));
-    if (ch.checked && !ch.insolvency_history) tips.push(ok('No insolvency history')); }
+  const c = l.checks || {}, ch = l.audience === 'business' ? companyInfo(l.company, false) : null, ok = (t) => `<b style="color:#1f8a55">&#10003;</b> ${t}`, tips = [];
+  if (c.phone?.reachable === true || c.phone?.allocated === true || c.verified?.phone === true) tips.push(ok('Phone number verified'));
+  if (c.email?.result === 'valid' || c.verified?.email === true) tips.push(ok('Email address verified'));
+  if (ch) tips.push(ok('Business verified on Companies House'));
   return tips;
 }
 const q = (v) => encodeURIComponent(`"${String(v ?? '').replace(/["\\]/g, '')}"`);
-// Same phone or email in the last 7 days = a repeat enquiry: not sold again, and no new Meta conversion.
-// After 7 days it's a new lead, but never for a broker who bought this business before (exclude_brokers).
+// Same phone or email in the last 7 days = a repeat enquiry: not sold again.
+// After 7 days it's a new lead, but never for a firm that bought this person before (exclude_brokers).
 export const REPEAT_DAYS = 7;
-export async function duplicateOf(b) {
+export async function duplicateOf({ phone, email } = {}) {
   const since = new Date(Date.now() - REPEAT_DAYS * 864e5).toISOString();
-  const dupe = await db(`leads?created_at=gte.${since}&or=(phone.eq.${q(b.phone)},email.eq.${q(String(b.email).toLowerCase())})&select=id&order=created_at.desc&limit=1`);
+  const or = [phone && `phone.eq.${q(phone)}`, email && `email.eq.${q(String(email).toLowerCase())}`].filter(Boolean);
+  if (!or.length) return null;
+  const dupe = await db(`leads?created_at=gte.${since}&hidden_at=is.null&or=(${or.join(',')})&select=id&order=created_at.desc&limit=1`);
   return dupe[0]?.id || null;
 }
-// A repeat enquiry (within REPEAT_DAYS) from a business already matched: remind the business who its broker is (with a
-// link to be matched with someone else instead), and tell the broker they've followed up. At most once a day per lead.
-export async function followUp(id, b) {
+// A repeat enquiry (within REPEAT_DAYS) from someone already matched: remind them who their firm is (with a link to be
+// matched with a different firm instead), and tell the firm they've followed up. At most once a day per lead.
+// row = the new enquiry as a leads row (see toRow in leads.js), for what changed.
+export async function followUp(id, row = {}) {
   const [l] = await db(`leads?id=eq.${id}&select=*`);
   if (!l?.buyer) return {};
   const [x] = await db(`brokers?id=eq.${l.buyer}&select=*`);
   if (!x) return {};
   const rematch = signedUrl('rematch', l.id, REPEAT_DAYS); // only offered on a repeat within 7 days, and only usable for 7 days
   if (await allow(`followup:${l.id}`, 86400, 1)) {
-    const bits = [b.amount && Number(String(b.amount).replace(/[^\d]/g, '')) !== l.amount ? ['Amount this time', gbp(Number(String(b.amount).replace(/[^\d]/g, '')))] : null,
-      b.purpose && b.purpose !== l.purpose ? ['Purpose this time', b.purpose] : null, b.timeline && b.timeline !== l.timeline ? ['Needed this time', b.timeline] : null].filter(Boolean);
+    const bits = [row.matter && (row.matter !== l.matter || row.area !== l.area) ? ['Matter this time', matterName(row)] : null,
+      row.urgency && row.urgency !== l.urgency ? ['Urgency this time', row.urgency] : null].filter(Boolean);
     await Promise.allSettled([
       notify([l.email], `You've already been matched with ${publicProfile(x).company}`, matchedOpts(x, l, rematch)),
-      notify(recipients(x), `${l.business} has followed up: lead #${l.id}`, {
-        title: `${l.business} has been in touch again`,
+      notify(recipients(x), `${l.full_name} has followed up (lead #${l.id})`, {
+        title: `${l.full_name} has been in touch again`,
         preheader: `${l.full_name} sent another enquiry. A good moment to call.`,
         greeting: `Hello ${esc(x.company)},`,
-        intro: `<b>${esc(l.full_name)}</b> at ${esc(l.business)}, lead #${l.id} which you have from ${new Date(l.bought_at || l.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/London' })}, has just sent another enquiry through Leaflegal. We've reminded them that you're their broker and sent them your details again. They're still looking, so now is a good time to call.`,
-        rowsTitle: 'Contact details', rows: [['Business', l.business], ['Name', l.full_name], ['Mobile', l.phone], ['Email', l.email], ...bits],
+        intro: `<b>${esc(l.full_name)}</b>, lead #${l.id} which you have had since ${new Date(l.bought_at || l.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/London' })}, has just sent another enquiry through Leaflegal. We've reminded them that your firm has their enquiry and sent them your details again. They're still looking, so now is a good time to call.`,
+        rowsTitle: 'Contact details', rows: [['Name', l.full_name], ['Matter', matterName(l)], ['Mobile', l.phone], ['Email', l.email], ...bits],
         cta: { label: 'Open lead on the platform', url: `${PLATFORM_URL}/leads` },
         note: `This doesn't use any credits. Reply to this email to contact ${esc(l.full_name)} directly.`, replyTo: l.email }),
     ]);
   }
   return { match: publicProfile(x), again: true, rematch };
 }
-// "Match me with a different broker" (from the follow-up email or thank-you page): a new lead with the same details,
-// never offered to any broker who had this business before. Once per lead.
+// A leads row back in the shape storeLead takes (used to relist a person with a different firm).
+export const rowToLead = (l) => ({ area: l.area, areaLabel: l.area_label, matter: l.matter, matterLabel: l.matter_label, audience: l.audience, urgency: l.urgency,
+  deadline: l.deadline, postcode: l.postcode, postcodeDistrict: l.postcode_district, postcodeArea: l.postcode_area, region: l.region, country: l.country, location_source: l.location_source || null,
+  value: l.value_band || l.value_min || l.value_max ? { band: l.value_band, min: l.value_min, max: l.value_max } : null, valueLabel: l.value_label,
+  privatePay: l.private_pay, business: l.business_name || l.company_number ? { name: l.business_name, number: l.company_number } : null, company: l.company,
+  answers: l.answers, tags: l.tags, quality: { score: l.score, grade: l.grade }, summary: l.summary,
+  contact: { fullName: l.full_name, email: l.email, phone: l.phone }, consent: l.consent, source: l.source, checks: l.checks, flags: [], formVersion: l.form_version });
+// "Match me with a different firm" (from the follow-up email or thank-you page): a new lead with the same details,
+// never offered to any firm that had this person before. Once per lead.
 export async function rematchLead(id) {
   const [l] = await db(`leads?id=eq.${id}&select=*`);
   if (!l?.buyer) return { error: 'gone' };
   const done = await db(`leads?source->>rematch_of=eq.${l.id}&select=id&limit=1`);
   if (done.length) return { error: 'done' };
-  const s = l.source || {};
-  return ingestLead({ amount: l.amount, purpose: l.purpose, timeline: l.timeline, structure: l.structure, turnover: l.turnover, trading: l.trading, credit: l.credit, property: l.property,
-    debt: l.debt, debtLeft: l.debt_left, debtMonthly: l.debt_monthly, business: l.business, fullName: l.full_name, email: l.email, phone: l.phone,
-    consentAt: l.consent?.at, consentVersion: l.consent?.version, consentText: l.consent?.text, page: s.page, referrer: s.referrer, utm: s.utm, variant: s.landing_variant,
-    premium: s.premium_tier, checks: l.checks, company: l.company, rematchOf: l.id });
+  const { storeLead } = await import('./leads.js');
+  return storeLead({ ...rowToLead(l), rematchOf: l.id });
 }
+// Old name, kept for tools that still call it.
+export const ingestLead = async (lead) => (await import('./leads.js')).storeLead(lead);
 // First page of the visit (nav.js ll_src: utm_*, click IDs, external referrer, landing path), kept to known keys and short strings.
 const FIRST_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_id', 'utm_term', 'utm_content', 'gclid', 'fbclid', 'li_fat_id', 'referrer', 'landing'];
 export const firstTouch = (f) => { if (!f || typeof f !== 'object') return null;
   const o = Object.fromEntries(FIRST_KEYS.filter((k) => typeof f[k] === 'string' && f[k]).map((k) => [k, f[k].slice(0, 200)])); return Object.keys(o).length ? o : null; };
-// Smaller or newer businesses: under £50k revenue or under 6 months trading. Accepted from homeowners and tenants, and sent straight to Aureum Finance (Daniel McCaffrey, commission client) free of charge:
-// not sold or offered to other brokers. Falls back to the normal flow if that account can't take it.
-export const STARTER_BROKER = '76efaa60-7aa5-4e71-84b7-922b8ffa09d0';
-export const UNDER6 = 'Under 6 months';
-export const isStarter = (l) => l.turnover === 'Under £50k' || l.trading === UNDER6;
-// Homeowners trading under 6 months with £250k+ revenue skip Aureum and go on the marketplace (auto-buy or manual buy).
-export const starterToMarket = (l) => l.trading === UNDER6 && l.property === 'Homeowner' && REVENUE_MID[l.turnover] >= 250000;
-// Counted as a Lead on Meta/LinkedIn: everything except smaller/newer businesses, though under 6 months still counts for a homeowner or £100k+ revenue.
-export const countsAsLead = (l) => !isStarter(l) || (l.trading === UNDER6 && (l.property === 'Homeowner' || REVENUE_MID[l.turnover] >= 100000));
-export async function ingestLead(b) {
-  const amount = Number(String(b.amount || '').replace(/[^\d]/g, '')) || 0;
-  const row = {
-    amount, purpose: b.purpose, timeline: b.timeline, structure: b.structure, turnover: b.turnover, trading: b.trading, credit: b.credit, property: PROPERTY.includes(b.property) ? b.property : null,
-    debt: b.debt, debt_left: b.debtLeft || null, debt_monthly: b.debtMonthly || null,
-    business: b.business, full_name: b.fullName, email: b.email, phone: b.phone,
-    consent: { at: b.consentAt, version: b.consentVersion, text: b.consentText },
-    source: { page: b.page, referrer: b.referrer, utm: b.utm || {}, landing_variant: b.variant || null, premium_tier: !!b.premium, ...(b.rematchOf ? { rematch_of: b.rematchOf } : {}), ...(firstTouch(b.first) ? { first: firstTouch(b.first) } : {}) }, // premium_tier: £500k+ revenue; first: where the visit started (nav.js)
-    checks: b.checks || null,
-    company: b.company || null,
-  };
-  const dupeOf = b.rematchOf ? null : await duplicateOf(b);
-  if (dupeOf) return { duplicateOf: dupeOf, ...(await followUp(dupeOf, b)) }; // repeat enquiry: not sold again
-  row.email = String(row.email || '').toLowerCase();
-  row.exclude_brokers = [...new Set((await db(`leads?buyer=not.is.null&or=(phone.eq.${q(b.phone)},email.eq.${q(row.email)})&select=buyer&limit=200`)).map((l) => l.buyer).filter(Boolean))];
-  row.price = price(row, await getPricing());
-  const [lead] = await db('leads', { method: 'POST', body: row, prefer: 'return=representation' });
-  const before = new Set(lead.exclude_brokers || row.exclude_brokers); // bought this business before: never offered it again
-  if (isStarter(lead) && !starterToMarket(lead) && !before.has(STARTER_BROKER)) {
-    const [d] = await db(`brokers?id=eq.${STARTER_BROKER}&approved=eq.true&suspended_at=is.null&select=*`).catch(() => []);
-    const done = d && await db(`leads?id=eq.${lead.id}&buyer=is.null`, { method: 'PATCH', body: { buyer: d.id, bought_at: new Date().toISOString(), auto: true }, prefer: 'return=representation' }).catch(() => null);
-    if (done?.length) {
-      await db('ledger', { method: 'POST', body: { broker: d.id, delta: 0, reason: 'Lead assigned by Leaflegal (no charge)', lead_id: lead.id } }).catch(() => {});
-      await Promise.allSettled([deliver(d, done[0])]);
-      return { id: lead.id, price: 0, buyer: d.id, match: publicProfile(d) };
-    }
-  }
-  const brokers = (await db('brokers?approved=eq.true&suspended_at=is.null&select=*')).filter((x) => !before.has(x.id));
 
-  const cost = (x) => asPriced(lead, x).price; // what this broker pays: tier price or the original price
-  const underMax = (x) => onTiers(x) || !x.filters?.maxPrice || lead.price <= x.filters.maxPrice; // pricier leads are left for manual buying
-  // Never auto-buy a lead whose contact details failed the live checks, even if the applicant said they were right.
-  const c = lead.checks || {}, doubtful = c.phone?.allocated === false || c.phone?.reachable === false || c.email?.result === 'undeliverable';
-  const agreed = new Set(doubtful ? [] : [...(await db(`agreements?select=broker&broker=in.(${brokers.map((x) => x.id).join(',') || '00000000-0000-0000-0000-000000000000'})`)).map((a) => a.broker), ...(await waivedIds())]);
-  const auto = doubtful ? [] : brokers.filter((x) => x.mode === 'auto' && agreed.has(x.id) && cost(x) != null && x.credits >= cost(x) && matches(critOf(x), lead) && underMax(x))
-    .sort((x, y) => (x.last_auto_at || '').localeCompare(y.last_auto_at || ''));
-  const dayStart = new Date(); dayStart.setUTCHours(0, 0, 0, 0); // ponytail: UTC day; switch to Europe/London midnight if brokers notice the hour offset in summer
-  for (const x of auto) {
-    const p = cost(x);
-    if (x.monthly_cap && (await rpc('auto_spend_this_month', { p_broker: x.id })) + p > x.monthly_cap) continue;
-    const f = x.filters || {};
-    let tier = null;
-    if (onTiers(x)) { // each tier has its own monthly auto-buy budget
-      const budget = tierPlanOf(x)[lead.tier]?.credits || 0;
-      if (!budget || (await tierSpendOf(x, lead.tier)) + p > budget) continue;
-    } else if (f.tiers?.length) { // first matching tier with budget left this month
-      const spent = await tierSpend(x);
-      tier = tierMatches(f, lead).find((i) => spent[i] + lead.price <= Math.floor((x.monthly_cap * (f.tiers[i].share || 0)) / 100));
-      if (tier == null) continue;
-    }
-    if (!onTiers(x) && (f.dailyLeads || f.dailyCredits)) {
-      const today = await db(`ledger?broker=eq.${x.id}&reason=eq.Auto-bought%20lead&created_at=gte.${dayStart.toISOString()}&select=delta`);
-      if (f.dailyLeads && today.length >= f.dailyLeads) continue;
-      if (f.dailyCredits && -today.reduce((a, r) => a + r.delta, 0) + lead.price > f.dailyCredits) continue;
-    }
-    if (await rpc('buy_lead', { p_lead: lead.id, p_broker: x.id, p_auto: true })) {
-      if (tier != null) await db(`leads?id=eq.${lead.id}`, { method: 'PATCH', body: { auto_tier: tier } }).catch(() => {});
-      await Promise.allSettled([deliver(x, { ...lead, price: p, bought_at: new Date().toISOString(), auto: true }), lowCredits(x, x.credits, x.credits - p), inviteLeadAlerts(lead, true)]);
-      return { id: lead.id, price: p, buyer: x.id, match: publicProfile(x) };
-    }
-  }
-  const fans = brokers.filter((x) => x.notify && cost(x) != null && matches(critOf(x), lead) && (x.mode === 'manual' || !underMax(x)));
-  const ch = companyInfo(lead.company, false);
-  const when = new Date(lead.created_at || Date.now()).toLocaleString('en-GB', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
-  await Promise.allSettled(fans.map((x) => { const unsub = signedUrl('alerts-off', x.id, 365), cr = `${cost(x)} credits${onTiers(x) ? ` · ${lead.tier}` : ''}`; return notify(recipients(x, 'alert'), `New lead: ${gbp(lead.amount)} for ${String(lead.purpose || 'business finance').toLowerCase()} (${cr})`, {
-    title: 'A new lead fits your criteria', preheader: `${gbp(lead.amount)} for ${String(lead.purpose || 'business finance').toLowerCase()}, ${cr}. Exclusive to the first broker who buys it.`,
+const fmtWhen = (d) => new Date(d || Date.now()).toLocaleString('en-GB', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+const whereOf = (l) => l.region || l.postcode_district || 'the UK';
+// "A new lead fits your criteria" to a firm that would have to buy it by hand. cost = the price in credits.
+export function newLeadAlert(x, lead, cost = lead.price) {
+  const unsub = signedUrl('alerts-off', x.id, 365), cr = `${cost} credits`, mName = matterName(lead), ch = lead.audience === 'business' ? companyInfo(lead.company, false) : null;
+  return notify(recipients(x, 'alert'), `New lead: ${mName}, ${whereOf(lead)} (${cr})`, {
+    title: 'A new lead fits your criteria', preheader: `${mName} in ${whereOf(lead)}, ${cr}. Exclusive to the first firm that buys it.`,
     greeting: `Hello ${esc(x.company)},`,
-    intro: 'A business has just asked for finance that fits what you’re looking for. Each lead is sold to one broker only, so once someone buys it, it’s gone.',
-    highlight: { value: `${gbp(lead.amount)} for ${String(lead.purpose || 'business finance').toLowerCase()}`, label: `Received ${when} · ${cr}` },
-    rows: leadRows(lead).filter(([k, v]) => v != null && v !== '' && k !== 'Amount' && k !== 'Purpose'),
+    intro: 'Someone has just asked for a law firm and the enquiry fits what you’re looking for. Each lead is sold to one firm only, so once someone buys it, it’s gone.',
+    highlight: { value: mName, label: `Received ${fmtWhen(lead.created_at)} · ${cr}` },
+    rows: leadRows(lead).filter(([k]) => k !== 'Matter'),
     tipsTitle: 'Checked for you', tips: checkTips(lead),
     cta: { label: 'View this lead', url: `${PLATFORM_URL}/opportunities` },
-    note: `Full contact details and the company name unlock the moment you buy.${ch ? ' Company details come from Companies House.' : ''} Want leads like this bought for you automatically? <a href="${PLATFORM_URL}/autobuy" style="color:#244237">Set up auto-buy</a>.`,
-    unsub, footer: `You're receiving this because ${esc(x.company)} has new-lead emails switched on in Leaflegal Platform. <a href="${unsub}" style="color:#86998f">Unsubscribe from new-lead emails</a> or change them under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.` }); }));
-  // Leads outside a broker's criteria: suggested anyway, saying so, to brokers who want them straight away.
-  await Promise.allSettled(brokers.filter((x) => suggestMode(x) === 'instant' && cost(x) != null && !matches(critOf(x), lead)).map((x) => suggest(x, [lead])));
-  // Invited firms who haven't signed up yet: same lead, but the button finishes their signup.
-  const invited = await inviteLeadAlerts(lead, false);
-  return { id: lead.id, price: lead.price, buyer: null, alerted: fans.length, invited };
+    note: `Full contact details${lead.audience === 'business' ? ' and the business name' : ''} unlock the moment you buy.${ch ? ' Company details come from Companies House.' : ''} Want leads like this bought for you automatically? <a href="${PLATFORM_URL}/autobuy" style="color:#244237">Set up auto-buy</a>.`,
+    unsub, footer: `You're receiving this because ${esc(x.company)} has new-lead emails switched on in Leaflegal Platform. <a href="${unsub}" style="color:#86998f">Unsubscribe from new-lead emails</a> or change them under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.` });
 }
 
-// Every new lead to invited firms on "every new lead" (not the weekly round-up), including ones auto-matched to a broker
+// Every new lead to invited firms on "every new lead" (not the weekly round-up), including ones auto-matched to a firm
 // straight away (shown as matched, to show how fast leads go). At most INVITE_DAILY of these per person in any 24 hours,
 // counted in rate_events (2 queries per lead however many invitees). Sent in batches from the bulk address. Never throws.
 export const INVITE_DAILY = 3;
@@ -830,8 +733,8 @@ export const notJoined = async (people) => {
   const taken = new Set((await db('brokers?select=email&limit=10000')).flatMap((b) => { const e = String(b.email).trim().toLowerCase(), d = e.split('@')[1]; return FREE_MAIL.has(d) ? [e] : [e, `@${d}`]; }));
   return people.filter((v) => { const e = String(v.email).trim().toLowerCase(); return !taken.has(e) && !taken.has(`@${e.split('@')[1]}`); });
 };
+const inviteStop = (v) => `${API_URL}?action=invite-stop&t=${encodeURIComponent(v.token)}`;
 export async function inviteLeadAlerts(lead, matched) {
-  if (!unmatchedOk(lead)) return 0;
   try {
     const iso = new Date().toISOString();
     const people = await notJoined(await db(`invites?alerts=eq.true&digest=is.false&expires_at=gt.${iso}&and=(or(email_id.is.null,email_id.not.in.(queued,paused,accepted)),or(send_at.is.null,send_at.lte.${iso}))&select=*&order=email.asc&limit=20000`));
@@ -840,27 +743,26 @@ export async function inviteLeadAlerts(lead, matched) {
     for (let i = 0; i < keys.length; i += 200) for (const r of await db(`rate_events?key=in.(${keys.slice(i, i + 200).map((k) => encodeURIComponent(`"${k}"`)).join(',')})&at=gt.${new Date(Date.now() - 864e5).toISOString()}&select=key&limit=20000`)) used[r.key] = (used[r.key] || 0) + 1;
     const due = people.filter((v) => (used[`invlead:${v.email}`] || 0) < INVITE_DAILY);
     if (!due.length) return 0;
-    const what = `${gbp(lead.amount)} for ${String(lead.purpose || 'business finance').toLowerCase()}`;
-    const when = new Date(lead.created_at || Date.now()).toLocaleString('en-GB', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' });
+    const mName = matterName(lead), what = `${mName}, ${whereOf(lead)}`;
     const sent = await sendBatch(due.map((v) => ({ to: [v.email], subject: matched ? `Matched in seconds: ${what}` : `New lead: ${what} (${lead.price} credits)`, opts: {
       title: matched ? 'This lead was matched within seconds' : 'A new lead has just come in',
-      preheader: matched ? `${what}. It went straight to a broker whose criteria it fitted. Set yours up so the next one comes to you.` : `${what}. Finish setting up your account to buy leads like this.`,
+      preheader: matched ? `${mName} in ${whereOf(lead)}. It went straight to a firm whose criteria it fitted. Set yours up so the next one comes to you.` : `${mName} in ${whereOf(lead)}. Finish setting up your account to buy leads like this.`,
       greeting: `Hi ${esc(String(v.name || '').split(' ')[0] || 'there')},`,
       intro: matched
-        ? `A business has just asked for ${esc(what)}. It fitted a broker’s auto-buy criteria, so it went to them straight away, before anyone else saw it. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is already approved: finish setting up and set your own criteria, and leads like this come to you instead.`
-        : `A business has just asked for finance on Leaflegal. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is already approved: finish setting up and you can buy leads like this one. Each lead is sold to one broker only.`,
-      highlight: { value: what, label: matched ? `Received ${when} · matched to a broker within seconds` : `Received ${when} · ${lead.price} credits` },
-      rows: leadRows(lead).filter(([k, val]) => val != null && val !== '' && k !== 'Amount' && k !== 'Purpose'),
+        ? `Someone has just asked for help with ${esc(mName.toLowerCase())}. The enquiry fitted a firm’s auto-buy criteria, so it went to them straight away, before anyone else saw it. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is ready. Finish setting up and set your own criteria, and leads like this come to you instead.`
+        : `Someone has just asked for a law firm on Leaflegal. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is ready. Finish setting up and you can buy leads like this one. Each lead is sold to one firm only.`,
+      highlight: { value: mName, label: matched ? `Received ${fmtWhen(lead.created_at)} · matched to a firm within seconds` : `Received ${fmtWhen(lead.created_at)} · ${lead.price} credits` },
+      rows: leadRows(lead).filter(([k]) => k !== 'Matter'),
       tipsTitle: 'Checked for you', ticks: true, tips: inviteCheckTips(lead).map((t) => t.replace(/^<b[^>]*>&#10003;<\/b> /, '')),
-      cta: { label: matched ? 'Set up auto-buy' : 'Finish setting up', url: `${PLATFORM_URL}/signup?invite=${v.token}` },
-      note: matched ? 'This lead is no longer available. Brokers with auto-buy switched on get first pick of every lead that fits their criteria.' : 'Contact details and the company name unlock when a broker buys the lead.',
-      nav: false, replyTo: 'hello@leaflegal.co', unsub: `https://platform.leaflegal.co/api/platform?action=invite-stop&t=${encodeURIComponent(v.token)}`, footer: inviteFooter(v) } })), BULK_FROM());
+      cta: { label: matched ? 'Set up auto-buy' : 'Finish setting up', url: `${PLATFORM_URL}/register?invite=${v.token}` },
+      note: matched ? 'This lead is no longer available. Firms with auto-buy switched on get first pick of every lead that fits their criteria.' : 'Contact details unlock when a firm buys the lead.',
+      nav: false, replyTo: 'hello@leaflegal.co', unsub: inviteStop(v), footer: inviteFooter(v) } })), BULK_FROM());
     if (sent) await db('rate_events', { method: 'POST', body: due.map((v) => ({ key: `invlead:${v.email}` })) });
     return sent;
   } catch (e) { console.error('invite alerts', e.message); return 0; }
 }
 
-const inviteFooter = (v) => `You're receiving this because the Leaflegal team invited ${esc(v.email)} to join Leaflegal Platform. <a href="https://platform.leaflegal.co/api/platform?action=invite-stop&amp;t=${encodeURIComponent(v.token)}" style="color:#86998f">Unsubscribe from these emails</a>.`;
+const inviteFooter = (v) => `You're receiving this because the Leaflegal team invited ${esc(v.email)} to join Leaflegal Platform. <a href="${esc(inviteStop(v))}" style="color:#86998f">Unsubscribe from these emails</a>.`;
 
 // Weekly round-up for firms invited in bulk: the best unsold leads from the last 7 days, one email each, sent in batches.
 // Runs from the daily job on Mondays; the settings row makes it once a week however often the job runs.
@@ -872,7 +774,7 @@ export async function inviteDigest(now = new Date()) {
   const iso = now.toISOString();
   let [people, fresh] = await Promise.all([
     db(`invites?alerts=eq.true&digest=is.true&expires_at=gt.${iso}&and=(or(email_id.is.null,email_id.not.in.(queued,paused)),or(send_at.is.null,send_at.lte.${iso}))&select=email,name,company,token&order=email.asc&limit=20000`),
-    db(`leads?buyer=is.null&hidden_at=is.null&turnover=neq.${encodeURIComponent('£50k to £100k')}&created_at=gte.${new Date(now - 7 * 864e5).toISOString()}&select=${PREVIEW}&order=price.desc&limit=6`),
+    db(`leads?buyer=is.null&hidden_at=is.null&created_at=gte.${new Date(now - 7 * 864e5).toISOString()}&select=${PREVIEW}&order=price.desc&limit=6`),
   ]);
   people = await notJoined(people);
   await db('settings', { method: 'POST', prefer: 'resolution=merge-duplicates', body: { key: 'invite_digest', value: { week, people: people.length, leads: fresh.length } } });
@@ -881,57 +783,55 @@ export async function inviteDigest(now = new Date()) {
   return sendBatch(people.map((v) => ({ to: [v.email], subject: `${fresh.length} new lead${fresh.length === 1 ? '' : 's'} on Leaflegal this week`, opts: {
     title: 'This week’s leads on Leaflegal', preheader: `${fresh.length} lead${fresh.length === 1 ? ' is' : 's are'} still available. Finish setting up to buy.`,
     greeting: `Hi ${esc(String(v.name || '').split(' ')[0] || 'there')},`,
-    intro: `Here are the best leads that came in on Leaflegal over the last week and are still available. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is already approved: finish setting up and you can buy them. Each lead is sold to one broker only.`,
-    html: cards, cta: { label: 'Finish setting up', url: `${PLATFORM_URL}/signup?invite=${v.token}` },
-    note: 'Contact details and the company name unlock when a broker buys the lead.', replyTo: 'hello@leaflegal.co',
-    nav: false, unsub: `https://platform.leaflegal.co/api/platform?action=invite-stop&t=${encodeURIComponent(v.token)}`, footer: inviteFooter(v) } })), BULK_FROM());
+    intro: `Here are the best leads that came in on Leaflegal over the last week and are still available. Your account${v.company ? ` for <b>${esc(v.company)}</b>` : ''} is ready. Finish setting up and you can buy them. Each lead is sold to one firm only.`,
+    html: cards, cta: { label: 'Finish setting up', url: `${PLATFORM_URL}/register?invite=${v.token}` },
+    note: 'Contact details unlock when a firm buys the lead.', replyTo: 'hello@leaflegal.co',
+    nav: false, unsub: inviteStop(v), footer: inviteFooter(v) } })), BULK_FROM());
 }
 
-// Email version of an Opportunities card: purpose, time, amount, four facts, why it's outside the criteria, price.
+// Email version of an Opportunities card: practice area, time, matter, four facts, why it's outside the criteria, price.
 // Tables and inline styles only (email clients), square corners like the other emails.
 function leadCard(l, why = [], { plain = false } = {}) {
   const F = 'font-family:Arial,Helvetica,sans-serif;', s = salePrice(l), m = (Date.now() - new Date(l.created_at)) / 6e4;
   const ago = m < 60 ? `${Math.max(1, m | 0)} min ago` : m < 1440 ? `${(m / 60) | 0} hr ago` : `${(m / 1440) | 0} day${m < 2880 ? '' : 's'} ago`;
-  const short = (n) => (n >= 1e6 ? `£${+(n / 1e6).toFixed(2)}m` : n >= 1e3 ? `£${Math.round(n / 1e3)}k` : gbp(n));
   const fact = (k, v) => `<td width="50%" style="${F}padding:9px 0 0;vertical-align:top"><div style="font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:#86998f">${k}</div><div style="margin-top:2px;font-size:14px;font-weight:bold;color:#14271f">${esc(v || '–')}</div></td>`;
-  const credit = l.credit === 'Yes' ? 'Adverse' : l.credit === 'Not sure' ? '–' : 'Clean';
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px;border:1px solid #dde5e1;border-collapse:collapse;background:#fff">
 <tr><td style="${F}padding:16px 20px 0"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-<td style="${F}font-size:14px;font-weight:bold;color:#244237">${esc(l.purpose || 'Business finance')}${plain ? '' : `<span style="font-weight:normal;color:#86998f"> · ${ago}</span>`}</td>
+<td style="${F}font-size:14px;font-weight:bold;color:#244237">${esc(areaName(l))}${plain ? '' : `<span style="font-weight:normal;color:#86998f"> · ${ago}</span>`}</td>
 ${s.discounted && !plain ? `<td align="right" style="${F}"><span style="display:inline-block;white-space:nowrap;padding:3px 8px;background:#ffa630;color:#14271f;font-size:11px;font-weight:bold">50% OFF</span></td>` : ''}</tr></table></td></tr>
-<tr><td style="${F}padding:6px 20px 2px;font-size:30px;line-height:1.15;font-weight:bold;color:#14271f">${short(l.amount)}</td></tr>
-<tr><td style="padding:0 20px 14px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${fact('Revenue', l.turnover)}${fact('Trading', l.trading)}</tr><tr>${fact('Needed', l.timeline)}${fact('Credit', credit)}</tr></table></td></tr>
-${why.length ? `<tr><td style="${F}padding:10px 20px;background:#fff6e8;border-top:1px solid #f3e2c4;font-size:13px;line-height:1.5;color:#6b4a12"><b>Outside your criteria:</b> ${why.map(esc).join('; ')}</td></tr>` : ''}
+<tr><td style="${F}padding:6px 20px 2px;font-size:22px;line-height:1.2;font-weight:bold;color:#14271f">${esc(matterName(l))}</td></tr>
+<tr><td style="padding:0 20px 14px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${fact('Location', placeOf(l))}${fact('Urgency', l.urgency)}</tr><tr>${fact('Client', audienceLabel(l.audience))}${fact(l.value_band ? l.value_label || 'Value' : 'Grade', l.value_band || l.grade)}</tr></table></td></tr>
+${why.length ? `<tr><td style="${F}padding:10px 20px;background:#fff6e8;border-top:1px solid #f3e2c4;font-size:13px;line-height:1.5;color:#6b4a12"><b>Outside your criteria</b><br>${why.map(esc).join('<br>')}</td></tr>` : ''}
 ${plain ? '' : `<tr><td style="padding:12px 20px;border-top:1px solid #dde5e1;background:#f7f9f8"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
 <td style="${F}font-size:14px"><a href="${PLATFORM_URL}/opportunities" style="color:#244237;font-weight:bold">View lead</a></td>
 <td align="right" style="${F}font-size:20px;font-weight:bold;color:#244237">${s.discounted ? `<s style="font-size:14px;font-weight:normal;color:#86998f">${s.list_price}</s> ` : ''}${s.price}<span style="font-size:12px;font-weight:normal;color:#62786f"> credits</span></td></tr></table></td></tr>`}
 </table>`;
 }
-// "Recent enquiries" for cold invites: the three strongest verified leads from the last 3 weeks (revenue, time trading, clean
-// credit, size; best of each purpose first), as three compact cards. Contact details are shown only as fixed dots: nothing real
+// "Recent enquiries" for cold invites: the three strongest verified leads from the last 3 weeks (grade, score, live checks;
+// best of each practice area first), as three compact cards. Contact details are shown only as fixed dots: nothing real
 // is in the email, not even a letter. Cached for 10 minutes.
 let recentCache = { t: 0, html: '' };
 export async function recentEnquiries() {
   if (Date.now() - recentCache.t < 6e5) return recentCache.html;
-  const rows = await db(`leads?created_at=gte.${new Date(Date.now() - 21 * 864e5).toISOString()}&select=${PREVIEW},checks,company&order=created_at.desc&limit=200`).catch(() => []);
-  const ok = (l) => ({ ch: !!l.company?.number, phone: l.checks?.phone?.reachable === true || l.checks?.phone?.allocated === true, email: l.checks?.email?.result === 'valid' });
-  const score = (l) => { const v = ok(l); return TURNOVERS.indexOf(l.turnover) * 3 + TRADING.indexOf(l.trading) * 2 + (l.credit !== 'Yes' ? 4 : 0) + Math.min(Number(l.amount) || 0, 1e6) / 2e5 + (v.ch + v.phone + v.email) * 12; }; // fully verified leads first
-  const ranked = rows.filter((l) => l.amount >= 25000 && TURNOVERS.indexOf(l.turnover) >= 1).sort((a, b) => score(b) - score(a)), pick = [];
-  for (const l of ranked) if (pick.length < 3 && !pick.some((x) => x.purpose === l.purpose)) pick.push(l); // best of each purpose first
+  const rows = await db(`leads?created_at=gte.${new Date(Date.now() - 21 * 864e5).toISOString()}&hidden_at=is.null&select=${PREVIEW},checks&order=created_at.desc&limit=200`).catch(() => []);
+  const ok = (l) => ({ phone: l.checks?.phone?.reachable === true || l.checks?.phone?.allocated === true || l.checks?.verified?.phone === true, email: l.checks?.email?.result === 'valid' || l.checks?.verified?.email === true });
+  const score = (l) => { const v = ok(l); return (Number(l.score) || 0) + ({ A: 20, B: 10 }[l.grade] || 0) + (v.phone + v.email) * 15; }; // fully verified leads first
+  const ranked = rows.filter((l) => l.area && l.grade !== 'C').sort((a, b) => score(b) - score(a)), pick = [];
+  for (const l of ranked) if (pick.length < 3 && !pick.some((x) => x.area === l.area)) pick.push(l); // best of each practice area first
   for (const l of ranked) if (pick.length < 3 && !pick.includes(l)) pick.push(l); // then the best of the rest
-  const F = 'font-family:Arial,Helvetica,sans-serif;', short = (n) => (n >= 1e6 ? `£${+(n / 1e6).toFixed(2)}m` : `£${Math.round(n / 1e3)}k`);
+  const F = 'font-family:Arial,Helvetica,sans-serif;';
   const tick = (on, label, masked) => `<tr><td style="${F}padding:7px 0 0;font-size:12px;line-height:1.35;color:#2b3f36"><span style="color:${on ? '#1f8f4e' : '#a7b5ae'};font-weight:bold">${on ? '&#10003;' : '&#8211;'}</span>&nbsp;${label}<br><span style="color:#a7b5ae;letter-spacing:1px">${masked}</span></td></tr>`;
-  const card = (l) => { const v = ok(l), credit = l.credit === 'Yes' ? 'Adverse credit' : l.credit === 'Not sure' ? 'Credit –' : 'Clean credit';
+  const card = (l) => { const v = ok(l);
     return `<!--[if mso]><td width="33%" valign="top" style="padding:0 5px"><![endif]--><div class="ll-card" style="display:inline-block;width:100%;max-width:166px;vertical-align:top;margin:0 3px 10px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #dde5e1;background:#ffffff;border-collapse:collapse"><tr><td style="padding:14px 14px 13px;text-align:left">
-<div class="ll-purpose" style="${F}height:26px;overflow:hidden;font-size:10px;line-height:13px;letter-spacing:.7px;text-transform:uppercase;font-weight:bold;color:#62786f">${esc(l.purpose || 'Business finance')}</div>
-<div style="${F}margin-top:4px;font-size:26px;line-height:1.1;font-weight:bold;color:#14271f">${short(l.amount)}</div>
-<div style="${F}margin-top:6px;font-size:12px;line-height:1.5;color:#2b3f36">${esc(l.turnover)} revenue<br>${esc(l.trading)} trading<br>${credit}</div>
+<div class="ll-purpose" style="${F}height:26px;overflow:hidden;font-size:10px;line-height:13px;letter-spacing:.7px;text-transform:uppercase;font-weight:bold;color:#62786f">${esc(areaName(l))}</div>
+<div style="${F}margin-top:4px;height:44px;overflow:hidden;font-size:17px;line-height:22px;font-weight:bold;color:#14271f">${esc(matterName(l))}</div>
+<div style="${F}margin-top:6px;font-size:12px;line-height:1.5;color:#2b3f36">${esc(l.region || 'UK')}<br>${esc(l.urgency || 'Timing not given')}<br>${l.grade ? `Grade ${esc(l.grade)} lead` : 'New lead'}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:9px;border-top:1px solid #edf1ef">
-${tick(v.ch, 'Companies House', '&#9679;&#9679;&#9679;&#9679;&#9679;&#9679; LTD')}${tick(v.phone, 'Phone verified', '07&#9679;&#9679;&#9679; &#9679;&#9679;&#9679;&#9679;&#9679;&#9679;')}${tick(v.email, 'Email verified', '&#9679;&#9679;&#9679;&#9679;@&#9679;&#9679;&#9679;&#9679;&#9679;')}
+${tick(true, 'Name given', '&#9679;&#9679;&#9679;&#9679; &#9679;&#9679;&#9679;&#9679;&#9679;')}${tick(v.phone, 'Phone verified', '07&#9679;&#9679;&#9679; &#9679;&#9679;&#9679;&#9679;&#9679;&#9679;')}${tick(v.email, 'Email verified', '&#9679;&#9679;&#9679;&#9679;@&#9679;&#9679;&#9679;&#9679;&#9679;')}
 </table></td></tr></table></div><!--[if mso]></td><![endif]-->`; };
   const html = pick.length ? `<h2 style="${F}margin:32px 0 4px;font-size:17px;line-height:1.3;font-weight:bold;color:#14271f">Recent enquiries</h2>
-<p style="${F}margin:0 0 14px;font-size:14px;line-height:1.6;color:#62786f">Businesses that asked for finance on Leaflegal in the last few weeks. Contact details unlock when a broker buys the lead.</p>
+<p style="${F}margin:0 0 14px;font-size:14px;line-height:1.6;color:#62786f">People and businesses who asked for a law firm on Leaflegal in the last few weeks. Contact details unlock when a firm buys the lead.</p>
 <div class="ll-cards" style="text-align:center;font-size:0;margin:0 -3px"><!--[if mso]><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><![endif]-->${pick.map(card).join('')}<!--[if mso]></tr></table><![endif]--></div>
 <p style="${F}margin:6px 0 26px;text-align:center;font-size:15px"><a href="{{more}}" style="color:#244237;font-weight:bold;text-decoration:underline">View more opportunities &rarr;</a></p>` : ''; // {{more}}: each email fills in its own link
   recentCache = { t: Date.now(), html };
@@ -939,36 +839,37 @@ ${tick(v.ch, 'Companies House', '&#9679;&#9679;&#9679;&#9679;&#9679;&#9679; LTD'
 }
 
 // "Outside your criteria" email: one lead (instant) or several (daily summary). Says why each one doesn't fit.
+// Only leads the firm's regulators allow it to take.
 export function suggest(b, leads) {
-  leads = leads.filter(unmatchedOk).map((x) => asPriced(x, b));
+  leads = leads.filter((l) => canTake(b, l));
   if (!leads.length) return Promise.resolve(null);
-  const unsub = signedUrl('suggest-off', b.id, 365), one = leads.length === 1, l = leads[0];
-  const what = (x) => `${gbp(x.amount)} for ${String(x.purpose || 'business finance').toLowerCase()}`;
-  const cost = (x) => { const s = salePrice(x); return s.discounted ? `${s.price} credits (was ${s.list_price})` : `${s.price} credits`; };
+  const unsub = signedUrl('suggest-off', b.id, 365), one = leads.length === 1, l = leads[0], f = b.filters || {};
+  const what = (x) => `${matterName(x)}, ${whereOf(x)}`;
+  const cost = (x) => { const s = salePrice(x); return s.discounted ? `${s.price} credits, was ${s.list_price}` : `${s.price} credits`; };
   return notify(recipients(b, 'alert'), one ? `Outside your criteria: ${what(l)} (${cost(l)})` : `${leads.length} leads outside your criteria are still available`, {
     title: one ? 'A lead outside your criteria' : `${leads.length} leads outside your criteria`,
     preheader: one ? `${what(l)}. It doesn’t fit your settings, but it’s still available.` : 'They don’t fit your settings, but they’re still available to buy.',
     greeting: `Hello ${esc(b.company)},`,
-    intro: one ? `This lead doesn’t fit the criteria in your settings, so ${b.mode === 'auto' ? 'auto-buy didn’t buy it and ' : ''}we wouldn’t normally send it. It might still be worth a look. Each lead is sold to one broker only.`
-      : `These leads came in over the last day. They don’t fit the criteria in your settings, so ${b.mode === 'auto' ? 'auto-buy didn’t buy them, but' : ''} they might still be worth a look. Each lead is sold to one broker only.`,
-    ...(one ? { highlight: { value: what(l), label: `Outside your criteria · ${cost(l)}` },
-      rows: leadRows(l).filter(([k, v]) => v != null && v !== '' && k !== 'Amount' && k !== 'Purpose'),
-      tipsTitle: 'Why it’s outside your criteria', tips: misses(critOf(b), l).map(esc) }
-      : { html: `<p style="font-family:Arial,Helvetica,sans-serif;margin:26px 0 14px;font-size:16px;font-weight:bold;color:#14271f">Still available</p>${leads.slice(0, 10).map((x) => leadCard(x, misses(critOf(b), x))).join('')}${leads.length > 10 ? `<p style="font-family:Arial,Helvetica,sans-serif;margin:0 0 18px;font-size:14px;color:#62786f">And ${leads.length - 10} more on the platform.</p>` : ''}` }),
+    intro: one ? `This lead doesn’t fit the criteria in your settings, so ${b.mode === 'auto' ? 'auto-buy didn’t buy it and ' : ''}we wouldn’t normally send it. It might still be worth a look. Each lead is sold to one firm only.`
+      : `These leads came in over the last day. They don’t fit the criteria in your settings, so ${b.mode === 'auto' ? 'auto-buy didn’t buy them, but ' : ''}they might still be worth a look. Each lead is sold to one firm only.`,
+    ...(one ? { highlight: { value: matterName(l), label: `Outside your criteria · ${cost(l)}` },
+      rows: leadRows(l).filter(([k]) => k !== 'Matter'),
+      tipsTitle: 'Why it’s outside your criteria', tips: misses(f, l).map(esc) }
+      : { html: `<p style="font-family:Arial,Helvetica,sans-serif;margin:26px 0 14px;font-size:16px;font-weight:bold;color:#14271f">Still available</p>${leads.slice(0, 10).map((x) => leadCard(x, misses(f, x))).join('')}${leads.length > 10 ? `<p style="font-family:Arial,Helvetica,sans-serif;margin:0 0 18px;font-size:14px;color:#62786f">And ${leads.length - 10} more on the platform.</p>` : ''}` }),
     cta: { label: one ? 'View this lead' : 'View leads', url: `${PLATFORM_URL}/opportunities` },
     note: `Not interested in leads like ${one ? 'this' : 'these'}? You can get them as a daily summary instead, or switch them off, under <a href="${PLATFORM_URL}/notifications" style="color:#244237">Notifications</a>.`,
     unsub, footer: `You're receiving this because ${esc(b.company)} gets emails about leads outside its criteria. <a href="${unsub}" style="color:#86998f">Unsubscribe from these emails</a> or change them under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.` });
 }
-// Daily (cron-plans): unsold leads from the last day that sit outside each 'daily' broker's criteria.
+// Daily (cron-plans): unsold leads from the last day that sit outside each 'daily' firm's criteria.
 export async function suggestDigest() {
   const since = new Date(Date.now() - 864e5).toISOString(), cut = new Date(Date.now() - 20 * 36e5).toISOString();
   const [brokers, leads] = await Promise.all([db('brokers?approved=eq.true&suspended_at=is.null&filters->>suggest=eq.daily&select=*'),
-    db(`leads?buyer=is.null&hidden_at=is.null&created_at=gte.${since}&select=${PREVIEW},turnover,exclude_brokers&order=created_at.desc`)]);
+    db(`leads?buyer=is.null&hidden_at=is.null&created_at=gte.${since}&select=${PREVIEW},exclude_brokers&order=created_at.desc`)]);
   let sent = 0;
   for (const b of brokers) {
     if (missedEmailOn(b)) continue; // the missed-leads email covers these
     if (b.filters.digestAt > cut) continue; // already sent today (cron reruns)
-    const list = leads.filter((l) => unmatchedOk(l) && !matches(critOf(b), l) && !excluded(l, b.id) && asPriced(l, b).price != null);
+    const list = leads.filter((l) => canTake(b, l) && !matches(b.filters, l) && !excluded(l, b.id));
     if (!list.length) continue;
     await db(`brokers?id=eq.${b.id}`, { method: 'PATCH', body: { filters: { ...b.filters, digestAt: new Date().toISOString() } } });
     await suggest(b, list).then(() => sent++, (e) => console.error('digest', b.id, e.message));
@@ -976,33 +877,33 @@ export async function suggestDigest() {
   return sent;
 }
 
-// Daily (cron-plans): to brokers with auto-buy on, the leads from the last day that auto-buy skipped because of their criteria,
+// Daily (cron-plans): to firms with auto-buy on, the leads from the last day that auto-buy skipped because of their criteria,
 // sold or not, and which criteria held them back. Nudges them to widen their criteria. Off with filters.missed = 'off'.
 // They get this instead of the "outside your criteria" daily summary, which would repeat the unsold ones.
-export const excluded = (l, id) => (l.exclude_brokers || []).includes(id); // bought this business before
+export const excluded = (l, id) => (l.exclude_brokers || []).includes(id); // bought this person before
 export const missedEmailOn = (b) => b.mode === 'auto' && b.filters?.missed !== 'off';
 export function missedEmail(b, leads) {
-  const S = missedSummary(b, leads.filter(unmatchedOk)), n = S.missed.length, s = n === 1 ? '' : 's', F = 'font-family:Arial,Helvetica,sans-serif;';
+  const S = missedSummary(b, leads), n = S.missed.length, s = n === 1 ? '' : 's', F = 'font-family:Arial,Helvetica,sans-serif;';
   if (!n) return null;
   const unsub = signedUrl('missed-off', b.id, 365);
   return notify(recipients(b, 'alert'), `${n} lead${s} just outside your auto-buy criteria yesterday`, {
     title: `${n} lead${s} just outside your criteria`,
-    preheader: 'Brokers with wider auto-buy criteria get first pick of more leads.',
+    preheader: 'Firms with wider auto-buy criteria get first pick of more leads.',
     greeting: `Hello ${esc(b.company)},`,
     intro: `Over the last day, ${n === 1 ? 'a lead' : `${n} leads`} came in just outside the auto-buy criteria for <b>${esc(b.company)}</b>, so auto-buy let ${n === 1 ? 'it' : 'them'} pass.`,
-    html: `<p style="${F}margin:0 0 18px;font-size:15px;line-height:1.65;color:#2b3f36">The brokers who do best on Leaflegal keep their auto-buy criteria wide. They get first pick of more leads, and because each lead goes to one broker only, the first to auto-buy it is the one who gets to call. Often a single setting makes the difference.</p>`,
+    html: `<p style="${F}margin:0 0 18px;font-size:15px;line-height:1.65;color:#2b3f36">The firms who do best on Leaflegal keep their auto-buy criteria wide. They get first pick of more leads, and because each lead goes to one firm only, the first to auto-buy it is the one who gets to call. Often a single setting makes the difference.</p>`,
     tipsTitle: 'What held them back', ticks: false,
-    tips: S.groups.slice(0, 6).map((g) => `${esc(g.label)}: <b>${g.n} lead${g.n === 1 ? '' : 's'}</b>${g.only ? ` (allowing this alone would have picked up ${g.only === g.n ? (g.n === 1 ? 'it' : 'all of them') : g.only})` : ''}`),
+    tips: S.groups.slice(0, 6).map((g) => `${esc(g.label)}, <b>${g.n} lead${g.n === 1 ? '' : 's'}</b>${g.only ? ` (allowing this alone would have picked up ${g.only === g.n ? (g.n === 1 ? 'it' : 'all of them') : g.only})` : ''}`),
     cta: { label: 'Widen auto-buy criteria', url: `${PLATFORM_URL}/autobuy` },
-    // The best first: ranked by lead price (bigger, better-qualified businesses cost more), price itself never shown.
-    after: `<p style="${F}margin:30px 0 14px;font-size:16px;font-weight:bold;color:#14271f">${n > 5 ? 'The best of them' : 'The leads'}</p>${[...S.missed].sort((x, y) => (y.l.price || 0) - (x.l.price || 0)).slice(0, 5).map((m) => leadCard(m.l, misses(critOf(b), m.l), { plain: true })).join('')}${n > 5 ? `<p style="${F}margin:0 0 18px;font-size:14px;color:#62786f">And ${n - 5} more.</p>` : ''}`,
+    // The best first: ranked by lead price (higher value matters cost more), price itself never shown.
+    after: `<p style="${F}margin:30px 0 14px;font-size:16px;font-weight:bold;color:#14271f">${n > 5 ? 'The best of them' : 'The leads'}</p>${[...S.missed].sort((x, y) => (y.l.price || 0) - (x.l.price || 0)).slice(0, 5).map((m) => leadCard(m.l, misses(b.filters || {}, m.l), { plain: true })).join('')}${n > 5 ? `<p style="${F}margin:0 0 18px;font-size:14px;color:#62786f">And ${n - 5} more.</p>` : ''}`,
     note: 'The Auto-buy page shows what your criteria let pass over the last 30 days, and lets you allow each one in a click.',
     unsub, footer: `You're receiving this because ${esc(b.company)} has auto-buy switched on. <a href="${unsub}" style="color:#86998f">Unsubscribe from these emails</a> or change them under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.` });
 }
 export async function missedDigest() {
   const since = new Date(Date.now() - 864e5).toISOString(), cut = new Date(Date.now() - 20 * 36e5).toISOString();
   const [brokers, leads] = await Promise.all([db('brokers?approved=eq.true&suspended_at=is.null&mode=eq.auto&select=*'),
-    db(`leads?created_at=gte.${since}&select=${PREVIEW},buyer,exclude_brokers&order=created_at.desc`)]);
+    db(`leads?created_at=gte.${since}&hidden_at=is.null&select=${PREVIEW},buyer,exclude_brokers&order=created_at.desc`)]);
   let sent = 0;
   for (const b of brokers.filter(missedEmailOn)) {
     if (b.filters?.missedAt > cut) continue; // already sent today (cron reruns)
@@ -1014,8 +915,8 @@ export async function missedDigest() {
   return sent;
 }
 
-// ---------------------------------------------------------------- public broker profile
-// What a business sees about the broker it's matched with (confirmation page + "you've been matched" email).
+// ---------------------------------------------------------------- public firm profile
+// What a client sees about the firm it's matched with (confirmation page + "you've been matched" email).
 // Stored on brokers.profile; each contact line has a show switch. Company name always shows.
 const SHOWABLE = ['person', 'website', 'phone', 'whatsapp', 'sms', 'email'];
 const clip = (v, n) => String(v ?? '').trim().slice(0, n);
@@ -1040,14 +941,11 @@ export const waLink = (n) => `https://wa.me/${String(n).replace(/\D/g, '').repla
 const telLink = (n) => `tel:${String(n).replace(/[^\d+]/g, '')}`;
 const siteLabel = (u) => String(u).replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
 
-// Ready-made first message from the business to its broker (WhatsApp, text and email buttons open with it filled in).
-// Keep in step with matchMessage() in public/assets/apply.js.
+// Ready-made first message from the client to the firm (WhatsApp, text and email buttons open with it filled in).
+// No matter details: it travels in links inside the client's email. Keep in step with matchMessage() in the front end.
 export function matchMessage(m, l) {
-  const hi = String(m.person || '').split(' ')[0] || m.company, amt = typeof l.amount === 'number' ? gbp(l.amount) : l.amount;
-  const lines = [`Hi ${hi}, I found you through Leaflegal and was matched with you for business finance. Here's a quick summary:`, '',
-    l.business && `Business: ${l.business}`, amt && `Looking for: ${amt}${l.purpose ? ` for ${String(l.purpose).toLowerCase()}` : ''}`,
-    l.timeline && `Needed: ${l.timeline}`, l.turnover && `Annual revenue: ${l.turnover}`, l.trading && `Trading for: ${l.trading}`, '', `Thanks, ${l.full_name || ''}`.trim()];
-  return lines.filter((x) => x !== false && x !== null && x !== undefined).join('\n');
+  const hi = String(m.person || '').split(' ')[0] || m.company;
+  return [`Hi ${hi}, I found you through Leaflegal and was matched with your firm. Could we arrange a time to talk?`, '', `Thanks, ${l.full_name || ''}`.trim()].join('\n');
 }
 const isMobile = (n) => /^(\+?44\s?7|07)/.test(String(n || '').replace(/[\s()-]/g, ''));
 // The contact buttons, in order: Call, WhatsApp, Text, Email, Website.
@@ -1056,28 +954,28 @@ export function contactActions(m, l) {
   return [m.phone && { k: 'call', label: 'Call', sub: m.phone, href: telLink(m.phone) },
     m.whatsapp && { k: 'whatsapp', label: 'WhatsApp', sub: 'Message on WhatsApp', href: `${waLink(m.whatsapp)}?text=${enc(msg)}` },
     text && { k: 'sms', label: 'Text', sub: text, href: `sms:${String(text).replace(/[^\d+]/g, '')}?&body=${enc(msg)}` },
-    m.email && { k: 'email', label: 'Email', sub: m.email, href: `mailto:${m.email}?subject=${enc(`Business finance enquiry from ${l.business || l.full_name || 'Leaflegal'} (via Leaflegal)`)}&body=${enc(msg)}` },
+    m.email && { k: 'email', label: 'Email', sub: m.email, href: `mailto:${m.email}?subject=${enc(`Enquiry from ${l.full_name || 'a Leaflegal client'} (via Leaflegal)`)}&body=${enc(msg)}` },
     m.website && { k: 'web', label: 'Website', sub: siteLabel(m.website), href: m.website }].filter(Boolean);
 }
 
-// "You've been matched" email to the business, sent whenever a broker buys (or is given) its lead. Never throws.
+// "You've been matched" email to the client, sent whenever a firm buys (or is given) its lead. Never throws.
 // Logo shown at most 180×64 in emails; explicit width/height so Outlook doesn't blow it up to full size.
 const logoFit = (p, W = 180, H = 64) => { const w = p.logoW || W, h = p.logoH || H, k = Math.min(W / w, H / h, 1); return [Math.round(w * k), Math.round(h * k)]; };
-// "You've been matched" message to the business's phone, alongside the email. WhatsApp first (template leaflegal_matched,
-// from BIRD_WA_FROM, once Meta approves it), otherwise a text from BIRD_SMS_FROM. Does nothing until one is set up. Never throws.
-// Two templates: one for brokers whose profile shows a WhatsApp number (adds that line), one without. Meta templates can't
-// have optional lines, so the choice is made per send.
-export const MATCH_WA_TEMPLATE = 'leaflegal_matched_v2', MATCH_WA_TEMPLATE_WA = 'leaflegal_matched_wa';
+// "You've been matched" message to the client's phone, alongside the email. WhatsApp first (template below, from
+// BIRD_WA_FROM, once Meta approves it), otherwise a text from BIRD_SMS_FROM. Does nothing until one is set up. Never throws.
+// Two templates: one for firms whose profile shows a WhatsApp number (adds that line), one without. Meta templates can't
+// have optional lines, so the choice is made per send. No matter details in either.
+export const MATCH_WA_TEMPLATE = 'leaflegal_firm_matched', MATCH_WA_TEMPLATE_WA = 'leaflegal_firm_matched_wa';
 // Companies House names arrive in capitals ("AUTOMOVER LOGISTICS LTD"): show them as "Automover Logistics Ltd".
 export const niceBusiness = (n) => { const v = String(n || '').trim(); if (!v || v !== v.toUpperCase()) return v;
   return v.toLowerCase().replace(/\b([a-z])/g, (c) => c.toUpperCase()).replace(/\b(Llp|Plc|Uk|Cic)\b/g, (w) => w.toUpperCase()).replace(/\b(T\/a|And|Of|The)\b/g, (w, x, i) => (i ? w.toLowerCase() : w)); };
 export function matchedText(b, l) {
   const m = publicProfile(b), first = String(l.full_name || '').trim().split(/\s+/)[0] || 'there', who = m.person ? m.person.split(' ')[0] : m.company;
-  const reach = [m.phone && `Call: ${m.phone}`, m.whatsapp && `WhatsApp: ${m.whatsapp}`, m.email && `Email: ${m.email}`].filter(Boolean), biz = niceBusiness(l.business);
+  const reach = [m.phone && `Call ${m.phone}`, m.whatsapp && `WhatsApp ${m.whatsapp}`, m.email && `Email ${m.email}`].filter(Boolean);
   return {
-    sms: `Hi ${first}, thanks for your business finance enquiry with Leaflegal${biz ? ` for ${biz}` : ''}. We've matched you with ${m.company}, one of our recommended brokers, and ${who} will be in touch shortly about your ${gbp(l.amount)} request.${reach.length ? `\n\n${reach.join('\n')}` : ''}\n\nNo obligation to go ahead. Leaflegal`,
+    sms: `Hi ${first}, thanks for your enquiry with Leaflegal. We've matched you with ${m.company}, a law firm, and ${who} will be in touch shortly.${reach.length ? `\n\n${reach.join('\n')}` : ''}\n\nThe firm will explain its fees before you agree to anything. Leaflegal receives a fee from the firm for the introduction. Leaflegal`,
     template: m.whatsapp ? MATCH_WA_TEMPLATE_WA : MATCH_WA_TEMPLATE,
-    wa: { first_name: first, business: biz || 'your business', broker: m.company, contact: m.person || 'Their team', amount: gbp(l.amount), phone: m.phone || m.whatsapp || 'in your email', email: m.email || 'in your email', ...(m.whatsapp ? { whatsapp: m.whatsapp } : {}) },
+    wa: { first_name: first, firm: m.company, contact: m.person || 'Their team', phone: m.phone || m.whatsapp || 'in your email', email: m.email || 'in your email', ...(m.whatsapp ? { whatsapp: m.whatsapp } : {}) },
   };
 }
 // Sending (SMS and WhatsApp) uses BIRD_API_KEY_WHATSAPPSMS when set; BIRD_API_KEY (lookups) otherwise.
@@ -1134,7 +1032,8 @@ export function matchedEmail(b, l) {
   return notify([l.email], `You've been matched with ${publicProfile(b).company}`, matchedOpts(b, l));
 }
 const EMOJI = { call: '&#128222;', whatsapp: '&#128172;', sms: '&#128241;', email: '&#9993;&#65039;', web: '&#127760;' };
-export function matchedOpts(b, l, rematch) { // rematch: link to a new broker = the "already matched" version
+// The client email. No matter details or answers: only the firm, how to reach it, and what happens next.
+export function matchedOpts(b, l, rematch) { // rematch: link to a different firm = the "already matched" version
   const m = publicProfile(b), first = String(l.full_name || '').split(' ')[0], who = m.person || m.company;
   const F = 'font-family:Arial,Helvetica,sans-serif;', G = '#244237', MUTED = '#62786f', LINE = '#dde5e1';
   const card = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 26px;border:1px solid ${LINE};border-collapse:collapse"><tr><td style="${F}padding:22px 24px 14px">
@@ -1145,27 +1044,28 @@ ${m.about ? `<div style="margin-top:10px;font-size:14px;line-height:1.6;color:#2
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:16px">${contactActions(m, l).map((a) => `<tr><td style="padding:0 0 8px">
 <a href="${esc(a.href)}" style="${F}display:block;padding:13px 16px;background:${a.k === 'whatsapp' ? '#1f8f4e' : G};color:#ffffff;text-decoration:none;font-size:15px;font-weight:bold">${EMOJI[a.k]}&nbsp;&nbsp;${esc(a.label)}<span style="font-weight:normal;opacity:.85">&nbsp;&nbsp;${esc(a.sub)}</span></a></td></tr>`).join('')}</table></td></tr></table>`;
   return {
-    title: `You've ${rematch ? 'already ' : ''}been matched with ${m.company}`, preheader: rematch ? `${who} has your details and we've told them you're still looking.` : `${who} will be in touch about your ${gbp(l.amount)} enquiry.`,
+    title: `You've ${rematch ? 'already ' : ''}been matched with ${m.company}`, preheader: rematch ? `${who} has your details and we've told them you're still looking.` : `${who} will be in touch shortly.`,
     greeting: `Hi ${esc(first)},`,
-    ...(rematch ? { link: { label: 'Match me with a different broker', url: rematch } } : {}),
-    intro: rematch ? `Thanks for getting in touch again. ${esc(l.business)} is already matched with <b>${esc(m.company)}</b>, so we've let them know you're still looking. ${m.person ? esc(m.person) : 'They'} should be in touch shortly, or you can contact them using the details below.<br><br>Would you rather speak to someone else? Use the link at the bottom of this email and we'll match you with a different broker.` : `Thanks for your enquiry. We've matched ${esc(l.business)} with <b>${esc(m.company)}</b>, a business finance broker who can help with the ${gbp(l.amount)} you asked about. ${m.person ? esc(m.person) : 'They'} will be in touch shortly, usually by phone.`,
+    ...(rematch ? { link: { label: 'Match me with a different firm', url: rematch } } : {}),
+    intro: rematch ? `Thanks for getting in touch again. You're already matched with <b>${esc(m.company)}</b>, so we've let them know you're still looking. ${m.person ? esc(m.person) : 'They'} should be in touch shortly, or you can contact them using the details below.<br><br>Would you rather speak to someone else? Use the link at the bottom of this email and we'll match you with a different firm.`
+      : `Thanks for your enquiry. We've matched you with <b>${esc(m.company)}</b>, a law firm that can help. ${m.person ? esc(m.person) : 'They'} will be in touch shortly, usually by phone.`,
     html: card,
     stepsTitle: 'What happens next', steps: [['They contact you', `Expect a call from ${esc(who)}${m.phone ? ` on ${esc(m.phone)}` : ''}. Save their number so you know it's them.`],
-      ['Talk through your options', "They'll ask a few questions about your business and what you need the money for."],
-      ['You decide', "You choose whether to go ahead. There's no obligation."]],
-    footer: `Leaflegal introduces businesses to finance brokers. Any arrangement is between you and your broker, and Leaflegal isn't involved in it. Your broker will explain how they work and any fees before you go ahead.</p><p style="margin:0 0 12px">You're receiving this because you asked Leaflegal to match ${esc(l.business)} with a business finance broker.`, nav: false, replyTo: 'hello@leaflegal.co' };
+      ['They explain their fees', 'The firm will tell you how they work and what they charge before you agree to anything.'],
+      ['You decide', 'You choose whether to instruct them. There is no obligation.']],
+    note: 'Leaflegal receives a fee from the firm for introducing you. It does not change what the firm charges you.',
+    footer: `Leaflegal introduces people and businesses to law firms. Leaflegal is not a law firm and does not give legal advice. Any arrangement is between you and the firm, which is responsible for the advice it gives you.</p><p style="margin:0 0 12px">You're receiving this because you asked Leaflegal to put you in touch with a law firm.`, nav: false, replyTo: 'hello@leaflegal.co', from: MAIL_FROM() };
 }
 
-// Previews for the Profile tab: the real email, and the form's thank-you page as the business sees it.
-// The page markup mirrors brokerCard() in public/assets/apply.js — change both together.
+// Previews for the Profile tab: the real email, and the form's thank-you page as the client sees it.
+// The page markup mirrors the match card on the enquiry forms. Change both together.
 const icon = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
-// Same icons as brokerCard() in apply.js.
 const MATCH_ICON = { call: icon('<path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>'),
   whatsapp: icon('<path d="M3 21l1.7-4.9A8.6 8.6 0 1 1 8 19.6z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.2-1.2-1.8-.9-.8.8a4 4 0 0 1-2.3-2.3l.8-.8-.9-1.8z"/>'),
   sms: icon('<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M10 18h4"/>'), email: icon('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
   web: icon('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>') };
 export function matchedPreviews(b) {
-  const l = { email: 'preview@example.com', full_name: 'Sam Taylor', business: 'Taylor Joinery Ltd', amount: 75000, purpose: 'Equipment or vehicles', timeline: 'Within 2 weeks', turnover: '£250k to £500k', trading: '5+ years' };
+  const l = { email: 'preview@example.com', full_name: 'Sam Taylor', area: 'family-law', matter: 'divorce', urgency: 'Within a month', region: 'London' };
   const m = publicProfile(b), btns = contactActions(m, l).map((x) => `<a class="ap-mb ap-mb-${x.k}" href="#">${MATCH_ICON[x.k]}<span><b>${x.label}</b><em>${esc(x.sub)}</em></span></a>`);
   const page = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base target="_blank">
 <link href="/assets/base.css" rel="stylesheet"><link href="/assets/site.css?v=28" rel="stylesheet"><link href="/assets/apply.css?v=31" rel="stylesheet">
@@ -1173,16 +1073,16 @@ export function matchedPreviews(b) {
 <div class="sec"><div class="w"><div class="ap-step on ap-done">
 <div class="ap-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
 <h2 class="ap-q">Thanks, Sam. We've matched you with ${esc(m.company)}.</h2><p class="ap-done-lead">${esc(m.person || 'They')} will be in touch shortly, usually by phone. We've emailed you their details too.</p>
-<div class="ap-match"><span class="ap-match-tag">Your broker</span>${m.logo ? `<img class="ap-match-logo" src="${esc(m.logo)}" alt="">` : ''}<b class="ap-match-name">${esc(m.company)}</b>
+<div class="ap-match"><span class="ap-match-tag">Your law firm</span>${m.logo ? `<img class="ap-match-logo" src="${esc(m.logo)}" alt="">` : ''}<b class="ap-match-name">${esc(m.company)}</b>
 ${m.person ? `<span class="ap-match-who">${esc(m.person)}${m.role ? `, ${esc(m.role)}` : ''}</span>` : ''}${m.about ? `<p class="ap-match-about">${esc(m.about)}</p>` : ''}${btns.length ? `<div class="ap-match-btns">${btns.join('')}</div>` : ''}</div>
-<dl class="ap-summary"><div><dt>Amount</dt><dd>£75,000</dd></div><div><dt>Purpose</dt><dd>Equipment or vehicles</dd></div><div><dt>Needed</dt><dd>Within 2 weeks</dd></div><div><dt>Business</dt><dd>Taylor Joinery Ltd</dd></div></dl>
+<dl class="ap-summary"><div><dt>Help with</dt><dd>Divorce</dd></div><div><dt>Practice area</dt><dd>Family law</dd></div><div><dt>Timing</dt><dd>Within a month</dd></div></dl>
 </div></div></div></body></html>`;
   return { email: emailHtml(matchedOpts(b, l)), subject: `You've been matched with ${m.company}`, page, ...phonePreviews(b, l) };
 }
-// The approved Meta wording of the two matched templates (Bird: leaflegal_matched_v2 / leaflegal_matched_wa). Keep in step if a template is edited.
+// The wording of the two matched WhatsApp templates (Bird). They need Meta approval under these names. Keep in step if edited.
 const MATCH_WA_BODY = {
-  [MATCH_WA_TEMPLATE]: "Hi {{first_name}}, thanks for your business finance enquiry with Leaflegal for {{business}} ✅\n\nWe've matched you with *{{broker}}*, one of our recommended brokers. {{contact}} will be in touch shortly about your {{amount}} request.\n\n📞 {{phone}}\n✉️ {{email}}\n\nSave their number so you know it's them when they call. There's no obligation to go ahead.",
-  [MATCH_WA_TEMPLATE_WA]: "Hi {{first_name}}, thanks for your business finance enquiry with Leaflegal for {{business}} ✅\n\nWe've matched you with *{{broker}}*, one of our recommended brokers. {{contact}} will be in touch shortly about your {{amount}} request.\n\n📞 {{phone}}\n💬 WhatsApp: {{whatsapp}}\n✉️ {{email}}\n\nSave their number so you know it's them when they get in touch. There's no obligation to go ahead.",
+  [MATCH_WA_TEMPLATE]: "Hi {{first_name}}, thanks for your enquiry with Leaflegal ✅\n\nWe've matched you with *{{firm}}*, a law firm. {{contact}} will be in touch shortly.\n\n📞 {{phone}}\n✉️ {{email}}\n\nThe firm will explain its fees before you agree to anything. Leaflegal receives a fee from the firm for the introduction. There's no obligation to go ahead.",
+  [MATCH_WA_TEMPLATE_WA]: "Hi {{first_name}}, thanks for your enquiry with Leaflegal ✅\n\nWe've matched you with *{{firm}}*, a law firm. {{contact}} will be in touch shortly.\n\n📞 {{phone}}\n💬 WhatsApp {{whatsapp}}\n✉️ {{email}}\n\nThe firm will explain its fees before you agree to anything. Leaflegal receives a fee from the firm for the introduction. There's no obligation to go ahead.",
 };
 // WhatsApp and text previews for Profile: the same matchedText the real send uses, drawn as a phone chat.
 function phonePreviews(b, l) {
@@ -1233,7 +1133,7 @@ export async function scanSite(input) {
   // Structured data (schema.org Organization / LocalBusiness), when the site has it, is the most reliable source.
   let org = {};
   for (const m of html.matchAll(/<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)) {
-    try { const walk = (o) => { if (!o || typeof o !== 'object' || org.name) return; if (/Organization|Business|FinancialService|Corporation|ProfessionalService/i.test([].concat(o['@type'] || []).join(' ')) && typeof o.name === 'string') org = o; else Object.values(o).forEach(walk); }; walk(JSON.parse(m[1])); } catch {}
+    try { const walk = (o) => { if (!o || typeof o !== 'object' || org.name) return; if (/Organization|Business|LegalService|Attorney|Corporation|ProfessionalService/i.test([].concat(o['@type'] || []).join(' ')) && typeof o.name === 'string') org = o; else Object.values(o).forEach(walk); }; walk(JSON.parse(m[1])); } catch {}
   }
   // Company name: the part of the page title that matches the web address ("Vertical Brands - Brand & ..." on verticalbrands.co),
   // or what the site's own logo is labelled, before falling back to the first part of the title.
