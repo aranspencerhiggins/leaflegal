@@ -132,7 +132,7 @@
       "destination": "/platform/index.html"
     },
     {
-      "source": "/:path((?!api/|assets/).*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",
