@@ -141,9 +141,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=43', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=44', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=43" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=44" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -640,11 +640,11 @@ def cs_guides_home():
 
 
 # ---------------------------------------------------------------- homepage
-# Hero photo (Unsplash+ ARr07aQKrt4, man taking notes at a laptop on a warm cafe desk, chosen by Aran), mirrored in CSS so he sits on the right. Never use handshake photos.
-HOME_HERO_IMG = lambda w: f'https://plus.unsplash.com/premium_photo-1661551603826-a2b3d22950bc?ixlib=rb-4.1.0&auto=format&fit=crop&w={w}&q=80'
+# Hero photo (Unsplash+ ARr07aQKrt4, licensed download, man taking notes at a laptop, chosen by Aran). Self hosted WebP, already mirrored so he sits on the right. Never use handshake photos.
+HOME_HERO_IMG = lambda w: f'/assets/home-hero-{w}.webp'
 home = f'''
 <section class="ll-hero ll-hero-photo ll-hero-noform" id="quote">
-<img class="ll-hero-bg" src="{HOME_HERO_IMG(1800)}" srcset="{HOME_HERO_IMG(900)} 900w, {HOME_HERO_IMG(1400)} 1400w, {HOME_HERO_IMG(2200)} 2200w" sizes="100vw" alt="" fetchpriority="high"/>
+<img class="ll-hero-bg" src="{HOME_HERO_IMG(2200)}" srcset="{HOME_HERO_IMG(900)} 900w, {HOME_HERO_IMG(1400)} 1400w, {HOME_HERO_IMG(2200)} 2200w" sizes="100vw" alt="" fetchpriority="high"/>
 <div class="ll-hero-in"><div class="ll-hero-copy">
 <h1>Find the right solicitor for you</h1>
 <p class="ll-lead">Tell us what you need help with and we'll introduce you to a specialist, regulated law firm that handles your kind of matter.</p>
