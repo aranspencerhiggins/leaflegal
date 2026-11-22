@@ -555,7 +555,7 @@ const page = (res, status, title, inner) => res.status(status).setHeader('Conten
 .h{background:#244237;padding:20px 28px}.b{padding:28px}h1{margin:0 0 14px;font-size:23px;color:#14271f}table{width:100%;border-collapse:collapse;background:#f4f8f6;border-radius:12px;margin:6px 0 20px}
 td{padding:10px 14px;font-size:14px;vertical-align:top}td:first-child{color:#5d7a6e;width:40%}tr+tr td{border-top:1px solid #e2ebe7}a{color:#3d6656}
 button{border:0;border-radius:999px;background:#244237;color:#fff;font:700 16px Arial,sans-serif;padding:14px 30px;cursor:pointer}.ok{color:#1f8a55;font-weight:700}.m{color:#5d7a6e;font-size:14px}</style></head>
-<body><div class="w"><div class="c"><div class="h"><img src="https://leaflegal.co/assets/Leaflegal_Logo_White.svg" width="128" height="26" alt="Leaflegal"></div><div class="b">${inner}</div></div></div></body></html>`);
+<body><div class="w"><div class="c"><div class="h"><img src="https://leaflegal.co/assets/Leaflegal_Logo_White_email.png" width="128" height="28" alt="Leaflegal"></div><div class="b">${inner}</div></div></div></body></html>`);
 // Register links for each regulator (admin checks the number by hand, then ticks it as checked).
 const REGISTER_LINKS = { SRA: 'https://www.sra.org.uk/consumers/register/', CILEX: 'https://cilexregulation.org.uk/', CLC: 'https://www.clc-uk.org/', IAA: 'https://www.gov.uk/find-an-immigration-adviser' };
 const regulatorsOut = (b) => (Array.isArray(b?.regulators) ? b.regulators : []).filter((r) => r && regulatorOf(r.id)).map((r) => ({ id: r.id, number: r.number || '', label: regulatorOf(r.id).label, register: REGISTER_LINKS[r.id] }));

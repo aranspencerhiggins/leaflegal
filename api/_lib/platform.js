@@ -428,7 +428,7 @@ ${cta ? `<tr><td colspan="2" style="padding:22px 24px 24px;border-top:1px solid 
 ${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${esc(preheader)}${'&#8203;&nbsp;'.repeat(40)}</div>` : ''}
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f5f4"><tr><td align="center" style="padding:36px 12px 40px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px">
-<tr><td align="center" style="padding:0 0 28px">${showNav ? `<a href="${PLATFORM_URL}/dashboard"><img src="https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green.svg" width="140" height="28" alt="Leaflegal" style="display:block;border:0"></a>` : `<img src="https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green.svg" width="140" height="28" alt="Leaflegal" style="display:block;border:0">`}</td></tr>
+<tr><td align="center" style="padding:0 0 28px">${showNav ? `<a href="${PLATFORM_URL}/dashboard"><img src="https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green_email.png" width="140" height="31" alt="Leaflegal" style="display:block;border:0;width:140px;height:31px"></a>` : `<img src="https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green_email.png" width="140" height="31" alt="Leaflegal" style="display:block;border:0;width:140px;height:31px">`}</td></tr>
 <tr><td class="ll-body" style="background:#ffffff;border:1px solid ${LINE};padding:44px 40px 34px">
 <h1 style="${F}margin:0 0 22px;font-size:26px;line-height:1.25;font-weight:bold;color:${INK}">${esc(title)}</h1>
 ${greeting ? p(greeting) : ''}${intro ? p(intro) : ''}${html}
