@@ -112,7 +112,7 @@ function init() {
   const noteHTML = (k) => (k && NOTES[k] ? `<div class="im-note">${NOTES[k]}</div>` : '');
   const CONSENT_VERSION = '2026-11-22';
   // No tick boxes. Sending the form is the request to be introduced, and this notice sits right under the button.
-  const NOTICE = 'By sending this enquiry you agree to our <a href="/terms-conditions" target="_blank">Terms</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and to us passing your details and answers to one regulated law firm who may contact you by phone, email or text about it. Free to use, with no obligation. Leaflegal is not a law firm and does not give legal advice.';
+  const NOTICE = 'By sending this enquiry you agree to our <a href="/terms-conditions" target="_blank">Terms</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and to us passing your details and answers to one regulated law firm who may contact you by phone, email or text about it. No obligation to proceed. Leaflegal is not a law firm and does not give legal advice.';
   const plain = (s) => s.replace(/<[^>]+>/g, '');
   const today = () => { const t = new Date(); t.setHours(0, 0, 0, 0); return t; };
   const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);

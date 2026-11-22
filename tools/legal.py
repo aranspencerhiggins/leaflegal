@@ -111,7 +111,7 @@ TERMS = f'''
 <p>Leaflegal is a trading name of {CO}</p>
 
 <h2>2. What Leaflegal does</h2>
-<p>Leaflegal is a free introduction service for people and businesses looking for legal help. You tell us about your matter. If you agree, we pass your enquiry to one independent, regulated law firm we think may be able to help, and the firm contacts you.</p>
+<p>Leaflegal is an introduction service for people and businesses looking for legal help. You tell us about your matter. If you agree, we pass your enquiry to one independent, regulated law firm we think may be able to help, and the firm contacts you.</p>
 <p>Please be aware of the following points.</p>
 <ul>
 <li>Leaflegal is <strong>not</strong> a law firm and does not provide legal services.</li>

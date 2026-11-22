@@ -11,7 +11,7 @@ AREAS = [
         'slug': 'conveyancing', 'name': 'Conveyancing', 'icon': 'property', 'form': 'Buying or selling a home',
         'short': 'Buying, selling or remortgaging a property in England and Wales.',
         'title': 'Conveyancing Solicitors | Get Matched With a Conveyancer | Leaflegal',
-        'desc': 'Buying, selling or remortgaging? Answer a few quick questions and we will introduce you to a regulated conveyancing firm. Free to use, no obligation.',
+        'desc': 'Buying, selling or remortgaging? Answer a few quick questions and we will introduce you to a regulated conveyancing firm. No obligation to proceed.',
         'h1': 'Find a conveyancing solicitor',
         'lead': 'Tell us about your purchase, sale or remortgage and we will introduce you to a regulated conveyancing firm that handles your kind of property.',
         'intro': [
@@ -30,7 +30,7 @@ AREAS = [
             ('Your lender’s panel', 'If you are buying with a mortgage, the conveyancer usually needs to be on your lender’s panel. The firm can confirm this when they quote.'),
         ],
         'faqs': [
-            ('Does Leaflegal do the conveyancing?', 'No. Leaflegal is a free introduction service. The firm we introduce you to does the legal work and is responsible for it.'),
+            ('Does Leaflegal do the conveyancing?', 'No. Leaflegal is an introduction service. The firm we introduce you to does the legal work and is responsible for it.'),
             ('Which areas do you cover?', 'Conveyancing enquiries for properties in England and Wales. Scotland and Northern Ireland have separate systems and are not covered at the moment.'),
             ('How much does conveyancing cost?', 'It depends on the property, its value, whether it is leasehold and the firm. The firm will give you a written quote before you instruct them.'),
             ('Do I have to use the firm you introduce?', 'No. There is no obligation. You can compare their quote with others and choose whoever suits you.'),
@@ -69,7 +69,7 @@ AREAS = [
         'slug': 'family-law', 'name': 'Family law', 'icon': 'heart', 'form': 'Family law',
         'short': 'Divorce, separation, finances and arrangements for children.',
         'title': 'Family Law Solicitors | Divorce and Separation | Leaflegal',
-        'desc': 'Going through a divorce or separation? Answer a few quick questions and we will introduce you to a family law solicitor. Free to use, no obligation.',
+        'desc': 'Going through a divorce or separation? Answer a few quick questions and we will introduce you to a family law solicitor. No obligation to proceed.',
         'h1': 'Find a family law solicitor',
         'lead': 'Whether you are separating, sorting out finances or arranging time with your children, we will introduce you to a family law firm that can help.',
         'intro': [
@@ -98,7 +98,7 @@ AREAS = [
         'slug': 'debt-recovery', 'name': 'Debt recovery', 'icon': 'cash', 'form': 'Recovering a business debt', 'business_only': True,
         'short': 'Recovering unpaid invoices and debts owed to your business.',
         'title': 'Commercial Debt Recovery Solicitors | Unpaid Invoices | Leaflegal',
-        'desc': 'Customer not paying? We introduce businesses to debt recovery solicitors for unpaid invoices and commercial debts. Free to use, no obligation.',
+        'desc': 'Customer not paying? We introduce businesses to debt recovery solicitors for unpaid invoices and commercial debts. No obligation to proceed.',
         'h1': 'Recover what your business is owed',
         'lead': 'Unpaid invoices hurt cash flow. Tell us about the debt and we will introduce your business to a law firm that recovers commercial debts.',
         'intro': [
@@ -127,7 +127,7 @@ AREAS = [
         'slug': 'motoring-offences', 'name': 'Motoring offences', 'icon': 'car', 'form': 'A motoring offence',
         'short': 'Speeding, drink driving, totting up and driving bans.',
         'title': 'Motoring Offence Solicitors | Driving Ban, Speeding, Drink Driving | Leaflegal',
-        'desc': 'Facing a driving ban or a motoring charge? We introduce you to a motoring offence solicitor. Free to use, no obligation.',
+        'desc': 'Facing a driving ban or a motoring charge? We introduce you to a motoring offence solicitor. No obligation to proceed.',
         'h1': 'Find a motoring offence solicitor',
         'lead': 'Facing points, a ban or a court date? Tell us what has happened and we will introduce you to a firm that specialises in motoring law.',
         'intro': [
@@ -156,7 +156,7 @@ AREAS = [
         'slug': 'licensing', 'name': 'Licensing', 'icon': 'key', 'form': 'Licensing',
         'short': 'Premises, personal, taxi and other licences.',
         'title': 'Licensing Solicitors | Premises Licences and Reviews | Leaflegal',
-        'desc': 'Need help with a premises licence, a licence review or a taxi licence? We introduce you to a licensing solicitor. Free to use, no obligation.',
+        'desc': 'Need help with a premises licence, a licence review or a taxi licence? We introduce you to a licensing solicitor. No obligation to proceed.',
         'h1': 'Find a licensing solicitor',
         'lead': 'New premises, a variation, a review or a licence under threat? Tell us what you need and we will introduce you to a licensing law firm.',
         'intro': [
@@ -184,7 +184,7 @@ AREAS = [
         'slug': 'lease-extensions', 'name': 'Lease extensions', 'icon': 'doc', 'form': 'Extending a lease',
         'short': 'Extending the lease on a flat or buying the freehold.',
         'title': 'Lease Extension Solicitors | Extend Your Lease | Leaflegal',
-        'desc': 'Lease getting short? We introduce flat owners to lease extension solicitors. Free to use, no obligation.',
+        'desc': 'Lease getting short? We introduce flat owners to lease extension solicitors. No obligation to proceed.',
         'h1': 'Find a lease extension solicitor',
         'lead': 'A short lease can make a flat harder to sell or remortgage. Tell us about your lease and we will introduce you to a firm that handles lease extensions.',
         'intro': [
@@ -212,7 +212,7 @@ AREAS = [
         'slug': 'trademarks', 'name': 'Trademarks', 'icon': 'tag', 'form': 'Trademarks and IP', 'uk_wide': True,
         'short': 'Registering, protecting and enforcing trademarks, copyright and designs.',
         'title': 'Trademark Solicitors and Attorneys | Register and Protect Your Brand | Leaflegal',
-        'desc': 'Registering a trademark, facing an opposition or dealing with copying? We introduce you to a trademark solicitor or attorney. Free to use, no obligation.',
+        'desc': 'Registering a trademark, facing an opposition or dealing with copying? We introduce you to a trademark solicitor or attorney. No obligation to proceed.',
         'h1': 'Find a trademark solicitor',
         'lead': 'Protecting a name, logo or product? Tell us what you need and we will introduce you to a regulated trademark and IP specialist.',
         'intro': [
