@@ -3,19 +3,19 @@
   [
    "Overview",
    [
-    "Leaflegal introduces people and businesses to regulated law firms in eight areas of law. Six of those areas cover matters in England and Wales. The other two, trademarks and related IP and introductions to regulated immigration advisers, are available anywhere in the UK. This page gives an overview of each area, the kinds of matters the firms help with and how to choose where to start.",
+    "Leaflegal introduces people and businesses to regulated law firms in seven areas of law. Five of those areas cover matters in England and Wales. The other two, trademarks and related IP and introductions to regulated immigration advisers, are available anywhere in the UK. This page gives an overview of each area, the kinds of matters the firms help with and how to choose where to start.",
     "You do not need to know which area your problem falls under before you begin. Many people start with a simple description, such as needing to sell a flat, having received a court summons or being owed money by a customer. If you are not sure, pick the closest area on the form or describe what is happening in your own words. The firm will explain what kind of help fits once it understands the details.",
     {
-     "h3": "The eight areas"
+     "h3": "The seven areas"
     },
     {
      "list": [
       "Conveyancing, for buying, selling and remortgaging property",
       "Lease extensions, for leaseholders with a shortening lease",
       "Family law, for divorce, finances, children and separation",
-      "Motoring offences, for drivers facing points, a ban or court",
       "Licensing, for premises licences and related matters",
-      "Business debt recovery, for unpaid invoices between businesses", "Trademarks and related IP, for registering and protecting a brand, copyright and designs",
+      "Business debt recovery, for unpaid invoices between businesses",
+      "Trademarks and related IP, for registering and protecting a brand, copyright and designs",
       "Immigration, for introductions to a regulated adviser"
      ]
     },
@@ -31,7 +31,7 @@
     {
      "h3": "How to use these pages"
     },
-    "Each area has its own page, with a general explanation of how things usually work, what tends to affect the cost and the timescale, common problems and answers to frequent questions. Within each area there are also pages on specific matters, such as buying a leasehold flat, a financial settlement or a speeding allegation. Reading them before your first call can help you understand what the firm is telling you and think of the right questions to ask.",
+    "Each area has its own page, with a general explanation of how things usually work, what tends to affect the cost and the timescale, common problems and answers to frequent questions. Within each area there are also pages on specific matters, such as buying a leasehold flat, a financial settlement or a licence review. Reading them before your first call can help you understand what the firm is telling you and think of the right questions to ask.",
     {
      "h3": "Finding a firm near you"
     },
@@ -86,14 +86,9 @@
    ]
   ],
   [
-   "Motoring and licensing",
+   "Licensing",
    [
-    "These two areas are quite different, but both often involve dealing with the courts, the police or a local authority under time pressure.",
-    {
-     "h3": "Motoring offences"
-    },
-    "Motoring offences range from speeding to drink driving and dangerous driving. Many result in penalty points, a fine or a driving ban. Under the totting up rules, a driver who reaches 12 or more points within three years usually faces a ban of at least six months, unless the court accepts that a ban would cause exceptional hardship.",
-    "Firms we introduce help drivers with speeding allegations, drink driving, drug driving, careless and dangerous driving, driving without insurance, failing to identify the driver, totting up and exceptional hardship arguments. They can explain the process, the likely range of outcomes, and whether there are points worth raising with the court. For more, see our <a href=\"/motoring-offences\">motoring offences</a> page.",
+    "Licensing often involves dealing with the council, the police and sometimes the courts under time pressure.",
     {
      "h3": "Licensing"
     },
@@ -102,7 +97,7 @@
     {
      "h3": "Why early contact helps"
     },
-    "Both areas tend to run to fixed deadlines. A driver may have a short time to respond to a notice of intended prosecution or a single justice procedure notice. A business may have a set period to respond to a representation about its licence. Making contact with a solicitor early gives them more time to look at the paperwork and explain the options before a deadline passes."
+    "Licensing matters tend to run to fixed deadlines. A business may have a set period to respond to a representation about its licence. Making contact with a solicitor early gives them more time to look at the paperwork and explain the options before a deadline passes."
    ]
   ],
   [
@@ -173,11 +168,11 @@
     ],
     [
      "Do you cover all areas of law?",
-     "No. We focus on eight areas so that we can introduce people to firms that do that work every day. We do not cover personal injury, clinical negligence, housing disrepair, financial mis-selling, consumer debt collection, employment disputes or criminal matters other than motoring offences."
+     "No. We focus on seven areas so that we can introduce people to firms that do that work every day. We do not cover personal injury, clinical negligence, housing disrepair, financial mis-selling, consumer debt collection, employment disputes or criminal matters."
     ],
     [
      "Why are some areas England and Wales only?",
-     "England and Wales share one legal system, while Scotland and Northern Ireland each have their own. Property law, family law, motoring law, licensing and court procedures differ between them. Immigration law applies across the UK, so immigration introductions are available everywhere in the UK."
+     "England and Wales share one legal system, while Scotland and Northern Ireland each have their own. Property law, family law, licensing and court procedures differ between them. Immigration law applies across the UK, so immigration introductions are available everywhere in the UK."
     ],
     [
      "Is Leaflegal free for every area?",
@@ -252,15 +247,11 @@
    ]
   ],
   [
-   "Motoring and licensing",
+   "Licensing",
    [
     [
      "Can you help if I have a court date soon?",
-     "Yes, but tell us the date in the form so the firm knows how urgent it is. The closer the hearing, the harder it can be to prepare, so it helps to make an enquiry as soon as possible after receiving a summons or a notice of intended prosecution."
-    ],
-    [
-     "What is exceptional hardship?",
-     "When a driver faces a ban under the totting up rules, the court can decide not to impose the ban, or to shorten it, if it accepts that a ban would cause exceptional hardship. The test is strict and the court looks closely at the evidence. A motoring solicitor can explain how it works."
+     "Yes, but tell us the date in the form so the firm knows how urgent it is. The closer the hearing, the harder it can be to prepare, so it helps to make an enquiry as soon as possible after a review is called or a hearing is listed."
     ],
     [
      "Do I need a solicitor for a licence application?",
@@ -273,10 +264,6 @@
     [
      "Do I need a personal licence to run a pub?",
      "A premises that sells alcohol usually needs a designated premises supervisor who holds a personal licence, and every sale of alcohol must be authorised by a personal licence holder. Not everyone working at the premises needs one. A licensing solicitor can explain how this applies to your business."
-    ],
-    [
-     "Can I deal with a speeding allegation myself?",
-     "Many drivers deal with minor speeding matters themselves, often by accepting a fixed penalty or a speed awareness course where offered. Others seek advice, particularly if they are close to 12 points, the speed was high or they want to dispute the allegation. A solicitor can explain the options."
     ]
    ]
   ],

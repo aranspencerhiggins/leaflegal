@@ -35,14 +35,6 @@ AREA_EXTRA = {
         'ask': ['Do you offer a fixed fee first meeting?', 'Which parts of my matter can you do on a fixed fee?', 'Do you support mediation or other ways to avoid court?', 'Who will I deal with, and how quickly do you reply?', 'How do you keep costs under control?'],
         'act': ['Before you agree anything about money or property', 'If you have received court papers or a deadline', 'If arrangements for children are breaking down', 'Before applying for a final order if finances are not settled'],
     },
-    'motoring-offences': {
-        'more': 'A specialist motoring solicitor knows the procedure, the sentencing guidelines and the local courts, and can often spot problems with the paperwork or evidence. When we introduce you, the firm will look at your situation and explain your options before you decide anything.',
-        'who': 'Drivers facing points, a ban or a court date in England and Wales',
-        'fees': ['Most motoring solicitors charge fixed fees, often one for advice and preparation and another for each court hearing. Some offer a free first call to look at your paperwork and explain your options.',
-                 'Legal aid is rarely available for motoring offences, so most drivers pay privately. A clear written quote before the firm starts work means you know where you stand.'],
-        'ask': ['Is your fee fixed, and does it include the hearing?', 'Who will represent me at court?', 'What do you need from me, and by when?', 'Have you handled cases like mine before?', 'What happens if the hearing is adjourned?'],
-        'act': ['As soon as you receive a notice of intended prosecution', 'When you have a court date or a Single Justice Procedure notice', 'If a ban would affect your job or family', 'If you are close to 12 points'],
-    },
     'licensing': {
         'more': 'A licensing solicitor deals with the licensing authority, the police and other responsible authorities for you, prepares your application or response and represents you at any hearing. When we introduce you, the firm will explain the process and timescales for your premises.',
         'who': 'Pubs, bars, restaurants, shops, venues and the people who run them',

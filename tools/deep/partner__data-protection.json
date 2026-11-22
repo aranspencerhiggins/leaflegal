@@ -3,7 +3,7 @@
 [
 "Overview",
 [
-"Every Leaflegal lead contains personal data. Some leads also contain sensitive information, because people looking for help with a separation, an immigration matter or a driving offence often tell us something about their personal life or about an alleged offence. Handling that information properly protects the client, protects your firm and protects Leaflegal.",
+"Every Leaflegal lead contains personal data. Some leads also contain sensitive information, because people looking for help with a separation, or an immigration matter often tell us something about their personal life, health or background. Handling that information properly protects the client, protects your firm and protects Leaflegal.",
 "This page explains, in general terms, how Leaflegal approaches data protection and consent for legal leads, and what firms are usually responsible for once a lead is delivered. It is general information, not legal advice. Your firm's own data protection lead, or a data protection specialist, is the right person to advise on your firm's position under UK data protection law.",
 {
 "h3": "Our approach in brief"
@@ -95,7 +95,7 @@
 {
 "h3": "Where it can arise"
 },
-"Family enquiries can touch on relationships, health or the welfare of children. Immigration enquiries can involve nationality and, sometimes, information that reveals ethnic origin or religious belief. Motoring enquiries involve alleged offences, which count as criminal offence data. Clients may also mention health issues in any area when they describe their situation.",
+"Family enquiries can touch on relationships, health or the welfare of children. Immigration enquiries can involve nationality and, sometimes, information that reveals ethnic origin or religious belief. Clients may also mention health issues in any area when they describe their situation.",
 {
 "h3": "Keeping questions to a minimum"
 },
@@ -245,11 +245,7 @@
 [
 [
 "Do leads contain special category data?",
-"Some can. Family, immigration and motoring enquiries may include information about relationships, health, nationality or alleged offences, especially in the client's own description. We keep questions to the minimum needed to make first contact, but treat every lead as potentially sensitive. Store and share leads with that in mind, limiting access to the people who need to see them to deal with the enquiry."
-],
-[
-"Is motoring offence information criminal offence data?",
-"Information about alleged offences is generally treated as criminal offence data under UK data protection law, which has its own conditions for processing. Firms that handle motoring work usually already have procedures for this. Your data protection lead can confirm how your firm applies them to leads. Keep motoring leads secure."
+"Some can. Family and immigration enquiries may include information about relationships, health or nationality, especially in the client's own description. We keep questions to the minimum needed to make first contact, but treat every lead as potentially sensitive. Store and share leads with that in mind, limiting access to the people who need to see them to deal with the enquiry."
 ],
 [
 "Do you send matter details to Facebook or Google?",

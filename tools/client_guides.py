@@ -51,12 +51,6 @@ GUIDES = [
       ('h2', 'Have these ready'), ('ul', ['Your passport and any current visa or status documents', 'Copies of previous applications and decisions', 'Any letters from the Home Office, with dates', 'A list of your questions']),
       ('h2', 'Deadlines'), ('p', 'If you have a decision letter or a visa end date, tell the adviser straight away. Some deadlines are very short.'),
       ('h2', 'Be open'), ('p', 'Tell the adviser about anything that worries you, including past problems. They can only help with what they know.')]),
-    g('what-happens-at-a-motoring-hearing', 'motoring-offences', 'What Happens at a Motoring Offence Hearing | Leaflegal',
-      'What to expect at a magistrates’ court hearing for a motoring offence, and how a solicitor can help.',
-      'What happens at a motoring offence hearing', 'A plain English guide to your first hearing.', [
-      ('h2', 'Before the hearing'), ('p', 'Read your court papers carefully and get advice before the hearing, especially if a ban is possible.'),
-      ('h2', 'On the day'), ('p', 'Arrive early. Your case will be called, you will be asked to confirm your details and enter a plea. If you plead guilty, the court may sentence you the same day.'),
-      ('h2', 'How a solicitor helps'), ('ul', ['Checking the evidence and procedure', 'Advising on plea', 'Putting forward mitigation or an exceptional hardship argument'])]),
     g('how-to-trademark-a-name', 'trademarks', 'How to Trademark a Name in the UK | Leaflegal',
       'How to trademark a business name, logo or product name in the UK, step by step, from searching to registration, and what it costs.',
       'How to trademark a name', 'A plain English guide to protecting your brand name in the UK.', [
@@ -125,14 +119,6 @@ EXTRA = {
             ('h2', 'If you need an interpreter'), ('p', 'Tell the adviser before your appointment if you would like an interpreter or would feel more comfortable with someone with you. Many advisers can arrange this.'),
             ('h2', 'After the consultation'), ('p', 'The adviser should confirm in writing what they will do, what it costs and what they need from you. Read it carefully and ask about anything that is unclear before you agree.'),
             ('tip', 'Leaflegal does not give immigration advice. We introduce you to a regulated adviser who can.'),
-        ]},
-    'what-happens-at-a-motoring-hearing': {
-        'key': ['Get advice before the hearing, especially if a ban is possible', 'Arrive early and bring your paperwork', 'The court may sentence you on the same day'],
-        'more': [
-            ('h2', 'What to bring'), ('ul', ['Your court papers and any letters from the police', 'Your driving licence', 'Details of your income and outgoings, as fines are linked to income', 'Any letters supporting an exceptional hardship argument']),
-            ('h2', 'Possible outcomes'), ('p', 'Depending on the offence, the court can impose a fine, add penalty points or disqualify you from driving. For more serious offences other sentences are possible. A solicitor can explain what is likely in your case and how to put forward your side.'),
-            ('h2', 'Exceptional hardship'), ('p', 'If you reach 12 points, the court will usually ban you for at least six months. You can argue that a ban would cause exceptional hardship, for example to people who rely on you. These arguments need careful preparation and evidence.'),
-            ('tip', 'If you can’t attend on the date given, contact the court and your solicitor as soon as possible.'),
         ]},
     'how-to-trademark-a-name': {
         'key': ['A company name at Companies House is not a trademark', 'Search before you file, because a filed application can’t be widened', 'Registration usually takes around four months if nobody objects'],

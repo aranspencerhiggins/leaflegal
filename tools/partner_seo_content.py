@@ -10,7 +10,7 @@ L = lambda *items: {'list': list(items)}
 
 PILLARS = [
     pg('lead-generation-for-law-firms', 'Lead generation for law firms', 'Lead Generation for Law Firms | Exclusive Client Enquiries | Leaflegal',
-       'Lead generation for UK law firms. Exclusive, pre-screened client enquiries in conveyancing, family, immigration, motoring, licensing, debt recovery, lease extensions and trademarks.',
+       'Lead generation for UK law firms. Exclusive, pre-screened client enquiries in conveyancing, family, immigration, licensing, debt recovery, lease extensions and trademarks.',
        'Lead generation for law firms',
        'Leaflegal generates client enquiries for solicitors and law firms in England and Wales. We run the campaigns, ask the qualifying questions and send each enquiry to one firm only, while it is fresh.',
        [('Why law firms buy leads', [
@@ -23,13 +23,13 @@ PILLARS = [
         ('What makes a good legal lead', [
            'A good lead is a person with a real matter, who expects your call, in an area you handle. Exclusivity matters too, because an enquiry sent to five firms turns into a race on price. Every Leaflegal lead goes to one firm only.']),
         ('Practice areas', [
-           'We generate enquiries in eight areas where paying for introductions is permitted. They are conveyancing, family law, immigration (introductions to regulated advisers only), debt recovery for businesses, motoring offences, licensing, lease extensions and trademarks. We don’t generate personal injury, clinical negligence or claims management work.']),
+           'We generate enquiries in seven areas where paying for introductions is permitted. They are conveyancing, family law, immigration (introductions to regulated advisers only), debt recovery for businesses, licensing, lease extensions and trademarks. We don’t generate personal injury, clinical negligence or claims management work.']),
         ('Getting started', [
            'Book a 30-minute call with our team. We will talk through your practice areas, locations, volumes and pricing, and show you a sample lead before you commit to anything.'])],
        [('How is lead generation priced for law firms?', 'Pay per lead, at a price agreed with you before you start. Pricing depends on the practice areas, matter types and locations you choose.'),
         ('Is there a minimum?', 'Yes, the minimum is 10 leads per month. Above that, you set your monthly volume.'),
         ('Are the leads shared with other firms?', 'No. Each enquiry goes to one firm only and is never resold.'),
-        ('Which areas of law do you cover?', 'Conveyancing, family law, immigration, debt recovery, motoring offences, licensing, lease extensions and trademarks.')]),
+        ('Which areas of law do you cover?', 'Conveyancing, family law, immigration, debt recovery, licensing, lease extensions and trademarks.')]),
     pg('leads-for-solicitors', 'Leads for solicitors', 'Leads for Solicitors | Exclusive, Pre-Screened Enquiries | Leaflegal',
        'Exclusive client leads for solicitors in England and Wales. Pre-screened, verified and sent to one firm only. Pay per lead, minimum 10 a month.',
        'Leads for solicitors',
@@ -40,14 +40,14 @@ PILLARS = [
            L('The client’s name, UK mobile and email address', 'Practice area, matter type and a description in their own words', 'How urgent it is and any known deadline', 'Their location', 'The consent wording they agreed to, and when'),
            'Leads arrive by email or straight into your case management system or CRM, as soon as the enquiry is checked.']),
         ('Who it suits', [
-           'High street firms looking for private client work, specialist family, motoring, licensing and immigration practices, conveyancing teams and commercial firms recovering business debts. You must be authorised for the work you take on.']),
+           'High street firms looking for private client work, specialist family, licensing and immigration practices, conveyancing teams and commercial firms recovering business debts. You must be authorised for the work you take on.']),
         ('Pricing and volume', [
            'You pay per lead at a price agreed with you, with a minimum of 10 leads a month. You set a monthly cap and can pause at any time.'])],
        [('Do you work with sole practitioners?', 'Yes, if you are regulated for the work and can call enquiries back quickly.'),
         ('Can I choose which matters I receive?', 'Yes. Within each area you choose the matter types you want and the ones you don’t.'),
         ('How quickly do leads arrive?', 'As soon as the enquiry has been checked, so you can call while it is fresh.')]),
     pg('legal-leads', 'Legal leads', 'Legal Leads UK | Buy Exclusive Legal Leads | Leaflegal',
-       'Buy exclusive legal leads in England and Wales for conveyancing, family, immigration, motoring, licensing, debt recovery, lease extensions and trademarks. Pay per lead.',
+       'Buy exclusive legal leads in England and Wales for conveyancing, family, immigration, licensing, debt recovery, lease extensions and trademarks. Pay per lead.',
        'Legal leads for UK law firms',
        'Legal leads are enquiries from people and businesses who have asked to speak to a solicitor. Leaflegal generates them in eight practice areas and sends each one to a single firm.',
        [('Where our legal leads come from', [
@@ -158,7 +158,7 @@ INFO = [
        'Data protection and consent',
        'Leaflegal collects only what a firm needs to make first contact, records consent and never shares matter details with advertising platforms.',
        [('Controllers', ['Vertical Brands Ltd, trading as Leaflegal, is the controller for information collected through our forms. Once a lead is delivered, you become the controller of your copy.']),
-        ('Sensitive matters', ['Family, immigration and motoring enquiries can include special category or criminal offence data. We keep questions to the minimum and never pass matter details to advertising platforms.']),
+        ('Sensitive matters', ['Family and immigration enquiries can include special category data. We keep questions to the minimum and never pass matter details to advertising platforms.']),
         ('Your responsibilities', ['Use the lead only to contact the client about their enquiry, handle it in line with UK data protection law and your privacy notice, and keep it secure.'])],
        [('Do clients agree to be contacted?', 'Yes, by ticking a separate box. We record the wording and time.'),
         ('Can I add leads to my marketing list?', 'Only if the client separately agrees. The lead consent covers contact about their enquiry.')]),
@@ -173,7 +173,7 @@ GUIDES = [
         ('Set up for speed', [L('Send leads to a shared inbox or CRM, not one person', 'Turn on mobile notifications for the intake team', 'Agree who calls during lunch, evenings and holidays', 'Call first, then email if there is no answer')]),
         ('If you can’t get through', ['Leave a short voicemail, send an email and a text, and try again later the same day and the next morning.'])],
        [('How quickly should we call?', 'Within minutes if you can, and within the hour at the latest.'),
-        ('What if leads arrive out of hours?', 'Call first thing the next working day, and consider evening cover for urgent areas like motoring and immigration.')]),
+        ('What if leads arrive out of hours?', 'Call first thing the next working day, and consider evening cover for urgent areas like immigration and licensing reviews.')]),
     pg('guides/first-call-script', 'First call script', 'First Call Script for Legal Enquiries | Leaflegal Guide',
        'A simple structure for the first call with a new legal enquiry, covering the introduction, the matter, next steps and fees.',
        'A first call script for legal enquiries',
@@ -193,7 +193,7 @@ GUIDES = [
         ('Follow up', ['A short email and a second call a few days later turn many “not yet” answers into instructions.']),
         ('Measure', ['Track leads, contact rate and instructions by practice area, and share it with us so we can refine your criteria.'])],
        [('What is a good conversion rate?', 'It varies by area and firm. Measure your own and improve it.'),
-        ('Which areas convert fastest?', 'Deadline-driven matters such as motoring offences, refusals and licence reviews tend to convert quickly.')]),
+        ('Which areas convert fastest?', 'Deadline-driven matters such as immigration refusals and licence reviews tend to convert quickly.')]),
     pg('guides/following-up', 'Following up', 'Following Up Legal Enquiries That Go Quiet | Leaflegal Guide',
        'How law firms should follow up legal enquiries that don’t answer or aren’t ready to instruct.',
        'Following up enquiries that go quiet',
@@ -258,10 +258,6 @@ AREA_LEADS = {
                       'fields': ['Rough amount owed', 'Age of the debt', 'Whether it is disputed', 'Business to business confirmed', 'Number of debts'],
                       'suits': 'Commercial litigation and credit control teams acting for business creditors.',
                       'reg': 'Business to business debts only. We don’t send consumer debts.'},
-    'motoring-offences': {'slug': 'motoring-offence-leads', 'kw': 'Motoring offence leads', 'h1': 'Motoring offence leads for solicitors',
-                          'fields': ['Type of offence', 'Court date if known', 'Current points', 'Whether a ban is likely', 'Location'],
-                          'suits': 'Motoring specialists and solicitor advocates representing private paying drivers.',
-                          'reg': 'Clients have confirmed they want paid representation.'},
     'licensing': {'slug': 'licensing-leads', 'kw': 'Licensing leads', 'h1': 'Licensing leads for solicitors',
                   'fields': ['Premises, personal or taxi licence', 'New, variation, transfer or review', 'Hearing or opening date', 'Council area', 'Business name'],
                   'suits': 'Licensing teams representing pubs, bars, restaurants, late night venues, drivers and operators.',

@@ -53,16 +53,6 @@ SEO = {
             ('Is a debt recovery solicitor better than a debt collection agency?', 'A debt collection agency can chase payment, but only a solicitor can issue court proceedings for you, advise on the strength of your claim and take steps such as a statutory demand or a winding up petition. Many businesses go straight to a debt recovery solicitor for larger or disputed debts.'),
             ('How much does commercial debt recovery cost?', 'Many firms charge a fixed fee for a letter before action and fixed or capped fees for later stages. Some of the cost can often be recovered from the debtor. The firm explains its fees before any work starts.'),
         ], cross=['/licensing', '/solicitors', '/guides']),
-    '/motoring-offences': E(  # motoring offence solicitors 600, driving offence solicitors 600, motoring solicitors 500
-        f'Motoring Offence Solicitors | Driving Offence Help | {B}',
-        'Facing a driving ban, speeding, drink driving or totting up charge? We introduce you to a motoring offence solicitor in England and Wales. No obligation to proceed.',
-        'motoring offence solicitors', 'Motoring offence solicitors', [
-            'Motoring offence solicitors help drivers facing a ban, penalty points or a court date. Leaflegal introduces you to one regulated firm that handles your kind of driving offence, whether it is drink driving, drug driving, speeding, a totting up ban, careless driving or driving without insurance.',
-            'Driving offence solicitors can check the evidence and procedure, advise on your plea, argue exceptional hardship or special reasons where they apply and represent you in the magistrates’ court. Many offer fixed fees for a guilty plea hearing. Speaking to a motoring solicitor early gives the most options.',
-        ], [
-            ('Do I need a motoring offence solicitor?', 'Not always, but it is worth taking advice if you could be banned, you face a totting up ban, the charge is serious or you think the evidence is wrong. A motoring solicitor can tell you your options and likely outcome.'),
-            ('How much does a driving offence solicitor cost?', 'Many firms offer fixed fees for a guilty plea, an exceptional hardship argument or a trial. The firm we introduce you to explains its fees before you agree to anything.'),
-        ], cross=['/licensing/taxi-and-private-hire-licences', '/guides/what-happens-at-a-motoring-hearing', '/licensing/personal-licences']),
     '/licensing': E(  # licensing solicitors 600, premises licence 800, personal licence 1.6k, private hire licence 1.5k
         f'Licensing Solicitors | Premises and Personal Licences | {B}',
         'Licensing solicitors for premises licence applications, variations, DPS changes, licence reviews, personal licences and taxi licences. No obligation to proceed.',
@@ -72,7 +62,7 @@ SEO = {
         ], [
             ('When should I use a licensing solicitor?', 'For a new premises licence, a major variation, a licence review or any hearing, and whenever the police or council have raised concerns. Simple changes can sometimes be done yourself, but advice helps avoid delays and objections.'),
             ('Do licensing solicitors help with taxi licences?', 'Yes. Many licensing firms help drivers and operators with taxi and private hire licence applications, suspensions, revocations and appeals.'),
-        ], cross=['/motoring-offences', '/debt-recovery', '/solicitors']),
+        ], cross=['/licensing/taxi-and-private-hire-licences', '/debt-recovery', '/solicitors']),
     '/lease-extensions': E(  # lease extension 1.2k, lease extension solicitors 800, lease extension cost 350
         f'Lease Extension Solicitors | Extend Your Lease | {B}',
         'Lease getting short? Find a lease extension solicitor for statutory and informal lease extensions and buying the freehold. No obligation to proceed.',
@@ -345,73 +335,6 @@ SEO = {
             'We do not advise on your status or eligibility. The regulated firm advises on your situation.',
         ], cross=['/immigration/british-citizenship', '/immigration/settlement'], h1='EU Settlement Scheme'),
 
-    # ------------------------------------------------------------ motoring offences
-    '/motoring-offences/drink-driving': E(  # drink driving 2.2k, drink driving solicitors 1.1k, drink driving ban 200
-        f'Drink Driving Solicitors | Drink Driving Ban Help | {B}',
-        'Charged with drink driving? Find a drink driving solicitor in England and Wales for advice on the ban, special reasons and court. No obligation to proceed.',
-        'drink driving solicitors', 'Drink driving solicitors', [
-            'A drink driving conviction normally brings a driving ban of at least 12 months, and can affect your job and insurance for years. Drink driving solicitors check the procedure and evidence, advise on special reasons that could avoid a ban and represent you at court.',
-            'Ask about the drink drive rehabilitation course, which can reduce the length of the drink driving ban. Leaflegal introduces you to one regulated motoring offence solicitor.',
-        ], [
-            ('Can a drink driving solicitor stop a ban?', 'A ban is usually mandatory, but a solicitor can check whether the evidence and procedure were correct and whether special reasons apply, which can avoid or reduce a ban.'),
-        ], cross=['/motoring-offences/drug-driving', '/licensing/personal-licences', '/licensing/taxi-and-private-hire-licences'], h1='Drink driving solicitors'),
-    '/motoring-offences/drug-driving': E(  # drug driving 1.1k, drug driving solicitor 90
-        f'Drug Driving Solicitors | {B}',
-        'Charged with drug driving? Find a drug driving solicitor in England and Wales to check the blood test, limits and procedure. No obligation to proceed.',
-        'drug driving solicitor', 'Drug driving solicitors', [
-            'Drug driving cases often turn on blood test results, legal limits and how samples were taken and stored. A drug driving solicitor can check each step and advise on your plea.',
-            'Like drink driving, a conviction usually means a minimum 12 month ban. Leaflegal introduces you to one regulated motoring firm.',
-        ], cross=['/motoring-offences/drink-driving'], h1='Drug driving solicitors'),
-    '/motoring-offences/speeding': E(  # speeding solicitor 200, speeding fines uk 3.4k, speeding ticket 2.6k
-        f'Speeding Solicitors | Speeding Fines and Points | {B}',
-        'Facing speeding points, a high speeding fine or a ban? Find a speeding solicitor in England and Wales. No obligation to proceed.',
-        'speeding solicitor', 'Speeding solicitors', [
-            'Most speeding tickets are dealt with by a fixed penalty, but high speeds, a totting up ban or a court summons need more thought. A speeding solicitor can check the evidence, explain the likely speeding fine and points and represent you.',
-            'If the extra points would take you to 12, ask about exceptional hardship. Leaflegal introduces you to one regulated motoring offence solicitor.',
-        ], cross=['/motoring-offences/totting-up', '/motoring-offences/failing-to-identify-the-driver'], h1='Speeding solicitors'),
-    '/motoring-offences/totting-up': E(  # totting up ban 700, totting up 300
-        f'Totting Up Ban Solicitors | 12 Points | {B}',
-        'Reached 12 points? Find a totting up ban solicitor to argue exceptional hardship and protect your licence. No obligation to proceed.',
-        'totting up ban', 'Totting up ban solicitors', [
-            'A totting up ban usually follows when you reach 12 or more points within three years, and the minimum ban is six months. The main way to avoid it is to show exceptional hardship.',
-            'A totting up solicitor prepares your evidence and witnesses and presents the argument in court. Leaflegal introduces you to one regulated firm.',
-        ], cross=['/motoring-offences/exceptional-hardship', '/motoring-offences/speeding'], h1='Totting up ban solicitors'),
-    '/motoring-offences/exceptional-hardship': E(  # exceptional hardship 500
-        f'Exceptional Hardship Solicitors | Keep Your Licence | {B}',
-        'Facing a totting up ban? Find an exceptional hardship solicitor to prepare your evidence and argue to keep your licence. No obligation to proceed.',
-        'exceptional hardship', 'Exceptional hardship solicitors', [
-            'Exceptional hardship is an argument that a ban would cause hardship beyond the usual inconvenience, often to other people such as family members, employees or patients. It needs strong evidence and careful preparation.',
-            'An exceptional hardship solicitor can tell you whether your case is likely to succeed and prepare it. Leaflegal introduces you to one regulated motoring firm.',
-        ], cross=['/motoring-offences/totting-up'], h1='Exceptional hardship solicitors'),
-    '/motoring-offences/careless-driving': E(  # careless driving 900, careless driving solicitor 150
-        f'Careless Driving Solicitors | {B}',
-        'Charged with careless driving or driving without due care and attention? Find a careless driving solicitor in England and Wales. No obligation to proceed.',
-        'careless driving', 'Careless driving solicitors', [
-            'Careless driving, or driving without due care and attention, carries 3 to 9 points or a discretionary ban. The outcome often depends on the evidence of how the driving fell below the standard expected.',
-            'A careless driving solicitor can test the evidence and advise on your plea. Leaflegal introduces you to one regulated motoring firm.',
-        ], cross=['/motoring-offences/dangerous-driving'], h1='Careless driving solicitors'),
-    '/motoring-offences/dangerous-driving': E(  # dangerous driving 1.7k, dangerous driving solicitor 200
-        f'Dangerous Driving Solicitors | {B}',
-        'Charged with dangerous driving? Find a dangerous driving solicitor in England and Wales for this serious offence. No obligation to proceed.',
-        'dangerous driving', 'Dangerous driving solicitors', [
-            'Dangerous driving is a serious offence with an obligatory ban, an extended retest and a possible prison sentence. Early advice from a dangerous driving solicitor is important.',
-            'Sometimes the evidence supports careless driving instead. Leaflegal introduces you to one regulated motoring firm.',
-        ], cross=['/motoring-offences/careless-driving'], h1='Dangerous driving solicitors'),
-    '/motoring-offences/failing-to-identify-the-driver': E(  # section 172 600, s172 300, failing to identify driver 60
-        f'Section 172 Failing to Identify the Driver | {B}',
-        'Received a section 172 notice or charged with failing to identify the driver? Find a motoring solicitor in England and Wales. No obligation to proceed.',
-        'section 172', 'Failing to identify the driver', [
-            'A section 172 notice asks the registered keeper to name the driver. Failing to identify the driver carries 6 points and a fine, often more than the original offence.',
-            'There are defences where the keeper used reasonable diligence and still could not identify the driver. A motoring solicitor can advise.',
-        ], cross=['/motoring-offences/speeding'], h1='Failing to identify the driver'),
-    '/motoring-offences/driving-without-insurance': E(  # driving without insurance 2.9k, driving without insurance penalty 300
-        f'Driving Without Insurance Solicitors | IN10 | {B}',
-        'Charged with driving without insurance? Find a solicitor to check the cover, advise on the IN10 penalty and special reasons. No obligation to proceed.',
-        'driving without insurance', 'Driving without insurance solicitors', [
-            'Driving without insurance carries 6 to 8 points and an IN10 endorsement that can raise premiums for years. Sometimes there was cover after all, or special reasons apply.',
-            'A motoring solicitor can check the policy and advise on the penalty. Leaflegal introduces you to one regulated motoring firm.',
-        ], cross=['/motoring-offences/totting-up'], h1='Driving without insurance'),
-
     # ------------------------------------------------------------ trademarks and related IP (UK wide)
     '/trademarks': E(  # trademark registration 11k, trademark 7.2k, intellectual property lawyer 4.4k, trademark lawyer 450, trademark solicitor(s) 300, trademark attorney 250
         f'Trademark Solicitors and Attorneys UK | Register Your Trademark | {B}',
@@ -525,16 +448,16 @@ SEO = {
         f'Personal Licence Solicitors | {B}',
         'Help with a personal licence application, a relevant offence or a personal licence review. Find a licensing solicitor. No obligation to proceed.',
         'personal licence', 'Personal licence solicitors', [
-            'A personal licence lets you authorise the sale of alcohol under a premises licence. Most applications are simple, but a relevant offence, such as drink driving, can lead to objections or a review.',
+            'A personal licence lets you authorise the sale of alcohol under a premises licence. Most applications are simple, but a relevant offence can lead to objections or a review.',
             'A licensing solicitor can advise personal licence holders facing a review or objection.',
-        ], cross=['/motoring-offences/drink-driving', '/licensing/transfers-and-dps'], h1='Personal licence solicitors'),
+        ], cross=['/licensing/licence-reviews', '/licensing/transfers-and-dps'], h1='Personal licence solicitors'),
     '/licensing/taxi-and-private-hire-licences': E(  # private hire licence 1.5k, taxi licence 350
         f'Taxi and Private Hire Licence Solicitors | {B}',
         'Taxi licence suspended or refused? Find a solicitor for taxi and private hire licence applications, reviews and appeals. No obligation to proceed.',
         'private hire licence', 'Taxi licence solicitors', [
             'Taxi and private hire licence holders can face suspension or revocation after a complaint, an offence or points on their driving licence. Appeal deadlines are short.',
             'A taxi licence solicitor can respond to the council, represent you at a committee and appeal. Leaflegal introduces you to one regulated firm.',
-        ], cross=['/motoring-offences/speeding', '/motoring-offences/totting-up'], h1='Taxi licence solicitors'),
+        ], cross=['/licensing/personal-licences', '/licensing/licence-reviews'], h1='Taxi licence solicitors'),
 
     # ------------------------------------------------------------ debt recovery (business to business)
     '/debt-recovery/unpaid-invoices': E(  # unpaid invoices 350, how to chase unpaid invoices 50
@@ -645,13 +568,6 @@ AUTO_LINKS = [
     ('skilled worker visa', '/immigration/work-visas'), ('work visa', '/immigration/work-visas'),
     ('sponsor licence', '/immigration/sponsor-licences'), ('family visa', '/immigration/family-visas'),
     ('EU Settlement Scheme', '/immigration/eu-settlement-scheme'), ('settled status', '/immigration/eu-settlement-scheme'),
-    ('motoring offence solicitors', '/motoring-offences'), ('motoring offence solicitor', '/motoring-offences'), ('driving offence solicitors', '/motoring-offences'),
-    ('drink driving', '/motoring-offences/drink-driving'), ('drug driving', '/motoring-offences/drug-driving'),
-    ('speeding fine', '/motoring-offences/speeding'), ('speeding ticket', '/motoring-offences/speeding'),
-    ('totting up', '/motoring-offences/totting-up'), ('exceptional hardship', '/motoring-offences/exceptional-hardship'),
-    ('careless driving', '/motoring-offences/careless-driving'), ('dangerous driving', '/motoring-offences/dangerous-driving'),
-    ('section 172', '/motoring-offences/failing-to-identify-the-driver'), ('failing to identify the driver', '/motoring-offences/failing-to-identify-the-driver'),
-    ('driving without insurance', '/motoring-offences/driving-without-insurance'),
     ('licensing solicitors', '/licensing'), ('licensing solicitor', '/licensing'),
     ('premises licence application', '/licensing/premises-licence-applications'), ('premises licence variation', '/licensing/licence-variations'),
     ('designated premises supervisor', '/licensing/transfers-and-dps'), ('licence review', '/licensing/licence-reviews'),
@@ -676,6 +592,6 @@ AUTO_LINKS = [
 
 # Location page titles, led by the phrase people search with (Ahrefs UK, e.g. conveyancing solicitors london 1.7k, family solicitors bristol 800).
 LOCAL_TITLE = {'conveyancing': 'Conveyancing Solicitors in {c}', 'family-law': 'Family and Divorce Solicitors in {c}',
-               'motoring-offences': 'Motoring Offence Solicitors in {c}', 'licensing': 'Licensing Solicitors in {c}',
+               'licensing': 'Licensing Solicitors in {c}',
                'debt-recovery': 'Debt Recovery Solicitors in {c}', 'lease-extensions': 'Lease Extension Solicitors in {c}',
                'trademarks': 'Trademark Solicitors in {c}'}
