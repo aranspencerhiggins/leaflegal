@@ -138,9 +138,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=41', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=42', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=41" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=42" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -149,7 +149,132 @@ def with_nav(h, page, header=None):
 SHELL = open('backup/contact.html' if os.path.exists('backup/contact.html') else f'{PUB}/contact.html').read()  # original page shell (contact.html is now generated)
 
 
+def _deep_key(path):
+    rel = os.path.relpath(path, PUB)[:-5]
+    top = {'index': 'page__home', 'how-it-works': 'page__how-it-works', 'about': 'page__about', 'how-we-make-money': 'page__how-we-make-money',
+           'legal-services': 'page__legal-services', 'solicitors': 'page__solicitors', 'guides': 'page__guides', 'partners': 'partner__index'}
+    if rel in top:
+        return top[rel], None
+    if rel.startswith('guides/'):
+        return 'guide__' + rel[7:], None
+    if rel.startswith('partners/'):
+        k = 'partner__' + rel[9:].replace('/', '--')
+        parent = 'partner__' + rel[9:].split('/')[0] if '/' in rel[9:] else None
+        return k, parent
+    if rel.startswith('solicitors/') and rel.count('/') == 1:
+        return 'page__solicitors', None
+    return None, None
+
+
+def _add_deep(path, body):
+    if 'cs-deep' in body or 'deep' not in globals():
+        return body, False
+    key, parent = _deep_key(path)
+    if not key:
+        return body, False
+    d = deep(key)
+    rot = 0
+    if not d and parent:
+        d = deep(parent)
+        rot = sum(map(ord, path)) % 7
+    if not d:
+        return body, False
+    partner = key.startswith('partner__')
+    about = d['about'][rot % len(d['about']):] + d['about'][:rot % len(d['about'])]
+    lead = 'Pick a topic to read more.'
+    sec = cs_deep('Everything you need to know', {'about': about}, lead=lead)
+    if partner:
+        sec = sec.replace('<section class="section cs-sec">', '<section class="cfb-sec cfb-anat cs-sec">', 1)
+    if 'id="faq"' not in body:
+        groups = [(g, [tuple(x) for x in qas]) for g, qas in d['faqs']]
+        if rot:
+            groups = groups[rot % len(groups):] + groups[:rot % len(groups)]
+        href = '/partners/apply' if partner else '/apply'
+        sec += cs_faqs('Questions and answers', groups, 'Prefer to talk first?' if partner else 'Ready to get started?',
+                       'Book a call with our team.' if partner else 'One short form. One specialist firm contacts you.', href, 'Book a call' if partner else 'Get matched')
+    i = body.find('id="faq"')
+    if i == -1:
+        i = body.rfind('<div class="ll-cta">')
+    if i != -1:
+        i = body.rfind('<section', 0, i)
+        body = body[:i] + sec + body[i:]
+    else:
+        body += sec
+    return body, True
+
+
+_TOPUP_SKIP = ('404', 'apply', 'contact', 'press', 'accessibility', 'complaints', 'cookie-policy', 'privacy-policy', 'terms-conditions', 'partners/apply', 'partners/faq')
+
+
+def _words(html_):
+    t = re.sub(r'<(script|style|nav)[^>]*>.*?</\1>', '', html_, flags=re.S)
+    return len(re.sub(r'<[^>]+>', ' ', t).split())
+
+
+def _pool(rel):
+    parts = rel.split('/')
+    areas = [a['slug'] for a in AC.AREAS]
+    if parts[0] == 'partners':
+        if len(parts) == 3:  # partner matter page, show what clients ask
+            area = {AL[a]['slug']: a for a in AL}.get(parts[1]) if 'AL' in globals() else None
+            if area:
+                return [f'{area}__{parts[2]}', area]
+        return [os.path.basename(x)[:-5] for x in sorted(glob.glob(os.path.join(_DEEP_DIR, 'partner__*.json')))]
+    if parts[0] == 'guides' and len(parts) == 2:
+        g = next((x for x in CG.GUIDES if x['slug'] == parts[1]), None)
+        if g:
+            return [g['area']] + [f'{g["area"]}__{m["slug"]}' for m in MAT[g['area']]]
+    if parts[0] in areas:
+        return [f'{parts[0]}__{m["slug"]}' for m in MAT[parts[0]]] + [parts[0]]
+    return areas
+
+
+def _topup(path, body, target=5150):
+    rel = os.path.relpath(path, PUB)[:-5]
+    if rel in _TOPUP_SKIP or '/platform' in path or 'deep' not in globals():
+        return body
+    need = target - _words(body)
+    if need <= 0:
+        return body
+    pool = [k for k in _pool(rel) if os.path.exists(os.path.join(_DEEP_DIR, k + '.json'))]
+    if not pool:
+        return body
+    h = sum(map(ord, rel))
+    used = set(re.findall(r'<summary class="large-text bold-text">(.*?)<svg', body))
+    groups, got = [], 0
+    for j in range(len(pool)):
+        k = pool[(h + j) % len(pool)] if not rel.startswith('partners/') or rel.count('/') != 2 else pool[j]
+        d = deep(k)
+        for gname, qas in d['faqs']:
+            qs = [tuple(x) for x in qas if x[0] not in used]
+            if not qs:
+                continue
+            groups.append((gname, qs))
+            used.update(q for q, _ in qs)
+            got += sum(len((q + ' ' + a).split()) for q, a in qs)
+            if got >= need + 150 or len(groups) >= 6:
+                break
+        if got >= need + 150 or len(groups) >= 6:
+            break
+    if not groups:
+        return body
+    partner = rel.startswith('partners')
+    title = 'What clients ask' if partner and rel.count('/') == 2 else 'More questions people ask'
+    sec = cs_faqs(title, groups, 'Prefer to talk first?' if partner else 'Ready to get started?',
+                  'Book a call with our team.' if partner else 'One short form. One specialist firm contacts you.',
+                  '/partners/apply' if partner else '/apply', 'Book a call' if partner else 'Get matched', uid='faq2')
+    i = body.rfind('<div class="ll-cta">')
+    if i != -1:
+        i = body.rfind('<section', 0, i)
+        return body[:i] + sec + body[i:]
+    return body + sec
+
+
 def page(path, title, desc, body, extra_head='', extra_js='', header=None, backup=True):
+    body, _added = _add_deep(path, body)
+    body = _topup(path, body)
+    if 'data-tabs' in body and 'tabs.js' not in extra_js + extra_head:
+        extra_js += '<script src="/assets/tabs.js?v=2"></script>'
     h = SHELL
     s = h.index('<section')
     e = h.index('<footer class="llf">') if '<footer class="llf">' in h else h.index('<div class="footer"')
@@ -451,7 +576,7 @@ home = f'''
 
 {cs_guides_home()}
 
-{faq(HOME_FAQ, 'Ready to get started?', 'It only takes a couple of minutes.', '#quote', 'Get matched')}
+{cs_faqs('Questions and answers', faq_groups(HOME_FAQ, deep('page__home')), 'Ready to get started?', 'It only takes a couple of minutes.', '#quote', 'Get matched')}
 
 {cta('Find the right solicitor', 'Answer a few quick questions and we will do the matching.', '#quote', 'Get matched')}
 '''
@@ -505,16 +630,17 @@ for a in AC.AREAS:
     body = ''.join([
         head, TRUST_STRIP,
         cs_intro(f'About {a["name"].lower()}', a['intro'] + [AREA_EXTRA[a['slug']]['more']], glance, notice),
+        cs_deep(f'{a["name"]} explained', deep(a['slug']), lead='Pick a topic to read more.'),
         section('<div id="matters"></div><h2 class="cs-h2 cs-center">What the firms help with</h2>' + cards([(a['icon'], m['name'], m['short'], M_URL(a['slug'], m['slug'])) for m in MAT[a['slug']]], 'three', more_label='Learn more'), cls='section cs-sec'),
         cs_steps('How it works', a['how'], q, lead='Three simple steps, and nothing to pay us.'),
         cs_fees(a['slug'], a['name']),
         cs_things(a['considerations']),
-        faq(a['faqs'], 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched', title=f'{a["name"]} questions and answers'),
+        cs_faqs(f'{a["name"]} questions and answers', faq_groups(a['faqs'], deep(a['slug'])), 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched'),
         cs_guides(a['slug'], AREA_GUIDES.get(a['slug'], [])),
         cs_links(f'{LOCAL_NAME[a["slug"]]} near you', [(LOC_URL(c[0], a['slug']), c[1]) for c in MC.CITIES]) if a['slug'] in MC.LOCAL_AREAS else '',
         section('<h2 class="cs-h2 cs-center">Other legal services</h2>' + area_cards(others), cls='section cs-sec'),
     ])
-    page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), ld(faq_ld(a['faqs']), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>', backup=False)
+    page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), ld(faq_ld([qa for _, g in faq_groups(a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>', backup=False)
 
 hub = (page_head('Legal services', 'The areas of law we introduce people and businesses to. Pick one to find out more, or answer a few quick questions and we will do the matching.')
        + TRUST_STRIP + section(area_cards())
@@ -559,7 +685,7 @@ hiw = ''.join([
     section(split(PH.photo('keys'), '<h2 class="heading-two">How we are paid</h2><div class="large-text serif-typeface">' + BRAND + ' is free for you.</div>'
                   '<p class="ll-split-p-text">We are paid by the firm we introduce you to, so you never pay us. The firm must tell you about that fee in writing, and it does not change what the firm charges you.</p>'
                   '<a href="/how-we-make-money" class="button bg-base-50" style="margin-top:24px"><div>How we make money</div></a>', flip=True)),
-    faq(HIW_FAQ, 'Ready to get started?', 'It takes about two minutes.', '/apply', 'Get matched', title='Questions about how it works'),
+    cs_faqs('Questions about how it works', faq_groups(HIW_FAQ, deep('page__how-it-works')), 'Ready to get started?', 'It takes about two minutes.', '/apply', 'Get matched'),
 ])
 howto_ld = {'@context': 'https://schema.org', '@type': 'HowTo', 'name': f'How to find a solicitor with {BRAND}', 'totalTime': 'PT2M',
             'step': [{'@type': 'HowToStep', 'position': i, 'name': t, 'text': d} for i, (t, d) in enumerate(HIW_STEPS, 1)]}

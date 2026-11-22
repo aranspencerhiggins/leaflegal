@@ -114,3 +114,45 @@ def cs_guides(a_slug, guides):
 
 def cs_links(h2, links):
     return section(f'<h2 class="cs-h2 cs-center">{h2}</h2>' + f'<ul class="ll-linkgrid">' + ''.join(f'<li><a href="{h}">{t}{ARR}</a></li>' for h, t in links) + '</ul>', cls='section cs-sec')
+
+
+# ---------------------------------------------------------------- long-form content from tools/deep/*.json
+import json as _djson
+_DEEP_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'deep')
+
+
+def deep(key):
+    p = os.path.join(_DEEP_DIR, key + '.json')
+    return _djson.load(open(p)) if os.path.exists(p) else None
+
+
+def _dblocks(blocks):
+    out = []
+    for b in blocks:
+        if isinstance(b, str):
+            out.append(f'<p>{b}</p>')
+        elif 'h3' in b:
+            out.append(f'<h3>{b["h3"]}</h3>')
+        else:
+            out.append('<ul>' + ''.join(f'<li>{x}</li>' for x in b['list']) + '</ul>')
+    return ''.join(out)
+
+
+def cs_deep(h2, d, uid='about', lead=''):
+    if not d:
+        return ''
+    return section(f'<h2 class="cs-h2 cs-center">{h2}</h2>' + (f'<p class="cs-deep-lead">{lead}</p>' if lead else '')
+                   + tabs(uid, [(t, f'<div class="cs-deep">{_dblocks(bl)}</div>') for t, bl in d['about']]), cls='section cs-sec')
+
+
+def faq_groups(base, d, base_label='Common questions'):
+    groups = [(base_label, base)] if base else []
+    return groups + ([(g, [tuple(x) for x in qas]) for g, qas in d['faqs']] if d else [])
+
+
+def cs_faqs(title, groups, cta_title, cta_text, href, label, uid='faq'):
+    tabs_html = tabs(uid, [(name, ''.join(f'<details class="ll-faq"><summary class="large-text bold-text">{q}{CHEV_D}</summary><div class="ll-faq-a">{a}</div></details>' for q, a in qas)) for name, qas in groups], faq_panels=True)
+    return f'''<section class="section" id="{uid}"><div class="container---main"><div class="vertical-section-content reduced-gap">
+<h2 class="cs-h2 cs-center">{title}</h2>{tabs_html}
+<div class="faq-cta"><div class="heading-four">{cta_title}</div><div class="large-text">{cta_text}</div><a href="{href}" class="button bg-base-50 w-inline-block"><div>{label}</div></a></div>
+</div></div></section>'''

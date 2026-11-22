@@ -1,0 +1,315 @@
+{
+ "about": [
+  [
+   "About these leads",
+   [
+    "Leaflegal sends conveyancing enquiries from people who are buying, selling or remortgaging a home in England and Wales and want a firm to handle the legal work. Each enquiry goes to one firm only. It is never shared with a panel of other firms and it is never resold once it has been delivered to you.",
+    "Conveyancing clients usually contact a firm at a clear point of decision. An offer has been accepted, a buyer has been found, a fixed rate is coming to an end or a lender has asked for a solicitor to be named. At that moment they want a quote, a sense of how long things will take and someone who will pick up the phone. Our enquiries are built around that moment.",
+    "We run campaigns aimed at people at these points in a move, ask them a short set of questions about the transaction and confirm that they want to instruct a firm for paid conveyancing. When an enquiry matches the matter types and locations you have chosen, we check it and send it to you straight away, by email or into your CRM.",
+    {
+     "h3": "Why firms add bought leads to their pipeline"
+    },
+    "Most conveyancing firms rely on estate agent referrals, repeat clients and their own website. Those channels matter, but agent referrals can come with conditions, and paid search for conveyancing terms is crowded and costly to manage. Exclusive leads give you a source of direct enquiries where you decide the volume and the type of work.",
+    "Direct clients also tend to have chosen you rather than been handed to you. That can make the relationship simpler, because the client is not looking back to an agent for updates and you can set expectations from the first call.",
+    {
+     "h3": "What we do not do"
+    },
+    "We are not a comparison site and we do not run a quote engine that sends a buyer five competing prices. We do not tell a client which firm is cheapest or best. We introduce them to one firm that has chosen to receive their kind of matter, and the rest of the relationship is between you and the client.",
+    "Leaflegal is not a law firm, is not regulated by the SRA or the CLC and does not give legal advice. You are responsible for being authorised to carry out reserved conveyancing work and for meeting the requirements of any lender you act for."
+   ]
+  ],
+  [
+   "Who enquires",
+   [
+    "Conveyancing enquiries come from a wide mix of people, which is why we let you choose the matter types you want. A firm that only handles freehold purchases can receive just those, while a firm with a strong leasehold team can ask for more of that work.",
+    {
+     "h3": "Typical matter types"
+    },
+    {
+     "list": [
+      "Purchases, including first time buyers",
+      "Sales of freehold and leasehold homes",
+      "A sale and purchase together, often in a chain",
+      "Remortgages, with or without a change of lender",
+      "Transfers of equity, for example when a partner is added or removed",
+      "Leasehold flat purchases and sales",
+      "New build purchases with a developer deadline",
+      "Buy to let purchases by individual landlords"
+     ]
+    },
+    {
+     "h3": "Where they are in the process"
+    },
+    "Some people enquire the day an offer is accepted. Others are still viewing and want to line up a firm early so they can move quickly when they find the right property. Sellers often enquire when they put the house on the market, because agents increasingly ask them to instruct a solicitor before a buyer is found. Remortgage clients usually enquire a few months before their current deal ends.",
+    "Each lead tells you the stage the client has reached and their rough timescale, so you can decide who to call first and how to pitch your service.",
+    {
+     "h3": "What clients care about"
+    },
+    "In our experience of the questions people ask, conveyancing clients care about three things above all. They want a clear quote with no surprises later, they want regular updates without having to chase, and they want to know the firm will not hold up their chain. A first call that speaks to those three points usually lands well.",
+    "Many clients are anxious about the process, especially first time buyers, so a calm explanation of the main stages helps. They are rarely choosing on price alone, but they do compare quotes, so speed and clarity matter."
+   ]
+  ],
+  [
+   "Lead details",
+   [
+    "Every lead is the full record of what the client told us, in the order they told us. There is no scraped data and nothing is guessed. The aim is to give your quoting team enough to give a figure on the first call.",
+    {
+     "h3": "What each conveyancing lead includes"
+    },
+    {
+     "list": [
+      "The client's name, a verified UK mobile number and a verified email address",
+      "Whether it is a purchase, sale, both or a remortgage",
+      "The rough property value",
+      "Whether the property is freehold or leasehold",
+      "Whether there is a mortgage",
+      "The target timescale and any date they are working towards",
+      "Where the property is and where the client is",
+      "A short description in the client's own words",
+      "The best time to call",
+      "The source of the enquiry, a timestamp and the consent record"
+     ]
+    },
+    {
+     "h3": "Pre-screening"
+    },
+    "Before an enquiry becomes a lead, the client confirms they are looking for paid legal help with a property in England and Wales. Their mobile number and email address are checked. Enquiries that fall outside the areas we cover, or outside your criteria, are filtered out and the person is pointed somewhere more suitable. They never reach your inbox.",
+    {
+     "h3": "Consent"
+    },
+    "Each client ticks two separate boxes before submitting. One confirms they have read our terms and privacy policy and understand that Leaflegal is an introduction service, not a law firm. The other gives consent for their details to be shared with one firm and for that firm to contact them by phone, email or text about their matter. We record the exact wording and the time, and that record travels with the lead.",
+    {
+     "h3": "Delivery"
+    },
+    "Leads are sent as soon as they have been checked. You can receive them by email, to a shared intake inbox, or straight into your CRM or case management system using a lead email address or a webhook. There is no platform to log into."
+   ]
+  ],
+  [
+   "Working the lead",
+   [
+    "How you handle the first contact makes a large difference to how many enquiries become instructions. The firms that do best treat each lead as a live quote request rather than a name to add to a list.",
+    {
+     "h3": "Call quickly"
+    },
+    "A conveyancing client who has just had an offer accepted often contacts more than one firm or is being pushed towards the agent's panel firm. Calling while they are still thinking about their move gives you the best chance of being the firm they choose. Set up alerts so the right person sees a lead the moment it arrives.",
+    {
+     "h3": "Quote on the first call if you can"
+    },
+    "The lead tells you the transaction type, the rough value, the tenure and whether there is a mortgage. That is usually enough for a provisional figure. Follow up the call with a written, itemised quote that sets out your fee, the likely disbursements and anything that could add cost, such as a leasehold supplement or a management pack.",
+    {
+     "h3": "Set expectations"
+    },
+    "Explain the main stages in plain terms and how you will keep them updated. Many clients have heard stories about slow conveyancing, so telling them how often they will hear from you, and how to reach their case handler, builds trust before they instruct.",
+    {
+     "h3": "Mention the introduction"
+    },
+    "The client agreed to be contacted by a firm after making an enquiry through Leaflegal. Say so when you introduce yourself. Your client care letter should then cover any referral arrangement you are required to disclose.",
+    {
+     "h3": "Follow up"
+    },
+    "Not every client instructs on the first call. Some are waiting for a mortgage offer or for the agent to confirm a sale. A short email the same day, a second call a few days later and a final check in after a week often turn a not yet into an instruction. Keep it helpful rather than pushy.",
+    {
+     "h3": "Tell us what works"
+    },
+    "Let us know which leads instruct and which do not, and why. If remortgages rarely convert for you but leasehold sales do, we can change your matching so you receive more of the work you want.",
+    "Firms that review their results every month or so, and share what they see with us, usually find it easier to shape the work they receive over time."
+   ]
+  ],
+  [
+   "Compliance",
+   [
+    "Conveyancing is a reserved legal activity, and buying leads does not change your professional duties. Leaflegal is set up to support those duties rather than work around them.",
+    {
+     "h3": "Referral disclosure"
+    },
+    "Leaflegal is an introducer. Under the SRA Code of Conduct, you must make sure clients are told in writing about any financial arrangement you have with an introducer, and the arrangement must not affect your independence or your advice. CLC regulated practices have their own rules on referral arrangements, which work along similar lines. Our consent wording tells every client that we are paid by the firms we introduce them to, and we send that wording with each lead so your client care letter can match it.",
+    {
+     "h3": "Independence and client choice"
+    },
+    "We never steer a client towards a firm for any reason other than the match, and we never give legal advice. The client is free to choose another firm at any point. Nothing in your partner agreement asks you to act in a way that conflicts with the client's interests.",
+    {
+     "h3": "Regulation and lender panels"
+    },
+    "Only SRA regulated firms, CILEx regulated practices and CLC regulated conveyancers authorised for the work can receive conveyancing leads. You are responsible for being on any lender panel the client's mortgage needs and for your own conflict checks, identity checks and anti money laundering procedures.",
+    {
+     "h3": "Data protection"
+    },
+    "Leaflegal is a trading name of Vertical Brands Ltd, which acts as data controller for the information collected through our enquiry forms. Once a lead is delivered, you become the controller of your copy and handle it under your own privacy notice. Leads can only be used to contact the client about their enquiry. Adding them to a marketing list needs separate consent.",
+    "You can read more on our page about <a href=\"/partners/sra-referral-rules\">referral rules and introducers</a>."
+   ]
+  ],
+  [
+   "Pricing",
+   [
+    "You pay for each conveyancing lead we deliver, at a price agreed with you before you start. There is no retainer for advertising, no shared enquiries and no recycled data. Because you know the cost of each lead, you can measure it against the instructions and fees you win.",
+    {
+     "h3": "How the price is set"
+    },
+    "Price depends on the matter types and locations you choose. A sale and purchase in a busy area is worth more to most firms than a simple remortgage, and a narrow area around one office produces fewer matches than national coverage. We talk this through on a call and put a proposal together for your firm.",
+    {
+     "h3": "Volume and control"
+    },
+    "The minimum is 10 leads a month. Above that, you tell us how many your team can handle and we match to that number, so you are not sent more enquiries than you can call back quickly. You can set a monthly cap, change it and pause at any time, for example when a case handler is away or your team is at capacity.",
+    {
+     "h3": "Your partner agreement"
+    },
+    "Before your first lead, we agree a written partner agreement covering pricing, billing, volumes, delivery and the rules on invalid leads. If a lead has wrong contact details or falls outside your agreed criteria, you tell us within the review period set out in your agreement and we deal with it as the agreement says.",
+    {
+     "h3": "Getting started"
+    },
+    "Onboarding starts with a 30 minute call with our team. We talk about the conveyancing work you want, the areas you cover and the volume you can take, and we show you a sample lead before you commit to anything. You can <a href=\"/partners/apply\">apply to become a partner firm</a> to book that call."
+   ]
+  ]
+ ],
+ "faqs": [
+  [
+   "The leads",
+   [
+    [
+     "What is a conveyancing lead from Leaflegal?",
+     "It is an enquiry from a person who is buying, selling or remortgaging a property in England and Wales and has asked to be contacted by a firm about paid conveyancing. They have answered a short set of questions about the transaction, confirmed their contact details and agreed to be contacted by one firm. We send that enquiry to you alone, as soon as it has been checked."
+    ],
+    [
+     "Are the leads exclusive?",
+     "Yes. Each enquiry is matched to one firm only. We do not send the same enquiry to several firms at once and we never resell a lead after it has been delivered. If you are the firm we match, you are the only firm that receives that person's details from us. The client can still choose to speak to other firms on their own, as anyone can."
+    ],
+    [
+     "How do you check the leads?",
+     "Every client confirms they want paid legal help with a property in England and Wales. We verify their UK mobile number and their email address, and we filter out enquiries that fall outside our scope or your criteria. People we cannot help are told politely and pointed elsewhere, so they never become a lead. Each lead then arrives with the client's answers and the consent record."
+    ],
+    [
+     "What details will I get for each enquiry?",
+     "You get the client's name, mobile and email, whether it is a purchase, sale, both or a remortgage, the rough property value, the tenure, whether there is a mortgage, the target timescale and the location. There is also a short description in the client's own words, the best time to call, the source, a timestamp and the exact consent wording they agreed to."
+    ],
+    [
+     "Can I quote from the lead alone?",
+     "Usually you can give a provisional figure on the first call, because the lead covers the transaction type, rough value, tenure and whether a mortgage is involved. You will still want to confirm the details with the client and send a written quote. Things like a leasehold management pack, a new build or a gifted deposit may change your figure once you know more."
+    ],
+    [
+     "Do you send leasehold purchases and sales?",
+     "Yes, if you want them. Every lead says whether the property is freehold or leasehold, and you can choose to receive leasehold matters, leave them out or ask for them only in certain areas. Firms with an experienced leasehold team sometimes prefer this work, while others choose to focus on freehold transactions. We set your matching to suit you."
+    ],
+    [
+     "Are remortgage leads included?",
+     "Only if you ask for them. Remortgages, transfers of equity, purchases, sales and combined sale and purchase matters can each be switched on or off. Some firms take remortgages to keep a steady flow of shorter matters, while others prefer to concentrate on purchases. You can change the mix at any time by letting us know."
+    ],
+    [
+     "Do clients know a firm will call them?",
+     "Yes. Every client has agreed to be contacted by a firm about their matter, by phone, email or text, and most are expecting a call soon after they submit. It helps to say early in the call that you are getting in touch because of the enquiry they made through Leaflegal. That puts the client at ease and moves the conversation quickly on to their purchase, sale or remortgage."
+    ]
+   ]
+  ],
+  [
+   "Volume and areas",
+   [
+    [
+     "How many leads will I receive?",
+     "That depends on the matter types and locations you choose and the enquiries our campaigns are generating at the time. The minimum is 10 leads a month. Above that, you tell us how many your team can handle and we match to that number. We will give you an honest view on your call of what is realistic for your criteria, but we cannot promise a fixed volume."
+    ],
+    [
+     "Can I choose where my clients are?",
+     "Yes. You can choose particular towns, counties or regions, a radius around your offices, or national coverage if you work remotely. Many conveyancing firms act for clients anywhere in England and Wales, in which case wider coverage usually means more matches. If you prefer clients near an office, we can limit matching to those areas."
+    ],
+    [
+     "Can I set a monthly cap?",
+     "Yes. You set the number of leads you want each month, as long as it is at least the minimum of 10. Once you reach your cap, we stop matching enquiries to you until the next month. You can raise or lower your cap whenever your team's capacity changes, so you are never sent more enquiries than you can call quickly."
+    ],
+    [
+     "Can I pause leads?",
+     "Yes. If your team is at capacity, a case handler is on leave or you are changing systems, tell us and we will pause matching until you are ready. Pausing does not end your partner agreement. When you are ready to restart, let us know and matching begins again as new enquiries come in."
+    ],
+    [
+     "Do you cover the whole of England and Wales?",
+     "Our campaigns run across England and Wales, and conveyancing leads relate to properties there. We do not send enquiries about property in Scotland or Northern Ireland, which have their own systems. Within England and Wales, how many leads you receive depends on the areas you choose and the volume of enquiries in those places."
+    ],
+    [
+     "Can leads go to different branches or teams?",
+     "Yes. We can route leads by location or matter type, so a purchase near one office goes to that branch and remortgages go to a dedicated team. We can also send everything to a shared intake inbox or your CRM, where you assign leads yourself. We will set up whichever arrangement suits how your firm works."
+    ]
+   ]
+  ],
+  [
+   "Compliance",
+   [
+    [
+     "Do I need to tell clients about the referral fee?",
+     "Yes. The SRA Code of Conduct requires you to make sure clients are told in writing about any financial arrangement you have with an introducer. CLC regulated practices have similar rules. Our consent wording already tells every client that we are paid by the firms we introduce them to, and we send that wording with each lead so your client care letter can reflect it."
+    ],
+    [
+     "Is Leaflegal regulated?",
+     "No. Leaflegal is an introduction service, not a law firm. We are not regulated by the SRA or the CLC and we do not give legal advice. We make this clear to every client before they submit an enquiry. You remain responsible for your own regulatory obligations, including being authorised for reserved conveyancing work."
+    ],
+    [
+     "Who can receive conveyancing leads?",
+     "SRA regulated firms, CILEx regulated practices and CLC regulated conveyancers that are authorised to carry out the work. If a client needs a lender that requires panel membership, you are responsible for being on that panel or explaining the position to the client. We ask about your regulation and the work you handle when you apply."
+    ],
+    [
+     "How is client consent recorded?",
+     "Before submitting, the client ticks one box to confirm they understand our terms, our privacy policy and that we are an introduction service, and a second box to consent to their details being shared with one firm that may contact them by phone, email or text. We record the wording and the time, and send that record with the lead."
+    ],
+    [
+     "Who is responsible for the client's data?",
+     "Leaflegal, a trading name of Vertical Brands Ltd, is the data controller for information collected through our forms. Once a lead is delivered, your firm becomes controller of its copy and handles it under your own privacy notice and UK data protection law. The consent covers contact about the client's enquiry. Marketing to them later needs their separate consent."
+    ],
+    [
+     "Do I still need to carry out my own checks?",
+     "Yes. We verify contact details and confirm the client wants paid help, but we do not carry out identity checks, anti money laundering checks, source of funds checks or conflict searches. Those stay with your firm and should follow your usual procedures before you accept instructions. Treat a Leaflegal client the same way you would treat any new client who found you directly."
+    ]
+   ]
+  ],
+  [
+   "Pricing and terms",
+   [
+    [
+     "How much does each lead cost?",
+     "There is no standard price list. You pay per lead at a price agreed with you before you start, based on the matter types and locations you choose and the volume you want. We put a proposal together after your onboarding call, so you know the cost of every lead before the first one is delivered."
+    ],
+    [
+     "Is there a contract?",
+     "Yes, a written partner agreement. It covers pricing, billing, volumes, delivery and the rules on invalid leads, and it is agreed before your first lead. That way both sides know exactly how things work from the start, and there are no surprises about what is charged or how problems are handled."
+    ],
+    [
+     "What counts as an invalid lead?",
+     "Your partner agreement sets this out. It typically covers things like a lead with wrong contact details or one that falls outside the criteria you agreed with us. If you think a lead is invalid, tell us within the review period in your agreement and we will deal with it as the agreement says."
+    ],
+    [
+     "What if a client instructs another firm?",
+     "A lead is an introduction, not a guaranteed instruction. Clients are free to choose any firm, and some will compare quotes. The lead is valid if it meets the agreed criteria and the contact details are right. Calling quickly, quoting clearly and following up are the best ways to turn more of your leads into instructions."
+    ],
+    [
+     "How am I billed?",
+     "Billing is set out in your partner agreement before you start, including how often you are invoiced and how leads are counted. Because you pay per lead at an agreed price, your cost each month follows the number of leads delivered, up to the cap you have set. If you pause or lower your cap, your billing follows that change."
+    ]
+   ]
+  ],
+  [
+   "Getting started",
+   [
+    [
+     "How do I sign up?",
+     "Apply to become a partner firm and book a 30 minute call with our team. We talk through the conveyancing work you handle, your locations, your regulation and the volume you can take. We then agree your criteria and price, show you a sample lead and put your partner agreement in place."
+    ],
+    [
+     "Can I see a sample lead first?",
+     "Yes. On your onboarding call we show you a sample conveyancing lead, including every field, the format it arrives in and the consent record. You can see exactly what your team would receive before you commit to anything. If you use a CRM, we can also talk through how the fields would map into it, so your intake team knows what to expect."
+    ],
+    [
+     "How quickly can leads start?",
+     "Once your criteria, pricing and delivery are agreed and your partner agreement is signed, leads start as soon as matching enquiries come in. How quickly the first one arrives depends on the matter types and areas you choose. If you want to test your intake process first, we can agree a start date that gives your team time to get ready."
+    ],
+    [
+     "Is there a portal or login?",
+     "No. There is no platform to learn and nothing to log into. Leads arrive by email, to a shared inbox, or straight into your CRM or case management system using a lead email address or a webhook. Your team works them in the systems they already use. That keeps things simple for busy intake teams and means nothing gets missed in a separate system."
+    ],
+    [
+     "What should I set up before my first lead?",
+     "Decide who will call new leads and how quickly, including at lunchtime and late in the day. Send leads to a shared inbox or CRM rather than one person, prepare a quote template you can send straight after the call, and make sure your client care letter covers the referral arrangement."
+    ],
+    [
+     "Can I change the matter types I receive later?",
+     "Yes. Your matching is not fixed. If you find that sales convert better than remortgages, or you build up your leasehold team and want more of that work, tell us and we will change your criteria. Feedback on which leads instruct and which do not helps us adjust your matching so you receive more of the conveyancing work you want."
+    ]
+   ]
+  ]
+ ]
+}

@@ -1,0 +1,321 @@
+{
+ "about": [
+  [
+   "Overview",
+   [
+    "A court claim is the formal way of asking a court to order a debtor to pay what it owes. When a business customer has ignored reminders and a letter before action, issuing a claim is usually the next step. Most business debt claims in England and Wales start in the County Court, and higher value or more complex claims can start in the High Court.",
+    "For many creditors, the claim itself is enough. A debtor who has ignored letters may pay soon after receiving court papers, because it knows that a judgment against it can be registered publicly and can affect its ability to get credit. Others do not respond at all, and the creditor can then ask the court for judgment without a hearing.",
+    "Some claims are defended. The debtor files a defence explaining why it says it does not owe the money, or does not owe all of it. A defended claim follows a more involved process, with the court setting a timetable, the parties exchanging evidence and, if no settlement is reached, a hearing in front of a judge.",
+    "Starting a claim is a significant step. There are court fees to pay, there are rules to follow and there is a risk of paying the other side's costs if the claim fails. A solicitor will look at the strength of the evidence, the likely response and the debtor's ability to pay before recommending a claim.",
+    "This page is about claims by one business against another business for an unpaid debt, in England and Wales. Leaflegal does not introduce firms for consumer debt collection.",
+    {
+     "h3": "What a solicitor usually does"
+    },
+    {
+     "list": [
+      "Checks that pre-action steps have been followed",
+      "Confirms the correct legal name and address of the debtor",
+      "Chooses the right court and the right way to issue",
+      "Drafts the claim form and particulars of claim",
+      "Calculates interest and any statutory compensation",
+      "Requests judgment if the debtor does not respond",
+      "Deals with defences, evidence and settlement offers",
+      "Advises on enforcement once judgment is obtained"
+     ]
+    },
+    "Leaflegal does not give legal advice. We introduce your business to one regulated law firm that handles commercial debt claims, and the solicitor will explain the options for your own debt."
+   ]
+  ],
+  [
+   "Starting a claim",
+   [
+    "Before a claim is issued, a solicitor will usually make sure the groundwork is in place. That means a proper letter before action has been sent, the deadline has passed and the debtor's details are correct. The claim then begins with a few key documents.",
+    {
+     "h3": "The claim form"
+    },
+    "The claim form names the parties, gives a short description of the claim and sets out the amount being claimed, including interest, court fees and fixed legal costs where they apply. For many debt claims, the claim form is filed online.",
+    {
+     "h3": "Particulars of claim"
+    },
+    "The particulars of claim explain the facts the creditor relies on. In a debt claim, that usually means the contract, what was supplied, the invoices raised, the payment terms and the amount still owed. Where interest is claimed, the particulars explain the basis for it and how it is calculated.",
+    {
+     "h3": "Statement of truth"
+    },
+    "Court documents must be verified by a statement of truth, confirming that the facts stated are believed to be true. Signing a statement of truth without an honest belief in the facts can have serious consequences, so your solicitor will check the details with you carefully.",
+    {
+     "h3": "Online or paper"
+    },
+    "Many straightforward claims for a fixed sum can be issued online through the court's money claim services, which is usually quicker. Some claims, for example where there are several defendants or the claim is more complex, are issued on paper or through other routes. Your solicitor will choose the right method.",
+    {
+     "h3": "Serving the claim"
+    },
+    "Once issued, the claim must be served on the debtor. Often the court serves it by post. Sometimes the creditor's solicitor serves it. The date of service matters because it starts the clock for the debtor to respond.",
+    {
+     "h3": "Checks before issuing"
+    },
+    "Many solicitors carry out a final round of checks just before a claim is issued. They confirm the debtor is still trading and has not entered an insolvency process, that its registered office has not changed and that nothing has been paid since the letter before action. A claim against a company that has just gone into liquidation, for example, would usually need the court's permission and may not be worth pursuing at all."
+   ]
+  ],
+  [
+   "If undefended",
+   [
+    "A large share of business debt claims are never defended. The debtor either pays, admits the debt or simply does nothing. Each of these leads to a different next step.",
+    {
+     "h3": "The debtor pays"
+    },
+    "If the debtor pays the full amount claimed, including interest, court fees and fixed costs, the claim is at an end. The court is told that the claim has been settled.",
+    {
+     "h3": "The debtor admits the debt"
+    },
+    "A debtor can admit all or part of the claim. It may ask for time to pay or offer instalments. The creditor can accept the offer or ask the court to decide what is reasonable. If the creditor does not accept, the court will consider the debtor's finances and set the terms of payment.",
+    {
+     "h3": "The debtor does nothing"
+    },
+    "If the debtor does not file a defence or an acknowledgement of service in time, the creditor can usually ask for judgment in default. For a claim for a specified sum of money, this is often an administrative step that does not need a hearing.",
+    {
+     "h3": "Default judgment"
+    },
+    "A default judgment orders the debtor to pay the amount claimed, either immediately or by a set date. If it is not paid within a set period, it is usually entered on the public Register of Judgments, which can affect the debtor's credit rating. That prospect alone often leads to payment.",
+    {
+     "h3": "Setting aside"
+    },
+    "A debtor can sometimes apply to set aside a default judgment, for example if it was never properly served or if it has a real defence and acts promptly. If that happens, your solicitor will explain the position and how to respond.",
+    {
+     "h3": "Time to pay"
+    },
+    "Where a debtor admits the debt but says it cannot pay at once, the court can order payment by instalments. The creditor can object to an offer it considers too low, and the court will then look at the information provided about the debtor's finances. If instalments are ordered and then missed, the creditor can move on to enforcement."
+   ]
+  ],
+  [
+   "If defended",
+   [
+    "If the debtor files a defence, the claim becomes a contested case. This is where costs and timescales can increase, so it is worth understanding the general shape of the process.",
+    "A defence must explain which parts of the claim are denied and why. A bare denial is not enough. Reading the defence carefully often shows how strong it really is, and your solicitor will review it with you before recommending the next step.",
+    {
+     "h3": "Allocation to a track"
+    },
+    "The court asks both parties for information about the case and then allocates it to a track. Lower value claims usually go to the small claims track, which is designed to be simpler and where the legal costs that can be recovered are very limited. Higher value claims go to the fast track, the intermediate track or the multi track, each with its own procedures and rules on recoverable costs. The financial limits for each track are set by the court rules, and your solicitor will tell you which applies.",
+    {
+     "h3": "Mediation"
+    },
+    "Courts strongly encourage parties to try to settle. In many lower value money claims, the parties are now expected to take part in a short mediation appointment through the court service before the case goes further. In higher value claims, the court may expect the parties to consider mediation or other ways of resolving the dispute.",
+    {
+     "h3": "Directions and evidence"
+    },
+    "The court sets a timetable, known as directions. The parties usually exchange documents and witness statements, and in some cases expert evidence. Each side then has a clearer view of the strength of the other's case, and many claims settle at this stage.",
+    {
+     "h3": "Summary judgment"
+    },
+    "If the defence appears to have no real prospect of success, the creditor may be able to apply for summary judgment without a full trial. This can save time and cost in the right case, but it is not suitable where there is a genuine dispute about the facts.",
+    {
+     "h3": "The hearing"
+    },
+    "If the claim does not settle, it goes to a final hearing. A judge hears the evidence and decides whether the debt is owed and how much. The judge also decides who pays the costs, within the rules for the relevant track."
+   ]
+  ],
+  [
+   "Costs",
+   [
+    "The cost of a debt claim depends mainly on whether it is defended and how much is at stake. Understanding the main types of cost helps you decide whether a claim makes sense.",
+    {
+     "h3": "Court fees"
+    },
+    "The court charges a fee to issue a claim, usually based on the amount claimed. Further fees can apply at later stages, such as for a hearing or for enforcement. These fees are set by the government and change from time to time, so check GOV.UK or ask your solicitor.",
+    {
+     "h3": "Solicitor's fees"
+    },
+    "Many firms charge fixed fees for issuing a straightforward claim and requesting default judgment. If the claim is defended, the work is more often charged by the hour or in fixed stages. Ask for a written estimate of the cost of each stage before you decide to go ahead.",
+    {
+     "h3": "Recovering costs"
+    },
+    "The general rule is that the losing side pays some of the winning side's costs, but the amount is often limited. In many debt claims, the costs that can be recovered are fixed by the court rules, and on the small claims track they are very restricted. You should not assume that all of your legal spend will be repaid.",
+    {
+     "h3": "Interest and compensation"
+    },
+    "A creditor can usually claim interest on the debt, either under the contract, under late payment law or at the court's discretion. Between businesses, late payment law may also allow fixed compensation for each late invoice and, in some cases, reasonable recovery costs.",
+    {
+     "h3": "Settlement offers"
+    },
+    "There are formal ways to make settlement offers in court claims, and they can affect who pays costs if the case goes to a hearing. Your solicitor will explain how these work and when they might help.",
+    "Leaflegal is free for businesses to use. The firm pays us for the introduction, and that never changes what you pay them."
+   ]
+  ],
+  [
+   "Timescales",
+   [
+    "How long a claim takes depends almost entirely on how the debtor responds. These are typical stages, but your solicitor will give you an idea of timescales for your own claim.",
+    {
+     "h3": "Issue and service"
+    },
+    "An online claim can usually be issued quickly once the documents are ready. Service then follows, and the date of service starts the time for the debtor to respond.",
+    {
+     "h3": "The debtor's response"
+    },
+    "The debtor usually has 14 days after service of the particulars of claim to respond. If it files an acknowledgement of service saying it intends to defend, it usually has 28 days from service to file its defence. The parties can agree a short further extension in some cases.",
+    {
+     "h3": "Undefended claims"
+    },
+    "If the debtor does not respond in time, a request for default judgment can be made soon afterwards. An undefended claim can therefore reach judgment within weeks of issue, depending on how busy the court is.",
+    {
+     "h3": "Defended claims"
+    },
+    "A defended claim takes much longer. After allocation, mediation and directions, it may be many months before a final hearing, and larger claims can take a year or more. Court workloads vary across the country, which affects waiting times.",
+    {
+     "h3": "Time limits"
+    },
+    "A claim for a contract debt must usually be issued within six years of the date the money fell due. Once a claim is issued, the court sets deadlines for each step, and missing them can have serious consequences. Your solicitor will keep track of these for you.",
+    {
+     "h3": "Keeping momentum"
+    },
+    "Delays often come from waiting for documents or decisions. Having your evidence organised from the start, and responding quickly when your solicitor asks for instructions, helps the claim move as fast as the court timetable allows."
+   ]
+  ]
+ ],
+ "faqs": [
+  [
+   "Before you claim",
+   [
+    [
+     "Do I need to send a letter before issuing a claim?",
+     "Courts expect parties to exchange information and try to settle before a claim is issued. Going straight to court without a proper letter can lead to costs penalties or a pause in the claim. In almost every debt case, a solicitor will make sure a letter before action has been sent and the deadline has passed before issuing."
+    ],
+    [
+     "Is it worth suing if the debtor has no money?",
+     "A judgment is only valuable if the debtor can pay or has assets that can be reached. Before issuing, many solicitors check public records such as filed accounts, existing judgments and insolvency notices. If a debtor appears to have nothing, a solicitor may advise that a claim is unlikely to be worthwhile, which can save you money."
+    ],
+    [
+     "Which court will my claim be in?",
+     "Most business debt claims start in the County Court, often through a central online service, and may move to a local hearing centre if defended. Higher value or more complex claims can be started in the High Court. Your solicitor will choose the right court based on the amount, the complexity and any enforcement plans."
+    ],
+    [
+     "Can I bring a claim myself?",
+     "Businesses can bring claims without a solicitor, and some do for small debts. A solicitor can help make sure the claim is against the right party, the amount and interest are correct and the procedure is followed. That reduces the risk of delay or costs penalties, especially if the debtor defends."
+    ],
+    [
+     "How long do I have to start a claim?",
+     "For a debt under a contract, a claim must usually be issued within six years of the date payment fell due. A written acknowledgement of the debt by the debtor, or a part payment, can restart the clock. If your debt is approaching six years old, speak to a solicitor promptly."
+    ],
+    [
+     "Can I claim against more than one party?",
+     "Sometimes. For example, a creditor might claim against a company and against a director who signed a personal guarantee. Claims against several parties can be more complex and may not be suitable for the simplest online route. Your solicitor will explain who can be named and how."
+    ],
+    [
+     "What if the debtor is based outside England and Wales?",
+     "Claims against debtors based elsewhere can be more complex. Different rules apply to serving the claim and to enforcing a judgment abroad, and sometimes the contract says which courts should deal with disputes. Your solicitor will check your contract and explain whether a claim in England and Wales is the right approach."
+    ]
+   ]
+  ],
+  [
+   "The claim",
+   [
+    [
+     "What goes into a claim?",
+     "A claim usually includes a claim form and particulars of claim. Together they identify the parties, explain the contract and the debt, set out the amount owed and any interest claimed, and include a statement of truth. Your solicitor will draft these from your invoices, terms and correspondence."
+    ],
+    [
+     "Can I claim interest on the debt?",
+     "Usually, yes. Interest may be claimed under your contract, under late payment law for debts between businesses, or at the court's discretion. The basis must be explained in the claim. Your solicitor will choose the right basis and calculate the interest up to the date of issue and the daily rate after that."
+    ],
+    [
+     "How is the claim served on the debtor?",
+     "Often the court sends the claim to the debtor by post. In some cases the creditor's solicitor serves it instead. A company is commonly served at its registered office. The date of service matters because it starts the time for the debtor to respond, so it must be done correctly."
+    ],
+    [
+     "What is a statement of truth?",
+     "It is a short statement at the end of court documents confirming that the person signing believes the facts in the document are true. Making a false statement without an honest belief in its truth can lead to proceedings for contempt of court. Your solicitor will go through the facts with you before anything is signed."
+    ],
+    [
+     "Can the debtor pay after the claim is issued?",
+     "Yes, and many do. If the debtor pays the full amount claimed, including interest, court fees and fixed costs, the claim ends. If it pays only part, the claim may continue for the balance. Your solicitor will check what has been received and tell the court if the claim is settled."
+    ],
+    [
+     "Can I withdraw a claim once it has started?",
+     "A claimant can usually discontinue a claim, but doing so may mean paying the debtor's costs up to that point unless the parties agree otherwise. If the debtor has paid or a settlement has been reached, the solicitor will record the terms so that the claim is closed properly."
+    ]
+   ]
+  ],
+  [
+   "Defences",
+   [
+    [
+     "What happens if the debtor defends?",
+     "The court allocates the claim to a track, often after asking both sides for information. It may refer the parties to mediation and will set a timetable for exchanging documents and evidence. If the claim does not settle, it goes to a hearing. Your solicitor will explain each stage and its likely cost."
+    ],
+    [
+     "What is the small claims track?",
+     "It is the track for lower value claims, designed to be simpler and less formal. The legal costs that the winner can recover from the loser are very limited, so a business may not get much of its legal spend back. The financial limit for the track is set by the court rules, and your solicitor will tell you whether it applies."
+    ],
+    [
+     "Will I have to go to mediation?",
+     "In many lower value money claims, parties are now expected to attend a short mediation appointment run by the court service before the case goes further. In higher value claims, the court expects parties to consider settlement and may impose costs consequences on a party that unreasonably refuses. Your solicitor will explain what applies."
+    ],
+    [
+     "What is summary judgment?",
+     "Summary judgment allows the court to decide a claim without a full trial if the defence has no real prospect of success and there is no other reason for a trial. It can save time and cost where a defence is weak, but it is not suitable where there is a genuine factual dispute. Your solicitor will advise if it is an option."
+    ],
+    [
+     "Can the debtor bring a counterclaim?",
+     "Yes. A debtor may say it has its own claim against you, for example for late delivery or defective work. A counterclaim is dealt with alongside your claim and can affect the overall result. Your solicitor will review any counterclaim and explain how it changes the picture."
+    ],
+    [
+     "Will I need to give evidence?",
+     "If a defended claim goes to a hearing, someone from your business who knows the facts may need to provide a witness statement and attend to answer questions. Your solicitor will help prepare the statement and explain what to expect, so that you are ready if the case gets that far."
+    ],
+    [
+     "Can the claim settle before the hearing?",
+     "Yes, and many defended claims do. Settlement can happen at any stage, through negotiation, mediation or a formal offer. The terms are usually recorded in writing, and sometimes in a court order, so that they can be enforced if the debtor does not keep to them. Your solicitor will advise on any offer you receive."
+    ]
+   ]
+  ],
+  [
+   "Judgment",
+   [
+    [
+     "What is a default judgment?",
+     "It is a judgment entered because the debtor did not respond to the claim in time. For a claim for a fixed sum, it can usually be obtained without a hearing. It orders the debtor to pay, and if it is not paid it can be enforced using the court's enforcement tools."
+    ],
+    [
+     "What happens if the debtor does not pay the judgment?",
+     "The creditor can use enforcement methods, such as instructing enforcement agents to take goods, obtaining a charging order over property, freezing money in a bank account or requiring the debtor to give information about its finances. Your solicitor will recommend the method most likely to work for your debtor."
+    ],
+    [
+     "Will the judgment be made public?",
+     "County Court judgments that are not paid within a set period are usually entered on the public Register of Judgments. This can affect the debtor's ability to get credit and is one reason many debtors pay promptly after judgment. Your solicitor can explain how registration works in your case."
+    ],
+    [
+     "Can a default judgment be overturned?",
+     "A debtor can apply to set it aside, for example if the claim was not properly served or if it has a real prospect of defending the claim and applies promptly. If that happens, your solicitor will explain the strength of the application and how to respond."
+    ],
+    [
+     "How long does the debtor have to pay after judgment?",
+     "A judgment usually orders payment either straight away or within a set period, often 14 days, unless the court has allowed instalments. If payment is not made by the date ordered, the creditor can start enforcement. Your solicitor will tell you the date in your judgment and what can be done once it passes."
+    ],
+    [
+     "Can I enforce a judgment against a sole trader?",
+     "Yes. A sole trader is personally liable for the debts of the business, so a judgment can be enforced against their personal assets as well as the business. Some methods, such as an attachment of earnings order, are only available against individuals. Your solicitor will explain which methods are available."
+    ]
+   ]
+  ],
+  [
+   "Costs",
+   [
+    [
+     "How much does a debt claim cost?",
+     "It depends on whether it is defended. Many firms offer fixed fees for issuing a claim and requesting default judgment. Defended claims cost more and are often charged by the hour or in stages. Court fees are payable on top. Ask the firm for a written estimate for each stage."
+    ],
+    [
+     "Will the debtor pay my legal costs?",
+     "If you win, the court usually orders the debtor to pay some of your costs, but in many debt claims the recoverable amount is fixed by the rules and may be well below what you have spent. On the small claims track, recoverable costs are very limited. Your solicitor will explain what to expect."
+    ],
+    [
+     "What if I lose?",
+     "If a claim fails, the claimant may be ordered to pay some of the debtor's legal costs, as well as bearing its own. This is one reason why a solicitor will look closely at the evidence and any dispute before recommending a claim, and will keep the risks under review as the case goes on."
+    ],
+    [
+     "Does Leaflegal charge me anything?",
+     "No. Leaflegal is free for businesses to use. The firm we introduce you to pays us a fee for the introduction, which does not change what you pay them."
+    ]
+   ]
+  ]
+ ]
+}

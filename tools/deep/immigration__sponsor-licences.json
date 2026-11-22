@@ -1,95 +1,339 @@
 {
 "about": [
-["Overview", [
-"A sponsor licence is permission from the Home Office for a UK employer to hire certain workers from overseas. Without one, a business cannot usually offer a job to someone who needs a work visa such as the Skilled Worker visa. The licence is granted to the organisation, not to the worker, and it comes with duties that last for as long as the business holds it.",
-"Most employers look into a licence when they have a specific person in mind, such as a candidate who has applied from abroad or a graduate already in the UK whose current visa is ending. Others apply in advance because they know they will struggle to fill skilled roles from the local labour market and want to be ready when the right person comes along.",
-"Getting a licence is only the first step. Each worker then needs a certificate of sponsorship from the employer and a successful visa application of their own. The job, the salary and the worker all have to meet the rules for the visa route at the time the certificate is assigned.",
-"Holding a licence also changes how the business has to run parts of its HR. The Home Office expects sponsors to keep certain records, report certain changes and check that sponsored workers are doing the job they were sponsored for. A regulated adviser can explain what this means in practice for your business before you commit.",
-{"h3": "Who usually applies"},
-{"list": ["Care providers recruiting care workers and senior carers", "Technology firms hiring developers and engineers", "Restaurants and hotels recruiting chefs and managers", "Healthcare and dental practices", "Universities, schools and research organisations", "Construction, engineering and manufacturing businesses", "Start-ups and overseas companies opening a UK branch"]},
-"Leaflegal does not advise on whether your business can or should sponsor. We introduce you to a regulated firm or adviser who can look at your circumstances and explain your options."
-]],
-["How it works", [
-"Every application is different, but most follow a similar path. The steps below give a general picture of what employers usually go through. Your adviser will tell you exactly what applies to your business.",
-{"h3": "1. Checking eligibility"},
-"The Home Office needs to be satisfied that the business is genuine, operating lawfully in the UK and has a real need for the roles it wants to sponsor. People in key roles must not have certain unspent criminal convictions or a history of breaching immigration rules. An adviser will usually start by checking these points.",
-{"h3": "2. Choosing the licence type and key personnel"},
-"Employers choose which routes they want to sponsor workers on, such as the Skilled Worker route or one of the Global Business Mobility routes. They also nominate people to fill set roles in the Sponsor Management System, which is the online system used to run the licence. These usually include an Authorising Officer, a Key Contact and at least one Level 1 User.",
-{"h3": "3. Preparing documents"},
-"The application is made online, and the business then sends supporting documents within a deadline. The documents depend on the type of organisation and the routes applied for, and might include things like registration with a regulator, employer liability insurance, bank statements, VAT registration or a lease for business premises. Missing or wrong documents are one of the most common reasons for delay or refusal.",
-{"h3": "4. HR systems review"},
-"Before applying, many advisers review how the business carries out right to work checks, keeps records and monitors attendance. The Home Office can visit before or after granting a licence to check that these systems are in place.",
-{"h3": "5. Decision"},
-"If the application is approved, the business is given a licence and a rating, and can start assigning certificates of sponsorship. If it is refused, there is usually a cooling off period before the business can apply again, so getting the application right first time matters.",
-{"h3": "6. Sponsoring workers"},
-"With a licence in place, the employer assigns a certificate of sponsorship to each worker. The worker uses it to apply for their visa. Certificates for people applying from overseas and for people already in the UK can work differently, and your adviser will explain how to request and assign them."
-]],
-["Duties once licensed", [
-"A sponsor licence is a responsibility as well as a permission. The Home Office expects licence holders to help it monitor the people they sponsor and to keep their own details up to date. Falling short can lead to the licence being downgraded, suspended or revoked, which can affect every sponsored worker in the business.",
-{"h3": "Record keeping"},
-"Sponsors are expected to keep copies of certain documents for each sponsored worker, such as right to work checks, contact details and evidence of how the role was recruited for. Records usually need to be kept for the whole time the worker is sponsored and for a period afterwards.",
-{"h3": "Reporting changes"},
-"Some changes must be reported through the Sponsor Management System within set time limits. These can include a sponsored worker not starting work, being absent without permission, leaving the job or having a significant change to their role or salary. Changes to the business itself, such as a change of ownership, address or key personnel, may also need to be reported.",
-{"h3": "Compliance visits"},
-"Home Office compliance officers can visit at any time, with or without notice. They may look at records, interview staff and check that sponsored workers are doing the job described on their certificate. Many employers ask an adviser to carry out a mock audit so that they know what a visit will look at.",
-{"h3": "Keeping the licence"},
-"Rules on how long a licence lasts and how it is kept in force have changed over the years, so it is worth asking your adviser what applies to you now. Whatever the rules, the business still needs to keep its details accurate and meet its duties for the whole time it holds the licence."
-]],
-["Costs", [
-"There are two kinds of cost to think about. The first is the fees the Home Office charges. The second is the fee charged by the firm or adviser who helps you.",
-{"h3": "Home Office fees"},
-"The Home Office charges an application fee for the licence itself, which depends on the size and type of the organisation. Employers also pay for each certificate of sponsorship they assign and, for many roles, an Immigration Skills Charge for each year a worker is sponsored. Workers pay their own visa fee and usually the Immigration Health Surcharge. These amounts change from time to time, so check the current figures on GOV.UK or ask your adviser.",
-{"h3": "Adviser fees"},
-"Many firms offer a fixed fee for preparing and submitting a sponsor licence application. Some also offer packages that include a HR systems review, training for key personnel or ongoing compliance support. Others charge by the hour for more complex work, such as responding to a suspension.",
-"Ask the firm to explain exactly what is included, whether Home Office fees are included or extra, and what would cost more. A good firm will confirm the fee in writing before any work starts.",
+[
+"Overview",
+[
+"A sponsor licence is permission from the Home Office that lets a UK organisation sponsor certain workers from overseas. The licence belongs to the business, not to any individual worker, and it stays with the business for as long as it holds it. Holding a licence brings ongoing responsibilities as well as the ability to recruit.",
+"Most employers start looking into sponsorship when they have a particular person in mind. It might be a candidate who has applied from abroad, a graduate already working for them, or a member of staff in an overseas office who is needed in the UK. Others look into it because they have struggled to recruit for some roles and want to understand whether sponsorship is something they could explore.",
+"Sponsorship touches several parts of a business at once. It involves the owners or directors, whoever runs HR and payroll, the managers who will work alongside sponsored staff and, of course, the workers themselves. That is one reason many employers want a regulated adviser involved from the very beginning.",
+{
+"h3": "Why employers ask for help"
+},
+"The sponsorship system is detailed and the guidance for sponsors is long. It also changes often, sometimes several times a year. Employers who have sponsored before can find that things have moved on since they last looked. A regulated adviser keeps up with these changes and looks at how they affect your business in particular.",
+{
+"list": [
+"Care providers and healthcare businesses",
+"Technology and engineering firms",
+"Restaurants, hotels and hospitality groups",
+"Schools, universities and research organisations",
+"Construction and manufacturing businesses",
+"Overseas companies opening a UK office",
+"Start-ups and growing small businesses"
+]
+},
+{
+"h3": "What a regulated adviser does"
+},
+"A regulated adviser looks at your business and your plans and explains what sponsorship would mean for you. They can prepare and submit applications, help you set up the systems you will need, train the people who will manage the licence and deal with the Home Office on your behalf. They can also tell you honestly if sponsorship does not look like a good fit for your business right now.",
+"Some employers use an adviser for a single application. Others build a long term relationship, with the adviser acting almost as an extension of their HR team for immigration matters. There is no right answer, and the firm can explain the options it offers.",
+{
+"h3": "Leaflegal's role"
+},
+"Leaflegal does not give immigration advice and does not tell any business whether it can or should sponsor. We introduce employers to one firm or adviser regulated to give immigration advice. Everything about your options, the process and your duties comes from them."
+]
+],
+[
+"Working with an adviser",
+[
+"Every adviser works a little differently, but most sponsor licence instructions follow a similar shape. Knowing what to expect can help you get the most out of the relationship and plan your own time.",
+{
+"h3": "Getting to know your business"
+},
+"A good adviser starts by understanding how your business works. They will want to know what you do, how you are structured, how many people you employ, how you recruit and what roles you are thinking about. They are building a picture so that their advice fits your business rather than a generic one.",
+{
+"h3": "Looking at your HR set-up"
+},
+"Many advisers look at how your business handles staff records, right to work checks and changes in employment. Some offer a formal review, others look at it more informally. Either way, it is a chance to find any gaps before the Home Office does.",
+{
+"h3": "Preparing the application"
+},
+"If you decide to go ahead, the adviser will explain what they need from you and when. They will usually prepare the application, check your documents and explain each step before anything is submitted. They may ask the same question more than once to make sure the details are consistent.",
+{
+"h3": "After a decision"
+},
+"Many employers keep their adviser on after a licence is granted. Ongoing help can include training the people who will use the licence, helping with individual workers, dealing with changes in the business and preparing for any Home Office visit. Some firms offer this through a monthly arrangement and others charge per task.",
+{
+"h3": "Who does what"
+},
+"It helps to agree early on who in your business will be the main point of contact for the adviser. Sponsorship involves deadlines, and things move more smoothly when one person is responsible for keeping track of them on your side.",
+{
+"h3": "Communication"
+},
+"Ask at the start how the firm will keep you updated and how quickly it usually replies to messages. Many firms use email, client portals or regular calls. Knowing what to expect helps avoid frustration, particularly when you have a candidate waiting to hear about a start date."
+]
+],
+[
+"First meeting",
+[
+"The first conversation with an adviser is usually about understanding your situation and explaining how they could help. It is not a test, and you do not need to have all the answers. It is also your chance to decide whether this is the right firm for you.",
+{
+"h3": "What they are likely to ask"
+},
+{
+"list": [
+"What your business does and how long it has been trading",
+"How the business is owned and run",
+"The roles you want to fill and why",
+"Whether you already have someone in mind",
+"Whether you have held a licence before",
+"Any deadlines you are working towards",
+"Any letters you have received from the Home Office"
+]
+},
+{
+"h3": "What to have ready"
+},
+"There is no need to gather a full set of documents before the first call. Having your company details, a rough description of the roles and any key dates to hand will make the conversation more useful. If you have had any contact with the Home Office about immigration before, have the letters nearby.",
+{
+"h3": "Questions you might ask"
+},
+{
+"list": [
+"How often do you handle sponsor licence work for businesses like ours?",
+"Who will actually work on our matter?",
+"Is your fee fixed, and what does it include?",
+"Are Home Office fees included or separate?",
+"What support do you offer once a licence is in place?",
+"How do you keep clients updated?",
+"How quickly do you usually respond if something urgent comes up?"
+]
+},
+{
+"h3": "After the call"
+},
+"Most firms will follow up in writing with a summary of what they can do and what it would cost. Take time to read it. You are under no obligation to go ahead, and it is perfectly normal to ask further questions before you decide."
+]
+],
+[
+"Timescales",
+[
+"Employers often find that sponsorship takes longer than they first expected. It helps to think of it in stages rather than as a single application.",
+{
+"h3": "Getting ready"
+},
+"The time it takes to prepare depends a great deal on the business. An established business with tidy records may be ready quite quickly. A newer business, or one whose HR records need attention, may need longer. Your adviser will give you a realistic view once they understand your position.",
+{
+"h3": "Waiting for a decision"
+},
+"The Home Office publishes its current processing times on GOV.UK, and they change from time to time. Faster services are sometimes offered for an extra fee, but availability can be limited. Your adviser can tell you what is realistic at the point you apply.",
+{
+"h3": "Bringing people on board"
+},
+"A licence decision is not the end of the timeline. Each worker then has their own process, which has its own timescale. If you have a candidate waiting or a start date in mind, tell your adviser at the very first conversation so that they can explain how the stages fit together.",
+{
+"h3": "Planning ahead"
+},
+"Businesses that plan recruitment months ahead tend to find sponsorship less stressful than those who start when a role is already urgent. If you think you may want to sponsor in future, an early conversation with a regulated adviser can help you understand the likely timescale for your business.",
+{
+"h3": "Busy periods"
+},
+"Processing times can lengthen when the Home Office is busy, for example after a change in the rules when many businesses apply at once. Advisers can also be busier at these times. Getting in touch early gives everyone more room to work without pressure."
+]
+],
+[
+"Costs",
+[
+"Sponsorship involves two main kinds of cost. One is what the government charges. The other is what your adviser charges.",
+{
+"h3": "Government fees and charges"
+},
+"The Home Office charges fees connected with the licence and with each worker who is sponsored. Some charges are paid by the employer and some by the worker. The amounts change from time to time, sometimes significantly, so always check the current figures on GOV.UK or ask your adviser for an up to date breakdown before you budget.",
+{
+"h3": "How advisers usually charge"
+},
+"Many firms offer a fixed fee for a licence application. Some offer packages that include a review of your HR systems, training for staff or ongoing support. More complex or urgent work, such as responding to a Home Office letter, may be charged by the hour or quoted separately.",
+{
+"h3": "Getting a clear quote"
+},
+"Ask the firm to set out in writing what is included, what would cost extra and whether government fees are part of the price. A good firm will be happy to explain its fees before you commit, and will tell you if something changes.",
+{
+"h3": "Thinking about the long term"
+},
+"Many businesses look at the cost of sponsorship over several years rather than just the first application. Ongoing support, help with individual workers and changes in the business can all carry costs. Your adviser can help you understand the likely picture for your plans.",
 "Leaflegal is free for employers to use. The firm pays us for the introduction, and that never changes what you pay them."
-]],
-["Common problems", [
-"Most problems with sponsor licences are avoidable with good preparation. These are some of the issues employers commonly run into.",
-{"h3": "Missing documents"},
-"Applications can be refused if the right documents are not sent in the right format by the deadline. Each type of organisation has its own document requirements.",
-{"h3": "Roles that do not meet the rules"},
-"The job must usually be at the right skill level and paid at least the relevant salary threshold. Thresholds and eligible occupation codes change, so a role that qualified last year might not qualify now.",
-{"h3": "Weak HR systems"},
-"If a compliance visit finds gaps in right to work checks or record keeping, the business can be refused or the licence downgraded. Fixing systems before applying is far easier than fixing them afterwards.",
-{"h3": "Not reporting changes"},
-"Busy businesses sometimes forget to report a worker leaving or a change of role. These missed reports can add up and put the licence at risk.",
-{"h3": "Suspension or revocation"},
-"If the Home Office suspends a licence, the business usually has a short period to respond. Revocation can affect every worker the business sponsors. Anyone in this position should speak to a regulated adviser straight away."
-]]
+]
+],
+[
+"Letters and problems",
+[
+"Most sponsor licence holders deal with the Home Office from time to time. Some contact is routine. Some is serious and needs a quick response.",
+{
+"h3": "If you receive a Home Office letter"
+},
+"Read it carefully and note any deadline straight away. Letters about a licence can have short time limits. Contact a regulated adviser as soon as possible and send them a copy. If you do not have an adviser yet, mention the deadline when you make an enquiry so the firm knows how urgent it is.",
+{
+"h3": "If the Home Office wants to visit"
+},
+"The Home Office can visit sponsors, sometimes with little or no notice. Many employers ask their adviser to help them prepare, or to carry out a practice review beforehand so that they know what a visit is likely to involve.",
+{
+"h3": "If your licence is suspended or at risk"
+},
+"This can affect every worker you sponsor, so it needs urgent attention. Speak to a regulated adviser straight away. Do not wait to see what happens next.",
+{
+"h3": "Common practical problems"
+},
+{
+"h3": "Keeping good records of your own"
+},
+"Keep copies of every letter and email you receive from the Home Office, along with a note of when it arrived. If a problem does come up, having everything in one place makes it much quicker for your adviser to understand what has happened and respond.",
+{
+"list": [
+"Only one person in the business understands the licence, and they leave",
+"Changes in the business are not passed on to whoever manages the licence",
+"Records are kept in different places and are hard to find",
+"Advice from another business, or from old guidance online, is relied on without checking",
+"Help is sought only once a problem has become urgent"
+]
+},
+"Most of these are about organisation rather than law, and a regulated adviser can help you put simple systems in place to avoid them."
+]
+]
 ],
 "faqs": [
-["Getting a licence", [
-["What is a sponsor licence?", "It is permission from the Home Office that allows a UK employer to sponsor certain workers from overseas for a work visa. The licence belongs to the business, and the business takes on duties for as long as it holds it."],
-["Does my business need a sponsor licence?", "If you want to employ someone who needs a work visa such as the Skilled Worker visa, you will usually need one. Some people already have the right to work in the UK through other routes and do not need sponsoring. A regulated adviser can check what applies to the people you want to hire."],
-["Can a small business or start-up get a licence?", "Yes, small businesses and new businesses can apply. They still need to show they are genuine, trading lawfully and have suitable HR systems in place. New businesses sometimes need extra documents to show they are operating."],
-["How long does a decision take?", "The Home Office publishes its standard processing times, and a faster priority service is sometimes available for an extra fee. Your adviser can tell you the current timescales and whether priority processing is worth considering."],
-["What documents will I need?", "It depends on your type of organisation and the routes you apply for. Common examples include proof of registration, employer liability insurance, bank statements and evidence of business premises. Your adviser will give you a checklist."],
-["What happens if my application is refused?", "There is usually a cooling off period before you can apply again. Your adviser can explain the reasons for the refusal and what can be done about it."],
-["Can an overseas company apply?", "Overseas companies often apply once they have a UK presence, and some routes are designed for businesses expanding into the UK. A regulated adviser can explain which route suits your plans."]
-]],
-["Running the licence", [
-["Who are the key personnel?", "These are the people nominated to run the licence in the Sponsor Management System. They usually include an Authorising Officer, a Key Contact and one or more Level 1 Users. They need to be suitable and usually based in the UK."],
-["What is a certificate of sponsorship?", "It is an electronic record the employer assigns to a worker in the Sponsor Management System. The worker uses the reference number when they apply for their visa. It is not a physical certificate."],
-["What do I have to report to the Home Office?", "Sponsors must report certain changes within set time limits, such as a worker not starting, leaving or being absent without permission, and some changes to the business. Your adviser can give you a full list."],
-["What is a compliance visit?", "It is a visit from Home Office officers to check that your business is meeting its duties. They may look at records and speak to staff. Visits can happen before or after a licence is granted, and sometimes without notice."],
-["Do I need to renew my licence?", "The rules on renewing licences have changed over time. Ask your adviser what applies to your licence today."],
-["What is an A rating and a B rating?", "Licences are usually given an A rating when granted. A licence can be downgraded to a B rating if the Home Office has concerns, and the business then has to follow an action plan to bring it back to an A rating."],
-["Can my licence be suspended or revoked?", "Yes, if the Home Office believes the business is not meeting its duties or poses a risk to immigration control. If this happens, speak to a regulated adviser straight away, as the time to respond is short."]
-]],
-["Costs", [
-["How much does a sponsor licence cost?", "The Home Office charges an application fee that depends on the size and type of your business. There are also fees for each certificate of sponsorship and usually an Immigration Skills Charge. Check the current figures on GOV.UK or ask your adviser."],
-["How much do advisers charge?", "Many firms offer a fixed fee for the application, with optional extras like a systems review or training. Ask for the fee in writing, and check whether Home Office fees are included."],
-["Who pays the Immigration Skills Charge?", "The sponsoring employer pays it, and it cannot usually be passed on to the worker. Your adviser can explain whether it applies to the roles you want to fill."],
-["Does Leaflegal charge me anything?", "No. Leaflegal is free for employers to use. The firm or adviser we introduce you to pays us a fee, which does not change what you pay them."]
-]],
-["Working with an adviser", [
-["Who can give immigration advice?", "In the UK, immigration advice must be given by someone who is regulated to give it, such as a solicitor regulated by the SRA or an adviser registered with the Immigration Advice Authority. Every firm we introduce is regulated."],
-["Is Leaflegal an immigration adviser?", "No. Leaflegal is not regulated to give immigration advice and does not do so. We introduce you to a regulated firm or adviser, and any advice comes from them."],
-["What will the adviser ask me?", "Expect questions about your business, the roles you want to fill, the people you want to hire and how you handle HR. Having your company details and an idea of the roles and salaries ready will help."],
-["Can the adviser help after the licence is granted?", "Many advisers offer ongoing support, such as assigning certificates, reporting changes and preparing for compliance visits. Ask what they offer and how it is charged."],
-["Do I have to go ahead after speaking to the adviser?", "No. You are free to decide whether to instruct the firm. There is no obligation."],
-["How quickly will someone contact me?", "The firm usually gets in touch within one working day of your enquiry, often sooner."]
-]]
+[
+"About licences",
+[
+[
+"What is a sponsor licence?",
+"It is permission from the Home Office that lets a UK organisation sponsor certain workers from overseas. The licence belongs to the business and comes with ongoing responsibilities for as long as it is held. A regulated adviser can explain what holding a licence would involve for your business in practice, and whether it is something worth exploring."
+],
+[
+"Can Leaflegal tell us whether we can sponsor?",
+"No. Leaflegal is not regulated to give immigration advice and does not do so. We do not assess your business or the roles you want to fill. We introduce you to a firm or adviser who is regulated, and they will look at your situation and explain your options in a first conversation."
+],
+[
+"Is this page for businesses or individuals?",
+"This page is for employers and other organisations. If you are an individual looking for work in the UK, or you already have a job offer, our work visas page is likely to be more useful. Either way, we can introduce you to a regulated adviser who handles that kind of matter. Some enquiries involve both, for example where an employer wants support for itself and for the worker it hopes to hire. Mention this when you enquire."
+],
+[
+"We have sponsored workers before. Do we still need advice?",
+"Many employers who have sponsored before still use an adviser, because the rules and guidance change often. What applied a few years ago may not apply now. A regulated adviser can look at your current position and explain anything that has changed since you last dealt with sponsorship."
+],
+[
+"Can an adviser help an overseas business?",
+"Yes. Many regulated advisers work with overseas companies that are setting up in the UK or moving staff here. Tell us a little about your plans when you enquire. The adviser will explain how they can help and what they would need from you. Having a short description of your group structure and your plans for the UK will make the first conversation more useful."
+],
+[
+"What if we only need one worker?",
+"Plenty of businesses that look into sponsorship only have one or two roles in mind. Advisers work with businesses of all sizes, from sole employers to large groups. A regulated adviser can talk through your plans and explain what would be involved, whatever the number of roles."
+],
+[
+"Why do sponsor licence rules change so often?",
+"Immigration policy is set by the government and is reviewed regularly, often in response to the economy and the labour market. Changes can affect fees, guidance and the way the system works. This is one reason why employers find it helpful to have a regulated adviser who keeps up to date and can explain what any change means for their business."
+]
+]
+],
+[
+"Working with an adviser",
+[
+[
+"What happens in the first conversation?",
+"The adviser will usually ask about your business, the roles you have in mind and any deadlines. They will then explain how they could help and what it might cost. It is a chance for both sides to see whether they are a good fit. You do not need to prepare a full set of documents beforehand."
+],
+[
+"How long is the first conversation?",
+"It varies. Some firms start with a short call to understand what you need, then arrange a longer meeting. Others go into more detail straight away. Ask the firm at the start whether there is a charge for the first meeting and how long it is likely to take. If you have a lot to cover, it can help to send a short note of your questions beforehand."
+],
+[
+"Can we meet the adviser in person?",
+"Many firms are happy to meet in person, and many also work entirely by phone and video. Sponsorship work can usually be done remotely, which means you are not limited to advisers near your business. Ask the firm how it prefers to work and whether it can visit your premises. Whatever the format, you should expect the same standard of service and the same confidentiality."
+],
+[
+"Who in our business should be involved?",
+"It usually helps to have a senior decision maker and whoever handles HR involved in early conversations. They will be the people dealing with the adviser and the process. Your adviser can explain who they would normally expect to work with in a business like yours. If the person handling the matter changes later, let the adviser know straight away so that messages do not go astray."
+],
+[
+"Will the adviser look at our HR systems?",
+"Many advisers do, either as part of their service or as an optional extra. They may look at how you keep staff records and handle changes. Ask what is included in their fee, and whether any review would happen before or after an application."
+],
+[
+"Can the adviser help after a licence is granted?",
+"Most advisers offer ongoing support, such as help with individual workers, training staff and preparing for Home Office visits. Some charge a monthly fee and others charge per piece of work. Ask what they offer and how it is charged before you decide."
+],
+[
+"What will the adviser need from us?",
+"In general, advisers need clear information about your business, prompt answers to their questions and access to the right people. They will tell you which documents they need and by when. Being open and responsive is one of the best ways to help the process run smoothly and avoid last minute pressure."
+]
+]
+],
+[
+"Choosing an adviser",
+[
+[
+"Who is allowed to give immigration advice?",
+"In the UK, immigration advice can only be given by people who are regulated to give it. That includes solicitors regulated by the SRA and advisers registered with the Immigration Advice Authority, formerly the OISC. Every firm we introduce is regulated. You can check any adviser on the relevant public register."
+],
+[
+"What should we look for in a firm?",
+"Many employers look for experience of businesses like theirs, clear fees, a named person handling the matter and good communication. It is reasonable to ask how often a firm handles sponsor licence work and how it supports clients once a licence is in place."
+],
+[
+"Are there warning signs to look out for?",
+"Be cautious of anyone who is not regulated but offers to handle immigration matters for a fee, who guarantees an outcome, or who suggests leaving information out of an application. A regulated adviser will be open about what they can and cannot promise."
+],
+[
+"Can we switch adviser later?",
+"Yes. You are free to change adviser if you are not happy, although it is usually easier to do so between pieces of work than in the middle of an urgent matter. Your new adviser can explain what information they would need from the previous one."
+],
+[
+"Should we use a solicitor or an immigration adviser?",
+"Both can be highly experienced. What matters most is that the person is regulated, is authorised for the kind of work you need and has experience of businesses like yours. Fees and ways of working differ between firms, so it is worth asking questions before you decide."
+],
+[
+"What if we are unhappy with the service?",
+"Regulated firms must have a complaints procedure, and you can ask for a copy at the start. If a complaint is not resolved, you may be able to take it further, for example to the Legal Ombudsman or to the adviser's regulator. The firm should explain how this works in its terms."
+]
+]
+],
+[
+"Costs",
+[
+[
+"How much does a sponsor licence cost?",
+"There are Home Office fees and charges connected with the licence and with each sponsored worker, and these change from time to time. Check the current figures on GOV.UK, or ask your adviser for an up to date breakdown so that you can budget properly before you commit."
+],
+[
+"How do advisers usually charge?",
+"Many firms charge a fixed fee for a licence application, with optional extras such as HR reviews or staff training. Urgent or complex work may be charged by the hour or quoted separately. Ask for the fee in writing, and check whether government fees are included or extra."
+],
+[
+"Does Leaflegal charge us anything?",
+"No. Leaflegal is free for employers to use. The firm or adviser we introduce you to pays us a fee for the introduction, which does not change what you pay them. You agree any fees directly with the firm, and you are under no obligation to instruct them."
+],
+[
+"Can we get a quote before deciding?",
+"Yes. Most firms will give you a written quote after the first conversation, once they understand what you need. Read it carefully, check what is included and ask questions about anything that is unclear. A good firm will be happy to explain. If you are comparing firms, check that the quotes cover the same work so that you are comparing like with like."
+],
+[
+"Will costs be different for a small business?",
+"Some Home Office charges depend on the size and type of the organisation, and adviser fees can vary with the amount of work involved. The current Home Office figures are on GOV.UK. Ask your adviser to explain which fees would apply to your business and to set out their own fee in writing."
+]
+]
+],
+[
+"Deadlines and urgency",
+[
+[
+"We have received a letter from the Home Office. What now?",
+"Note any deadline in the letter straight away, as time limits can be short. Leaflegal cannot advise on the letter, but we can introduce you to a regulated adviser quickly. Mention the deadline in your enquiry, and have the letter ready to send to the adviser when they get in touch."
+],
+[
+"Our licence has been suspended. Can you help?",
+"We can introduce you to a regulated adviser as a priority. A suspension can affect every worker you sponsor, and the time to respond is usually short. Tell us it is urgent when you enquire, and have any Home Office correspondence ready to share with the adviser."
+],
+[
+"How quickly will someone contact us?",
+"The firm usually gets in touch within one working day of your enquiry, often sooner. If you have an urgent deadline, such as a candidate's start date or a Home Office letter, say so in your enquiry so the firm knows to prioritise it. Make sure the phone number and email you give us are ones you check regularly, so that you do not miss the firm's first message."
+],
+[
+"Do we have to go ahead after speaking to the adviser?",
+"No. You are free to decide whether to instruct the firm, and there is no obligation. Nothing is agreed until you accept their terms. If you decide not to go ahead, you do not need to give a reason, and we will not pass your enquiry to anyone else without asking."
+],
+[
+"What information do you share with the firm?",
+"We share the details you give us in your enquiry, such as your business name, contact details, the type of help you need and how urgent it is. We share it only with the one firm we introduce you to, with your agreement, and never with advertising platforms. You can read more about how we handle information in our privacy notice."
+]
+]
+]
 ]
 }

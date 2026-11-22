@@ -1,0 +1,309 @@
+{
+"about": [
+[
+"Overview",
+[
+"Every Leaflegal lead passes the same set of checks before it reaches your firm. The checks are there for one reason. Your intake team's time is valuable, and it should be spent talking to real people about real matters that your firm can help with, not chasing numbers that do not connect or explaining to someone that you do not handle their kind of case.",
+"Our checks fall into four groups. We check the contact details. We check that the matter is in scope for your firm. We check that the person is looking for paid legal help. And we record the person's consent to be contacted by a firm, in their own words and at the time they gave it. Only an enquiry that passes all four becomes a lead.",
+{
+"h3": "Checks happen before the lead exists"
+},
+"Most of our checks happen inside the enquiry form itself, while the person is filling it in. That matters. It means problems are caught when the person can still fix them, such as a mistyped phone number. It also means people we cannot help are told so before they submit anything, rather than becoming a lead that your firm has to turn away.",
+{
+"h3": "Speed and checks together"
+},
+"Checks can slow things down, and slow leads lose value. We have designed ours to run in the moment, so that a lead can be sent to your firm as soon as the person submits their enquiry and it has been checked. We do not hold leads back to batch them, review them by hand or call the client first. You are the first person to speak to them about their matter.",
+{
+"h3": "What this page covers"
+},
+"This page explains each check in plain terms, what it catches and what it cannot catch. No set of checks can tell you whether a client will instruct you, and we are careful not to suggest otherwise. What checks can do is remove the most common sources of wasted time before a lead reaches you.",
+{
+"h3": "Why checks matter to a law firm"
+},
+"Wasted calls cost more in a law firm than in most businesses. The people who call new enquiries are often fee earners or experienced intake staff whose time is expensive. Every call to a number that does not connect, every conversation with someone who wanted free advice and every enquiry about a matter your firm does not handle takes them away from chargeable work. Checks will never remove every wasted call, but they remove the most common causes before the lead reaches you."
+]
+],
+[
+"Contact details",
+[
+"A lead is only useful if you can reach the person. The contact details on every Leaflegal lead are checked when the enquiry is submitted.",
+{
+"h3": "Mobile number"
+},
+"The client must give a UK mobile number, and it is checked as a valid UK mobile number at the point of submission. This catches numbers with missing or extra digits, landlines entered in the mobile field, overseas numbers in areas where we need a UK mobile and obviously invented numbers. If the number fails the check, the person is asked to correct it before they can continue.",
+{
+"h3": "Email address"
+},
+"The email address is checked for a real domain. That means the part after the at sign has to belong to a domain that exists and can receive email. This catches addresses on domains that do not exist, which includes many made up addresses and some typing mistakes.",
+{
+"h3": "Name"
+},
+"The client gives their name so that you know who you are calling. For business enquiries, such as debt recovery or licensing, the lead also includes the business name where the client gave it.",
+{
+"h3": "Best time to call"
+},
+"Where the client tells us a best time to call, it is included in the lead. It is not a restriction, but it can help you decide when to try again if the first call is not answered.",
+{
+"h3": "Why we check at submission"
+},
+"Checking contact details while the person is still on the form means they can put things right immediately. Checking afterwards would mean either sending you a lead we already know is faulty or holding it back while someone tries to reach the client, and both waste time. Catching problems at the point of entry keeps leads fast and keeps errors to a minimum.",
+{
+"h3": "What contact checks cannot do"
+},
+"A number can be valid and still belong to someone who mistyped one digit. An email can be on a real domain and still be misspelt. Checks at submission catch most problems but not all of them. If a lead turns out to have wrong contact details, tell us within the review period in your partner agreement and it will be dealt with as your agreement sets out."
+]
+],
+[
+"Scope checks",
+[
+"A lead that your firm cannot handle is no use to you, however genuine the client. Scope checks make sure each lead fits the practice areas, matter types and locations agreed with you.",
+{
+"h3": "Practice area and matter type"
+},
+"The client chooses the area of law and the type of matter from the options on our form, then describes it in their own words. The lead is matched only to a firm that has chosen that practice area and matter type. A firm that takes contested finances but not simple divorce will not receive a simple divorce enquiry.",
+{
+"h3": "Location"
+},
+"The client tells us where they are. In six of our seven areas, matters must be in England and Wales. Immigration enquiries can come from anywhere in the UK. Each lead is matched only to a firm that covers that location, or that works nationally.",
+{
+"h3": "Areas we never cover"
+},
+"Some matters are filtered out completely, whatever a firm's criteria. We do not generate personal injury or clinical negligence enquiries, where referral fees are prohibited under section 56 of the Legal Aid, Sentencing and Punishment of Offenders Act 2012. We do not handle claims management work such as housing disrepair or financial mis-selling. People with these matters are told we cannot help before they submit.",
+{
+"h3": "Business to business debts only"
+},
+"Debt recovery enquiries are checked to make sure they are business to business. We do not send consumer debts, such as a person chasing money owed by a friend or a business chasing an individual consumer.",
+{
+"h3": "Immigration"
+},
+"Immigration enquiries collect only the type of matter, urgency and contact details. Leaflegal never asks questions that would amount to assessing someone's immigration position and never gives immigration advice. Enquiries go only to regulated firms and registered advisers."
+]
+],
+[
+"Paid help",
+[
+"One of the most common frustrations with legal marketing is spending time on people who were only ever looking for free advice. Every Leaflegal client confirms they want paid legal help before their enquiry is submitted.",
+{
+"h3": "How we ask"
+},
+"Our form asks directly whether the person is looking for paid legal help or for legal aid or free advice. The wording makes clear that a solicitor or regulated adviser will charge for their work. Only people who confirm they want paid help can submit an enquiry.",
+{
+"h3": "What happens to everyone else"
+},
+"People who say they only want legal aid or free advice are told politely that we cannot help and, where possible, pointed towards organisations that might. They do not become leads and your firm never sees them.",
+{
+"h3": "What paid help confirmed means"
+},
+"It means the person understands that they will be paying for legal help and is looking for a firm on that basis. It does not mean they have agreed to a particular fee or that they can afford every kind of service. Some clients will find your fees higher than they expected. A clear, honest conversation about cost on the first call is the best way to handle that.",
+{
+"h3": "Family law and legal aid"
+},
+"Legal aid is not available for most private family matters, so most separating couples pay privately. Our family enquiries are from people who have confirmed they want paid help. People who tell us they are looking for legal aid are told we cannot help and pointed elsewhere, so they never become a lead."
+]
+],
+[
+"Consent",
+[
+"Every Leaflegal lead comes with a record of the client's consent. This protects the client, protects your firm and helps you start the first call with confidence.",
+{
+"h3": "Two separate boxes"
+},
+"Before an enquiry can be submitted, the client ticks two boxes. The first confirms they have read our terms and privacy policy and understand that Leaflegal is an introduction service, not a law firm. The second gives consent for their details to be shared with a firm we match them with, and for that firm to contact them by phone, email or text about their matter.",
+{
+"h3": "Why two boxes"
+},
+"Keeping the two separate means a client cannot agree to be contacted without also seeing that Leaflegal is an introducer, and cannot accept our terms without making a separate, active choice about being contacted. Neither box is ticked in advance.",
+{
+"h3": "What we record"
+},
+"We record the exact wording the client agreed to and the time they agreed to it. That record is sent with every lead, so you always know what the client was told and when.",
+{
+"h3": "The referral arrangement"
+},
+"Our consent wording tells every client that Leaflegal is paid by the firms it introduces them to. Under the SRA Code of Conduct, firms must make sure clients are told about any financial arrangement with an introducer. Having the wording with each lead helps your client care information match what the client has already been told.",
+{
+"h3": "What consent covers"
+},
+"The consent covers contact from your firm about the client's enquiry. It does not cover adding them to a newsletter or general marketing list. If a client wants to hear more from your firm, ask for marketing consent separately.",
+{
+"h3": "Using the record"
+},
+"Occasionally a client does not remember making an enquiry, especially if they filled in the form late at night or in a stressful moment. The consent record lets you explain, politely, when they asked to be contacted and what they agreed to. Most people remember once reminded. If a client asks you not to contact them again, respect that and let us know."
+]
+],
+[
+"Not included",
+[
+"It is as important to understand what our checks do not involve as what they do. Being clear about this helps you plan your own intake.",
+{
+"h3": "We do not call clients first"
+},
+"We do not phone clients to qualify them before sending a lead. That would slow things down and mean the client had to explain their situation twice. You are the first person to speak to them.",
+{
+"h3": "We do not assess the merits"
+},
+"Leaflegal is not a law firm and does not give legal advice. We do not judge whether a client has a good case, a strong defence or a realistic chance of a particular outcome. That is your role once you speak to them.",
+{
+"h3": "We do not check identity"
+},
+"Our checks are about contact details, scope, paid help and consent. They are not identity or anti-money laundering checks. Your firm carries out its own identity, conflict and anti-money laundering checks before taking on a client, in the usual way.",
+{
+"h3": "We do not run conflict checks"
+},
+"We do not know who your existing clients are or who is on the other side of their matters. Run your own conflict checks. If you cannot act, let us know.",
+{
+"h3": "We do not guarantee instructions"
+},
+"A lead that passes every check is a real person with a real matter who has asked to hear from a firm. Whether they instruct you depends on many things, including how quickly you call, how you explain your service and your fees.",
+"To see a checked lead for yourself, <a href=\"/partners/apply\">apply to become a partner firm</a> and we will show you a sample on your call."
+]
+]
+],
+"faqs": [
+[
+"Contact checks",
+[
+[
+"How do you check a lead's phone number?",
+"The client must give a UK mobile number, and it is checked as a valid UK mobile number when they submit the enquiry. If it fails, they are asked to correct it before they can continue. This catches missing digits, landlines in the mobile field and invented numbers before a lead is ever created."
+],
+[
+"How do you check email addresses?",
+"The email address is checked for a real domain at the point of submission. The part after the at sign must belong to a domain that exists and can receive email. This catches addresses on domains that do not exist, including many invented ones. No check can catch every misspelling, so if an email bounces, raise it within your review period."
+],
+[
+"Can a lead still have wrong details?",
+"Occasionally. A number can be valid but belong to someone else if a client mistypes one digit, and an email can be on a real domain but misspelt. Checks at submission catch most problems but not every one. If a lead has wrong details, tell us within the review period in your partner agreement."
+],
+[
+"Why do you ask for a mobile rather than a landline?",
+"A mobile lets your firm call and text, which is often the quickest way to reach someone who is at work, travelling or busy. A short text saying you have received their enquiry and will call again can keep a client engaged when they cannot answer. Every lead includes a verified UK mobile number and an email address for the same reason."
+],
+[
+"Do leads include any other contact details?",
+"Leads include the client's name, a UK mobile number and an email address, plus the best time to call where they gave one. For business enquiries, the business name is included where the client gave it. If a client mentions another way to reach them in their description, it appears in the lead as they wrote it."
+],
+[
+"What if the client does not answer?",
+"An unanswered call does not mean the details are wrong. Many people do not answer unknown numbers straight away. Leave a short voicemail that mentions their enquiry, send an email and a text, and try again later the same day and the next morning. If the number connects to someone else, that is a different matter and can be raised as invalid."
+],
+[
+"What if a client gives a work email?",
+"That is fine. Work emails are on real domains and pass our check. Some clients prefer to use a personal address for sensitive matters such as family law, and some business clients use their work address for debt recovery or licensing. Use whichever address the client gave, and be mindful that others may see emails sent to a shared work inbox."
+]
+]
+],
+[
+"Scope and fit",
+[
+[
+"How do you make sure a lead fits my firm?",
+"Each lead is matched against the practice areas, matter types and locations agreed with you. The client chooses their matter type from our options and tells us where they are. A lead only reaches you if it fits what you chose and you have not reached your monthly cap. Paused firms are left out."
+],
+[
+"What if a lead is outside my criteria?",
+"That should not happen, but if it does, tell us within the review period in your partner agreement. A lead that falls outside your agreed practice areas, matter types or locations will usually count as invalid. We will also look at why it happened so it does not happen again."
+],
+[
+"Do you filter out personal injury enquiries?",
+"Yes, completely. Paying referral fees for personal injury and clinical negligence work is prohibited under section 56 of the Legal Aid, Sentencing and Punishment of Offenders Act 2012. People with those matters are told we cannot help before they submit, and they never become leads. If one slips through because a client described their matter inaccurately, tell us straight away."
+],
+[
+"Do you check that debts are business to business?",
+"Yes. Our debt recovery form checks that the client is a business chasing a debt owed by another business. We do not send consumer debts. The lead also includes the rough amount owed, the age of the debt and whether it is disputed. This helps commercial teams judge the likely work and decide how quickly to call."
+],
+[
+"Are immigration enquiries checked differently?",
+"Immigration enquiries collect only the type of matter, urgency and contact details. Leaflegal never asks questions that would amount to assessing someone's immigration position and never gives immigration advice. Enquiries go only to SRA or CILEx regulated firms or to advisers registered with the Immigration Advice Authority at the right level."
+],
+[
+"Do you cover matters outside England and Wales?",
+"In six of our areas, matters must be in England and Wales, and the location check makes sure of that. Immigration enquiries can come from anywhere in the UK, because immigration law applies across the UK. Clients outside the areas we cover are told we cannot help before they submit, so they never become leads. Your own location choices narrow this further to the places your firm serves."
+],
+[
+"Can a client choose the wrong matter type?",
+"Sometimes. People are not lawyers, and a client might describe a lease extension as a remortgage problem or choose divorce when their main concern is the children. Their own description usually makes the real issue clear. If a lead plainly falls outside what you agreed to receive, raise it within your review period."
+]
+]
+],
+[
+"Paid help",
+[
+[
+"Do all clients want paid help?",
+"Yes. Every client confirms they are looking for paid legal help before their enquiry is submitted. People who only want legal aid or free advice are told we cannot help and pointed elsewhere, so they never become leads. This does not mean they have agreed to a particular fee, but it does mean they expect a solicitor to charge for their work."
+],
+[
+"Does paid help confirmed mean they will accept my fees?",
+"No. It means they understand that a solicitor will charge and are looking for a firm on that basis. They have not agreed to any particular fee. Some will find your fees higher than expected. Explaining your fees clearly and early gives you the best chance of an instruction. Clarity builds trust."
+],
+[
+"What about family clients who might get legal aid?",
+"Legal aid is not available for most private family matters, so most clients pay privately. People looking for legal aid are told we cannot help and pointed elsewhere. Every family lead you receive has confirmed they want paid help. This means the family leads you receive are from people looking for privately funded help with their separation, finances or children."
+],
+[
+"Do business clients confirm paid help too?",
+"Yes. Business clients, such as those chasing debts or dealing with a licence, confirm they are looking for paid legal help in the same way. For debt recovery, the lead also tells you the rough amount owed, which helps you judge the likely work and fees. Licensing leads show the licence type and any hearing or opening date."
+],
+[
+"Do you ask clients about their budget?",
+"Not in general. Asking about budget before a client has spoken to a firm can put people off and is hard to answer without knowing what the work involves. Some areas include information that hints at the size of a matter, such as rough property value or the amount of an unpaid debt."
+]
+]
+],
+[
+"Consent",
+[
+[
+"How do clients give consent?",
+"They tick two separate boxes before submitting. The first confirms they have read our terms and privacy policy and understand that Leaflegal is an introduction service. The second consents to their details being shared with a matched firm and to that firm contacting them by phone, email or text about their matter."
+],
+[
+"Are the consent boxes pre-ticked?",
+"No. Both boxes start unticked, and the client has to tick each one themselves before the enquiry can be submitted. This makes consent an active choice rather than something hidden in the small print. The wording the client saw and the time they ticked each box are recorded and sent with the lead. This gives your firm a clear record of what the client agreed to before you make contact."
+],
+[
+"What is in the consent record?",
+"The exact wording the client agreed to and the time they agreed to it. It is sent with every lead, so you know what the client was told, including that Leaflegal is paid by the firms it introduces, and when they gave consent. If a client does not remember enquiring, the record helps you explain politely when and how they asked to be contacted."
+],
+[
+"Can I use the lead for marketing?",
+"Not without separate consent. The client agreed to be contacted by your firm about their enquiry. If they want to receive newsletters or other marketing, ask them separately and record their answer in the usual way. The consent given through Leaflegal covers contact about the client's enquiry only. Electronic marketing usually needs its own consent under PECR, so keep the two separate in your records."
+],
+[
+"Does the consent help with referral disclosure?",
+"It helps. Our wording tells every client that Leaflegal is paid by the firms it introduces. The SRA Code of Conduct requires you to make sure clients are told about any financial arrangement with an introducer, and many firms also confirm it in their client care letter. Your compliance officer can confirm your firm's approach."
+],
+[
+"What if a client asks not to be contacted again?",
+"Respect their wishes and stop contacting them about the enquiry. Let us know too, so that we have a record. Clients can change their minds at any time, and handling that politely protects your firm's reputation and keeps you in line with data protection law. Clear handling protects everyone. Note it on your record."
+]
+]
+],
+[
+"Limits of checks",
+[
+[
+"Do you call leads before sending them?",
+"No. Leads are sent as soon as they are checked, so you are the first person to speak to the client. Calling them first would delay the lead and mean the client had to explain their matter twice. Our checks run while the client fills in the form, so they do not hold the lead back. The lead reaches you as soon as the enquiry has been checked."
+],
+[
+"Do your checks include identity or anti-money laundering checks?",
+"No. Our checks cover contact details, scope, paid help and consent. Identity, anti-money laundering and conflict checks remain your firm's responsibility before you take on a client, as they would for any new enquiry. Leaflegal does not ask for identity documents at the enquiry stage. The client's name, contact details and matter information help you prepare for the first call, and your firm then carries out its usual checks."
+],
+[
+"Do you assess whether the client has a good case?",
+"No. Leaflegal is not a law firm and does not give legal advice. We do not judge the merits of a matter or the likely outcome. That is for your firm once you speak to the client. Clients are told clearly that Leaflegal does not give legal advice. Any view on the merits, the options or the likely costs comes from your firm once you have spoken to them."
+],
+[
+"Can checks guarantee a client will instruct me?",
+"No. Checks remove the most common sources of wasted time, such as wrong details, out of scope matters and people wanting free help. Whether a client instructs depends on many things, including how quickly you call, how you explain your service and whether your fees suit them. We provide qualified enquiries, not guaranteed instructions."
+],
+[
+"Can I suggest a new check?",
+"Yes. If your intake team keeps running into the same problem, tell us. We will look at whether a change to our form or checks would help. We keep the form short so that people finish it, so we weigh every new question carefully, but feedback from firms is how our checks improve."
+]
+]
+]
+]
+}

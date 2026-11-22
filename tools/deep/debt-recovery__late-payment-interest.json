@@ -1,0 +1,325 @@
+{
+ "about": [
+  [
+   "Overview",
+   [
+    "When one business pays another business late, the law in England and Wales often allows the business that was paid late to claim extra money on top of the invoice. This comes from the Late Payment of Commercial Debts (Interest) Act 1998, usually called late payment law. It gives a right to statutory interest, a fixed sum of compensation for each late invoice and, in some cases, reasonable costs of recovering the debt.",
+    "The aim of the law is to discourage late payment and to make sure a business that has to wait for its money is not left out of pocket. It applies automatically to many contracts between businesses for goods or services, unless the contract itself provides a proper remedy for late payment instead.",
+    "Many businesses do not realise they have these rights, or choose not to use them to protect a customer relationship. Others add statutory interest and compensation as a matter of routine when an invoice goes overdue, or when a debt is passed to a solicitor. Either way, it helps to know what the law allows so you can make an informed choice.",
+    "Late payment law only applies where both sides are acting in the course of a business. It does not apply to consumers, and Leaflegal does not introduce firms for consumer debt collection. This page covers debts between businesses in England and Wales.",
+    "The amounts involved on a single invoice may look small. Across a long running account with many late invoices, or on a large invoice paid months late, they can add up to a meaningful sum. They can also help a business cover the cost of chasing, which is often the part of late payment that hurts most.",
+    {
+     "h3": "What can usually be claimed"
+    },
+    {
+     "list": [
+      "Statutory interest on the unpaid amount for each day it is late",
+      "A fixed sum of compensation for each late invoice, depending on its size",
+      "Reasonable costs of recovery above the fixed sum in some cases",
+      "Contractual interest instead, where your contract sets its own remedy"
+     ]
+    },
+    {
+     "h3": "Who usually claims"
+    },
+    "Suppliers of goods, contractors, consultants, agencies, manufacturers, wholesalers and other businesses supplying other businesses all commonly rely on late payment law. It can be used against customers of any size, including large companies and public bodies.",
+    "Leaflegal does not give legal advice. We introduce your business to one regulated law firm that handles commercial debt recovery, and the solicitor will look at your contracts and invoices and explain what can be claimed in your case."
+   ]
+  ],
+  [
+   "How interest works",
+   [
+    "Statutory interest is simple interest, not compound interest. It is calculated on the amount of the unpaid invoice for each day the payment is late. The rate and the start date are set by the law, though a contract can change some of this.",
+    {
+     "h3": "The rate"
+    },
+    "The statutory rate is 8% a year above a reference rate, which is the Bank of England base rate. The reference rate is fixed for six month periods. For debts that become late in the first half of the year, the base rate on 31 December before is used. For debts that become late in the second half of the year, the base rate on 30 June is used. The reference rate then stays the same for that debt, even if the base rate later changes.",
+    {
+     "h3": "When interest starts"
+    },
+    "If the contract sets a payment date, interest usually starts to run from the day after that date. If no payment date was agreed, the law sets a default period, which is generally 30 days after the later of delivery of the goods or services and the customer receiving the invoice. Your solicitor will work out the correct start date for each invoice.",
+    {
+     "h3": "When interest stops"
+    },
+    "Interest runs until the invoice is paid. If the debt goes to court, the way interest is calculated after a claim or judgment can change, and your solicitor will explain this.",
+    {
+     "h3": "Daily rate"
+    },
+    "Because interest is calculated daily, it is common to show it as a total up to a certain date, plus a daily rate that continues after that. This is how it usually appears in a letter before action or a court claim.",
+    {
+     "h3": "Paid late but paid"
+    },
+    "Statutory interest and compensation can usually still be claimed even if the invoice itself has now been paid late. The right arose when the payment became late. Whether to pursue it is a commercial decision for your business.",
+    {
+     "h3": "Part payments"
+    },
+    "If a customer pays part of an invoice late, interest is usually worked out on the amount outstanding from time to time. The interest on the part that was paid stops on the date of that payment, while interest on the balance continues. A clear account history makes this calculation much easier.",
+    {
+     "h3": "An example in words"
+    },
+    "Imagine an invoice with a 30 day payment term that is paid three months late. Statutory interest would usually run for roughly 90 days on the invoice amount at the statutory rate, and a single fixed sum of compensation would apply based on the size of the invoice. Your solicitor will do the exact calculation using the correct dates and reference rate."
+   ]
+  ],
+  [
+   "Compensation",
+   [
+    "As well as interest, late payment law gives a fixed sum of compensation for each late invoice. It is designed to cover the cost of chasing the debt, and it can be claimed without proving what the chasing actually cost.",
+    {
+     "h3": "Fixed sums"
+    },
+    "The amount depends on the size of the debt. The law sets three bands, which have been £40 for debts under £1,000, £70 for debts of £1,000 up to £10,000 and £100 for debts of £10,000 or more. These figures have stayed the same for many years, but it is worth checking GOV.UK or with your solicitor in case they change.",
+    {
+     "h3": "Per invoice"
+    },
+    "Compensation is usually calculated for each separate debt, which normally means each invoice. A customer who has paid several invoices late can therefore face several fixed sums. Your solicitor will check how your invoices and contract are set up.",
+    {
+     "h3": "Reasonable recovery costs"
+    },
+    "If the actual cost of recovering the debt is more than the fixed sum, a creditor may be able to claim reasonable costs of recovery as well, after deducting the fixed sum. This might include some of the cost of a debt recovery agency or solicitor's letter. Whether costs are reasonable depends on the circumstances, and costs that are dealt with separately in court proceedings cannot usually be claimed twice.",
+    {
+     "h3": "Only on late debts"
+    },
+    "Compensation only applies where statutory interest applies. If your contract replaces statutory interest with its own remedy, the fixed sums may not apply in the same way. Your solicitor will check this.",
+    {
+     "h3": "Adding it to the account"
+    },
+    "Some businesses add statutory compensation to a customer's statement as soon as an invoice goes overdue. Others only claim it if the debt is passed to a solicitor. There is no single right approach, and your solicitor can explain the practical effect of each."
+   ]
+  ],
+  [
+   "Your contract",
+   [
+    "Late payment law applies automatically, but businesses can agree something different in their contract within limits. Your contract terms are therefore an important part of the picture.",
+    "The first question a solicitor will usually ask is which terms govern the contract. The answer decides whether statutory interest applies, whether a contractual rate replaces it and what the payment date was. That in turn affects every figure in the claim.",
+    {
+     "h3": "Contractual interest"
+    },
+    "Many terms and conditions set their own interest rate for late payment. If your contract provides a substantial remedy for late payment, that remedy usually applies instead of statutory interest. You cannot normally claim both.",
+    {
+     "h3": "Substantial remedy"
+    },
+    "A contract cannot simply exclude statutory interest or replace it with a token amount. A term that tries to do this without providing a substantial remedy for late payment can be void, in which case statutory interest applies. Whether a remedy is substantial depends on things like the interest rate set, the bargaining strength of the parties and whether the term was reasonable.",
+    {
+     "h3": "Payment terms"
+    },
+    "Businesses are generally free to agree payment periods, but there are rules about very long ones. Between businesses, payment periods of more than 60 days are only allowed if they are not grossly unfair to the supplier. Public authorities are generally expected to pay within 30 days. Your solicitor will explain how these rules might affect your contract.",
+    {
+     "h3": "Terms that were never agreed"
+    },
+    "Your own terms only apply if they formed part of the contract. If they were printed on the back of an invoice sent after the work was done, they may not count. If they were not incorporated, the statutory scheme may apply instead.",
+    {
+     "h3": "Reviewing your terms"
+    },
+    "Many businesses use a late payment problem as a prompt to review their terms. Clear payment terms, an agreed interest rate and a clear process for sharing terms with customers can make future claims more straightforward."
+   ]
+  ],
+  [
+   "Claiming it",
+   [
+    "There is no special form for claiming statutory interest and compensation. They are usually added to the amount demanded, either in a letter to the customer or in a court claim.",
+    {
+     "h3": "In a letter"
+    },
+    "A creditor can tell the customer that it is claiming statutory interest and compensation and show how they have been calculated. Many solicitors include them in a letter before action, setting out the invoice total, the interest to date, the daily rate and the fixed sums.",
+    {
+     "h3": "In a court claim"
+    },
+    "If the debt goes to court, statutory interest and compensation can be included in the claim. The basis for the interest must be set out clearly, and the creditor cannot usually claim statutory interest and the court's own discretionary interest for the same period. Your solicitor will choose the basis that suits your claim.",
+    {
+     "h3": "Showing your workings"
+    },
+    "Clear calculations make a claim harder to argue with. A simple schedule listing each invoice, its due date, the date paid or still outstanding, the interest and the compensation is often all that is needed.",
+    {
+     "h3": "Conduct of the creditor"
+    },
+    "The court can reduce or remove statutory interest in some situations, for example where the creditor's own conduct makes it fair to do so. Being able to show that you invoiced correctly and dealt with the customer fairly helps.",
+    {
+     "h3": "Time limits"
+    },
+    "A claim for statutory interest and compensation is a claim for money due under the law, and time limits apply. As with the underlying debt, the usual period is six years. It is easier to claim while records are clear and the debt is recent.",
+    {
+     "h3": "Commercial judgement"
+    },
+    {
+     "h3": "Using interest in negotiation"
+    },
+    "Statutory interest and compensation can also be a useful part of settlement talks. A creditor might offer to waive some or all of the interest if the customer pays the invoice in full by a set date. This gives the customer a reason to act quickly while keeping the main debt intact. Your solicitor can help structure an offer like this and record it clearly in writing.",
+    "Some businesses waive interest as a goodwill gesture if the customer pays the invoice promptly once chased. That is a choice for your business. Your solicitor can explain the amounts at stake so that you can decide."
+   ]
+  ],
+  [
+   "Costs",
+   [
+    "Working out statutory interest and compensation is usually a small part of a debt recovery matter, and many firms include it within their fixed fee for a letter before action or a claim.",
+    {
+     "h3": "Using the compensation to offset costs"
+    },
+    "The fixed sums of compensation, and any reasonable recovery costs, are designed to help a creditor cover the cost of chasing. For smaller debts in particular, they can make the cost of a solicitor's letter more manageable.",
+    {
+     "h3": "Reviewing contracts"
+    },
+    "If you want a solicitor to review your terms and conditions or advise on your late payment rights more generally, this is usually charged separately. Ask the firm for a fixed fee or estimate.",
+    {
+     "h3": "Larger or older debts"
+    },
+    "For a customer that has paid many invoices late over a long period, the interest and compensation can add up. Calculating them across a long account history may take more time. Ask the firm how it would charge for this.",
+    "Leaflegal is free for businesses to use. The firm pays us for the introduction, and that never changes what you pay them."
+   ]
+  ]
+ ],
+ "faqs": [
+  [
+   "The basics",
+   [
+    [
+     "What is late payment interest?",
+     "It is interest that a business can claim when another business pays it late. Under late payment law, a creditor can usually claim statutory interest at 8% a year above the Bank of England base rate, plus a fixed sum of compensation for each late invoice, unless the contract provides its own substantial remedy for late payment."
+    ],
+    [
+     "Does late payment law apply to my business?",
+     "It applies to contracts for the supply of goods or services where both parties are acting in the course of a business. That covers most trade between businesses, including sales to public bodies. It does not apply to sales to consumers. Your solicitor will check whether your contract is covered."
+    ],
+    [
+     "Do I have to tell the customer in advance?",
+     "No. The right to statutory interest arises under the law, so you do not need to have warned the customer or included it in your terms. Many businesses do mention it in their terms or on invoices, which can encourage prompt payment and avoid surprises."
+    ],
+    [
+     "Does it apply to sole traders?",
+     "Yes, as long as the sole trader bought the goods or services for their business. A sole trader buying for personal use would be a consumer, and late payment law would not apply. Your solicitor will consider how your customer was acting when the contract was made."
+    ],
+    [
+     "Can I claim against a large company or public body?",
+     "Yes. Late payment law applies regardless of the size of the customer, and public authorities are covered too. There are also rules on how long public authorities should take to pay. Your solicitor will explain how these rules affect your invoices."
+    ],
+    [
+     "Is claiming interest bad for customer relationships?",
+     "It can be, and some businesses choose not to claim with customers they value. Others find that knowing interest will be added encourages prompt payment. It is a commercial decision for your business. Your solicitor can tell you what is at stake so you can decide."
+    ],
+    [
+     "Do you help with consumer debts?",
+     "No. Leaflegal only introduces businesses that are owed money by other businesses in England and Wales. Late payment law does not apply to consumer contracts, and consumer debt collection is outside this service."
+    ]
+   ]
+  ],
+  [
+   "Interest",
+   [
+    [
+     "How is statutory interest calculated?",
+     "It is simple interest at 8% a year above the Bank of England base rate, calculated on the unpaid amount for each day the payment is late. The base rate used is fixed for six month periods. Your solicitor will calculate the total and the daily rate that continues until payment."
+    ],
+    [
+     "Which base rate is used?",
+     "For debts that become late between January and June, the base rate in force on the previous 31 December is used. For debts that become late between July and December, the rate on 30 June is used. That rate then applies to the debt even if the base rate changes later."
+    ],
+    [
+     "When does interest start to run?",
+     "If your contract sets a payment date, interest usually starts the day after that date. If no date was agreed, the law generally allows 30 days after the later of delivery and the customer receiving the invoice. Your solicitor will check the start date for each invoice."
+    ],
+    [
+     "Is it simple or compound interest?",
+     "Statutory interest is simple interest. It is calculated on the original unpaid amount and is not added to the debt and then charged interest itself. A contract can provide for a different arrangement, which your solicitor can explain."
+    ],
+    [
+     "Can I claim interest after the invoice has been paid?",
+     "Usually, yes. The right to statutory interest and compensation arises when the payment becomes late, so it can often be claimed even after the invoice itself has been paid late. Whether it is worth pursuing is a commercial decision for your business."
+    ],
+    [
+     "Can I claim both contractual and statutory interest?",
+     "No. If your contract provides a substantial remedy for late payment, that remedy usually applies instead of statutory interest. If your contractual term is not a substantial remedy, it may be void and statutory interest may apply instead. Your solicitor will check your terms."
+    ],
+    [
+     "What if the customer paid part of the invoice?",
+     "Interest is usually calculated on whatever remains unpaid from time to time. Interest on the part paid stops on the date it was paid, while interest on the balance continues. A clear account history showing each payment makes the calculation straightforward. Your solicitor can prepare it for you."
+    ]
+   ]
+  ],
+  [
+   "Compensation",
+   [
+    [
+     "What fixed compensation can I claim?",
+     "Late payment law sets a fixed sum for each late debt, depending on its size. The bands have been £40 for debts under £1,000, £70 for debts of £1,000 up to £10,000 and £100 for debts of £10,000 or more. Check GOV.UK or with your solicitor in case they change."
+    ],
+    [
+     "Is compensation per invoice or per customer?",
+     "It is usually per debt, which normally means each separate invoice. If a customer has paid several invoices late, a fixed sum can often be claimed for each one. Your solicitor will look at how the invoices were raised and what the contract says."
+    ],
+    [
+     "What are reasonable recovery costs?",
+     "If the actual cost of recovering a debt is more than the fixed sum, the creditor may be able to claim reasonable costs of recovery as well, less the fixed sum already claimed. This can include some external costs of chasing. Whether costs are reasonable depends on the circumstances."
+    ],
+    [
+     "Do I need to prove what chasing cost me?",
+     "Not for the fixed sum. It is set by law and does not depend on the actual cost of chasing. If you want to claim reasonable recovery costs above the fixed sum, you will need to show what those costs were and why they were reasonable."
+    ],
+    [
+     "Can I claim compensation if my contract sets its own interest rate?",
+     "It depends. Fixed compensation is tied to statutory interest, so if your contract replaces statutory interest with its own substantial remedy, the position may be different. Your solicitor will look at your terms and explain what can be claimed."
+    ],
+    [
+     "Can I claim compensation on a small invoice?",
+     "Yes. The fixed sum applies to qualifying late debts of any size, with the smallest band covering debts under £1,000. On a small invoice the compensation can be a noticeable proportion of the amount owed, which is one reason it can help make chasing smaller debts worthwhile. Your solicitor will confirm what applies."
+    ]
+   ]
+  ],
+  [
+   "Contracts",
+   [
+    [
+     "Can my customer's terms exclude late payment interest?",
+     "Terms cannot simply exclude statutory interest. A term that tries to exclude or limit it without providing a substantial remedy for late payment can be void. Whether a remedy is substantial depends on factors such as the rate and the circumstances. Your solicitor will review whichever terms apply."
+    ],
+    [
+     "Whose terms apply, mine or the customer's?",
+     "It depends on how the contract was formed. Where both sides send their own terms, it can be unclear which set applies, and the answer often depends on the order of documents and what happened next. Your solicitor will look at the paperwork and explain which terms are likely to govern the contract."
+    ],
+    [
+     "Are long payment terms allowed?",
+     "Businesses can generally agree their own payment periods, but between businesses a period of more than 60 days is only allowed if it is not grossly unfair to the supplier. Public authorities are generally expected to pay within 30 days. Your solicitor can explain how these rules apply."
+    ],
+    [
+     "Should my terms mention late payment interest?",
+     "It is not required, because statutory interest applies anyway unless replaced. However, many businesses state their rights clearly in their terms or on invoices so that customers know what to expect. A solicitor can review your terms and suggest clear wording."
+    ],
+    [
+     "What if there is no written contract?",
+     "Late payment law still applies to contracts made orally or through emails and orders, as long as both parties are acting in the course of business. Without agreed payment terms, the default payment period set by the law will usually apply."
+    ]
+   ]
+  ],
+  [
+   "Claiming",
+   [
+    [
+     "How do I claim statutory interest?",
+     "Usually by adding it to the amount demanded, either in a letter to the customer or in a court claim. The claim should show how the interest and compensation have been calculated. Many solicitors include a schedule listing each invoice, its due date and the amounts claimed."
+    ],
+    [
+     "Can I add interest in a court claim?",
+     "Yes. Statutory interest and compensation can be included in a claim, with the basis set out in the particulars of claim. You cannot usually claim statutory interest and the court's discretionary interest for the same period. Your solicitor will choose the right basis."
+    ],
+    [
+     "Can the court reduce the interest?",
+     "In some situations, yes. The court can reduce or remove statutory interest where the creditor's own conduct makes it fair to do so. Keeping accurate invoices and dealing fairly with the customer helps protect your position."
+    ],
+    [
+     "How long do I have to claim?",
+     "The usual time limit for claiming money due under a contract or under the law is six years. It is easier to claim while records are clear and the debt is recent. If you are thinking about claiming interest on older invoices, speak to a solicitor promptly."
+    ],
+    [
+     "Can I claim interest on a whole history of late payments?",
+     "Often, yes, within the usual six year time limit. A customer that has paid many invoices late over several years may owe interest and compensation on each of them, even if all the invoices are now paid. Gathering the dates for every invoice can take time. Your solicitor can help assemble the history and work out the total."
+    ],
+    [
+     "Will claiming interest make the customer dispute the debt?",
+     "Sometimes adding interest prompts a customer to look harder for reasons not to pay, and sometimes it prompts quicker payment. It depends on the customer. Your solicitor can talk through the likely reaction and whether to include interest in the first letter or hold it back as part of a negotiation."
+    ],
+    [
+     "Does Leaflegal charge me anything?",
+     "No. Leaflegal is free for businesses to use. The firm we introduce you to pays us a fee for the introduction, which does not change what you pay them."
+    ]
+   ]
+  ]
+ ]
+}

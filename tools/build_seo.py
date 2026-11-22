@@ -52,6 +52,12 @@ for a_slug, matters in MAT.items():
         head = hero_split(h1, mt['short'] + ' ' + ('Tell us a little about it and we will introduce you to a regulated adviser.' if imm else 'Tell us a little about it and we will introduce you to a specialist firm.'),
                           ticks, f'<a href="{q}" class="button"><div>Get matched</div></a><a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, i + 1), alt='')
         related = [x for x in matters if x['slug'] != mt['slug']]
+        DM = deep(f'{a_slug}__{mt["slug"]}')
+        if DM:
+            sib = matters[(i + 1) % len(matters)]
+            SD = deep(f'{a_slug}__{sib["slug"]}')
+            if SD:
+                DM = dict(DM, faqs=DM['faqs'] + [[short_name(sib['name']), [x for _, g in SD['faqs'] for x in g][:8]]])
         faqs = mt['faqs'] + a['faqs'][:3]
         who = 'regulated adviser' if imm else 'firm'
         glance = [('Area of law', f'<a href="{AREA_URL(a_slug)}">{a["name"]}</a>'), ('Who it is for', AREA_EXTRA[a_slug]['who']),
@@ -60,11 +66,12 @@ for a_slug, matters in MAT.items():
         body = ''.join([
             head, TRUST_STRIP,
             cs_intro(f'About {mt["name"].lower()}', mt['intro'] + [AREA_EXTRA[a_slug]['more']], glance, IMM_NOTE if imm else ''),
+            cs_deep(f'{short_name(mt["name"])} explained', DM, lead='Pick a topic to read more.'),
             cs_help(f'How the {who} can help', mt['help'], 'What to have ready', mt['ready'], 'Don’t worry if you don’t have everything yet. The ' + who + ' will tell you what else they need.'),
             cs_steps('How it works', a['how'], q, lead='Three simple steps, and nothing to pay us.'),
             cs_fees(a_slug, a['name']),
             cs_things(a['considerations']),
-            faq(faqs, 'Ready to get started?', 'One short form. One specialist contacts you.', q, 'Get matched', title=f'{mt["name"]} questions and answers'),
+            cs_faqs(f'{short_name(mt["name"])} questions and answers', faq_groups(faqs, DM), 'Ready to get started?', 'One short form. One specialist contacts you.', q, 'Get matched'),
             section(f'<h2 class="cs-h2 cs-center">More {a["name"].lower()} help</h2>' + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in related[:6]], 'three', more_label='Learn more'), cls='section cs-sec'),
             cs_guides(a_slug, AREA_GUIDES.get(a_slug, [])),
             cs_links(f'{LOCAL_NAME[a_slug]} near you', [(LOC_URL(c[0], a_slug), c[1]) for c in MC.CITIES]) if a_slug in MC.LOCAL_AREAS else '',
@@ -74,10 +81,38 @@ for a_slug, matters in MAT.items():
             title = f'{mt["name"]} | {a["name"]} | {BRAND}'
         desc = f'{mt["short"]} Answer a few quick questions and we will introduce you to {"a regulated immigration adviser" if imm else "a regulated law firm"}. Free to use, no obligation.'
         page(f'{PUB}{url}.html', title, desc, compact(body),
-             f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld(faqs), svc_ld(mt['name'], url, mt['short']),
+             f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in faq_groups(faqs, DM) for qa in g]), svc_ld(mt['name'], url, mt['short']),
                 crumb_ld(('Legal services', '/legal-services'), (a['name'], AREA_URL(a_slug)), (mt['name'], url))),
              '<script src="/assets/tabs.js?v=2"></script>', backup=False)
         _count['matter'] += 1
+
+def local_faq_groups(a_slug, base, ci):
+    """Local questions first, then a rotating mix of matter questions so each city page differs."""
+    groups = [('Local questions', base)]
+    ms = MAT[a_slug]
+    for k in range(5):
+        m = ms[(ci + k) % len(ms)]
+        dm = deep(f'{a_slug}__{m["slug"]}')
+        if not dm:
+            continue
+        qs = [tuple(x) for _, g in dm['faqs'] for x in g]
+        off = (ci * 3) % max(1, len(qs) - 8)
+        groups.append((short_name(m['name']), qs[off:off + 9]))
+    return groups
+
+
+def hub_faq_groups(ci):
+    groups = [('Using Leaflegal', HOME_FAQ)]
+    for x in MC.LOCAL_AREAS + ['immigration']:
+        ms = MAT[x]
+        m = ms[ci % len(ms)]
+        dm = deep(f'{x}__{m["slug"]}')
+        if dm:
+            qs = [tuple(q) for _, g in dm['faqs'] for q in g]
+            off = (ci * 5) % max(1, len(qs) - 7)
+            groups.append((AREA[x]['name'], qs[off:off + 7]))
+    return groups
+
 
 # ---------------------------------------------------------------- location pages: /solicitors, /solicitors/<city>, /solicitors/<city>/<area>
 os.makedirs(f'{PUB}/solicitors', exist_ok=True)
@@ -97,6 +132,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         faqs = [(f'Do you only introduce firms based in {c_name}?', f'We introduce you to a firm that covers {c_name}. Some have offices nearby, and others work remotely across England and Wales. The firm will tell you how they work when they contact you.'),
                 (f'Does it cost anything to use {BRAND} in {c_name}?', f'No. {BRAND} is free to use. The firm explains its own fees before you agree to anything.'),
                 (f'Do you cover {nearby[0]} and {nearby[1]}?', f'Yes. We cover {c_name} and the surrounding area, including {", ".join(nearby[:-1])} and {nearby[-1]}.')] + a['faqs'][:3]
+        LGROUPS = local_faq_groups(a_slug, faqs, ci)
         glance = [('Area of law', f'<a href="{AREA_URL(a_slug)}">{a["name"]}</a>'), ('Who it is for', AREA_EXTRA[a_slug]['who']),
                   ('Covering', f'{c_name}, {", ".join(nearby[:-1])} and {nearby[-1]}'), ('Who contacts you', 'One regulated law firm'),
                   ('Cost to use Leaflegal', 'Free, with no obligation')]
@@ -105,16 +141,17 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
                        f'<a href="{q}" class="button"><div>Get matched</div></a><a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, ci + ai)),
             TRUST_STRIP,
             cs_intro(f'{a["name"]} in {c_name}', intro + [AREA_EXTRA[a_slug]['more']], glance),
+            cs_deep(f'{a["name"]} explained', deep(a_slug), lead=f'General information for people and businesses in {c_name}. Pick a topic to read more.'),
             section(f'<h2 class="cs-h2 cs-center">What the firms help with</h2>' + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in MAT[a_slug]], 'three', more_label='Learn more'), cls='section cs-sec'),
             cs_steps('How it works', a['how'], q, lead=f'Three simple steps, wherever you are in {c_name}.'),
             cs_fees(a_slug, a['name']),
-            faq(faqs, 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched', title=f'{a["name"]} in {c_name}, questions and answers'),
+            cs_faqs(f'{a["name"]} in {c_name}, questions and answers', LGROUPS, 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched'),
             cs_links(f'{LOCAL_NAME[a_slug]} in other places', [(LOC_URL(c[0], a_slug), c[1]) for c in others]),
             cs_links(f'Other legal help in {c_name}', [(LOC_URL(c_slug, x), LOCAL_NAME[x]) for x in MC.LOCAL_AREAS if x != a_slug] + [(AREA_URL('immigration'), 'Immigration advisers (UK wide)')]),
         ])
         page(f'{PUB}{url}.html', f'{LOCAL_NAME[a_slug]} in {c_name} | {BRAND}',
              f'{LOCAL_NAME[a_slug]} in {c_name}. Answer a few quick questions and we will introduce you to a regulated firm covering {c_name} and {region}. Free, no obligation.',
-             compact(body), f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld(faqs), crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)), (a['name'], url))),
+             compact(body), f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in LGROUPS for qa in g]), crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)), (a['name'], url))),
              '<script src="/assets/tabs.js?v=2"></script>', backup=False)
         _count['local'] += 1
     # city hub
@@ -139,7 +176,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
             'It is worth asking any firm how it charges before work starts. Many matters are handled for a fixed fee, while others are charged by the hour. A good firm will explain the likely total, what could make it change and what is included, and confirm it in writing.',
             f'You can check that a solicitor is regulated on the Solicitors Regulation Authority register, and that a licensed conveyancer is regulated by the Council for Licensed Conveyancers. Every firm we introduce in {c_name} and {region} is regulated, and you are free to decide whether to instruct them.'],
             [('Check regulation', 'SRA or CLC register'), ('Ask about fees', 'Before any work starts'), ('Meetings', 'In person, phone or video'), ('Obligation', 'None')]),
-        faq(HOME_FAQ, 'Ready to get started?', 'One short form. One specialist firm contacts you.', '/apply', 'Get matched', title=f'Solicitors in {c_name}, questions and answers'),
+        cs_faqs(f'Legal questions from people in {c_name}', hub_faq_groups(ci), 'Ready to get started?', 'One short form. One specialist firm contacts you.', '/apply', 'Get matched'),
         cs_links('Other places we cover', [(CITY_URL(c[0]), c[1]) for c in others]),
         cta(f'Find a solicitor in {c_name}', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched'),
     ])
@@ -225,6 +262,21 @@ def p_related(url):
         f'<a class="ll-pcard" href="/partners/{d["slug"]}"><img src="{PH_POOL[i % len(PH_POOL)]}" alt="" loading="lazy"/><div><span class="ll-gcat">Guide for law firms</span><b>{d["h1"]}</b><p>{d["summary"]}</p></div></a>' for i, d in enumerate(g)) + '</div></div></section>')
 
 
+def _pdeep(url):
+    k = 'partner__' + url[len('/partners/'):].replace('/', '--')
+    d = deep(k)
+    if d:
+        return d
+    rest = url[len('/partners/'):]
+    if '/' in rest:
+        d = deep('partner__' + rest.split('/')[0])
+        if d:
+            qs = [tuple(x) for _, g in d['faqs'] for x in g]
+            off = sum(map(ord, url)) % max(1, len(qs) - 12)
+            return {'about': d['about'], 'faqs': [('More questions', qs[off:off + 12])]}
+    return None
+
+
 def partner_page(url, d, side_title, side_links, crumbs, extra_top='', img=None, lead_page=False):
     cur = ' aria-current="page"'
     side = ''.join(f'<li><a href="{h}"{cur if h == url else ""}>{t}</a></li>' for h, t in side_links)
@@ -233,7 +285,7 @@ def partner_page(url, d, side_title, side_links, crumbs, extra_top='', img=None,
             + f'<p><b>{d["summary"]}</b></p>' + ''.join(f'<h2>{h2}</h2>{seo_blocks(bl)}' for h2, bl in d['sections']) + '</div>' + P_DISC
             + f'</article><aside>{P_SIDE_CTA}<div class="ll-gside"><h2>{side_title}</h2><ul>{side}</ul></div></aside></div></section>'
             + CFB['anatomy'] + P_WHY + p_related(url) + CFB['how']
-            + faq(d['faqs'], 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
+            + cs_faqs('Questions and answers', faq_groups(d['faqs'], _pdeep(url)), 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
             + cta(d['cta_h2'], 'Book a 30-minute call and see a sample lead.', '/partners/apply', 'Become a partner firm'))
     os.makedirs(os.path.dirname(f'{PUB}{url}.html'), exist_ok=True)
     page(f'{PUB}{url}.html', d['title'], d['description'], body,

@@ -1,0 +1,326 @@
+{
+ "about": [
+  [
+   "Overview",
+   [
+    "A winding up petition is an application to the court asking it to put a company into compulsory liquidation because the company cannot pay its debts. If the court agrees, it makes a winding up order. The company's affairs are then taken over by the Official Receiver or an insolvency practitioner, its assets are gathered in and sold, and what is left is shared among its creditors. The company is eventually dissolved and stops existing.",
+    "For a creditor, a petition is one of the most powerful tools available. It does not simply ask the court to order payment. It puts the future of the debtor company at stake. That is why many companies find a way to pay before the petition is heard. It is also why the law treats petitions seriously, and why a creditor needs to be sure it is using one in the right case.",
+    "A petition is usually presented after a company has failed to pay a statutory demand or a court judgment. It can also be based on other evidence that the company cannot pay its debts as they fall due. In every case, the debt must be more than the minimum set by law and must not be genuinely disputed.",
+    "Winding up is a collective process. Once a company is wound up, the petitioning creditor is not paid ahead of everyone else. All unsecured creditors usually share in whatever is left after the costs of the liquidation and certain preferred debts. That can mean a small return, or none at all. A solicitor will help you weigh up what a petition is likely to achieve.",
+    "Some creditors petition because they want the money and believe the threat of liquidation will produce it. Others have accepted that the company will never pay and want an independent officer to look into what happened to its money, or simply want to stop the company running up more debts with other suppliers. A solicitor will ask what you hope to achieve, because the answer affects whether a petition is the right tool.",
+    "This page is about petitions by a business creditor against a company that owes it money, in England and Wales. Petitions against individuals are bankruptcy petitions, which have their own rules. Leaflegal does not introduce firms for consumer debt collection.",
+    {
+     "h3": "What a solicitor usually does"
+    },
+    {
+     "list": [
+      "Checks the debt is suitable and not genuinely disputed",
+      "Searches for any existing petitions against the company",
+      "Prepares the petition and the supporting statement",
+      "Files the petition and pays the court fee and deposit",
+      "Arranges service on the company",
+      "Advertises the petition in the Gazette at the right time",
+      "Attends the hearing and deals with other creditors",
+      "Negotiates if the company offers to pay or settle"
+     ]
+    },
+    "Leaflegal does not advise on whether to petition. We introduce your business to one regulated law firm that handles insolvency litigation, and the solicitor will look at your own situation."
+   ]
+  ],
+  [
+   "The process",
+   [
+    "Winding up petitions follow a strict procedure set out in insolvency law and the court rules. The steps below give a general outline. Your solicitor will manage the detail and the deadlines.",
+    {
+     "h3": "1. Grounds for the petition"
+    },
+    "The solicitor confirms the basis on which the company can be shown to be unable to pay its debts. Often this is an unpaid statutory demand for a debt of more than £750, or a judgment that has not been satisfied. Sometimes there is other clear evidence that the company cannot pay its debts as they fall due.",
+    {
+     "h3": "2. Checking for other petitions"
+    },
+    "Before presenting a petition, the solicitor usually searches the court's records to see whether another creditor has already petitioned. If so, it may make more sense to support that petition than to start a new one.",
+    {
+     "h3": "3. Preparing and filing"
+    },
+    "The petition sets out details of the company, the debt and the grounds for winding up. It is supported by a statement confirming the facts. The petition is filed at the appropriate court, which depends on factors such as the company's paid up share capital and its registered office. A court fee and a deposit for the Official Receiver are paid at this stage.",
+    {
+     "h3": "4. Service"
+    },
+    "The petition must be served on the company, usually at its registered office. The rules on service are strict, and evidence of service is filed with the court.",
+    {
+     "h3": "5. Advertisement"
+    },
+    "The petition is normally advertised in the Gazette, the official public record. The rules set a window for this, which in general means not earlier than a set number of business days after service and not later than a set number of business days before the hearing. Advertising alerts other creditors, and also banks, that the petition exists.",
+    {
+     "h3": "6. Compliance and hearing"
+    },
+    "Shortly before the hearing, the petitioner files a certificate confirming that the procedural steps have been followed. The petition is then heard by the court, often in a short list of similar cases.",
+    {
+     "h3": "Keeping in touch"
+    },
+    "Throughout the process, the solicitor will usually tell you about any contact from the company, its directors or its advisers, and about any notices from other creditors. Decisions about accepting payment, agreeing an adjournment or allowing withdrawal are yours to make, with your solicitor's guidance."
+   ]
+  ],
+  [
+   "After presentation",
+   [
+    "Once a petition has been presented, the company's position changes in ways that put real pressure on it to resolve the debt. Understanding these effects helps explain why so many petitions end before the hearing.",
+    {
+     "h3": "Payments by the company"
+    },
+    "Under insolvency law, if a winding up order is made, any disposal of the company's property after the petition was presented is void unless the court allows it. This covers payments to suppliers and, potentially, to the petitioning creditor itself. Directors and the company's bank are usually very aware of this.",
+    {
+     "h3": "Bank accounts"
+    },
+    "When a bank learns of an advertised petition, it will often freeze or restrict the company's accounts to avoid being caught by the rule on void payments. This can make it very hard for the company to trade. A company can apply to the court for a validation order allowing certain payments, but this takes time and evidence.",
+    {
+     "h3": "Other creditors"
+    },
+    "Other creditors can give notice that they intend to appear at the hearing, either to support or to oppose the petition. If the petitioning creditor is paid and drops out, another creditor can sometimes ask to be substituted as petitioner so that the case continues.",
+    {
+     "h3": "Payment of the debt"
+    },
+    "If the company offers to pay the debt and costs, the petitioner can usually ask the court to dismiss the petition or allow it to be withdrawn. Care is needed, because a payment received after presentation could later be challenged if the company is wound up anyway on another creditor's petition. Your solicitor will explain how to reduce this risk.",
+    {
+     "h3": "Restraining a petition"
+    },
+    "If the company believes the debt is genuinely disputed, it can apply to the court to stop the petition from being advertised or heard. If the court agrees, the creditor is likely to be ordered to pay the company's costs."
+   ]
+  ],
+  [
+   "The hearing",
+   [
+    "Winding up petitions are usually heard in a list of similar cases, and each hearing may be short. What happens depends on whether the debt has been paid, whether the company opposes the petition and whether other creditors take part.",
+    "Hearings are usually held in public, though many now take place remotely. The petitioning creditor does not normally need to attend in person, as its solicitor or a barrister will appear on its behalf.",
+    {
+     "h3": "Possible outcomes"
+    },
+    {
+     "list": [
+      "A winding up order is made and the company goes into compulsory liquidation",
+      "The petition is dismissed, for example because the debt has been paid",
+      "The petitioner is allowed to withdraw",
+      "The hearing is adjourned to give time for payment or evidence",
+      "Another creditor is substituted as petitioner"
+     ]
+    },
+    {
+     "h3": "If an order is made"
+    },
+    "The Official Receiver usually becomes liquidator of the company at first, though an insolvency practitioner may be appointed later. The liquidator takes control of the company's assets and records, investigates its affairs and the conduct of its directors, and deals with creditors' claims.",
+    {
+     "h3": "Proving your debt"
+    },
+    "Once the company is in liquidation, creditors, including the petitioner, submit details of what they are owed to the liquidator. If there is money to distribute after costs and preferred debts, unsecured creditors usually share it in proportion to their claims.",
+    {
+     "h3": "Petition costs"
+    },
+    "Where a winding up order is made, the petitioning creditor's costs of the petition are usually paid out of the company's assets as an expense of the liquidation, ahead of ordinary creditors. Whether there are enough assets to cover them is another matter.",
+    {
+     "h3": "If the company opposes"
+    },
+    "If the company opposes the petition on the basis of a dispute, the court will look at whether the dispute is genuine and substantial. If it is, the petition is likely to be dismissed. If not, the court may make an order or give directions for evidence."
+   ]
+  ],
+  [
+   "Risks",
+   [
+    "A winding up petition is a serious step for both sides. A creditor needs to understand the risks as well as the benefits before going ahead.",
+    {
+     "h3": "Disputed debts"
+    },
+    "Winding up proceedings are not a way to resolve arguments about whether money is owed. If the company has a genuine and substantial dispute, the petition is likely to fail and the creditor may have to pay the company's costs, sometimes on a generous basis.",
+    {
+     "h3": "Little or no return"
+    },
+    "If the company is wound up, there may be very little money for unsecured creditors. A petition can end a debtor's business without producing payment of the debt. For some creditors that is still worthwhile, for example to stop further losses or to allow investigation of the directors. For others it is not.",
+    {
+     "h3": "Payments that can be challenged"
+    },
+    "Payments made by the company after the petition is presented can be at risk if the company is later wound up. A creditor who accepts payment and withdraws may, in some situations, be asked to pay the money back to the liquidator.",
+    {
+     "h3": "Ending the relationship"
+    },
+    "Petitioning against a customer is likely to end any future trading relationship. It may also affect how other customers or partners see your business, which is worth considering in a small industry.",
+    {
+     "h3": "Strict procedure"
+    },
+    "Petitions have tight rules on content, service and advertisement. Mistakes can lead to delay, extra cost or the petition failing. This is specialist insolvency work, and every firm we introduce handles it.",
+    {
+     "h3": "Thinking about alternatives"
+    },
+    "Before petitioning, it is worth asking whether another route might work better. If the company has property, a charging order after judgment may give security without ending the business. If it simply needs time, a written payment plan may recover more in the end. Your solicitor can compare the options with you."
+   ]
+  ],
+  [
+   "Costs",
+   [
+    "Winding up petitions involve more cost than a statutory demand or a simple court claim. There are three main types of cost.",
+    {
+     "h3": "Court fee and deposit"
+    },
+    "The court charges a fee to present a petition, and the petitioner must also pay a deposit towards the Official Receiver's costs. These are both set by the government and change from time to time, so check GOV.UK or ask the firm for current figures. The deposit can sometimes be refunded if the petition is dismissed or withdrawn.",
+    {
+     "h3": "Other expenses"
+    },
+    "There are usually smaller expenses for process servers and for advertising the petition in the Gazette.",
+    {
+     "h3": "Solicitor's fees"
+    },
+    "Some firms offer fixed fees for an undefended petition, covering preparation, service, advertisement and attending the hearing. If the company opposes the petition, applies to restrain it or other creditors become involved, the work becomes more complex and costs more. Ask for a clear written estimate.",
+    {
+     "h3": "Recovering costs"
+    },
+    "If the company pays the debt to avoid a winding up order, the creditor will often ask for its costs to be paid as well. If an order is made, petition costs are usually paid from the company's assets, if there are enough. If the petition fails because the debt is disputed, the creditor may have to pay the company's costs.",
+    "Leaflegal is free for businesses to use. The firm pays us for the introduction, and that never changes what you pay them."
+   ]
+  ]
+ ],
+ "faqs": [
+  [
+   "The basics",
+   [
+    [
+     "What is a winding up petition?",
+     "It is an application to the court asking it to put a company into compulsory liquidation because it cannot pay its debts. If the court agrees, it makes a winding up order, the company's assets are gathered in and sold, and what is left is shared among creditors. The company is then dissolved."
+    ],
+    [
+     "Who can present a winding up petition?",
+     "A creditor owed more than the minimum set by law can present a petition, as can certain others such as the company itself, its directors or some public bodies. In business debt recovery, it is usually an unpaid creditor. Several creditors can join together to reach the minimum debt."
+    ],
+    [
+     "What is the minimum debt for a petition?",
+     "A creditor relying on an unpaid statutory demand must be owed more than £750. The debt must be for a fixed amount that is due and not genuinely disputed. Your solicitor will check whether your debt meets the requirements and whether there are other grounds for showing the company cannot pay."
+    ],
+    [
+     "Do I need a statutory demand first?",
+     "Not always. A petition is often based on an unpaid statutory demand, but it can also be based on an unsatisfied court judgment or other clear evidence that the company cannot pay its debts as they fall due. Your solicitor will explain which grounds fit your situation."
+    ],
+    [
+     "Can I petition against a sole trader?",
+     "No. Winding up applies to companies and some other bodies. The equivalent process for an individual, including a sole trader, is a bankruptcy petition, which has its own rules and a higher minimum debt. Your solicitor can explain how bankruptcy works if your debtor trades in their own name."
+    ],
+    [
+     "Is a petition the same as liquidation?",
+     "Not quite. A petition is the application. Liquidation starts if the court makes a winding up order. Many petitions never reach that point because the company pays, settles or shows that the debt is disputed. A company can also enter liquidation voluntarily, which is a separate process."
+    ]
+   ]
+  ],
+  [
+   "Before petitioning",
+   [
+    [
+     "Is my debt suitable for a petition?",
+     "A petition is usually suitable only where the debt is for a fixed sum, is clearly due and is not genuinely disputed. If the company has raised a real complaint or has a substantial counterclaim, a petition is likely to be risky. Your solicitor will review the history of the debt before advising."
+    ],
+    [
+     "Should I check whether the company is already insolvent?",
+     "Yes, it is worth checking. If the company is already in administration or liquidation, or another creditor has already petitioned, the position changes. Your solicitor will usually search the public records and the court's index of petitions before taking any step."
+    ],
+    [
+     "What if another creditor has already petitioned?",
+     "If there is already a petition, it may be better to support it by giving notice that you will appear at the hearing, rather than presenting your own. This can save cost. If the original petitioner is paid and drops out, you may be able to ask to be substituted."
+    ],
+    [
+     "Can a petition be used just to get paid?",
+     "Many creditors find that a petition prompts payment, and that is a legitimate result where the company genuinely owes the money. What the court will not allow is using a petition to pressure a company over a debt that is genuinely disputed. In that situation, the creditor risks paying the company's costs."
+    ],
+    [
+     "How long does it take to get to a hearing?",
+     "It depends on the court's list and the time needed for service and advertisement. Generally, a petition takes at least several weeks from presentation to hearing, and sometimes longer. Your solicitor will give you an idea of current timescales in the relevant court."
+    ],
+    [
+     "What information will the solicitor need?",
+     "Expect to provide the company's details, your invoices and contract, the statutory demand or judgment if there is one, evidence of service of the demand and a clear account of any payments or complaints. The solicitor will also need to know whether you have heard of other creditors or any insolvency process."
+    ],
+    [
+     "Is a petition better than a court claim?",
+     "They do different jobs. A court claim leads to a judgment and then enforcement against the company's assets. A petition asks the court to end the company. A petition can produce quick payment from a company that is solvent but unwilling, while a claim is usually better where there is any dispute. Your solicitor will explain which suits your debt."
+    ]
+   ]
+  ],
+  [
+   "During the petition",
+   [
+    [
+     "What happens to the company's bank account?",
+     "Once a petition is advertised, banks often freeze or restrict the company's accounts. This is because payments made after the petition is presented can be void if the company is wound up. The company may apply to the court for a validation order allowing certain payments to continue."
+    ],
+    [
+     "What does advertising the petition mean?",
+     "The petition is published in the Gazette, the official public record, within a set window before the hearing. This alerts other creditors and lenders. Advertising is a required step in most cases, and the timing rules must be followed carefully."
+    ],
+    [
+     "Can the company stop the petition?",
+     "The company can pay the debt and costs, reach a settlement with the creditor or apply to the court to restrain the petition on the basis that the debt is genuinely disputed. If the dispute is substantial, the court is likely to stop the petition and order the creditor to pay costs."
+    ],
+    [
+     "What if the company pays after the petition is presented?",
+     "The creditor can usually ask the court to dismiss the petition or allow withdrawal. However, payments made after presentation can be challenged if the company is later wound up on another petition. Your solicitor will explain how to handle any payment and reduce the risk of having to repay it."
+    ],
+    [
+     "Can other creditors join in?",
+     "Yes. Other creditors can give notice that they intend to appear at the hearing to support or oppose the petition. If the petitioner is paid and withdraws, a supporting creditor may be substituted to continue the case."
+    ],
+    [
+     "What is a validation order?",
+     "It is an order from the court allowing a company subject to a petition to make certain payments, such as wages or supplier payments, without those payments being void if the company is wound up. Companies usually apply for one to keep trading while the petition is dealt with."
+    ],
+    [
+     "Can the company ask for an adjournment?",
+     "Yes. A company may ask the court for more time, for example to pay the debt or to put forward evidence of a dispute. The court will decide whether an adjournment is justified. Creditors can agree or oppose. Your solicitor will discuss with you whether a short adjournment could lead to payment."
+    ]
+   ]
+  ],
+  [
+   "Outcomes",
+   [
+    [
+     "Will I get paid if the company is wound up?",
+     "Not necessarily. In a compulsory liquidation, unsecured creditors usually share what is left after the costs of the liquidation and certain preferred debts. That can be a small proportion of the debt, or nothing. Many creditors are paid in full before the hearing, when the company acts to avoid a winding up order."
+    ],
+    [
+     "What happens to the directors?",
+     "When a company is wound up by the court, the Official Receiver investigates the reasons for its failure and the conduct of its directors. If there is evidence of misconduct, action can follow, such as disqualification. The creditor is not responsible for this, but may be asked for information."
+    ],
+    [
+     "Who pays the costs of the petition?",
+     "If a winding up order is made, the petitioner's costs are usually paid from the company's assets before ordinary creditors. If the company pays to avoid an order, the creditor will often ask for its costs too. If the petition fails because the debt is disputed, the creditor may have to pay the company's costs."
+    ],
+    [
+     "Can a winding up order be reversed?",
+     "In limited circumstances, a company or another interested party can apply to the court to rescind or stay a winding up order, usually very soon after it is made. This is uncommon. Your solicitor will explain what this might mean if it arises in your case."
+    ],
+    [
+     "What if the company goes into administration instead?",
+     "A company facing a petition sometimes enters administration to protect itself while it tries to rescue the business or sell it. Administration usually brings a moratorium that stops creditors from continuing a petition without permission. Your claim would then normally be dealt with by the administrator. Your solicitor will explain how this affects you."
+    ],
+    [
+     "Can the directors set up a new company?",
+     "Directors of a liquidated company can sometimes set up a new business, but there are restrictions on reusing the old company's name, and the Official Receiver will look at their conduct. A creditor cannot usually pursue the new company for the old one's debts unless, for example, a director signed a personal guarantee. Your solicitor can explain the position."
+    ]
+   ]
+  ],
+  [
+   "Costs",
+   [
+    [
+     "How much does a winding up petition cost?",
+     "There is a court fee and a deposit for the Official Receiver, plus smaller costs for service and advertisement, and the solicitor's fees. Some firms offer fixed fees for an undefended petition. Fees are set by the government and change from time to time, so ask the firm for current figures."
+    ],
+    [
+     "Is the deposit refunded?",
+     "The deposit is meant to cover some of the Official Receiver's costs if an order is made. If the petition is dismissed or withdrawn, the deposit can often be returned. Your solicitor will explain the current position on refunds."
+    ],
+    [
+     "Can I recover my costs if the company pays before the hearing?",
+     "Often the creditor asks for its costs to be paid as part of any settlement, and many companies agree in order to bring the petition to an end. If the matter comes before the court, the judge can deal with costs when dismissing or allowing withdrawal of the petition. Your solicitor will explain what is realistic."
+    ],
+    [
+     "Does Leaflegal charge me anything?",
+     "No. Leaflegal is free for businesses to use. The firm we introduce you to pays us a fee for the introduction, which does not change what you pay them."
+    ]
+   ]
+  ]
+ ]
+}

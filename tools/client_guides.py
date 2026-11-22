@@ -89,8 +89,8 @@ EXTRA = {
     'how-to-extend-a-lease': {
         'key': ['There is a formal statutory route and an informal route', 'You will usually need a solicitor and a surveyor', 'Starting early gives you more options'],
         'more': [
-            ('h2', 'The statutory route in more detail'), ('p', 'You usually need to have owned the flat for at least two years to use the statutory route. Your solicitor serves a formal notice on the freeholder setting out your proposed premium, and the freeholder replies with a counter notice. If you can’t agree, a tribunal can decide.'),
-            ('h2', 'The informal route in more detail'), ('p', 'An informal deal can be quicker and is sometimes the only option if you have owned the flat for less than two years. The freeholder can set their own terms, though, so a solicitor should check the new lease carefully before you sign.'),
+            ('h2', 'The statutory route in more detail'), ('p', 'There used to be a rule that you had to own the flat for two years before using the statutory route, but the Leasehold and Freehold Reform Act 2024 removed it from 31 January 2025. Your solicitor will confirm what applies to you. Under the statutory route, your solicitor serves a formal notice on the freeholder setting out your proposed premium, and the freeholder replies with a counter notice. If you can’t agree, a tribunal can decide.'),
+            ('h2', 'The informal route in more detail'), ('p', 'An informal deal can be quicker and more flexible. The freeholder can set their own terms, though, so a solicitor should check the new lease carefully before you sign.'),
             ('h2', 'What affects the premium'), ('ul', ['How many years are left on the lease', 'The value of the flat', 'The ground rent', 'Whether the lease is below 80 years, which can make extending more expensive']),
             ('tip', 'The rules on leasehold are changing. Ask your solicitor which rules apply to your lease right now.'),
         ]},

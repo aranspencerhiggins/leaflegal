@@ -1,0 +1,344 @@
+{
+"about": [
+[
+"Overview",
+[
+"Leaflegal sends law firms exclusive, pre-screened enquiries from people and businesses who want paid legal help. We run the campaigns, ask the questions an intake team would ask, check the contact details, record the client's consent and send each enquiry to one firm only, as soon as it is checked. Firms pay per lead, at a price agreed with them before they start.",
+"We work with solicitors' firms, CILEx regulated practices, licensed conveyancers and, for immigration, advisers registered with the Immigration Advice Authority. Partner firms choose the practice areas, matter types and locations they want and set the number of leads their team can handle each month. The minimum is 10 leads a month, and firms can change their volume or pause whenever they need to.",
+"Our campaigns reach people at the moments they realise they need a solicitor, such as an offer accepted on a house, a relationship ending, a court summons, an invoice long overdue, a licence review letter, a visa deadline or a lease that is getting short. Each person answers a short set of questions about their situation and confirms they are looking for paid help. When their enquiry fits your criteria, it comes to you and nobody else.",
+{
+"h3": "Why firms work with us"
+},
+"Winning new private clients takes time and money. Paid search for legal terms is expensive and needs constant attention. Directories often share the same enquiry between several firms. Building a strong website takes years. Most firms already have referrers and a reputation, but those are hard to grow on demand. Leaflegal gives firms a source of new enquiries they can plan around, without running adverts themselves.",
+{
+"h3": "What makes Leaflegal different"
+},
+{
+"list": [
+"Every enquiry goes to one firm only and is never resold",
+"Every client has confirmed they want paid help, not legal aid or free advice",
+"Every UK mobile number and email address is checked when the enquiry is submitted",
+"Every lead comes with the exact consent wording the client agreed to and the time",
+"Leads arrive by email or in your CRM as soon as they are checked",
+"There is no platform to learn and no login, and changes are made by talking to our team",
+"Every arrangement is set out in a written partner agreement before the first lead"
+]
+},
+{
+"h3": "What we are not"
+},
+"Leaflegal is not a law firm and does not give legal advice. We do not give immigration advice. We do not generate personal injury, clinical negligence or claims management work. Every client is told that we are an introduction service and that we are paid by the firms we introduce them to. Clients do not pay Leaflegal anything."
+]
+],
+[
+"Practice areas",
+[
+"We generate enquiries in seven practice areas where paying an introducer is permitted. Within each area, you choose the matter types you want and the locations you cover. Each area has its own page with more detail.",
+"If you take more than one area, each is set up separately with its own matter types, locations and price, so different teams in your firm can receive the enquiries that suit them.",
+{
+"h3": "Conveyancing"
+},
+"Purchases, sales, sale and purchase together, remortgages, transfers of equity and leasehold purchases. Leads show the transaction type, rough property value, tenure and whether there is a mortgage. See <a href=\"/partners/conveyancing-leads\">conveyancing leads</a>.",
+{
+"h3": "Family law"
+},
+"Divorce and dissolution, financial settlements and consent orders, child arrangements, cohabitation disputes and nuptial agreements. Leads show the type of matter and whether proceedings have started. See <a href=\"/partners/family-law-leads\">family law leads</a>.",
+{
+"h3": "Immigration"
+},
+"Family and partner visas, settlement, citizenship, work and business visas, refusals and appeals. Introductions only, to regulated firms and registered advisers. Leaflegal collects only the type of matter, urgency and contact details. See <a href=\"/partners/immigration-law-leads\">immigration law leads</a>.",
+{
+"h3": "Debt recovery"
+},
+"Unpaid invoices and commercial debts owed by one business to another. Leads show the rough amount owed, the age of the debt and whether it is disputed. Consumer debts are not included.",
+{
+"h3": "Motoring offences"
+},
+"Drink and drug driving, speeding and totting up, careless and dangerous driving and related matters. Leads show the type of offence, any court date and current points.",
+{
+"h3": "Licensing"
+},
+"New premises licences, variations and transfers, reviews and hearings, personal licences and taxi and private hire licences. Leads show the licence type, the application or review involved and the council area.",
+{
+"h3": "Lease extensions"
+},
+"Statutory and informal lease extensions, collective enfranchisement and related leasehold matters. Leads show roughly how many years are left on the lease.",
+"Matters in six areas are in England and Wales. Immigration enquiries can come from anywhere in the UK."
+]
+],
+[
+"Every lead",
+[
+"A Leaflegal lead is the complete record of what the client told us, in the order they told us. It is designed so that your first call can be about the client's matter rather than about who you are and why you are calling.",
+{
+"h3": "What is included"
+},
+{
+"list": [
+"Name, verified UK mobile number and an email address on a real domain",
+"Practice area and type of matter",
+"A short description in the client's own words",
+"How urgent it is and any deadline, hearing or court date",
+"Where the client is",
+"Confirmation they want paid legal help",
+"The best time to call, where they gave one",
+"The source, a timestamp and the consent record"
+]
+},
+{
+"h3": "Who reaches you"
+},
+"People and businesses in England and Wales, or anywhere in the UK for immigration, with a matter in a practice area and matter type you handle, in a location you cover, who want paid help, gave valid contact details and agreed to be contacted by a firm.",
+{
+"h3": "Who does not"
+},
+"People who only want legal aid or free advice. Personal injury and clinical negligence claims. Housing disrepair and mis-selling claims. Matters outside the areas we cover. Anyone who has not agreed to be contacted. These are filtered out before an enquiry is submitted, so they never become leads.",
+{
+"h3": "Where leads come from"
+},
+"From our own campaigns on social media, search and content, and our own enquiry forms. We do not buy data, rent lists, scrape directories or pass on cold contacts. Every lead is someone who asked to be contacted about their own matter.",
+{
+"h3": "Why it helps the first call"
+},
+"Because the lead already tells you the matter, its urgency and the client's own account, your first call can start where a good intake call would normally be ten minutes in. Clients notice when a firm has listened to what they wrote, and it makes the conversation about how you can help rather than a list of questions.",
+"You can read more about our checks on the <a href=\"/partners/lead-verification\">lead verification</a> page."
+]
+],
+[
+"How it works",
+[
+"Working with Leaflegal is set up with you by our team. There is no long form to complete alone and no software to install.",
+{
+"h3": "1. Book a call"
+},
+"Apply in a couple of minutes and pick a time for a 30-minute call with our team. We talk about your practice areas, matter types, locations, team and goals, and show you a sample lead so you can see exactly what arrives.",
+{
+"h3": "2. Agree your criteria and price"
+},
+"We set up your matching criteria and send a written proposal with your price per lead for each practice area and an honest view of likely volumes. You can adjust it before going any further.",
+{
+"h3": "3. Sign your partner agreement"
+},
+"Your agreement sets out pricing, billing, volumes, delivery and how invalid leads are handled. Nothing starts until it is signed.",
+{
+"h3": "4. Receive leads"
+},
+"Matching enquiries are sent to you as soon as they are checked, by email, to a shared inbox or into your CRM. Call quickly, use what the client told us and agree a clear next step.",
+{
+"h3": "After that"
+},
+"Tell us which leads turn into instructions. Change your matter types, locations or cap whenever you like, and pause if your team is at capacity. The firms that do best call within minutes and keep talking to us about what works.",
+{
+"h3": "Getting ready"
+},
+"Before your first lead arrives, decide where leads will land, switch on notifications for whoever handles them and agree who calls at each point in the day. Send leads to a shared inbox or CRM rather than one person's email, so nothing waits while someone is in court or on leave. These small decisions make a large difference to how many leads turn into instructions.",
+"There is a fuller explanation on our <a href=\"/partners/how-it-works\">how it works</a> page."
+]
+],
+[
+"Pricing",
+[
+"You pay per lead, at a price agreed with your firm before you start. You do not pay for clicks, impressions, advertising spend or campaign management.",
+{
+"h3": "What sets the price"
+},
+"Your price depends on the practice areas and matter types you choose, how wide your location coverage is and the monthly volume you want. Each practice area you take has its own price. We do not publish a price list, because the value of a legal enquiry varies too much between areas and locations for one figure to be useful.",
+{
+"h3": "Volume you control"
+},
+"The minimum is 10 leads a month. Above that, you set a monthly cap, and once you reach it we stop matching to you until the next month. Your cap also sets the most you will spend on leads in a month. You can change it or pause at any time.",
+{
+"h3": "No surprises"
+},
+"Your proposal sets out your price and any other costs before you commit. Your partner agreement records pricing, billing, volumes and the rules for invalid leads before your first lead is delivered.",
+{
+"h3": "What you are paying for"
+},
+"A lead is a qualified, exclusive enquiry and a fair chance to win the work. It is not a guaranteed instruction. A lead stays valid if the client chooses another firm or decides not to proceed. Leads with wrong contact details or outside your agreed criteria are handled as your agreement sets out.",
+"Many firms find it helpful to judge leads by the cost of winning an instruction rather than the price of a single lead. Because each lead has an agreed price and you control the volume, that calculation is straightforward once you keep a simple record of outcomes.",
+"See our <a href=\"/partners/pricing\">pricing</a> page for more on how prices are agreed."
+]
+],
+[
+"Compliance",
+[
+"Leaflegal is built around the professional duties that law firms work to. Referral disclosure, consent and data protection are part of every lead.",
+{
+"h3": "Referral arrangements"
+},
+"Under the SRA Code of Conduct, firms must make sure clients are told about any financial arrangement with an introducer, and the arrangement must not affect the firm's independence. Our consent wording tells every client that Leaflegal is paid by the firms it introduces, and we send that wording with every lead so your client care information can match it.",
+{
+"h3": "Prohibited and restricted areas"
+},
+"We do not generate personal injury or clinical negligence enquiries, where referral fees are banned under section 56 of the Legal Aid, Sentencing and Punishment of Offenders Act 2012, or claims management work. The SRA Code also restricts payments to introducers in respect of clients in criminal proceedings or with public funding, which firms taking motoring work should consider with their compliance officer.",
+{
+"h3": "Consent"
+},
+"Every client ticks two separate boxes, one confirming they understand Leaflegal is an introduction service and one agreeing to be contacted by a matched firm about their matter. We record the wording and the time.",
+{
+"h3": "Data protection"
+},
+"Vertical Brands Ltd, trading as Leaflegal, is the controller for information collected through our forms. Once a lead is delivered, your firm is the controller of its copy. We never share matter details with advertising platforms.",
+{
+"h3": "Your responsibilities"
+},
+{
+"h3": "Immigration"
+},
+"Leaflegal is not regulated to give immigration advice and never does. Immigration enquiries go only to firms regulated by the SRA or CILEx Regulation, or to advisers registered with the Immigration Advice Authority at the right level for the work. Everything about a client's options comes from the firm or adviser.",
+"You remain responsible for being authorised for the work you take on, for disclosure, conflicts, client care and handling client data. Read more on our <a href=\"/partners/sra-referral-rules\">referral rules</a> page. This is general information, not regulatory advice."
+]
+]
+],
+"faqs": [
+[
+"About Leaflegal",
+[
+[
+"What is Leaflegal?",
+"An introduction service run by Vertical Brands Ltd. We run marketing campaigns for people and businesses who need legal help, ask them a short set of questions about their matter and, with their consent, introduce each one to a single partner firm that handles that kind of work. We are not a law firm and do not give legal advice."
+],
+[
+"Who can become a partner firm?",
+"SRA regulated solicitors' firms, CILEx regulated practices, CLC regulated conveyancers and, for immigration, advisers registered with the Immigration Advice Authority at the right level for the work. You must be authorised for every kind of work you ask to receive. We ask about your regulation when you apply and only match enquiries in areas where you can act. If you are unsure whether your firm fits, mention it on your application."
+],
+[
+"Which practice areas do you cover?",
+"Conveyancing, family law, immigration, debt recovery for businesses, motoring offences, licensing and lease extensions. You choose which areas you want, and the matter types and locations within each. We do not cover personal injury, clinical negligence or claims management work. Each area has its own page with more detail. Choose any combination."
+],
+[
+"Do you cover Scotland and Northern Ireland?",
+"Not at the moment. Leads in six areas are for matters in England and Wales. Immigration introductions can come from anywhere in the UK, because immigration law applies across the UK. If you are a firm outside England and Wales, mention it when you apply and we will tell you honestly whether the service fits."
+],
+[
+"Is there an online platform?",
+"No. There is no platform, portal or login. Leads arrive by email or in your CRM, and any changes to your criteria, volume or delivery are made by talking to our team. Many firms prefer this, because there is nothing new for their staff to learn and no extra system to check during a busy day."
+],
+[
+"How do I apply?",
+"Complete the partner application, which takes a couple of minutes. It asks about your practice areas, how you are regulated, the areas you cover and how many leads you want. We then book a 30-minute call with our team and show you a sample lead. There is no obligation until you sign your partner agreement."
+],
+[
+"Can I see a sample lead before committing?",
+"Yes. On your 30-minute call we show you a sample lead in the format you would receive it, including every field, the client's description and the consent record. It shows exactly what your intake team would be working with, so you can decide whether it suits your firm before you agree anything."
+]
+]
+],
+[
+"The leads",
+[
+[
+"Are the leads exclusive?",
+"Yes. Each enquiry is matched to one firm only. We never send the same lead to several firms and never resell a lead that has been delivered. When you call, you are the only firm Leaflegal has introduced the client to. Every partner firm receives leads on this basis. It is not an optional extra and it does not depend on your price or volume."
+],
+[
+"Where do your leads come from?",
+"From people completing our own enquiry forms, usually after seeing one of our campaigns on social media or finding us through search. We do not buy data, rent lists, scrape directories or pass on cold contacts. Every lead is someone who asked to be contacted about their own matter and ticked a separate box agreeing to be introduced to a firm."
+],
+[
+"Do you send legal aid enquiries?",
+"No. Every client confirms they are looking for paid legal help before their enquiry is submitted. People who only want legal aid or free advice are told we cannot help and pointed elsewhere. This does not mean every client will accept your fees, but it does mean everyone who reaches you expects a solicitor to charge for their work. Being clear about fees early helps."
+],
+[
+"Can I choose the matter types I receive?",
+"Yes. Within each practice area, tell us what you want and what you do not. A family firm might take contested finances but not simple divorce. A conveyancing team might take purchases but not remortgages. We only send enquiries that fit. You can change your choices at any time by telling our team."
+],
+[
+"How do you decide which firm gets a lead?",
+"Each lead goes to one firm whose practice areas, matter types and locations it fits, taking account of each firm's monthly cap. Where several firms fit, we balance distribution fairly between them. There is no auction or bidding. Your price is agreed in advance and does not move with other firms' bids. Paused firms are left out of matching until they are ready again."
+],
+[
+"Will every lead become an instruction?",
+"No. Some clients compare firms, some decide not to proceed and some do not accept the fees. We provide qualified, exclusive enquiries, not guaranteed instructions. Calling quickly and being clear about fees gives you the best chance. A lead stays valid if the client chooses another firm or decides not to proceed. Your own records will show how leads work for your firm over time."
+],
+[
+"What information comes with each lead?",
+"The client's name, a verified UK mobile number and email address, the practice area and matter type, a description in their own words, urgency and any deadline, their location, confirmation of paid help, the best time to call, the source, a timestamp and the consent record. Some areas include extra fields, such as rough property value or years left on a lease."
+]
+]
+],
+[
+"Price and volume",
+[
+[
+"How much does each lead cost?",
+"Pricing is agreed with each firm before it starts and depends on the practice areas, matter types and locations you choose and the volume you want. We do not publish prices because they vary widely. We send a written proposal after your call. Each practice area you take has its own price."
+],
+[
+"Is there a minimum?",
+"Yes. The minimum is 10 leads a month. Above that, you set a monthly cap that your team can comfortably call back, and you can change it at any time. Ten a month is enough to judge the quality of the leads and see how they fit with your intake process. Many firms start near the minimum and raise their cap once their routine is working."
+],
+[
+"Can I pause leads?",
+"Yes. If your team is at capacity, a fee earner is away or your office is closed, ask us to pause. You receive no leads while paused, and your criteria and price stay the same for when you return. Pausing is a normal part of how firms use the service and does not need explaining."
+],
+[
+"Do you guarantee volumes?",
+"We cannot guarantee exact volumes, because they depend on how many people enquire and how closely they match your criteria. We give you an honest view of likely volumes when we agree your criteria, and tell you if your criteria are likely to limit them. Wider coverage usually helps. Narrow criteria can limit matches."
+],
+[
+"What if a lead is invalid?",
+"Your partner agreement defines an invalid lead, such as one with wrong contact details or outside your agreed criteria, and sets a review period for raising it. Genuinely invalid leads are dealt with as your agreement sets out. A lead stays valid if the client chooses another firm or decides not to go ahead. Reporting promptly helps us fix any cause."
+],
+[
+"Do clients pay Leaflegal?",
+"No. Clients do not pay Leaflegal anything. Your firm pays for the introduction and the client agrees fees directly with you. Every client is told that Leaflegal is paid by the firms it introduces. Our arrangement with your firm does not change what the client pays you. The client is free to decide whether to instruct you after your first conversation."
+],
+[
+"Can I change my criteria after starting?",
+"Yes. Add or remove practice areas or matter types, widen or narrow your locations and raise or lower your cap whenever your firm's needs change. Tell our team and we will update your matching. Most firms adjust something in their first few months. Changes apply to new leads. Leads already delivered remain yours."
+]
+]
+],
+[
+"Delivery",
+[
+[
+"How are leads delivered?",
+"By email to one or more addresses, to a shared intake inbox, or straight into your CRM or case management system using a lead email address or a webhook. We set up whichever suits your intake team. Different practice areas or offices can have different routes. There is no portal to check."
+],
+[
+"How quickly do leads arrive?",
+"As soon as each enquiry has been checked. There is no batching or daily file. That means you can call while the client is still focused on their matter and expecting to hear from a solicitor. Make sure notifications are switched on for whoever handles new leads, so nothing sits unseen in a busy inbox."
+],
+[
+"Can leads go to different teams?",
+"Yes. Leads can be routed by practice area or location to different addresses, or sent into your CRM for assignment. Many firms use a shared inbox so nothing is missed when someone is out. If you route leads to named people, make sure someone else can see them during holidays."
+],
+[
+"What should we do when a lead arrives?",
+"Call within minutes if you can. Mention that the client made an enquiry through Leaflegal and asked to speak to a solicitor, refer to their matter and any deadline, be clear about fees and agree a next step. Confirm it by email the same day. Then record the outcome. Follow up if there is no answer."
+],
+[
+"Do leads arrive outside office hours?",
+"Yes. Leads are sent whenever enquiries are checked, and many people fill in forms in the evening or at the weekend. Many firms call overnight leads first thing the next morning. Some send a short text or email to acknowledge weekend leads and promise a call on Monday. Plan cover in advance."
+]
+]
+],
+[
+"Compliance",
+[
+[
+"Do I need to disclose the referral?",
+"Yes. The SRA Code of Conduct requires you to make sure clients are told about any financial arrangement with an introducer. Our consent wording tells every client that Leaflegal is paid by the firms it introduces, and we send that wording with each lead. Many firms also confirm it in their client care letter. This is general information, not regulatory advice."
+],
+[
+"Why don't you offer personal injury leads?",
+"Paying referral fees for personal injury and clinical negligence work is prohibited under section 56 of the Legal Aid, Sentencing and Punishment of Offenders Act 2012, so we do not generate those enquiries in any form. People with those matters are told we cannot help before they submit. We also stay out of housing disrepair and financial mis-selling claims."
+],
+[
+"Do you give immigration advice?",
+"No. Leaflegal is not regulated to give immigration advice and never does. Our immigration form asks only for the type of matter, urgency and contact details, and enquiries go only to regulated firms or advisers registered with the Immigration Advice Authority. All advice comes from the firm or adviser. We never assess a client's eligibility."
+],
+[
+"Who is responsible for the data once I receive a lead?",
+"Your firm becomes the controller of its copy and is responsible for handling it under UK data protection law and your own privacy notice. Use it to contact the client about their enquiry, and only add them to marketing with separate consent. Vertical Brands Ltd, trading as Leaflegal, is the controller for what we collect through our forms."
+],
+[
+"Do I still run conflict checks?",
+"Yes. Run your normal conflict, identity and anti-money laundering checks before taking on any matter. Leaflegal does not carry these out for you. If you cannot act because of a conflict, let us know and we will treat the lead as your partner agreement sets out. Leaflegal does not know who your existing clients are, so these checks can only be done by your firm."
+]
+]
+]
+]
+}
