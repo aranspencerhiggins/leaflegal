@@ -38,7 +38,7 @@
 [data-theme=partner] .cfb-sec{background:var(--pd-1)}
 [data-theme=partner] .cfb-sec:nth-of-type(odd),[data-theme=partner] .cfb-anat{background:var(--pd-2)}
 [data-theme=partner] :is(.cfb-facts ul,.cfb-cost-card,.cfb-crm,.cfb-points li,.cfb-filter,.cfb-mode,.cfb-crit,.cfb-fund,.cfb-plan,.cfb-col.out,.cfb-btn.line){background:var(--pd-card);border-color:var(--pd-line)}
-[data-theme=partner] .cfb-facts li,.cfb-crm-logo{background:var(--pd-card2)}
+[data-theme=partner] .cfb-facts li,[data-theme=partner] .cfb-crm-logo{background:var(--pd-card2)}
 [data-theme=partner] :is(.cfb-facts b,.cfb-cost-copy h2,.cfb-range b,.cfb-crm-h b,.cfb-head h2,.cfb-head a,.cfb-note a,.cfb-points b,.cfb-col.out h3,.cfb-mode h3,.cfb-steps b,.cfb-pp,.cfb-link,.cfb-final h2,.cfb-btn.line){color:var(--pd-head)}
 [data-theme=partner] :is(.cfb-btn.dark,.cfb-price,.cfb-crm-any,.cfb-record-h,.cfb-col.in,.cfb-mode.dark,.cfb-chips span.on,.cfb-steps span){background:#1f4234;color:#fff}
 [data-theme=partner] .cfb-btn.dark:hover,[data-theme=partner] .cfb-btn.line:hover{background:#2a5644;color:#fff}
@@ -221,3 +221,8 @@
 /* before the video starts show the plain Leaflegal logo; the PARTNERS tag only appears if the video can't play */
 .llb-logo-p:not(.noanim) .llb-logo-tag{display:none}
 .llb-logo-p:not(.noanim):not(.anim){flex-direction:row}
+/* icon contrast: light icons on dark tiles, dark ticks on lime circles */
+body[data-theme=partner] .cfb-crm-logo{background:#1f4234;border-color:rgba(255,255,255,.12);color:var(--pd-accent)}
+body[data-theme=partner] .cfb-crm-logo svg{stroke:var(--pd-accent)}
+body[data-theme=partner] .cfb-col.in .cfb-ok{background:var(--pd-accent);border-color:var(--pd-accent);color:#12271e}
+body[data-theme=partner] .cfb-col.in .cfb-ok svg{color:#12271e;stroke:#12271e}
