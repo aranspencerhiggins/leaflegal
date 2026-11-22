@@ -24,3 +24,12 @@
 .ap-lp.ap-has-photo .ap-wrap{position:relative;z-index:1}
 @media (max-width:767px){.ap-lp-photo{bottom:auto;height:420px}
   .ap-lp-photo::after{background:linear-gradient(180deg,rgba(24,48,42,.5) 0%,rgba(24,48,42,.72) 55%,#18302a 100%)}}
+/* Enquiry pages on desktop, headline pinned to the top beside the form (not centred halfway down), and long option lists kept compact */
+@media (min-width:1000px){.ap-lp.ap-enq{padding:64px 0 88px}
+  .ap-enq .ap-lp-grid{align-items:start}
+  .ap-enq .ap-lp-head{position:sticky;top:40px;padding-top:44px}
+  .ap-enq .ap-q{font-size:28px;margin-bottom:22px}
+  .ap-enq .ap-opts:has(>.ap-opt:nth-child(6)){gap:8px}
+  .ap-enq .ap-opts:has(>.ap-opt:nth-child(6)) .ap-opt{padding:7px 14px 7px 8px;border-radius:13px;gap:12px;min-height:0}
+  .ap-enq .ap-opts:has(>.ap-opt:nth-child(6)) .ap-opt b{font-size:15.5px;line-height:1.25}
+  .ap-enq .ap-opts:has(>.ap-opt:nth-child(6)) .ap-ico{width:32px;height:32px;border-radius:9px}}
