@@ -1,5 +1,5 @@
 # Practice areas for Leaflegal. Edit the copy here, then run: python3 tools/build_pages.py
-# Only these eight areas (trademarks and related IP added 2026-11-22) (owner's decision, 2026-11-21). Never add personal injury, clinical negligence (LASPO s56 referral fee ban),
+# Only these seven areas (motoring offences removed 2026-11-22, SRA Code 5.1(d)) (trademarks and related IP added 2026-11-22) (owner's decision, 2026-11-21). Never add personal injury, clinical negligence (LASPO s56 referral fee ban),
 # housing disrepair, financial mis-selling or other claims management work (FCA-regulated).
 # Immigration is referral only: Leaflegal must never give immigration advice or services (Immigration and Asylum Act 1999, s84).
 # Keep the immigration copy to what the firms do and how the introduction works. No eligibility rules, routes or requirements.

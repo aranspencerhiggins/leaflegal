@@ -24,7 +24,7 @@ const jwt = (sub, { key = good, exp = 3600, role = 'authenticated', kid = 'k1' }
 const ADMIN = 'aaaaaaaa-0000-4000-8000-000000000001', BROKER = 'bbbbbbbb-0000-4000-8000-000000000002', NEWB = 'cccccccc-0000-4000-8000-000000000003', UNV = 'eeeeeeee-0000-4000-8000-000000000005';
 const V = new Date().toISOString();
 const SRA = [{ id: 'SRA', number: '612345' }];
-const ALL_AREAS = ['conveyancing', 'immigration', 'family-law', 'debt-recovery', 'motoring-offences', 'licensing', 'lease-extensions'];
+const ALL_AREAS = ['conveyancing', 'immigration', 'family-law', 'debt-recovery', 'licensing', 'lease-extensions'];
 const people = {
   [ADMIN]: { id: ADMIN, email_verified_at: V, email: 'admin@test', company: 'Leaflegal', approved: true, is_admin: true, credits: 0, filters: {} },
   [BROKER]: { id: BROKER, email_verified_at: V, email: 'jo@firm.test', company: 'Firm LLP', approved: true, is_admin: false, credits: 500, mode: 'manual', notify: true, filters: { areas: ALL_AREAS }, stripe_customer: 'cus_1', regulators: SRA },

@@ -73,8 +73,8 @@ export const rpc = (fn, args) => db(`rpc/${fn}`, { method: 'POST', body: args })
 export const DEFAULT_PRICING = {
   min: 15, max: 400,
   areas: { conveyancing: 35, immigration: 60, 'family-law': 55, 'debt-recovery': 45, licensing: 55, 'lease-extensions': 60, trademarks: 50 },
-  matters: { 'immigration/sponsor-licences': 120, 'family-law/financial-settlements': 75, 'licensing/premises-licence-applications': 70,
-    'lease-extensions/collective-enfranchisement': 110,
+  matters: { 'immigration/sponsor-licences': 120, 'family-law/financial-settlements': 75,
+    'licensing/licence-reviews': 80, 'licensing/premises-licence-applications': 70, 'lease-extensions/collective-enfranchisement': 110,
     'trademarks/trademark-infringement': 75, 'trademarks/objections-and-oppositions': 65 },
   grade: { A: 1.3, B: 1, C: 0.7 }, urgent: 1.15, business: 1.1,
   value: [[1000000, 1.4], [500000, 1.25], [250000, 1.1]],

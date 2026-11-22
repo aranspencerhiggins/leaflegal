@@ -33,6 +33,41 @@
       "permanent": false
     },
     {
+      "source": "/motoring-offences",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/motoring-offences/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/legal-services/motoring-offences/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/solicitors/:city/motoring-offences",
+      "destination": "/solicitors/:city",
+      "permanent": true
+    },
+    {
+      "source": "/guides/what-happens-at-a-motoring-hearing",
+      "destination": "/guides",
+      "permanent": true
+    },
+    {
+      "source": "/partners/motoring-offence-leads/:path*",
+      "destination": "/partners",
+      "permanent": true
+    },
+    {
+      "source": "/enquire/motoring-offences",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/legal-services/:path+",
       "destination": "/:path+",
       "permanent": true
