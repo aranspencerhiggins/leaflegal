@@ -8,7 +8,7 @@ M_URL = lambda a, s: f'/{a}/{s}'
 CITY_URL = lambda c: f'/solicitors/{c}'
 LOC_URL = lambda c, a: f'/solicitors/{c}/{a}'
 CITY = {c[0]: c for c in MC.CITIES}
-LOCAL_NAME = {'conveyancing': 'Conveyancing solicitors', 'family-law': 'Family law solicitors', 'motoring-offences': 'Motoring offence solicitors',
+LOCAL_NAME = {'conveyancing': 'Conveyancing solicitors', 'family-law': 'Family solicitors', 'motoring-offences': 'Motoring offence solicitors',
               'licensing': 'Licensing solicitors', 'debt-recovery': 'Debt recovery solicitors', 'lease-extensions': 'Lease extension solicitors'}
 TOP_CITIES = [c[0] for c in MC.CITIES[:8]]
 AREA_GUIDES = {}

@@ -48,6 +48,7 @@ for a_slug, matters in MAT.items():
         h1 = short_name(mt['name'])
         if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not h1.endswith('s') and len(h1) < 20:
             h1 += ' solicitors'
+        h1 = seo_h1(url, h1)
         ticks = ['Free to use, no obligation', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
                  'For businesses in England and Wales' if a.get('business_only') else 'Across the UK' if imm else 'For matters in England and Wales']
         head = hero_split(h1, mt['short'] + ' ' + ('Tell us a little about it and we will introduce you to a regulated adviser.' if imm else 'Tell us a little about it and we will introduce you to a specialist firm.'),
@@ -59,7 +60,7 @@ for a_slug, matters in MAT.items():
             SD = deep(f'{a_slug}__{sib["slug"]}')
             if SD:
                 DM = dict(DM, faqs=DM['faqs'] + [[short_name(sib['name']), [x for _, g in SD['faqs'] for x in g][:8]]])
-        faqs = mt['faqs'] + a['faqs'][:3]
+        faqs = seo_faqs(url) + mt['faqs'] + a['faqs'][:3]
         who = 'regulated adviser' if imm else 'firm'
         glance = [('Area of law', f'<a href="{AREA_URL(a_slug)}">{a["name"]}</a>'), ('Who it is for', AREA_EXTRA[a_slug]['who']),
                   ('Who contacts you', 'One regulated immigration firm or adviser' if imm else 'One regulated law firm'),
@@ -67,6 +68,7 @@ for a_slug, matters in MAT.items():
         body = ''.join([
             head, TRUST_STRIP,
             cs_intro(f'About {mt["name"].lower()}', mt['intro'] + [AREA_EXTRA[a_slug]['more']], glance, IMM_NOTE if imm else ''),
+            seo_block(url),
             cs_deep(f'{short_name(mt["name"])} explained', DM, lead='Pick a topic to read more.'),
             cs_help(f'How the {who} can help', mt['help'], 'What to have ready', mt['ready'], 'Don’t worry if you don’t have everything yet. The ' + who + ' will tell you what else they need.'),
             cs_steps('How it works', a['how'], q, lead='Three simple steps, and nothing to pay us.'),
@@ -74,6 +76,7 @@ for a_slug, matters in MAT.items():
             cs_things(a['considerations']),
             cs_faqs(f'{short_name(mt["name"])} questions and answers', faq_groups(faqs, DM), 'Ready to get started?', 'One short form. One specialist contacts you.', q, ENQ_LABEL),
             section(f'<h2 class="cs-h2 cs-center">More {a["name"].lower()} help</h2>' + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in related[:6]], 'three', more_label='Learn more'), cls='section cs-sec'),
+            seo_related(url, f'Related {a["name"].lower()} services', [AREA_URL(a_slug)] + [M_URL(a_slug, x['slug']) for x in related]),
             cs_guides(a_slug, AREA_GUIDES.get(a_slug, [])),
             cs_links(f'{LOCAL_NAME[a_slug]} near you', [(LOC_URL(c[0], a_slug), c[1]) for c in MC.CITIES]) if a_slug in MC.LOCAL_AREAS else '',
         ])
@@ -150,7 +153,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
             cs_links(f'{LOCAL_NAME[a_slug]} in other places', [(LOC_URL(c[0], a_slug), c[1]) for c in others]),
             cs_links(f'Other legal help in {c_name}', [(LOC_URL(c_slug, x), LOCAL_NAME[x]) for x in MC.LOCAL_AREAS if x != a_slug] + [(AREA_URL('immigration'), 'Immigration advisers (UK wide)')]),
         ])
-        page(f'{PUB}{url}.html', f'{LOCAL_NAME[a_slug]} in {c_name} | {BRAND}',
+        page(f'{PUB}{url}.html', LOCAL_TITLE[a_slug].format(c=c_name) + f' | {BRAND}',
              f'{LOCAL_NAME[a_slug]} in {c_name}. Answer a few quick questions and we will introduce you to a regulated firm covering {c_name} and {region}. Free, no obligation.',
              compact(body), APPLY_HEAD + f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in LGROUPS for qa in g]), crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)), (a['name'], url))),
              '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
@@ -181,7 +184,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         cs_links('Other places we cover', [(CITY_URL(c[0]), c[1]) for c in others]),
         cta(f'Find a solicitor in {c_name}', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched'),
     ])
-    page(f'{PUB}/solicitors/{c_slug}.html', f'Free Introductions to Solicitors in {c_name} | {BRAND}',
+    page(f'{PUB}/solicitors/{c_slug}.html', f'Solicitors in {c_name} | Free Introductions | {BRAND}',
          f'Find a solicitor in {c_name} for conveyancing, family law, motoring offences, licensing, debt recovery and lease extensions. Free introductions to regulated firms.',
          compact(hub), f'<link rel="canonical" href="{SITE}{CITY_URL(c_slug)}"/>' + ld(crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)))), backup=False)
     _count['hub'] += 1
