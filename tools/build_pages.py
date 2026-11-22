@@ -512,7 +512,7 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
-APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=3" rel="stylesheet"/>'
+APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=4" rel="stylesheet"/>'
 APPLY_JS = '<script type="module" src="/assets/enquire.js?v=4"></script>'
 
 
@@ -697,8 +697,9 @@ LP_TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 LP_TICKS = ('Free to use, no obligation', 'One regulated firm, not a call centre', 'Your details are kept private')
 
 
-def lp_body(h1='Find the right solicitor for your matter', ticks=LP_TICKS, form=None):
-    return ('<section class="ap-section ap-solo ap-lp" id="quote"><div class="ap-wrap"><div class="ap-lp-grid">'
+def lp_body(h1='Find the right solicitor for your matter', ticks=LP_TICKS, form=None, img=None):
+    pic = f'<div class="ap-lp-photo"><img src="{img}" alt="" loading="eager" fetchpriority="high"/></div>' if img else ''
+    return (f'<section class="ap-section ap-solo ap-lp{" ap-has-photo" if img else ""}" id="quote">{pic}<div class="ap-wrap"><div class="ap-lp-grid">'
             f'<div class="ap-lp-head"><h1>{h1}</h1>'
             '<ul>' + ''.join(f'<li><span class="ap-lp-tick">{LP_TICK}</span><span>{t}</span></li>' for t in ticks) + '</ul></div>'
             + (form or FORM) + '</div></div></section>')
@@ -754,7 +755,7 @@ for a in AC.AREAS:
     os.makedirs(f'{PUB}/enquire', exist_ok=True)
     page(f'{PUB}/enquire/{a["slug"]}.html', f'{a["name"]} Enquiry | {BRAND}',
          f'Answer a few quick questions about your {a["name"].lower()} matter and we will introduce you to one regulated firm. Free, with no obligation.',
-         lp_body(ENQ_H1[a['slug']], ('Free, no obligation', 'One regulated firm', 'UK wide' if imm_a else 'England and Wales'), form_card(a['slug'])),
+         lp_body(ENQ_H1[a['slug']], ('Free, no obligation', 'One regulated firm', 'UK wide' if imm_a else 'England and Wales'), form_card(a['slug']), img=PH.photo(PH.AREA[a['slug']][0], 1600)),
          APPLY_HEAD + '<meta name="robots" content="noindex"/>', APPLY_JS, header=LP_HEADER, backup=False)
     page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), APPLY_HEAD + ld(faq_ld([qa for _, g in faq_groups(seo_faqs(AREA_URL(a['slug'])) + a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
 
