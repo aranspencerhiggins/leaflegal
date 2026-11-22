@@ -28,6 +28,14 @@ def area_img(a, i=0):
     return PH.photo(PH.AREA[a][i % 2])
 
 
+SHORT_NAMES = {'Settlement and indefinite leave to remain': 'Indefinite leave to remain', 'Sponsor licences for employers': 'Sponsor licences',
+               'Late payment interest and compensation': 'Late payment interest', 'Taxi and private hire licences': 'Taxi licences'}
+
+
+def short_name(n):
+    return SHORT_NAMES.get(n, n)
+
+
 # ---------------------------------------------------------------- client matter pages: /legal-services/<area>/<matter>
 for a_slug, matters in MAT.items():
     a = AREA[a_slug]
@@ -36,8 +44,9 @@ for a_slug, matters in MAT.items():
     for i, mt in enumerate(matters):
         url = M_URL(a_slug, mt['slug'])
         q = f'/apply?area={quote(a["form"])}'
-        h1 = mt['name'] + (', with introductions to regulated advisers' if imm else ' solicitors' if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not mt['name'].endswith('s') else '')
-        h1 = mt['name'] if a_slug in ('conveyancing', 'lease-extensions') else h1
+        h1 = short_name(mt['name'])
+        if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not h1.endswith('s') and len(h1) < 20:
+            h1 += ' solicitors'
         ticks = ['Free to use, no obligation', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
                  'For businesses in England and Wales' if a.get('business_only') else 'Across the UK' if imm else 'For matters in England and Wales']
         head = hero_split(h1, mt['short'] + ' ' + ('Tell us a little about it and we will introduce you to a regulated adviser.' if imm else 'Tell us a little about it and we will introduce you to a specialist firm.'),
@@ -123,6 +132,14 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
                 + cards([(AREA[x]['icon'], LOCAL_NAME[x], AREA[x]['short'], LOC_URL(c_slug, x)) for x in MC.LOCAL_AREAS]
                         + [('globe', 'Immigration advisers', 'Introductions to regulated immigration advisers, wherever you are in the UK.', AREA_URL('immigration'))], 'three', more_label='Learn more'), cls='section cs-sec'),
         cs_steps('How it works', [('Tell us what you need', 'Answer a few quick questions about your matter. It takes about two minutes.'), ('We introduce one firm', f'We pass your enquiry to one regulated firm that covers {c_name} and handles your kind of matter.'), ('The firm contacts you', 'They talk through your matter and explain their fees. You decide whether to go ahead.')], '/apply', lead='Free to use, with no obligation.'),
+        section(f'<h2 class="cs-h2 cs-center">Legal help in {c_name}, area by area</h2><div class="cs-things">'
+                + ''.join(f'<div class="cs-thing"><h3><a href="{LOC_URL(c_slug, x)}">{LOCAL_NAME[x]}</a></h3><p>{AREA[x]["short"]} For {AREA_EXTRA[x]["who"][0].lower() + AREA_EXTRA[x]["who"][1:]}.</p></div>' for x in MC.LOCAL_AREAS) + '</div>', cls='section cs-sec'),
+        cs_intro(f'Choosing a solicitor in {c_name}', [
+            f'The right firm for you depends on the kind of matter you have, not just on being close by. A conveyancing firm on the high street in {c_name} may not handle a contested licence review, and a family law specialist will not usually deal with a speeding charge. That is why we ask what your matter is about before we introduce anyone.',
+            'It is worth asking any firm how it charges before work starts. Many matters are handled for a fixed fee, while others are charged by the hour. A good firm will explain the likely total, what could make it change and what is included, and confirm it in writing.',
+            f'You can check that a solicitor is regulated on the Solicitors Regulation Authority register, and that a licensed conveyancer is regulated by the Council for Licensed Conveyancers. Every firm we introduce in {c_name} and {region} is regulated, and you are free to decide whether to instruct them.'],
+            [('Check regulation', 'SRA or CLC register'), ('Ask about fees', 'Before any work starts'), ('Meetings', 'In person, phone or video'), ('Obligation', 'None')]),
+        faq(HOME_FAQ, 'Ready to get started?', 'One short form. One specialist firm contacts you.', '/apply', 'Get matched', title=f'Solicitors in {c_name}, questions and answers'),
         cs_links('Other places we cover', [(CITY_URL(c[0]), c[1]) for c in others]),
         cta(f'Find a solicitor in {c_name}', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched'),
     ])
@@ -155,6 +172,7 @@ for gd in CG.GUIDES:
     more_g = [x for x in CG.GUIDES if x['slug'] != gd['slug']][:3]
     page(f'{PUB}/guides/{gd["slug"]}.html', gd['title'], gd['desc'],
          ghead + f'<section class="ll-docsec"><div class="ll-doc-wrap">{key[:0]}<div class="cs-docmain">{key}{blocks_html(blocks)}</div>{aside}</div></section>'
+         + cs_fees(gd['area'], a['name']) + cs_things(a['considerations'])
          + cs_steps('Need help with your own matter?', a['how'], gq, lead='We introduce you to one regulated firm. Free to use, with no obligation.')
          + section('<h2 class="cs-h2 cs-center">More guides</h2><div class="ll-ggrid cs-gg">' + ''.join(f'<a class="ll-pcard" href="/guides/{x["slug"]}"><img src="{area_img(x["area"], i)}" alt="" loading="lazy"/><div><span class="ll-gcat">{AREA[x["area"]]["name"]}</span><b>{x["h1"]}</b><p>{x["lead"]}</p></div></a>' for i, x in enumerate(more_g)) + '</div>', cls='section cs-sec'),
          f'<link rel="canonical" href="{SITE}/guides/{gd["slug"]}"/>', backup=False)
@@ -191,6 +209,22 @@ import cfb_legal as _cfb
 CFB = _cfb.parts(ICON, TICK, LC)
 
 
+P_WHY = ('<section class="cfb-sec cfb-anat"><div class="cfb-wrap"><div class="cfb-head"><h2>Why law firms work with Leaflegal</h2><p>Enquiries that are worth calling, on terms that suit your firm.</p></div><div class="cfb-anat-grid"><ol class="cfb-points">' + ''.join(f'<li><b>{t}</b><p>{d}</p></li>' for t, d in [
+    ('One firm per enquiry', 'Every enquiry goes to one firm only. You are never racing three other practices to the same phone number.'),
+    ('Clients who want paid help', 'We screen out people looking only for free advice or legal aid, so your fee earners spend time on work they can take on.'),
+    ('Your areas, your matters', 'Choose the practice areas, matter types and locations you want. Change them whenever your capacity changes.'),
+    ('Compliant introductions', 'Clients are told we are an introducer paid by the firms we work with, and you receive the consent wording with every lead.'),
+    ('Fast delivery', 'Leads reach your inbox or CRM as soon as they are checked, while the client is still expecting a call.'),
+    ('No long contracts', 'A monthly minimum of 10 leads and the freedom to pause. If leads do not work for you, you are not tied in.'),
+]) + '</ol></div></div></section>')
+
+
+def p_related(url):
+    g = [d for d in PS.GUIDES if f'/partners/{d["slug"]}' != url][:3]
+    return ('<section class="cfb-sec cfb-anat"><div class="cfb-wrap"><div class="cfb-head"><h2>Guides for law firms</h2></div><div class="ll-ggrid cs-gg">' + ''.join(
+        f'<a class="ll-pcard" href="/partners/{d["slug"]}"><img src="{PH_POOL[i % len(PH_POOL)]}" alt="" loading="lazy"/><div><span class="ll-gcat">Guide for law firms</span><b>{d["h1"]}</b><p>{d["summary"]}</p></div></a>' for i, d in enumerate(g)) + '</div></div></section>')
+
+
 def partner_page(url, d, side_title, side_links, crumbs, extra_top='', img=None, lead_page=False):
     cur = ' aria-current="page"'
     side = ''.join(f'<li><a href="{h}"{cur if h == url else ""}>{t}</a></li>' for h, t in side_links)
@@ -198,7 +232,7 @@ def partner_page(url, d, side_title, side_links, crumbs, extra_top='', img=None,
             + '<section class="ll-docsec"><div class="ll-guide-wrap"><article><div class="ll-doc">'
             + f'<p><b>{d["summary"]}</b></p>' + ''.join(f'<h2>{h2}</h2>{seo_blocks(bl)}' for h2, bl in d['sections']) + '</div>' + P_DISC
             + f'</article><aside>{P_SIDE_CTA}<div class="ll-gside"><h2>{side_title}</h2><ul>{side}</ul></div></aside></div></section>'
-            + (CFB['anatomy'] if lead_page else '') + CFB['how']
+            + CFB['anatomy'] + P_WHY + p_related(url) + CFB['how']
             + faq(d['faqs'], 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
             + cta(d['cta_h2'], 'Book a 30-minute call and see a sample lead.', '/partners/apply', 'Become a partner firm'))
     os.makedirs(os.path.dirname(f'{PUB}{url}.html'), exist_ok=True)
@@ -224,7 +258,7 @@ for a in AC.AREAS:
     ic, nm, short, detail, typical = LC_AREA[s]
     base = f'/partners/{al["slug"]}'
     mlinks = [(f'{base}/{m["slug"]}', f'{m["name"]} leads') for m in MAT[s]]
-    d = {'h1': al['h1'], 'title': f'{al["kw"]} for Solicitors | Exclusive, Pay Per Lead | {BRAND}',
+    d = {'h1': al['kw'], 'title': f'{al["kw"]} for Solicitors | Exclusive, Pay Per Lead | {BRAND}',
          'description': f'{al["kw"]} for UK law firms. Exclusive, pre-screened {nm.lower()} enquiries, sent to one firm only. Pay per lead, minimum 10 a month.',
          'summary': f'{BRAND} generates exclusive {nm.lower()} enquiries from people and businesses who have asked to speak to a solicitor. {short}',
          'sections': [(f'What {nm.lower()} enquiries look like', [detail]),
@@ -238,7 +272,7 @@ for a in AC.AREAS:
     partner_page(base, d, 'Leads by practice area', [(f'/partners/{AL[x["slug"]]["slug"]}', AL[x['slug']]['kw']) for x in AC.AREAS], [('Leads', '/partners/lead-generation-for-law-firms')], img=PH.photo(PH.AREA[s][0]), lead_page=True)
     for m in MAT[s]:
         u = f'{base}/{m["slug"]}'
-        md = {'h1': f'{m["name"]} leads for {"advisers and law firms" if s == "immigration" else "solicitors"}',
+        md = {'h1': f'{short_name(m["name"])} leads',
               'title': f'{m["name"]} Leads for Law Firms | {BRAND}',
               'description': f'Exclusive {m["name"].lower()} leads for UK law firms. Pre-screened enquiries, sent to one firm only. Pay per lead.',
               'summary': f'Exclusive {m["name"].lower()} enquiries from people who have asked to speak to {"a regulated adviser" if s == "immigration" else "a solicitor"}. {m["firm"]}',
