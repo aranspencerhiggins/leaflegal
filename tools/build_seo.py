@@ -1,11 +1,12 @@
 # SEO pages, run inside tools/build_pages.py (exec): matter pages, location pages, client guides, and the law firm pages
 # (lead types by practice area and matter, lead generation pillars, how it works, guides, FAQ). No em dashes in copy.
 
-def hero_split(h1, lead, ticks, btns, img, crumbs='', alt=''):
+def hero_split(h1, lead, ticks, btns, img, crumbs='', alt='', form=None):
     li = ''.join(f'<li>{TICK}{t}</li>' for t in ticks)
     return (f'<section class="ll-pagehead ll-hero-split"><div class="ll-hero-grid"><div>{crumbs}'
             f'<h1>{h1}</h1><p class="ll-lead">{lead}</p><ul class="ll-hero-ticks">{li}</ul><div class="ll-head-btns">{btns}</div></div>'
-            f'<div class="ll-hero-media"><img src="{img}" alt="{alt}" loading="eager" fetchpriority="high"/></div></div></section>')
+            + (f'<div class="ll-hero-form" id="quote">{form}</div></div></section>' if form else
+               f'<div class="ll-hero-media"><img src="{img}" alt="{alt}" loading="eager" fetchpriority="high"/></div></div></section>'))
 
 
 def crumb_ld(*items):
@@ -43,14 +44,15 @@ for a_slug, matters in MAT.items():
     imm = a_slug == 'immigration'
     for i, mt in enumerate(matters):
         url = M_URL(a_slug, mt['slug'])
-        q = f'/apply?area={quote(a["form"])}'
+        q = '#quote'  # the form is in the hero
         h1 = short_name(mt['name'])
         if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not h1.endswith('s') and len(h1) < 20:
             h1 += ' solicitors'
         ticks = ['Free to use, no obligation', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
                  'For businesses in England and Wales' if a.get('business_only') else 'Across the UK' if imm else 'For matters in England and Wales']
         head = hero_split(h1, mt['short'] + ' ' + ('Tell us a little about it and we will introduce you to a regulated adviser.' if imm else 'Tell us a little about it and we will introduce you to a specialist firm.'),
-                          ticks, f'<a href="{q}" class="button"><div>Get matched</div></a><a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, i + 1), alt='')
+                          ticks, '<a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, i + 1), alt='',
+                          form=form_card(a_slug, mt['slug']))
         related = [x for x in matters if x['slug'] != mt['slug']]
         DM = deep(f'{a_slug}__{mt["slug"]}')
         if DM:
@@ -81,9 +83,9 @@ for a_slug, matters in MAT.items():
             title = f'{mt["name"]} | {a["name"]} | {BRAND}'
         desc = f'{mt["short"]} Answer a few quick questions and we will introduce you to {"a regulated immigration adviser" if imm else "a regulated law firm"}. Free to use, no obligation.'
         page(f'{PUB}{url}.html', title, desc, compact(body),
-             f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in faq_groups(faqs, DM) for qa in g]), svc_ld(mt['name'], url, mt['short']),
+             APPLY_HEAD + f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in faq_groups(faqs, DM) for qa in g]), svc_ld(mt['name'], url, mt['short']),
                 crumb_ld(('Legal services', '/legal-services'), (a['name'], AREA_URL(a_slug)), (mt['name'], url))),
-             '<script src="/assets/tabs.js?v=2"></script>', backup=False)
+             '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
         _count['matter'] += 1
 
 def local_faq_groups(a_slug, base, ci):
@@ -122,7 +124,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
     for ai, a_slug in enumerate(MC.LOCAL_AREAS):
         a = AREA[a_slug]
         url = LOC_URL(c_slug, a_slug)
-        q = f'/apply?area={quote(a["form"])}'
+        q = '#quote'  # the form is in the hero
         need, angle = MC.LOCAL_ANGLE[a_slug]
         h1 = f'{LOCAL_NAME[a_slug]} in {c_name}'
         lead = f'If you are {need} in {c_name} or nearby, answer a few quick questions and we will introduce you to one regulated firm that handles your kind of matter.'
@@ -138,7 +140,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
                   ('Cost to use Leaflegal', 'Free, with no obligation')]
         body = ''.join([
             hero_split(h1, lead, ['Free to use, no obligation', 'One regulated firm, not a list', f'Covering {c_name} and {region}'],
-                       f'<a href="{q}" class="button"><div>Get matched</div></a><a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, ci + ai)),
+                       '<a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, ci + ai), form=form_card(a_slug)),
             TRUST_STRIP,
             cs_intro(f'{a["name"]} in {c_name}', intro + [AREA_EXTRA[a_slug]['more']], glance),
             cs_deep(f'{a["name"]} explained', deep(a_slug), lead=f'General information for people and businesses in {c_name}. Pick a topic to read more.'),
@@ -151,8 +153,8 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         ])
         page(f'{PUB}{url}.html', f'{LOCAL_NAME[a_slug]} in {c_name} | {BRAND}',
              f'{LOCAL_NAME[a_slug]} in {c_name}. Answer a few quick questions and we will introduce you to a regulated firm covering {c_name} and {region}. Free, no obligation.',
-             compact(body), f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in LGROUPS for qa in g]), crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)), (a['name'], url))),
-             '<script src="/assets/tabs.js?v=2"></script>', backup=False)
+             compact(body), APPLY_HEAD + f'<link rel="canonical" href="{SITE}{url}"/>' + ld(faq_ld([qa for _, g in LGROUPS for qa in g]), crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)), (a['name'], url))),
+             '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
         _count['local'] += 1
     # city hub
     hub = ''.join([

@@ -417,7 +417,7 @@ EMAIL = 'hello@leaflegal.co'
 LOGO_LIGHT = asset('Leaflegal_Logo_White')       # on dark surfaces
 LOGO_DARK = asset('Leaflegal_Logo_Deep_Green')   # on light surfaces
 AREA_URL = lambda s: f'/{s}'
-# homepage card / ?area= value -> the option in the form's first step (assets/apply.js)
+# homepage card / ?area= value -> the option in the form's first step (assets/enquire.js)
 PURPOSE = {a['name']: a['form'] for a in AC.AREAS}
 
 
@@ -504,8 +504,14 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
-APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/>'
-APPLY_JS = '<script src="/assets/apply.js?v=101"></script>'
+APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=1" rel="stylesheet"/>'
+APPLY_JS = '<script type="module" src="/assets/enquire.js?v=1"></script>'
+
+
+def form_card(area=None, matter=None):
+    """The qualifying form card (assets/enquire.js), started inside an area and matter when given."""
+    attrs = (f' data-area="{area}"' if area else '') + (f' data-matter="{matter}"' if matter else '')
+    return FORM.replace('id="ap"', 'id="ap"' + attrs, 1)
 ld = lambda *xs: ''.join(f'<script type="application/ld+json">{_json.dumps(x, ensure_ascii=False)}</script>' for x in xs)
 faq_ld = lambda qas: {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': [
     {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': re.sub(r'<[^>]+>', '', a)}} for q, a in qas]}
@@ -610,13 +616,13 @@ os.makedirs(f'{PUB}/legal-services', exist_ok=True)
 AREA_IMG = {'conveyancing': 'stock-home', 'immigration': 'stock-legal-call', 'family-law': 'stock-about', 'debt-recovery': 'stock-invoice',
             'motoring-offences': 'stock-need-buying-vehicles', 'licensing': 'stock-ind-restaurants-and-hospitality', 'lease-extensions': 'stock-legal-meet'}
 for a in AC.AREAS:
-    q = f'/apply?area={quote(a["form"])}'
+    q = '#quote'  # the form is in the hero
     where = 'Introductions to regulated immigration advisers across the UK' if a.get('referral_only') else ('For businesses in England and Wales' if a.get('business_only') else 'For matters in England and Wales')
     head = (f'<section class="ll-pagehead ll-hero-split"><div class="ll-hero-grid"><div><nav class="ll-crumbs" aria-label="Breadcrumb"><a href="/legal-services">Legal services</a><span>/</span><span>{a["name"]}</span></nav>'
             f'<h1>{a["h1"]}</h1><p class="ll-lead">{a["lead"]}</p>'
             f'<ul class="ll-hero-ticks"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}{where}</li></ul>'
-            f'<div class="ll-head-btns"><a href="{q}" class="button"><div>Get matched</div></a><a href="#how" class="ll-ghost-light">How it works</a></div></div>'
-            f'<div class="ll-hero-media"><img src="{PH.photo(PH.AREA[a["slug"]][0])}" alt="" loading="eager" fetchpriority="high"/></div></div></section>')
+            f'<div class="ll-head-btns"><a href="#how" class="ll-ghost-light">How it works</a></div></div>'
+            f'<div class="ll-hero-form" id="quote">{form_card(a["slug"])}</div></div></section>')
     crumb_ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': 'Legal services', 'item': f'{SITE}/legal-services'},
         {'@type': 'ListItem', 'position': 2, 'name': a['name'], 'item': f'{SITE}{AREA_URL(a["slug"])}'}]}
@@ -640,7 +646,7 @@ for a in AC.AREAS:
         cs_links(f'{LOCAL_NAME[a["slug"]]} near you', [(LOC_URL(c[0], a['slug']), c[1]) for c in MC.CITIES]) if a['slug'] in MC.LOCAL_AREAS else '',
         section('<h2 class="cs-h2 cs-center">Other legal services</h2>' + area_cards(others), cls='section cs-sec'),
     ])
-    page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), ld(faq_ld([qa for _, g in faq_groups(a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>', backup=False)
+    page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), APPLY_HEAD + ld(faq_ld([qa for _, g in faq_groups(a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
 
 hub = (page_head('Legal services', 'The areas of law we introduce people and businesses to. Pick one to find out more, or answer a few quick questions and we will do the matching.')
        + TRUST_STRIP + section(area_cards())
