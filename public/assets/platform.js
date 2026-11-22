@@ -102,7 +102,7 @@
   const audName = (a) => (a === 'business' ? 'Business' : a === 'individual' ? 'Individual' : '–');
   const payName = (p) => (p === 'yes' ? 'Can pay privately' : p === 'quote' ? 'Will pay if the cost is right' : 'Not asked');
   const pcArea = (l) => l.postcode_area || String(l.postcode_district || l.postcode || '').toUpperCase().match(/^[A-Z]{1,2}/)?.[0] || '';
-  const where = (l) => [l.region, l.postcode_district || (l.postcode ? String(l.postcode).split(' ')[0] : '')].filter(Boolean).join(' · ') || '–';
+  const where = (l) => ([l.region, l.postcode_district || (l.postcode ? String(l.postcode).split(' ')[0] : '')].filter(Boolean).join(' · ') || '–') + (l.location_source === 'ip' && l.region ? ' (approximate)' : '');
   const valueText = (l) => l.value_band ? `${l.value_label ? `${h(l.value_label)} ` : ''}${h(l.value_band)}` : '–';
   const dueText = (d) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '');
   const isUrgent = (l) => l.urgency === 'Urgently' || (l.deadline && new Date(l.deadline) - Date.now() < 14 * 864e5);

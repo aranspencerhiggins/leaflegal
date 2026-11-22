@@ -377,3 +377,6 @@ on conflict (id) do nothing;
 
 -- First admin: after signing up on leaflegal.co/platform, run
 --   update public.brokers set is_admin = true, approved = true where email = '<admin email>';
+
+-- 2026-11-22: where the location came from ('postcode' or 'ip', from the connection when no postcode was asked).
+alter table public.leads add column if not exists location_source text;

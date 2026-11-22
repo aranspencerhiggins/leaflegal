@@ -43,6 +43,7 @@ export function toRow(lead = {}) {
     area, area_label: orNull(lead.areaLabel, 80) || (area ? areaLabel(area) : null), matter, matter_label: orNull(lead.matterLabel, 120) || (matter ? matterLabel(area, matter) : null),
     audience: lead.audience === 'business' ? 'business' : 'individual', urgency: toUrgency(lead.urgency), deadline: /^\d{4}-\d{2}-\d{2}$/.test(String(lead.deadline || '')) ? lead.deadline : null,
     postcode: postcode || null, postcode_district: district, postcode_area: pArea, region: orNull(lead.region, 60), country: orNull(lead.country, 20),
+    location_source: lead.locationSource === 'ip' ? 'ip' : postcode ? 'postcode' : lead.locationSource === 'postcode' ? 'postcode' : null,
     value_band, value_label: orNull(lead.valueLabel || (v && typeof v === 'object' ? v.label : null), 80), value_min, value_max,
     private_pay: toPrivatePay(lead.privatePay), business_name: orNull(biz?.name, 160), company_number: orNull(biz?.number, 12)?.toUpperCase() || null,
     company: lead.company && typeof lead.company === 'object' ? lead.company : null,

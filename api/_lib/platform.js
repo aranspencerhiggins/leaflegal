@@ -210,7 +210,7 @@ export const suggestMode = (b) => (SUGGEST.includes(b.filters?.suggest) ? b.filt
 
 // Fields a firm sees before buying (nothing that names or locates the person: no name, contact details, full postcode,
 // business name or summary). postcode_area (letters only) is selected for matching.
-export const PREVIEW = 'id,created_at,area,area_label,matter,matter_label,audience,urgency,deadline,postcode_district,postcode_area,region,country,value_band,value_label,value_min,value_max,private_pay,answers,tags,grade,score,price,list_price,price_fixed';
+export const PREVIEW = 'id,created_at,area,area_label,matter,matter_label,audience,urgency,deadline,postcode_district,postcode_area,region,country,location_source,value_band,value_label,value_min,value_max,private_pay,answers,tags,grade,score,price,list_price,price_fixed';
 // Masked contact shown before purchase, e.g. J*** S****, a*****@*****.co.uk, +447******90. Raw values never leave the server.
 const stars = (n) => '*'.repeat(Math.max(3, Math.min(n, 8)));
 export function maskContact(l) {
@@ -679,7 +679,7 @@ export async function followUp(id, row = {}) {
 }
 // A leads row back in the shape storeLead takes (used to relist a person with a different firm).
 export const rowToLead = (l) => ({ area: l.area, areaLabel: l.area_label, matter: l.matter, matterLabel: l.matter_label, audience: l.audience, urgency: l.urgency,
-  deadline: l.deadline, postcode: l.postcode, postcodeDistrict: l.postcode_district, postcodeArea: l.postcode_area, region: l.region, country: l.country,
+  deadline: l.deadline, postcode: l.postcode, postcodeDistrict: l.postcode_district, postcodeArea: l.postcode_area, region: l.region, country: l.country, location_source: l.location_source || null,
   value: l.value_band || l.value_min || l.value_max ? { band: l.value_band, min: l.value_min, max: l.value_max } : null, valueLabel: l.value_label,
   privatePay: l.private_pay, business: l.business_name || l.company_number ? { name: l.business_name, number: l.company_number } : null, company: l.company,
   answers: l.answers, tags: l.tags, quality: { score: l.score, grade: l.grade }, summary: l.summary,
