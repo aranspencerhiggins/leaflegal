@@ -622,12 +622,11 @@ body .ll-hero.ll-hero-photo.ll-hero-photo::after{background:linear-gradient(180d
 .ll-hero-noform .ll-hero-points{margin-top:24px}
 .ll-hero-noform h1,.ll-hero-noform .ll-lead,.ll-hero-noform .ll-hero-points li{text-shadow:0 1px 18px rgba(0,0,0,.35)}
 @media (max-width:991px){
-  .ll-hero-noform{--hp:240px;padding:calc(var(--hp) + 32px) 0 56px;display:block}
+  .ll-hero-noform{--hp:230px;padding:calc(var(--hp) + 36px) 0 56px;display:block}
   body:not([data-theme=partner]) .ll-hero.ll-hero-photo{background:radial-gradient(90% 45% at 100% calc(var(--hp) + 60px),rgba(97,176,146,.30),transparent 70%),radial-gradient(80% 40% at 0% 100%,rgba(255,166,48,.12),transparent 70%),linear-gradient(170deg,#1f4f3e 0%,#163a2d 40%,#0e271e 75%,#0a1d16 100%)}
   .ll-hero-photo .ll-hero-bg{inset:0 0 auto 0;height:var(--hp);object-position:70% 30%}
-  body .ll-hero.ll-hero-photo.ll-hero-photo::before{inset:0 0 auto 0;height:var(--hp);background:linear-gradient(180deg,rgba(12,30,23,.2) 0%,transparent 35%,transparent 60%,#1d4a3a 100%)}
+  body .ll-hero.ll-hero-photo.ll-hero-photo::before{background:none}
   body .ll-hero.ll-hero-photo.ll-hero-photo::after{background:none}
-  .ll-hero-noform h1,.ll-hero-noform .ll-lead{text-align:left;margin-left:0}
 }
-@media (min-width:561px) and (max-width:991px){.ll-hero-noform{--hp:360px}.ll-hero-noform .ll-hero-points{display:grid}}
+@media (min-width:561px) and (max-width:991px){.ll-hero-noform{--hp:340px}}
 @media (max-width:560px){.ll-borrow{padding:16px}.ll-borrow-go{font-size:15px;padding-left:12px;padding-right:12px}.ll-need-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ll-need-opts a{padding:0 8px;font-size:14px}.ll-need-opts a:last-child:nth-child(odd){grid-column:1/-1}}

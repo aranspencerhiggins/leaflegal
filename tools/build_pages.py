@@ -141,9 +141,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=45', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=46', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=45" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=46" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
