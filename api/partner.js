@@ -1,12 +1,11 @@
 import { createHash } from 'node:crypto';
-import { sealHandoff, db, metaEvent, waOrSms, PLATFORM_URL } from './_lib/platform.js';
-import { partnerInvite, partnerThanks } from './platform.js';
-import { capture, sourceFrom, describeSource, runFlows } from './_lib/crm.js';
+import { sealHandoff, db, metaEvent } from './_lib/platform.js';
+import { capture, sourceFrom, describeSource, runFlows, REGISTER_URL } from './_lib/crm.js';
 
-// POST /api/partner: emails a law firm partner application (/partners/apply) to the team via Resend. Same env as api/enquiry.js.
-// Law firms only: the broker branches below (platform invite, WhatsApp) are left over from LoanLeaf and never run.
+// POST /api/partner: emails a law firm partner enquiry (/partners/apply) to the team via Resend, adds the firm to the CRM
+// and returns a sign-up link that prefills platform.leaflegal.co/register. Same env as api/enquiry.js.
 const FIELDS = [
-  ['form', 'Type'], ['route', 'Route'], ['company', 'Company'], ['budget', 'Monthly budget for leads'], ['areas', 'Practice areas'], ['regulator', 'Regulator'], ['coverage', 'Coverage'], ['fcaRef', 'Regulator number'],
+  ['form', 'Type'], ['route', 'Route'], ['company', 'Firm'], ['budget', 'Monthly budget for leads'], ['areas', 'Practice areas'], ['regulator', 'Regulator'], ['coverage', 'Coverage'], ['regulatorRef', 'Regulator number'],
   ['volume', 'Plan / leads per month'], ['delivery', 'Delivery'], ['start', 'Start'],
   ['firstName', 'First name'], ['lastName', 'Last name'], ['role', 'Role'], ['email', 'Email'], ['phone', 'Phone'], ['site', 'Website'], ['notes', 'Notes'],
   ['consentText', 'Consent wording'], ['page', 'Page'], ['referrer', 'Referrer'],
@@ -132,10 +131,8 @@ export default async function handler(req, res) {
   if (!b.firstName || !b.lastName || !b.company || b.consent !== true
     || !/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(b.email || '') || !/^(?:0|\+?44)\d{9,10}$/.test(String(b.phone || '').replace(/[\s()-]/g, '')))
     return res.status(400).json({ error: 'Missing or invalid fields' });
-  // Brokers must give a UK mobile: we call, text and WhatsApp it.
-  if (b.form !== 'legal' && !/^(?:\+44|0044|0)7\d{9}$/.test(String(b.phone).replace(/[\s()-]/g, ''))) return res.status(400).json({ error: 'Please enter a UK mobile number' });
 
-  const legal = b.form === 'legal', kind = legal ? 'Law firm partner application' : 'Broker partner application';
+  const kind = 'Law firm partner enquiry';
   const flags = [];
   if (b.hp) flags.push('honeypot filled');
   if (Number(b._ms) < 2000) flags.push(`completed in ${b._ms}ms`); // bots: well under 2s. People with autofill can finish in 3-5s.
@@ -144,15 +141,15 @@ export default async function handler(req, res) {
   if (!key) return res.status(503).json({ error: 'Email not configured' });
 
   const rows = FIELDS.filter(([k]) => b[k] && (!Array.isArray(b[k]) || b[k].length)).map(([k, l]) => `<tr><td style="padding:6px 12px;color:#579e84;vertical-align:top">${l}</td><td style="padding:6px 12px;font-weight:700;color:#244237;white-space:pre-wrap">${esc(b[k]) || '–'}</td></tr>`).join('')
-    + (flags.length ? `<tr><td style="padding:6px 12px;color:#c0392b">Check</td><td style="padding:6px 12px;color:#c0392b">${flags.join('; ')}</td></tr>` : '');
+    + (flags.length ? `<tr><td style="padding:6px 12px;color:#c0392b">Check</td><td style="padding:6px 12px;color:#c0392b">${flags.join(', ')}</td></tr>` : '');
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: `Leaflegal <${process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`,
-      to: (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(','),
+      from: `Leaflegal <${process.env.ENQUIRY_FROM || 'hello@leaflegal.co'}>`,
+      to: (process.env.ENQUIRY_TO || 'hello@leaflegal.co').split(','),
       reply_to: b.email,
-      subject: `${flags.length ? '[Check] ' : ''}${legal ? `Law firm application: ${b.company} (${b.volume || '?'} leads/month)` : `New partner interest: ${b.company}`}`.slice(0, 200),
+      subject: `${flags.length ? '[Check] ' : ''}Law firm enquiry from ${b.company}${b.volume ? ` (${b.volume} leads a month)` : ''}`.slice(0, 200),
       html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">New ${kind.toLowerCase()}</h2><table style="border-collapse:collapse">${rows}</table></div>`,
     }),
   });
@@ -171,37 +168,19 @@ export default async function handler(req, res) {
       if (!m.ok) console.error('meta capi partner', m.status, await m.text());
     } catch (err) { console.error('meta capi partner', err.message); }
   }
-  // PartnerInterest: one per person who sends details (enquiry, or the details step of booking a call). Same id as the pixel copy.
-  if (!flags.length && !legal) await metaEvent('PartnerInterest', { req, email: b.email, phone: b.phone, first: b.firstName, last: b.lastName, page: b.page,
-    eventId: b.eventId ? `${b.eventId}-pi` : undefined, fbc: b.fbc, fbp: b.fbp, custom: { content_name: b.route === 'Booked a call' ? 'Booked a call' : 'Partner enquiry' } });
   // Into the CRM (spam-flagged submissions are left out). A plain enquiry gets the "new" flow's first email straight away.
   if (!flags.length) {
     try {
       const src = b.source && typeof b.source === 'object' ? b.source : {}, call = b.route === 'Booked a call';
       const r = await capture({ email: b.email, name: `${b.firstName} ${b.lastName}`.trim(), company: b.company, phone: b.phone, leadsPerMonth: b.volume, budget: b.budget,
         source: call ? 'Booked a call' : sourceFrom(src), sourceDetail: describeSource(src), utm: Object.keys(src).length ? src : null,
-        stage: call ? 'call_booked' : 'new', tags: legal ? ['Law firm'] : [], note: `${legal ? 'Law firm' : 'Broker'} ${call ? 'booked a call' : 'sent an enquiry'} on leaflegal.co${b.volume ? ` · ${b.volume} leads a month` : ''}${b.budget ? ` · budget ${b.budget}` : ''}` });
-      // Website brokers get the platform invite below instead of the CRM's own "thanks" email (step new:0); later steps still run.
-      if (!legal && r?.contact) await db('crm_flow_sends', { method: 'POST', body: { contact_id: r.contact.id, step: 'new:0' }, prefer: 'resolution=ignore-duplicates' }).catch(() => {});
-      else if (r?.contact?.stage === 'new') await runFlows({ contactIds: [r.contact.id] });
+        stage: call ? 'call_booked' : 'new', tags: ['Law firm'], note: `Law firm ${call ? 'booked a call' : 'sent an enquiry'} on leaflegal.co${b.volume ? ` · ${b.volume} leads a month` : ''}${b.budget ? ` · budget ${b.budget}` : ''}` });
+      if (r?.contact?.stage === 'new') await runFlows({ contactIds: [r.contact.id] });
     } catch (e) { console.error('crm capture', e.message); }
   }
-  // Encrypted hand-off so platform.leaflegal.co/register can prefill these details (brokers only).
-  let handoff; try { if (!legal) handoff = sealHandoff({ company: b.company, contactName: `${b.firstName} ${b.lastName}`.trim(), email: b.email, phone: b.phone, volume: b.volume }); } catch {}
-  // Brokers: an invite to Leaflegal Platform (with new-lead emails, not pre-approved) and WhatsApps to them and to the team.
-  if (!legal && !flags.length) {
-    const name = `${b.firstName} ${b.lastName}`.trim(), call = handoff ? `https://leaflegal.co/partners/apply?call=1&h=${encodeURIComponent(handoff)}` : 'https://leaflegal.co/partners/apply';
-    const [inv] = await Promise.allSettled([
-      partnerInvite({ email: b.email, name, company: b.company, phone: b.phone, call }),
-      waOrSms(b.phone, 'leaflegal_partner_welcome', { first_name: b.firstName, email: String(b.email).trim() },
-        `Hi ${b.firstName}, thanks for your interest in becoming a Leaflegal partner. Your platform invite is on its way to ${String(b.email).trim()}. Join from the email or book a call with the team. Leaflegal`, `partner-${Date.now()}`),
-      ...String(process.env.ADMIN_WHATSAPP || '').split(',').filter(Boolean).map((to) => waOrSms(to, 'leaflegal_partner_alert', { name, company: b.company, mobile: b.phone, email: String(b.email).trim() },
-        `New partner interest on Leaflegal: ${name}, ${b.company}, ${b.phone}, ${String(b.email).trim()}. Invite sent.`, `partner-alert-${Date.now()}`)),
-    ]);
-    const v = inv.value;
-    if (v === 'has-account') await partnerThanks({ email: b.email, name, company: b.company, join: `${PLATFORM_URL}/signin`, call }).catch((e) => console.error('partner thanks', e.message));
-    return res.status(200).json({ ok: true, handoff, invite: v?.token || null, hasAccount: v === 'has-account' });
-  }
-  return res.status(200).json({ ok: true, handoff });
+  // Encrypted hand-off so platform.leaflegal.co/register?h=… can prefill the sign-up form (api/platform.js action=handoff).
+  let handoff = null;
+  try { if (!flags.length) handoff = sealHandoff({ company: b.company, contactName: `${b.firstName} ${b.lastName}`.trim(), email: b.email, phone: b.phone, volume: b.volume }); } catch {}
+  return res.status(200).json({ ok: true, handoff, register: handoff ? `${REGISTER_URL}?h=${encodeURIComponent(handoff)}` : REGISTER_URL });
 }
 export const _test = { candidateSlots, londonMs, freeOf, tzOff };

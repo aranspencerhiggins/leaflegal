@@ -1,7 +1,12 @@
-// Leaflegal Platform: broker portal (dashboard, opportunities, lead pipeline, auto-buy, credits, account, admin).
+// Leaflegal Platform: law firm portal (dashboard, opportunities, lead pipeline, auto-buy, credits, account, admin).
 // Auth is Supabase email + password over its REST API; everything else goes through /api/platform.
 (() => {
-  const SB = 'https://tefpljuzuvdchczcfjlz.supabase.co', KEY = 'sb_publishable_xkOwkkbg3qYYJukThYnHDw_Q_oqo-hm', TK = 'llp-session';
+  // Supabase project URL and publishable key come from /api/platform?action=config (these are only the fallbacks).
+  let SB = 'https://qrdpvsqsfifmgkxinank.supabase.co', KEY = 'sb_publishable_vZL7kU5KjOGWKSfcAAsnbg_9p9BBTUM';
+  const TK = 'llp-session';
+  // Public config (Supabase, Turnstile) and the practice area taxonomy: fetched once per page load, before the first route.
+  let CONFIG = {};
+  const configReady = fetch('/api/platform?action=config').then((r) => r.json()).then((d) => { CONFIG = d || {}; if (d?.supabaseUrl) SB = d.supabaseUrl; if (d?.supabaseKey) KEY = d.supabaseKey; }).catch(() => {});
   const app = document.getElementById('app'), modal = document.getElementById('pf-modal'), toastEl = document.querySelector('.pf-toast');
   const h = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   // Repeatable input list (several emails or webhooks): rows of inputs with remove buttons and an Add button.
@@ -64,24 +69,55 @@
     download: ic('<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>'),
     webhook: ic('<path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2"/><path d="m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06"/><path d="m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8"/>'),
   };
-  const PURPOSE_ICON = {
-    'Growth and expansion': '<path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/>',
-    'Cash flow': '<rect x="2" y="6" width="20" height="13" rx="2"/><path d="M16 12h2M2 10h20"/>',
-    'Equipment or vehicles': '<path d="M1 6h13v10H1zM14 10h4l3 3v3h-7"/><circle cx="5.5" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/>',
-    'Stock and inventory': '<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/>',
-    'Commercial property': '<path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M16 9h2a2 2 0 0 1 2 2v10M2 21h20M8 7h4M8 11h4M8 15h4"/>',
-    'Refinance existing debt': '<path d="M21 12a9 9 0 0 1-15 6.7L3 16M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5M3 21v-5h5"/>',
-    'Tax or VAT bill': '<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="m9 14 6-6"/>',
-    'Something else': '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
+  // One icon per practice area (taxonomy slugs).
+  const AREA_ICON = {
+    conveyancing: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+    immigration: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+    'family-law': '<circle cx="8" cy="7" r="3"/><circle cx="17" cy="9" r="2.2"/><path d="M2.5 20c.5-3.6 2.8-6 5.5-6s5 2.4 5.5 6M13.5 20c.4-2.6 1.8-4.6 3.5-4.6s3.1 2 3.5 4.6"/>',
+    'debt-recovery': '<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+    'motoring-offences': '<path d="M5 17h14M3 13l2-5.5A2 2 0 0 1 6.9 6h10.2a2 2 0 0 1 1.9 1.5L21 13v4H3z"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/>',
+    licensing: '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><circle cx="12" cy="14" r="2.5"/><path d="m10.5 16.2-1 3.3 2.5-1 2.5 1-1-3.3"/>',
+    'lease-extensions': '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>',
+    trademarks: '<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+    other: '<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',
   };
-  const pIcon = (p) => ic(PURPOSE_ICON[p] || PURPOSE_ICON['Something else']);
-  const STAGES = [['new', 'New'], ['contacted', 'Contacted'], ['application', 'Application'], ['funded', 'Funded'], ['lost', 'Lost']];
-  const STAGE_NAME = Object.fromEntries(STAGES);
+  const aIcon = (a) => ic(AREA_ICON[a] || AREA_ICON.other);
+
+  // ------------------------------------------------ taxonomy (practice areas, matters, regions, regulators, stages)
+  // From /api/platform?action=taxonomy, the same lists as api/_lib/taxonomy.js. Fetched once per page load and kept in localStorage.
+  // Built-in copy (api/_lib/taxonomy.js at build time) so the pages work before the fetch lands or if it fails.
+  let TX = {"areas":[{"slug":"conveyancing","label":"Conveyancing","ew":true,"matters":[["buying-a-home","Buying a home"],["selling-a-home","Selling a home"],["buying-and-selling","Buying and selling"],["first-time-buyers","First time buyer"],["buying-a-leasehold-flat","Buying a leasehold flat"],["new-build-purchases","New build purchase"],["buy-to-let","Buy to let"],["remortgaging","Remortgaging"],["transfer-of-equity","Transfer of equity"],["other","Something else"]]},{"slug":"immigration","label":"Immigration","ew":false,"matters":[["work-visas","Work visa"],["spouse-and-partner-visas","Spouse or partner visa"],["family-visas","Family visa"],["settlement","Settlement (ILR)"],["british-citizenship","British citizenship"],["eu-settlement-scheme","EU Settlement Scheme"],["sponsor-licences","Sponsor licence (employer)"],["refusals-and-appeals","Refusal or appeal"],["visitor-visas","Visitor visa"],["talent-and-founder-visas","Global Talent or Innovator Founder"],["other","Something else"]]},{"slug":"family-law","label":"Family law","ew":true,"matters":[["divorce","Divorce"],["civil-partnership-dissolution","Ending a civil partnership"],["financial-settlements","Financial settlement"],["consent-orders","Consent order"],["child-arrangements","Child arrangements"],["cohabitation-disputes","Cohabitation dispute"],["separation-agreements","Separation agreement"],["prenuptial-agreements","Prenuptial agreement"],["other","Something else"]]},{"slug":"debt-recovery","label":"Debt recovery","ew":true,"businessOnly":true,"matters":[["unpaid-invoices","Unpaid invoices"],["letters-before-action","Letter before action"],["court-claims","Court claim"],["enforcement","Enforcing a judgment"],["statutory-demands","Statutory demand"],["winding-up-petitions","Winding up petition"],["late-payment-interest","Late payment interest"],["other","Something else"]]},{"slug":"motoring-offences","label":"Motoring offences","ew":true,"matters":[["speeding","Speeding"],["drink-driving","Drink driving"],["drug-driving","Drug driving"],["careless-driving","Careless driving"],["dangerous-driving","Dangerous driving"],["driving-without-insurance","Driving without insurance"],["mobile-phone","Using a phone while driving"],["failing-to-identify-the-driver","Failing to identify the driver"],["totting-up","Totting up ban"],["exceptional-hardship","Exceptional hardship"],["other-motoring","Another motoring offence"],["other","Something else"]]},{"slug":"licensing","label":"Licensing","ew":true,"matters":[["premises-licence-applications","New premises licence"],["licence-variations","Licence variation"],["transfers-and-dps","Transfer or DPS change"],["personal-licences","Personal licence"],["licence-reviews","Licence review or hearing"],["taxi-and-private-hire-licences","Taxi or private hire licence"],["other-licensing","Another licence"],["other","Something else"]]},{"slug":"lease-extensions","label":"Lease extensions","ew":true,"matters":[["statutory-lease-extension","Statutory lease extension"],["informal-lease-extension","Informal lease extension"],["short-lease","Flat with a short lease"],["collective-enfranchisement","Buying the freehold"],["selling-a-leasehold-flat","Selling a leasehold flat"],["lease-variations","Lease variation"],["other","Something else"]]},{"slug":"trademarks","label":"Trademarks and IP","ew":false,"matters":[["trademark-registration","Trademark registration"],["trademark-searches","Trademark search"],["objections-and-oppositions","Objection or opposition"],["trademark-infringement","Trademark infringement"],["cease-and-desist-letters","Cease and desist letter"],["trademark-renewals","Renewal or ownership change"],["copyright","Copyright"],["design-rights","Design rights"],["other-ip","Another brand or IP matter"],["other","Something else"]]}],"regions":["London","South East","South West","East of England","East Midlands","West Midlands","Yorkshire and the Humber","North West","North East","Wales","Scotland","Northern Ireland","Channel Islands and Isle of Man","Outside the UK"],"urgency":["Urgently","Within a month","In the next few months","Just looking into it"],"audiences":[["individual","Individuals"],["business","Businesses"]],"grades":["A","B","C"],"privatePay":[["yes","Can pay privately"],["quote","Will pay if the cost is right"]],"regulators":[{"id":"SRA","label":"Solicitors Regulation Authority (SRA)","number":"SRA number","areas":["conveyancing","immigration","family-law","debt-recovery","motoring-offences","licensing","lease-extensions","trademarks"]},{"id":"CILEX","label":"CILEx Regulation","number":"CILEx Regulation number","areas":["conveyancing","immigration","family-law","debt-recovery","motoring-offences","licensing","lease-extensions","trademarks"]},{"id":"CLC","label":"Council for Licensed Conveyancers (CLC)","number":"CLC licence number","areas":["conveyancing","lease-extensions"]},{"id":"IAA","label":"Immigration Advice Authority (IAA)","number":"IAA reference","areas":["immigration"]},{"id":"IPREG","label":"Intellectual Property Regulation Board (IPReg)","number":"IPReg registration number","areas":["trademarks"]}],"stages":["new","contacted","consultation","instructed","lost"],"stageLabels":{"new":"New","contacted":"Contacted","consultation":"Consultation","instructed":"Instructed","lost":"Lost"}};
+  let STAGES = [], STAGE_NAME = {};
+  const useTx = (t) => { if (t?.areas?.length) TX = { ...TX, ...t }; STAGES = TX.stages.map((k) => [k, TX.stageLabels[k] || k]); STAGE_NAME = Object.fromEntries(STAGES); };
+  try { useTx(JSON.parse(localStorage.getItem('llp-tax') || 'null')); } catch { useTx(null); }
+  const taxReady = fetch('/api/platform?action=taxonomy').then((r) => (r.ok ? r.json() : null)).then((d) => { const t = d?.taxonomy || d; if (t?.areas?.length) { useTx(t); try { localStorage.setItem('llp-tax', JSON.stringify(t)); } catch {} } }).catch(() => {});
+  const areaOf = (slug) => TX.areas.find((a) => a.slug === slug) || null;
+  const areaName = (slug, fallback) => areaOf(slug)?.label || fallback || (slug === 'not-sure' ? 'Not sure yet' : slug || '');
+  const matterName = (area, slug, fallback) => areaOf(area)?.matters.find(([s]) => s === slug)?.[1] || fallback || (slug === 'other' ? 'Something else' : slug || '');
+  const regulatorOf = (id) => TX.regulators.find((r) => r.id === id) || null;
+  // Same rule as allowedAreas in api/_lib/taxonomy.js: a firm only gets areas its regulators allow.
+  const allowedAreas = (regs = []) => [...new Set(regs.map((r) => (typeof r === 'string' ? r : r?.id)).flatMap((id) => regulatorOf(id)?.areas || []))];
+  const firmAreas = (b = me) => { const regs = b?.regulators || []; return regs.length ? allowedAreas(regs) : b?.allowedAreas?.length ? b.allowedAreas : b?.allowed_areas?.length ? b.allowed_areas : TX.areas.map((a) => a.slug); };
+  const REG_LINK = { SRA: 'https://www.sra.org.uk/consumers/register/', CILEX: 'https://cilexregulation.org.uk/', CLC: 'https://www.clc-uk.org/', IAA: 'https://www.gov.uk/find-an-immigration-adviser', IPREG: 'https://ipreg.org.uk/' };
+  const regShort = (id) => ({ SRA: 'SRA', CILEX: 'CILEx', CLC: 'CLC', IAA: 'IAA', IPREG: 'IPReg' }[id] || id);
+  const audName = (a) => (a === 'business' ? 'Business' : a === 'individual' ? 'Individual' : '–');
+  const payName = (p) => (p === 'yes' ? 'Can pay privately' : p === 'quote' ? 'Will pay if the cost is right' : 'Not asked');
+  const pcArea = (l) => l.postcode_area || String(l.postcode_district || l.postcode || '').toUpperCase().match(/^[A-Z]{1,2}/)?.[0] || '';
+  const where = (l) => ([l.region, l.postcode_district || (l.postcode ? String(l.postcode).split(' ')[0] : '')].filter(Boolean).join(' · ') || '–') + (l.location_source === 'ip' && l.region ? ' (approximate)' : '');
+  const valueText = (l) => l.value_band ? `${l.value_label ? `${h(l.value_label)} ` : ''}${h(l.value_band)}` : '–';
+  const dueText = (d) => (d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '');
+  const isUrgent = (l) => l.urgency === 'Urgently' || (l.deadline && new Date(l.deadline) - Date.now() < 14 * 864e5);
+  const gradeBadge = (l) => `<span class="pf-q pf-q-${l.grade === 'A' ? 'hi' : l.grade === 'B' ? 'mid' : 'lo'}" title="Lead grade and quality score">${I.star}${h(l.grade || '–')}${l.score != null ? `<small>${l.score}</small>` : ''}</span>`;
+  const tagList = (tags) => (tags?.length ? `<div class="pf-tags">${tags.map((t) => `<span class="pf-tag">${h(t)}</span>`).join('')}</div>` : '');
+  const answersList = (answers) => (answers?.length ? `<dl class="pf-qa">${answers.map((x) => `<div><dt>${h(x.q)}</dt><dd>${h(x.a)}</dd></div>`).join('')}</dl>` : '<p class="pf-hint">No qualifying answers on this lead.</p>');
+  // Lead fields come in two shapes: the marketplace shape (area, score, full_name) and leadOut (practice_area, quality_score, contact_name).
+  const L = (l) => ({ ...l, area: l.area ?? l.practice_area, area_label: l.area_label ?? l.practice_area_label, score: l.score ?? l.quality_score, contact_name: l.contact_name ?? l.full_name });
   const qClass = (q) => (q >= 80 ? 'hi' : q >= 60 ? 'mid' : 'lo');
   const qBadge = (q) => `<span class="pf-q pf-q-${qClass(q)}" title="Lead quality score">${I.star}${q}</span>`;
   const initials = (s) => String(s || '?').replace(/[^\p{L}\p{N}\s]/gu, '').split(/\s+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 2).toUpperCase() || '?';
 
-  // App routes sit at the root of platform.leaflegal.co; '/platform' only where the app is still served under that path (local previews).
+  // The app is served at platform.leaflegal.co (P = '') and also at leaflegal.co/platform/... (P = '/platform').
+  // P is '' only if the app is ever served from the root of its own host.
   const P = /^\/platform(\/|$)/.test(location.pathname) ? '/platform' : '';
   const currentTab = () => location.pathname.slice(P.length).replace(/^\//, '').split('/')[0];
   function nav(tab) {
@@ -137,14 +173,13 @@
   // From the leaflegal.co partner form (?h=…, encrypted): fill in the sign-up form. Merged in before the first render.
   const handoff = new URLSearchParams(location.search).get('h');
   const handoffReady = handoff ? fetch(`/api/platform?action=handoff&h=${encodeURIComponent(handoff)}`).then((r) => r.json()).then((d) => { for (const [k, v] of Object.entries(d || {})) if (v && !prefill[k]) prefill[k] = v; }).catch(() => {}) : Promise.resolve();
-  const SIZE_RANGE = { 'Under £25k': [0, 25000], '£25k to £100k': [25000, 100000], '£100k to £500k': [100000, 500000], '£500k to £2m': [500000, 2000000], '£2m+': [2000000, null] };
 
 
   // Cloudflare Turnstile (bot check). Off until the site key is set on the server (/api/platform?action=config).
   // A fresh, single-use token is made at each submit; resolves '' when switched off or if Cloudflare can't load.
   const ts = { key: undefined, id: null, box: null, wait: null };
   const humanToken = async (box) => {
-    if (ts.key === undefined) ts.key = await fetch('/api/platform?action=config').then((r) => r.json()).then((d) => d.turnstile || null).catch(() => null);
+    if (ts.key === undefined) { await configReady; ts.key = CONFIG.turnstile || null; }
     if (!ts.key || !box) return '';
     if (!window.turnstile) await new Promise((ok) => { const sc = Object.assign(document.createElement('script'), { src: 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit', async: true, onload: ok, onerror: ok }); document.head.appendChild(sc); });
     if (!window.turnstile) return '';
@@ -164,14 +199,13 @@
   function signupView() {
     const inv = invite, pre = inv ? { company: inv.c || '', contactName: inv.n || '', email: inv.e, phone: inv.m || '' } : prefill;
     obShell(`<form class="pf-onb-form" novalidate><span class="pf-eyebrow">Step 1 of ${ALL_STEPS.length}</span>
-        <h1>${inv ? `You’re invited, ${h(String(inv.n || '').split(' ')[0])}` : 'Create a broker account'}</h1>
-        <p class="pf-sub">${inv?.na ? 'Your details are filled in. Choose a password to get started. We check every new firm, usually within one working day.' : inv ? 'Your account is already approved as a Leaflegal supplier. Check your details, choose a password and you’re in.' : 'It takes a minute. We review every firm before it can buy leads.'}</p>
-        ${inv ? `<p class="pf-prefilled">${I.check}${inv.na ? 'Invitation' : 'Approved supplier invitation'} for ${h(inv.e)}</p>` : pre.company ? `<p class="pf-prefilled">${I.check}We've filled this in from your partner application.</p>` : ''}
+        <h1>${inv ? `You’re invited, ${h(String(inv.n || '').split(' ')[0])}` : 'Create a law firm account'}</h1>
+        <p class="pf-sub">${inv?.na ? 'Your details are filled in. Choose a password to get started. We check every new firm, usually within one working day.' : inv ? 'This account is already approved as a Leaflegal partner firm. Check the details, choose a password and you’re in.' : 'It takes a minute. We review every firm before it can buy leads.'}</p>
+        ${inv ? `<p class="pf-prefilled">${I.check}${inv.na ? 'Invitation' : 'Approved partner firm invitation'} for ${h(inv.e)}</p>` : pre.company ? `<p class="pf-prefilled">${I.check}We've filled this in from your partner application.</p>` : ''}
         <div class="pf-two"><label>Full name<input name="contactName" autocomplete="name" value="${h(pre.contactName || '')}" required></label>
-          <label>Company name<input name="company" autocomplete="organization" value="${h(pre.company || '')}" required></label></div>
-        <div class="pf-two"><label>Mobile number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="07700 900123" value="${h(pre.phone || '')}" required><span class="pf-hint">Not shown publicly. Your public phone number can be different if you choose.</span></label>
-          <label>FCA firm ref <span>(optional)</span><input name="fca" inputmode="numeric"></label></div>
-        <label>Work email<input name="email" type="email" autocomplete="email" value="${h(pre.email || '')}"${inv ? ' readonly' : ''} required></label>
+          <label>Firm name<input name="company" autocomplete="organization" value="${h(pre.company || '')}" required></label></div>
+        <div class="pf-two"><label>Mobile number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="07700 900123" value="${h(pre.phone || '')}" required><span class="pf-hint">Not shown publicly. The firm’s public phone number can be different.</span></label>
+          <label>Work email<input name="email" type="email" autocomplete="email" value="${h(pre.email || '')}"${inv ? ' readonly' : ''} required></label></div>
         <label>Password <span>(12+ characters with upper and lower case, a number and a symbol)</span><input name="password" type="password" autocomplete="new-password" required></label>
         <p class="pf-err" role="alert"></p><div class="pf-ts" id="pf-ts"></div>
         <div class="pf-onb-nav"><span class="pf-onb-alt">Already have an account? <a href="${P}/signin">Sign in</a></span><button class="pf-btn pf-btn-primary pf-btn-lg" type="submit">Create account${I.arrow}</button></div></form>`,
@@ -180,8 +214,8 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault(); err.textContent = '';
       const v = Object.fromEntries(new FormData(form));
-      if (!v.company.trim() || !v.contactName.trim() || !v.email.trim()) { err.textContent = 'Please fill in your full name, company name and work email.'; return; }
-      if (!/^(\+44|0044|0)7\d{9}$/.test(v.phone.replace(/[\s()-]/g, ''))) { err.textContent = 'Please enter your mobile number, e.g. 07700 900123.'; return; }
+      if (!v.company.trim() || !v.contactName.trim() || !v.email.trim()) { err.textContent = 'Please fill in your full name, firm name and work email.'; return; }
+      if (!/^(\+44|0044|0)7\d{9}$/.test(v.phone.replace(/[\s()-]/g, ''))) { err.textContent = 'Please enter a UK mobile number, such as 07700 900123.'; return; }
       const weak = pwProblem(v.password); if (weak) { err.textContent = `Your password needs ${weak}`; return; }
       const btn = form.querySelector('button[type=submit]'); btn.disabled = true; btn.classList.add('busy');
       try {
@@ -225,14 +259,14 @@
     app.innerHTML = `<header class="pf-onb-top"><a href="https://leaflegal.co" class="pf-onb-logo" aria-label="Leaflegal">${LOGO}</a>
         <a href="${P}/register" class="pf-onb-skip">Create an account</a></header>
       <main class="pf-onb-main"><div class="pf-onb-card pf-signin-card"><form class="pf-onb-form" novalidate>
-        <h1>Sign in</h1><p class="pf-sub">Leaflegal Platform for finance brokers.</p>
+        <h1>Sign in</h1><p class="pf-sub">Leaflegal Platform for law firms.</p>
         <label>Work email<input name="email" type="email" autocomplete="email" required></label>
         <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
         <p class="pf-err" role="alert"></p>
         <button class="pf-btn pf-btn-primary pf-btn-lg" type="submit">Sign in${I.arrow}</button>
         <p class="pf-switch">New to Leaflegal? <a href="${P}/register">Create an account</a></p>
       </form></div>
-      <ul class="pf-signin-points"><li>${I.target}Exclusive leads, sold to one broker only</li><li>${I.spark}Auto-buy leads that match set criteria</li><li>${I.webhook}Delivered to inbox and CRM instantly</li></ul></main>`;
+      <ul class="pf-signin-points"><li>${I.target}Exclusive enquiries, sold to one firm only</li><li>${I.spark}Auto-buy by practice area, matter and region</li><li>${I.webhook}Delivered to inbox and case management instantly</li></ul></main>`;
     const form = app.querySelector('form'), err = form.querySelector('.pf-err');
     form.addEventListener('submit', async (e) => {
       e.preventDefault(); err.textContent = '';
@@ -244,7 +278,7 @@
   }
 
   // ------------------------------------------------ shell
-  let me = null, opts = null, packs = null, pricing = null, TIERS = { names: [], prices: {} }, custom = null, trial = null, acting = null, low = 300;
+  let me = null, opts = null, packs = null, pricing = null, custom = null, trial = null, acting = null, low = 300;
   const NAV = [['dashboard', 'Dashboard', 'home'], ['opportunities', 'Opportunities', 'inbox'], ['leads', 'My leads', 'layers'], ['autobuy', 'Auto-buy', 'spark'], ['profile', 'Profile', 'star'], ['billing', 'Billing', 'coins'], ['notifications', 'Notifications', 'bell'], ['account', 'Account', 'user']];
   const TITLES = { dashboard: 'Dashboard', opportunities: 'Opportunities', leads: 'My leads', autobuy: 'Auto-buy', billing: 'Billing', credits: 'Billing', profile: 'Public profile', account: 'Account', notifications: 'Notifications', admin: 'Admin', crm: 'CRM' };
   // Team members only see what their permissions allow; the account owner (no me.member) sees everything.
@@ -263,11 +297,11 @@
         <a href="${P}/autobuy" class="pf-mode ${me.mode}"><i></i>${me.mode === 'auto' ? 'Auto-buy on' : 'Manual mode'}</a>
         <a href="${P}/billing" class="pf-balance">${I.coins}<b>${num(me.credits)}</b><span>credits</span></a></header>
         ${acting ? `<div class="pf-banner pf-banner-warn">${I.shield}<div><b>Editing ${h(acting.company)}’s account as an admin.</b> Changes you save here go straight to their account and are recorded in the activity log. <a href="${P}/profile">Profile</a> · <a href="${P}/autobuy">Auto-buy and delivery</a> · <a href="${P}/notifications">Notifications</a></div><button class="pf-btn pf-btn-primary pf-btn-sm" data-act-done>Done</button></div>` : ''}
-        ${acting || me.agreementCurrent ? '' : `<div class="pf-banner pf-banner-go">${I.arrow}<div><b>Finish setting up your account.</b> Add your company details, choose a plan and sign the partner agreement to start buying leads.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/onboarding">Continue setup</a></div>`}
-        ${tab === 'dashboard' && me.agreementCurrent && (!me.profile?.show || profValid(me.profile)) ? `<div class="pf-banner pf-banner-go">${I.user}<div><b>Set up your public profile.</b> When a business is matched with you, we show them your logo and contact details and email them a copy. Without a profile they only see your firm name.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/profile">Set up profile</a></div>` : ''}
+        ${acting || me.agreementCurrent ? '' : `<div class="pf-banner pf-banner-go">${I.arrow}<div><b>Finish setting up the account.</b> Add the firm’s details and regulator, choose a plan and sign the referral agreement to start buying leads.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/onboarding">Continue setup</a></div>`}
+        ${tab === 'dashboard' && me.agreementCurrent && (!me.profile?.show || profValid(me.profile)) ? `<div class="pf-banner pf-banner-go">${I.user}<div><b>Set up the public profile.</b> When a client is matched with the firm, we show them its logo and contact details and email them a copy. Without a profile they only see the firm name.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/profile">Set up profile</a></div>` : ''}
         ${!acting && tab !== 'billing' && me.approved && !me.suspended_at && me.agreementCurrent && me.credits < low ? `<div class="pf-banner pf-banner-warn" data-upsell>${I.coins}<div><b>${me.credits > 0 ? `Only ${num(me.credits)} credits left.` : 'You’re out of credits.'}</b> Upgrade your plan to keep buying leads${me.mode === 'auto' ? ' and keep auto-buy running' : ''}. The new plan’s credits are added straight away.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/billing#plans">Upgrade plan</a></div>` : ''}
         ${me.suspended_at ? `<div class="pf-banner pf-banner-warn">${I.clock}<div><b>This account is suspended.</b> Buying, auto-buy and new-lead emails are paused. Please contact <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.</div></div>` : ''}
-        ${me.approved || me.suspended_at ? '' : `<div class="pf-banner">${I.clock}<div><b>Your account is being reviewed.</b> Look around freely. You can buy credits and leads once we've approved your firm, usually within one working day.</div></div>`}
+        ${me.approved || me.suspended_at ? '' : `<div class="pf-banner">${I.clock}<div><b>This account is being reviewed.</b> Look around freely. Credits and leads can be bought once we’ve checked the firm and its regulator, usually within one working day.</div></div>`}
         <div class="pf-view">${inner}</div></main>`;
     app.querySelectorAll('[data-out]').forEach((b) => (b.onclick = signOut));
     app.querySelector('[data-grp]')?.addEventListener('click', (e) => { // desktop: the Admin heading opens and closes the group; phones follow the link
@@ -286,7 +320,7 @@
       if (!v.isConnected) return;
       if (s?.trial) {
         app.querySelector('[data-upsell]')?.remove();
-        v.insertAdjacentHTML('beforebegin', `<div class="pf-banner pf-banner-go" data-upsell>${I.spark}<div><b>You’re on the first month offer.</b> Upgrade to ${h(s.plan)} now to get ${num(s.credits)} credits today instead of waiting for ${s.renews ? new Date(s.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : 'your renewal'}.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/billing#plans">Upgrade now</a></div>`);
+        v.insertAdjacentHTML('beforebegin', `<div class="pf-banner pf-banner-go" data-upsell>${I.spark}<div><b>First month offer.</b> Upgrade to ${h(s.plan)} now to get ${num(s.credits)} credits today instead of waiting for ${s.renews ? new Date(s.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : 'your renewal'}.</div><a class="pf-btn pf-btn-primary pf-btn-sm" href="${P}/billing#plans">Upgrade now</a></div>`);
       }
       if (!lowNow) return;
       const msg = lowMsg(s);
@@ -323,17 +357,25 @@
   const empty = (icon, title, text, cta = '') => `<div class="pf-empty"><span class="pf-empty-ic">${I[icon]}</span><h2>${title}</h2><p>${text}</p>${cta}</div>`;
 
   // ------------------------------------------------ shared: opportunity card + drawers
-  const oppCard = (l, compact) => `<article class="pf-opp ${l.match ? 'is-match' : ''} ${l.discounted ? 'is-deal' : ''}" data-open="${l.id}" tabindex="0" role="button" aria-label="${h(short(l.amount))} ${h(l.purpose)} lead, ${l.price} credits${l.discounted ? `, 50% off, was ${l.list_price}` : ''}">${l.discounted ? '<span class="pf-deal-flag">50% off</span>' : ''}
-    <div class="pf-opp-top"><span class="pf-pic">${pIcon(l.purpose)}</span><div class="pf-opp-meta"><b>${h(l.purpose)}</b><span>${mins(l.created_at) < 60 ? '<i class="pf-live"></i>' : ''}${ago(l.created_at)}${onTier() && l.tier ? ` ${tierTag(l.tier)}` : ''}</span></div>${compact ? '' : qBadge(l.quality)}</div>
-    <div class="pf-amount">${short(l.amount)}</div>
-    ${!compact && l.companies_house ? `<p class="pf-chline">${I.check}Companies House: ${h(l.companies_house.type || 'company')}${l.companies_house.incorporated ? ` since ${l.companies_house.incorporated.slice(0, 4)}` : ''}</p>` : ''}
-    ${compact ? `<p class="pf-opp-line">${h(l.turnover)} revenue · ${h(l.trading)}${l.property ? ` · ${h(l.property)}` : ''}</p>` : `<dl class="pf-facts"><div><dt>Revenue</dt><dd>${h(l.turnover)}</dd></div><div><dt>Trading</dt><dd>${h(l.trading)}</dd></div>
-      <div><dt>Property</dt><dd>${h(l.property || 'Not asked')}</dd></div><div><dt>Credit</dt><dd>${l.credit === 'Yes' ? 'Adverse' : l.credit === 'Not sure' ? '–' : 'Clean'}</dd></div></dl>`}
-    ${!compact && l.contact ? `<div class="pf-masked"><span>${I.user}${h(l.contact.name)}</span><span>${I.phone}${h(l.contact.phone)}${l.contact.phoneValid ? `<i class="pf-ver" title="${l.contact.phoneLive ? 'Number live on the network' : 'Valid UK mobile'}">${I.check}</i>` : ''}</span><span>${I.mail}${h(l.contact.email)}${l.contact.emailChecked ? `<i class="pf-ver" title="${l.contact.emailVerified ? 'Mailbox verified' : 'Email domain verified'}">${I.check}</i>` : ''}</span></div>` : ''}
-    <div class="pf-opp-foot">${compact ? qBadge(l.quality) : l.match ? `<span class="pf-matchtag">${I.target}${onTier() ? 'One of your tiers' : 'Fits your criteria'}</span>` : '<span class="pf-opp-view">View details</span>'}<span class="pf-price">${l.discounted ? `<s>${l.list_price}</s>` : ''}${l.price}<small>credits</small></span></div></article>`;
+  // Masked contact (before purchase): initial, masked phone and email, with the live-check badges.
+  const maskedContact = (c) => !c ? '' : `<div class="pf-masked"><span>${I.user}${h(c.name)}</span>
+    <span>${I.phone}${h(c.phone)}${c.phoneLive || c.phoneValid ? `<i class="pf-ver" title="${c.phoneLive ? 'Number live on the network' : 'Valid UK mobile'}">${I.check}</i>` : ''}</span>
+    <span>${I.mail}${h(c.email)}${c.emailVerified || c.emailChecked ? `<i class="pf-ver" title="${c.emailVerified ? 'Mailbox verified' : 'Email domain verified'}">${I.check}</i>` : ''}</span></div>`;
+  const leadTitle = (l) => h(l.matter_label || matterName(l.area, l.matter) || l.area_label || areaName(l.area) || 'Enquiry');
+  const oppCard = (l, compact) => { l = L(l); const area = l.area_label || areaName(l.area), urgent = isUrgent(l);
+    return `<article class="pf-opp ${l.match ? 'is-match' : ''} ${l.discounted ? 'is-deal' : ''}" data-open="${l.id}" tabindex="0" role="button" aria-label="${leadTitle(l)}, ${h(area)}, ${h(l.region || '')}, ${l.price} credits${l.discounted ? `, 50% off, was ${l.list_price}` : ''}">${l.discounted ? '<span class="pf-deal-flag">50% off</span>' : ''}
+    <div class="pf-opp-top"><span class="pf-pic">${aIcon(l.area)}</span><div class="pf-opp-meta"><b>${h(area)}</b><span>${mins(l.created_at) < 60 ? '<i class="pf-live"></i>' : ''}${ago(l.created_at)}</span></div>${compact ? '' : gradeBadge(l)}</div>
+    <h3 class="pf-matter">${leadTitle(l)}</h3>
+    ${compact ? `<p class="pf-opp-line">${h(where(l))} · ${h(l.urgency || 'No timescale given')}</p>` : `<div class="pf-pills">${l.urgency ? `<span class="pf-pill ${urgent ? 'pf-pill-hot' : ''}">${I.clock}${h(l.urgency)}</span>` : ''}${l.deadline ? `<span class="pf-pill pf-pill-hot">Deadline ${dueText(l.deadline)}</span>` : ''}<span class="pf-pill">${l.audience === 'business' ? 'Business client' : 'Individual client'}</span>${l.private_pay === 'yes' ? `<span class="pf-pill pf-pill-ok">${I.check}Private pay</span>` : l.private_pay === 'quote' ? '<span class="pf-pill">Pays if the cost is right</span>' : ''}</div>
+    <dl class="pf-facts"><div><dt>Location</dt><dd>${h(where(l))}</dd></div>${l.value_band ? `<div><dt>${h(l.value_label || 'Value')}</dt><dd>${h(l.value_band)}</dd></div>` : l.deadline ? `<div><dt>Deadline</dt><dd>${dueText(l.deadline)}</dd></div>` : ''}</dl>
+    ${tagList(l.tags)}
+    ${l.answers?.length ? `<details class="pf-answers" data-noopen><summary>${num(l.answers.length)} qualifying answer${l.answers.length === 1 ? '' : 's'}</summary>${answersList(l.answers)}</details>` : ''}
+    ${l.companies_house ? `<p class="pf-chline">${I.check}Companies House ${h(l.companies_house.type || 'company')}${l.companies_house.incorporated ? ` since ${l.companies_house.incorporated.slice(0, 4)}` : ''}</p>` : ''}
+    ${maskedContact(l.contact)}`}
+    <div class="pf-opp-foot">${compact ? gradeBadge(l) : l.match ? `<span class="pf-matchtag">${I.target}Fits the criteria</span>` : '<span class="pf-opp-view">View details</span>'}<span class="pf-price">${l.discounted ? `<s>${l.list_price}</s>` : ''}${l.price}<small>credits</small></span></div></article>`; };
   const wireOpps = (root, list, after) => root.querySelectorAll('[data-open]').forEach((c) => {
-    const go = () => oppDrawer(list.find((l) => l.id === +c.dataset.open), after);
-    c.onclick = go; c.onkeydown = (e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), go());
+    const go = (e) => { if (e?.target.closest('[data-noopen]')) return; oppDrawer(list.find((l) => l.id === +c.dataset.open), after); };
+    c.onclick = go; c.onkeydown = (e) => (e.key === 'Enter' || e.key === ' ') && !e.target.closest('[data-noopen]') && (e.preventDefault(), go());
   });
 
   function drawer(html) {
@@ -345,40 +387,45 @@
   }
   // Price with the original struck through when the 72-hour discount applies.
   const priceTag = (l, unit = '') => l.discounted ? `<span class="pf-was">${l.list_price}</span> <b class="pf-now">${l.price}${unit}</b> <span class="pf-off">50% off</span>` : `${l.price}${unit}`;
-  // Companies House block. Before purchase (full = false) the server sends no name, number or address.
+  // Companies House block for business leads. Before purchase (full = false) the server sends no name, number or address.
   const CH_STATUS = { active: 'Active', dissolved: 'Dissolved', liquidation: 'In liquidation', administration: 'In administration', 'voluntary-arrangement': 'Voluntary arrangement', receivership: 'In receivership' };
   const monthYear = (d) => (d ? new Date(d).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }) : '–');
   const yearsSince = (d) => { const y = Math.floor((Date.now() - Date.parse(d)) / (365.25 * 864e5)); return y >= 1 ? `${y} year${y === 1 ? '' : 's'}` : 'under a year'; };
   const yn = (v, yes, no) => (v ? `<span class="pf-chwarn">${yes}</span>` : no);
-  const chBlock = (c, full) => !c ? '' : `<section class="pf-ch"><div class="pf-ch-h"><b>${I.shield}Companies House</b><span>From the public register${full ? '' : ' · name and number unlock when you buy'}</span></div>
+  const chBlock = (c, full) => !c ? '' : `<section class="pf-ch"><div class="pf-ch-h"><b>${I.shield}Companies House</b><span>From the public register${full ? '' : ' · name and number unlock when bought'}</span></div>
     ${facts([
       ...(full ? [['Company name', h(c.name || '–')], ['Company number', h(c.number)]] : []),
       ['Company type', h(c.type || '–')], ['Status', h(CH_STATUS[c.status] || c.status || '–')],
       ['Incorporated', c.incorporated ? `${c.incorporated.length === 4 ? c.incorporated : monthYear(c.incorporated)} (${yearsSince(c.incorporated)})` : '–'],
-      ...(c.checked ? [['Registered in', h(c.locality || '–')], ['Industry', h(c.industries.join(', ') || '–')],
+      ...(c.checked ? [['Registered in', h(c.locality || '–')], ['Industry', h((c.industries || []).join(', ') || '–')],
         ['Filings', c.accounts_overdue || c.confirmation_overdue ? yn(true, [c.accounts_overdue && 'Accounts overdue', c.confirmation_overdue && 'Confirmation statement overdue'].filter(Boolean).join(', ')) : 'Up to date'],
-        ['Insolvency history', yn(c.insolvency_history, 'Yes', 'None')], ['Registered charges', c.charges ? 'Yes (existing secured lending)' : 'None']] : []),
-      [c.listed_as === 'company secretary' ? 'Company secretary' : 'Director', c.director_listed ? (full && c.director ? `${h(c.director)}, listed ${c.listed_as || 'director'}` : `Applicant is a listed ${c.listed_as || 'director'}`) : 'Applicant isn’t listed as a director'],
-      ...(c.director_dob ? [['Director date of birth', monthYear(c.director_dob)]] : []),
+        ['Insolvency history', yn(c.insolvency_history, 'Yes', 'None')]] : []),
+      ...(c.director_listed != null ? [[c.listed_as === 'company secretary' ? 'Company secretary' : 'Director', c.director_listed ? (full && c.director ? `${h(c.director)}, listed ${c.listed_as || 'director'}` : `The client is a listed ${c.listed_as || 'director'}`) : 'The client isn’t listed as a director']] : []),
       ...(full && c.address ? [['Registered office', h(c.address)]] : []),
     ])}
     ${full && c.url ? `<a class="pf-btn pf-btn-sm" href="${h(c.url)}" target="_blank" rel="noopener">View on Companies House${I.arrow}</a>` : ''}</section>`;
   const facts = (rows) => `<dl class="pf-facts pf-facts-lg">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`;
+  // The enquiry itself, shared by the marketplace drawer, My leads and admin.
+  const enquiryFacts = (l, extra = []) => facts([['Practice area', h(l.area_label || areaName(l.area))], ['Matter', leadTitle(l)], ['Client', audName(l.audience)], ['Urgency', h(l.urgency || '–')],
+    ...(l.deadline ? [['Deadline', `<span class="pf-chwarn">${dueText(l.deadline)}</span>`]] : []), ['Location', h(where(l))], ...(l.value_band ? [[h(l.value_label || 'Value'), h(l.value_band)]] : []), ['Paying privately', payName(l.private_pay)], ...extra]);
   function oppDrawer(l, after) {
+    if (!l) return; l = L(l);
     const shortOf = me.credits < l.price;
-    drawer(`<div class="pf-dh"><span class="pf-pic pf-pic-lg">${pIcon(l.purpose)}</span><div><span class="pf-eyebrow">Lead #${l.id} · ${ago(l.created_at)}</span><h2>${short(l.amount)} for ${h(l.purpose.toLowerCase())}</h2></div></div>
-      <div class="pf-dscore"><div class="pf-ring pf-q-${qClass(l.quality)}" style="--v:${l.quality}"><b>${l.quality}</b></div><div><b>Quality score</b><p>Based on credit history, time trading, revenue, urgency and existing debt.</p></div></div>
-      ${facts([...(onTier() && l.tier ? [['Lead tier', `${tierTag(l.tier)} ${num(TIERS.prices[l.tier])} credits`]] : []), ['Loan amount', gbp(l.amount)], ['Needed', h(l.timeline)], ['Business type', h(l.structure)], ['Annual revenue', h(l.turnover)], ['Trading for', h(l.trading)],
-        ['Homeowner or tenant', h(l.property || '–')], ['Missed payments / CCJs', l.credit === 'Not sure' ? '–' : h(l.credit)], ['Existing finance', h(l.debt) + (l.debt === 'Yes' && l.debt_left ? ` · ${h(l.debt_left)}` : '')], ['Monthly repayments', h(l.debt_monthly || '–')]])}
+    drawer(`<div class="pf-dh"><span class="pf-pic pf-pic-lg">${aIcon(l.area)}</span><div><span class="pf-eyebrow">Lead #${l.id} · ${ago(l.created_at)} · ${h(l.area_label || areaName(l.area))}</span><h2>${leadTitle(l)}</h2></div></div>
+      <div class="pf-dscore"><div class="pf-ring pf-q-${l.grade === 'A' ? 'hi' : l.grade === 'B' ? 'mid' : 'lo'}" style="--v:${l.score ?? 50}"><b>${h(l.grade || '–')}</b></div><div><b>Grade ${h(l.grade || '–')}${l.score != null ? ` · score ${l.score}` : ''}</b><p>Based on how complete and specific the answers are, how soon help is needed and the contact checks.</p></div></div>
+      ${enquiryFacts(l)}
+      ${tagList(l.tags)}
+      <h3 class="pf-dsec">Qualifying answers</h3>${answersList(l.answers)}
+      ${l.has_summary ? `<div class="pf-locked pf-locked-soft">${I.doc}<div><b>The client also wrote a summary in their own words.</b><span>It can identify them, so it unlocks with the contact details.</span></div></div>` : ''}
       ${chBlock(l.companies_house, false)}
-      ${l.contact ? `<div class="pf-mcontact"><div class="pf-mc-h"><b>Contact details</b><span>${I.shield}Revealed in full when you buy</span></div>
+      ${l.contact ? `<div class="pf-mcontact"><div class="pf-mc-h"><b>Contact details</b><span>${I.shield}Revealed in full when bought</span></div>
         <ul><li>${I.user}<span>Name</span><b>${h(l.contact.name)}</b></li>
         <li>${I.phone}<span>Mobile</span><b>${h(l.contact.phone)}</b>${l.contact.phoneLive ? `<em class="pf-verb">${I.check}Number live</em>` : l.contact.phoneValid ? `<em class="pf-verb">${I.check}Valid UK mobile</em>` : ''}</li>
         <li>${I.mail}<span>Email</span><b>${h(l.contact.email)}</b>${l.contact.emailVerified ? `<em class="pf-verb">${I.check}Mailbox verified</em>` : l.contact.emailChecked ? `<em class="pf-verb">${I.check}Domain verified</em>` : ''}</li></ul></div>` : ''}
-      ${!me.approved ? '<p class="pf-hint">Masked contact details and Companies House information appear once your firm is approved.</p>' : ''}
-      <div class="pf-locked">${I.shield}<div><b>Business name and full contact details unlock when you buy.</b><span>Exclusive to you: once bought, it disappears for every other broker.</span></div></div>
-      ${l.discounted ? `<div class="pf-dealnote"><b>50% off</b><span>This lead has been live for over 72 hours, so it’s half price: <s>${l.list_price}</s> ${l.price} credits.</span></div>` : ''}
-      <div class="pf-dfoot"><div><span>Price</span><b>${priceTag(l, ' credits')}</b><span>You have ${num(me.credits)}</span></div>
+      ${!me.approved ? '<p class="pf-hint">Masked contact details appear once the firm is approved.</p>' : ''}
+      <div class="pf-locked">${I.shield}<div><b>Full name, phone, email, full postcode${l.audience === 'business' ? ', business name' : ''} and the client’s summary unlock when bought.</b><span>Exclusive. Once bought, it disappears for every other firm. Check for conflicts before discussing the matter.</span></div></div>
+      ${l.discounted ? `<div class="pf-dealnote"><b>50% off</b><span>This lead has been live for over 72 hours, so it’s half price. <s>${l.list_price}</s> ${l.price} credits.</span></div>` : ''}
+      <div class="pf-dfoot"><div><span>Price</span><b>${priceTag(l, ' credits')}</b><span>Balance ${num(me.credits)}</span></div>
         ${me.restricted ? '<button class="pf-btn pf-btn-primary pf-btn-lg" disabled title="Leads for this account are assigned by Leaflegal">Assigned by Leaflegal</button>'
           : !can('buy') ? '<button class="pf-btn pf-btn-primary pf-btn-lg" disabled title="Ask the account owner for buying permission">Buying not allowed</button>'
           : !me.approved ? '<button class="pf-btn pf-btn-primary pf-btn-lg" disabled>Awaiting approval</button>'
@@ -388,8 +435,8 @@
       const b = e.currentTarget; b.disabled = true; b.classList.add('busy');
       try {
         const { lead } = await api('buy', { id: l.id });
-        modal.close(); toast(`Lead bought: ${lead.business}`);
-        openLead = lead.id; nav('leads');
+        modal.close(); toast(`Lead bought. ${lead?.contact_name || lead?.full_name || leadTitle(l)} is in My leads.`);
+        openLead = lead?.id || l.id; nav('leads');
       } catch (ex) { toast(ex.message, true); modal.close(); after?.(); }
     });
   }
@@ -406,23 +453,23 @@
     shell('dashboard');
     const d = await api('dashboard');
     const capPct = d.monthly_cap ? Math.min(100, (d.auto_spend / d.monthly_cap) * 100) : 0;
-    const totalStage = Math.max(1, ...Object.values(d.stages));
+    const totalStage = Math.max(1, ...Object.values(d.stages || {}));
     const first = (me.contact_name || me.company || '').split(' ')[0];
     view().innerHTML = `<div class="pf-hello"><div><h2>${hello()}${first ? `, ${h(first)}` : ''}</h2>
-        <p>${d.matching ? `<b>${d.matching} live lead${d.matching === 1 ? '' : 's'}</b> match${d.matching === 1 ? 'es' : ''} your criteria right now.` : d.live ? `${d.live} live lead${d.live === 1 ? ' is' : 's are'} on the marketplace.` : 'No live leads right now. New ones arrive throughout the day.'}</p></div>
+        <p>${d.matching ? `<b>${d.matching} live lead${d.matching === 1 ? '' : 's'}</b> match${d.matching === 1 ? 'es' : ''} the firm’s criteria right now.` : d.live ? `${d.live} live lead${d.live === 1 ? ' is' : 's are'} on the marketplace.` : 'No live leads right now. New ones arrive throughout the day.'}</p></div>
         <a href="${P}/opportunities" class="pf-btn pf-btn-primary">${I.inbox}Browse opportunities</a></div>
       <div class="pf-kpis">
         <a href="${P}/billing" class="pf-kpi pf-kpi-dark"><span>${I.coins}Credit balance</span><b>${num(d.credits)}</b><em>View billing ${I.arrow}</em></a>
         <div class="pf-kpi"><span>${I.layers}Leads this month</span><b>${d.month.leads}</b><em>${d.month.auto} auto-bought</em></div>
         <div class="pf-kpi"><span>${I.spark}Credits spent this month</span><b>${num(d.month.spent)}</b>${d.monthly_cap ? `<div class="pf-meter"><i style="width:${capPct}%"></i></div><em>${num(d.auto_spend)} of ${num(d.monthly_cap)} auto-buy limit</em>` : `<em>${d.mode === 'auto' ? 'No monthly limit set' : 'Auto-buy is off'}</em>`}</div>
-        <div class="pf-kpi"><span>${I.check}Funded deals</span><b>${d.total.funded}</b><em>${d.total.funded_value ? gbp(d.total.funded_value) + ' funded' : `from ${d.total.leads} lead${d.total.leads === 1 ? '' : 's'} bought`}</em></div>
+        <div class="pf-kpi"><span>${I.check}Instructed</span><b>${num(d.total?.instructed ?? d.stages?.instructed ?? 0)}</b><em>${d.total?.instructed_value ? `${gbp(d.total.instructed_value)} in fees recorded` : `from ${num(d.total?.leads || 0)} lead${d.total?.leads === 1 ? '' : 's'} bought`}</em></div>
       </div>
       <div class="pf-dash">
         <section class="pf-card pf-chart"><div class="pf-card-h"><h3>Leads bought</h3><span>Last 30 days</span></div>${bars(d.days)}</section>
         <section class="pf-card"><div class="pf-card-h"><h3>Pipeline</h3><a href="${P}/leads">View all</a></div>
-          <div class="pf-funnel">${STAGES.map(([k, n]) => `<a href="${P}/leads" data-stage="${k}" class="pf-fun-row"><span class="pf-dot pf-st-${k}"></span><span>${n}</span><i><b style="width:${(d.stages[k] / totalStage) * 100}%" class="pf-st-${k}"></b></i><em>${d.stages[k]}</em></a>`).join('')}</div></section>
-        <section class="pf-card pf-span2"><div class="pf-card-h"><h3>${d.matching ? 'Leads that fit your criteria' : 'Latest opportunities'}</h3><a href="${P}/opportunities">See all</a></div>
-          ${d.top.length ? `<div class="pf-grid pf-grid-3">${d.top.map((l) => oppCard(l, true)).join('')}</div>` : empty('inbox', 'Nothing live right now', 'Turn on auto-buy and we’ll grab matching leads the moment they arrive.', '<a class="pf-btn" href="${P}/autobuy">Set up auto-buy</a>')}</section>
+          <div class="pf-funnel">${STAGES.map(([k, n]) => `<a href="${P}/leads" data-stage="${k}" class="pf-fun-row"><span class="pf-dot pf-st-${k}"></span><span>${n}</span><i><b style="width:${((d.stages?.[k] || 0) / totalStage) * 100}%" class="pf-st-${k}"></b></i><em>${d.stages?.[k] || 0}</em></a>`).join('')}</div></section>
+        <section class="pf-card pf-span2"><div class="pf-card-h"><h3>${d.matching ? 'Leads that fit the criteria' : 'Latest opportunities'}</h3><a href="${P}/opportunities">See all</a></div>
+          ${d.top.length ? `<div class="pf-grid pf-grid-3">${d.top.map((l) => oppCard(l, true)).join('')}</div>` : empty('inbox', 'Nothing live right now', 'Turn on auto-buy and we’ll pick up matching enquiries the moment they arrive.', `<a class="pf-btn" href="${P}/autobuy">Set up auto-buy</a>`)}</section>
         <section class="pf-card"><div class="pf-card-h"><h3>Recent activity</h3><a href="${P}/billing">History</a></div>
           ${d.recent.length ? `<ul class="pf-feed">${d.recent.map((e) => `<li><span class="pf-feed-ic ${e.delta > 0 ? 'plus' : ''}">${e.delta > 0 ? I.plus : e.reason.startsWith('Auto') ? I.spark : I.layers}</span><div><b>${h(e.reason)}${e.lead_id ? ` #${e.lead_id}` : ''}</b><span>${ago(e.created_at)}</span></div><em class="${e.delta > 0 ? 'pf-plus' : ''}">${e.delta > 0 ? '+' : ''}${num(e.delta)}</em></li>`).join('')}</ul>` : '<p class="pf-hint">No activity yet.</p>'}</section>
       </div>`;
@@ -431,62 +478,59 @@
   }
 
   // ------------------------------------------------ opportunities
-  const OPP_DEFAULT = { mine: false, tier: '', purpose: '', sort: 'new', size: '', rev: '', trade: '', price: '', credit: '', prop: '', type: '', when: '', debt: '', ex: [] };
+  const OPP_DEFAULT = { mine: false, deal: false, sort: 'new', area: '', matter: '', region: '', urgency: '', audience: '', grade: '', value: '', pay: '', price: '', q: '' };
   let oppState = { ...OPP_DEFAULT };
-  try { oppState = { ...OPP_DEFAULT, ...JSON.parse(localStorage.getItem('llp-opp-filters') || '{}') }; } catch {}
-  const SIZES = { '': 'Any loan size', a: 'Under £50k', b: '£50k to £250k', c: '£250k to £1m', d: '£1m+' };
-  const inSize = (k, n) => !k || (k === 'a' ? n < 50000 : k === 'b' ? n >= 50000 && n < 250000 : k === 'c' ? n >= 250000 && n < 1000000 : n >= 1000000);
-  const URGENT = ['As soon as possible', 'Within 2 weeks'];
-  const TRADE_MIN = { '6 to 12 months': '6 months', '1 to 2 years': '1 year', '2 to 5 years': '2 years', '5+ years': '5 years' };
-  // Exclude: hide leads with any chosen value of any field. Stored as 'field|value' strings.
-  const exGroups = () => [['Purpose', 'purpose', opts.purposes.map((v) => [v, v])], ['Revenue', 'turnover', opts.turnovers.map((v) => [v, `${v} revenue`])],
-    ['Trading', 'trading', opts.trading.map((v) => [v, `Trading ${v.toLowerCase()}`])], ['Homeowner or tenant', 'property', [['Homeowner', 'Homeowners'], ['Tenant', 'Tenants']]],
-    ['Credit history', 'credit', [['Yes', 'Missed payments or CCJs']]], ['Existing finance', 'debt', [['Yes', 'Has existing finance'], ['No', 'No existing finance']]],
-    ['Business type', 'structure', [['Limited company', 'Limited companies'], ['Limited liability partnership (LLP)', 'LLPs']]],
-    ['Needed', 'timeline', [['As soon as possible', 'Needed as soon as possible'], ['Within 2 weeks', 'Needed within 2 weeks'], ['Within a month', 'Needed within a month'], ['Just exploring options', 'Just exploring']]]];
-  const exLabel = (e) => { const [f, v] = e.split('|'); return exGroups().find((g) => g[1] === f)?.[2].find((x) => x[0] === v)?.[1] || v; };
-  const sel = (key, label, options) => `<label class="pf-select pf-fsel ${oppState[key] ? 'is-set' : ''}"><span class="pf-vh">${label}</span><select data-f="${key}">${options.map(([v, t]) => `<option value="${h(v)}" ${String(oppState[key]) === String(v) ? 'selected' : ''}>${h(t)}</option>`).join('')}</select></label>`;
+  try { oppState = { ...OPP_DEFAULT, ...JSON.parse(localStorage.getItem('llp-opp-filters2') || '{}') }; } catch {}
+  // Value ranges (pounds): a lead fits when its stated value overlaps the range. Leads with no value only show under "Any value".
+  const VALUES = [['', 'Any value'], ['0-100000', 'Under £100k'], ['100000-250000', '£100k to £250k'], ['250000-500000', '£250k to £500k'], ['500000-1000000', '£500k to £1m'], ['1000000-', '£1m+']];
+  const inValue = (k, l) => { if (!k) return true; if (l.value_min == null && l.value_max == null) return false;
+    const [lo, hi] = k.split('-').map((x) => (x === '' ? null : +x)), vmin = l.value_min ?? l.value_max, vmax = l.value_max ?? l.value_min;
+    return vmax >= (lo || 0) && (hi == null || vmin < hi); };
+  const leadText = (l) => [l.area_label, areaName(l.area), l.matter_label, matterName(l.area, l.matter), l.region, l.postcode_district, l.urgency, l.value_band, ...(l.tags || []), ...(l.answers || []).flatMap((x) => [x.q, x.a])].join(' ').toLowerCase();
+  const GRADE_TEXT = { A: 'Grade A', B: 'Grade B', C: 'Grade C' };
+  const sel = (key, label, options) => `<label class="pf-select pf-fsel ${oppState[key] ? 'is-set' : ''}"><span class="pf-vh">${label}</span><select data-f="${key}" aria-label="${h(label)}">${options.map(([v, t]) => `<option value="${h(v)}" ${String(oppState[key]) === String(v) ? 'selected' : ''}>${h(t)}</option>`).join('')}</select></label>`;
   async function opportunities() {
     shell('opportunities');
-    const { leads } = await api('opportunities');
-    const draw = () => {
-      try { localStorage.setItem('llp-opp-filters', JSON.stringify(oppState)); } catch {}
-      const T = opts.turnovers, A = opts.trading, o = oppState;
-      let list = leads.filter((l) => (!o.mine || l.match) && (!o.deal || l.discounted) && (!onTier() || !o.tier || l.tier === o.tier) && (!o.purpose || l.purpose === o.purpose) && inSize(o.size, l.amount)
-        && (!o.rev || T.indexOf(l.turnover) >= T.indexOf(o.rev)) && (!o.trade || A.indexOf(l.trading) >= A.indexOf(o.trade))
-        && (!o.price || l.price <= +o.price) && (!o.credit || l.credit !== 'Yes') && (!o.debt || l.debt === o.debt) && !(o.ex || []).some((e) => { const [f, v] = e.split('|'); return l[f] === v; }) && (!o.prop || l.property === o.prop) && (!o.type || l.structure === o.type)
-        && (!o.when || (o.when === 'urgent' ? URGENT.includes(l.timeline) : l.timeline === o.when)));
-      const sorts = { value: (a, b) => b.amount - a.amount, quality: (a, b) => b.quality - a.quality, price: (a, b) => a.price - b.price };
+    const { leads: raw } = await api('opportunities');
+    const leads = raw.map(L);
+    let qt;
+    const draw = (focusQ) => {
+      try { localStorage.setItem('llp-opp-filters2', JSON.stringify(oppState)); } catch {}
+      const o = oppState, q = o.q.trim().toLowerCase(), U = TX.urgency;
+      let list = leads.filter((l) => (!o.mine || l.match) && (!o.deal || l.discounted) && (!o.area || l.area === o.area) && (!o.matter || l.matter === o.matter)
+        && (!o.region || l.region === o.region) && (!o.urgency || l.urgency === o.urgency) && (!o.audience || l.audience === o.audience) && (!o.grade || l.grade === o.grade)
+        && inValue(o.value, l) && (!o.pay || l.private_pay === 'yes') && (!o.price || l.price <= +o.price) && (!q || q.split(/\s+/).every((w) => leadText(l).includes(w))));
+      const rank = (l) => (l.deadline ? new Date(l.deadline).getTime() / 1e5 : 1e9) + (U.indexOf(l.urgency) + 1 || 9) * 1e8;
+      const sorts = { urgent: (a, b) => rank(a) - rank(b), grade: (a, b) => (a.grade || 'Z').localeCompare(b.grade || 'Z') || (b.score || 0) - (a.score || 0), price: (a, b) => a.price - b.price, value: (a, b) => (b.value_min || 0) - (a.value_min || 0) };
       if (sorts[o.sort]) list = list.slice().sort(sorts[o.sort]);
-      const active = [...(onTier() ? ['tier'] : []), 'purpose', 'size', 'rev', 'trade', 'price', 'credit', 'debt', 'prop', 'type', 'when', 'deal'].filter((k) => o[k]).length + (o.ex || []).length;
-      const deals = leads.filter((l) => l.discounted).length;
+      const active = ['area', 'matter', 'region', 'urgency', 'audience', 'grade', 'value', 'pay', 'price', 'deal', 'q'].filter((k) => o[k]).length;
+      const deals = leads.filter((l) => l.discounted).length, area = areaOf(o.area);
+      const areasHere = TX.areas.filter((a) => leads.some((l) => l.area === a.slug) || a.slug === o.area);
       view().innerHTML = `<div class="pf-toolbar">
-          <div class="pf-seg" role="group" aria-label="Show"><button class="${o.mine ? '' : 'on'}" data-mine="0">All <em>${leads.length}</em></button><button class="${o.mine ? 'on' : ''}" data-mine="1">${I.target}${onTier() ? 'My tiers' : 'My criteria'} <em>${leads.filter((l) => l.match).length}</em></button></div>
-          <div class="pf-tool-r">${deals ? `<button class="pf-dealbtn ${o.deal ? 'on' : ''}" data-deal aria-pressed="${!!o.deal}">50% off <em>${deals}</em></button>` : ''}${sel('sort', 'Sort', [['new', 'Newest first'], ['value', 'Largest loan'], ['quality', 'Best quality'], ['price', 'Lowest price']])}</div></div>
+          <div class="pf-seg" role="group" aria-label="Show"><button class="${o.mine ? '' : 'on'}" data-mine="0">All <em>${leads.length}</em></button><button class="${o.mine ? 'on' : ''}" data-mine="1">${I.target}Fits the criteria <em>${leads.filter((l) => l.match).length}</em></button></div>
+          <div class="pf-tool-r">${deals ? `<button class="pf-dealbtn ${o.deal ? 'on' : ''}" data-deal aria-pressed="${!!o.deal}">50% off <em>${deals}</em></button>` : ''}${sel('sort', 'Sort', [['new', 'Newest first'], ['urgent', 'Most urgent'], ['grade', 'Best grade'], ['value', 'Highest value'], ['price', 'Lowest price']])}</div></div>
         <div class="pf-filters" role="group" aria-label="Filter opportunities">
-          ${onTier() ? sel('tier', 'Tier', [['', 'Any tier'], ...TIERS.names.map((t) => [t, `${t} (${num(TIERS.prices[t])} credits)`])]) : ''}
-          ${sel('purpose', 'Purpose', [['', 'Any purpose'], ...opts.purposes.map((p) => [p, p])])}
-          ${sel('size', 'Loan size', Object.entries(SIZES))}
-          ${sel('rev', 'Minimum revenue', [['', 'Any revenue'], ...T.map((t) => [t, `${t.replace(/ to .*/, '').replace(/\+$/, '')}+ revenue`])])}
-          ${sel('trade', 'Minimum time trading', [['', 'Any trading time'], ...A.filter((t) => TRADE_MIN[t]).map((t) => [t, `${TRADE_MIN[t]}+ trading`])])}
-          ${sel('price', 'Maximum price', [['', 'Any price'], ['50', 'Up to 50 credits'], ['100', 'Up to 100 credits'], ['150', 'Up to 150 credits'], ['200', 'Up to 200 credits']])}
-          ${sel('credit', 'Credit history', [['', 'Any credit history'], ['clean', 'Clean credit only']])}
-          ${sel('debt', 'Existing finance', [['', 'Any existing finance'], ['Yes', 'Has existing finance'], ['No', 'No existing finance']])}
-          ${sel('type', 'Business type', [['', 'Any business type'], ['Limited company', 'Limited companies'], ['Limited liability partnership (LLP)', 'LLPs']])}
-          ${sel('prop', 'Homeowner or tenant', [['', 'Homeowner or tenant'], ['Homeowner', 'Homeowners'], ['Tenant', 'Tenants']])}
-          ${sel('when', 'Needed', [['', 'Any timeline'], ['urgent', 'Within 2 weeks'], ['Within a month', 'Within a month'], ['Just exploring options', 'Just exploring']])}
-          <label class="pf-select pf-fsel"><span class="pf-vh">Exclude</span><select data-ex><option value="">Exclude…</option>${exGroups().map(([g, f, vs]) => `<optgroup label="${h(g)}">${vs.filter(([v]) => !(o.ex || []).includes(`${f}|${v}`)).map(([v, t]) => `<option value="${h(`${f}|${v}`)}">${h(t)}</option>`).join('')}</optgroup>`).join('')}</select></label>
-          ${(o.ex || []).map((e) => `<button class="pf-btn pf-btn-sm pf-exchip" data-unex="${h(e)}" aria-label="Stop excluding ${h(exLabel(e))}">Not: ${h(exLabel(e))} ${I.x}</button>`).join('')}
+          <label class="pf-select pf-fsel pf-fsearch ${o.q ? 'is-set' : ''}"><span class="pf-vh">Search the answers</span><input type="search" data-q value="${h(o.q)}" placeholder="Search answers, e.g. leasehold or tribunal" aria-label="Search the answers"></label>
+          ${sel('area', 'Practice area', [['', 'Any practice area'], ...(areasHere.length ? areasHere : TX.areas).map((a) => [a.slug, a.label])])}
+          ${area ? sel('matter', 'Matter', [['', `Any ${area.label.toLowerCase()} matter`], ...area.matters]) : ''}
+          ${sel('region', 'Region', [['', 'Any region'], ...TX.regions.map((r) => [r, r])])}
+          ${sel('urgency', 'Urgency', [['', 'Any urgency'], ...U.map((u) => [u, u])])}
+          ${sel('audience', 'Client', [['', 'Individuals and businesses'], ['individual', 'Individuals'], ['business', 'Businesses']])}
+          ${sel('grade', 'Grade', [['', 'Any grade'], ...TX.grades.map((g) => [g, GRADE_TEXT[g] || g])])}
+          ${sel('value', 'Value', VALUES)}
+          ${sel('pay', 'Private pay', [['', 'Any payment'], ['yes', 'Can pay privately']])}
+          ${sel('price', 'Maximum price', [['', 'Any price'], ['50', 'Up to 50 credits'], ['75', 'Up to 75 credits'], ['100', 'Up to 100 credits'], ['150', 'Up to 150 credits']])}
           ${active ? `<button class="pf-btn pf-btn-sm pf-clear" data-clear>${I.x}Clear ${active} filter${active === 1 ? '' : 's'}</button>` : ''}
         </div>
         <p class="pf-count">${list.length === leads.length ? `Showing all ${leads.length} live lead${leads.length === 1 ? '' : 's'}` : `Showing <b>${list.length}</b> of ${leads.length} live leads`}</p>
         ${list.length ? `<div class="pf-grid">${list.map((l) => oppCard(l)).join('')}</div>`
-          : empty('inbox', active || o.mine ? 'No leads match these filters' : 'No live leads right now', active || o.mine ? 'Try widening or clearing your filters.' : 'New enquiries appear here the moment they come in. Each lead is sold to one broker only, so turn on auto-buy to get first pick.', active || o.mine ? '<button class="pf-btn" data-clear>Clear filters</button>' : '<a class="pf-btn" href="${P}/autobuy">Set up auto-buy</a>')}`;
+          : empty('inbox', active || o.mine ? 'No leads match these filters' : 'No live leads right now', active || o.mine ? 'Try widening or clearing the filters.' : 'New enquiries appear here the moment they come in. Each lead is sold to one firm only, so turn on auto-buy to get first pick.', active || o.mine ? '<button class="pf-btn" data-clear>Clear filters</button>' : `<a class="pf-btn" href="${P}/autobuy">Set up auto-buy</a>`)}`;
       view().querySelectorAll('[data-mine]').forEach((b) => (b.onclick = () => { o.mine = b.dataset.mine === '1'; draw(); }));
       view().querySelectorAll('[data-deal]').forEach((b) => (b.onclick = () => { o.deal = !o.deal; draw(); }));
-      view().querySelectorAll('[data-f]').forEach((el) => (el.onchange = () => { o[el.dataset.f] = el.value; draw(); }));
-      view().querySelectorAll('[data-ex]').forEach((el) => (el.onchange = () => { if (el.value) o.ex = [...(o.ex || []), el.value]; draw(); }));
-      view().querySelectorAll('[data-unex]').forEach((b) => (b.onclick = () => { o.ex = o.ex.filter((e) => e !== b.dataset.unex); draw(); }));
+      view().querySelectorAll('[data-f]').forEach((el) => (el.onchange = () => { o[el.dataset.f] = el.value; if (el.dataset.f === 'area') o.matter = ''; draw(); }));
+      const qi = view().querySelector('[data-q]');
+      qi.oninput = () => { clearTimeout(qt); qt = setTimeout(() => { o.q = qi.value; draw(true); }, 250); };
+      if (focusQ) { qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
       view().querySelectorAll('[data-clear]').forEach((b) => (b.onclick = () => { oppState = { ...OPP_DEFAULT, sort: o.sort }; draw(); }));
       wireOpps(view(), list, opportunities);
     };
@@ -494,7 +538,7 @@
   }
 
   // ------------------------------------------------ my leads (pipeline)
-  let stageFilter = '', myLeads = [], openLead = null, leadPeriod = 'all', leadFrom = '', leadTo = '', leadBasis = 'bought', leadQ = '', leadPurpose = '', leadRev = '';
+  let stageFilter = '', myLeads = [], openLead = null, leadPeriod = 'all', leadFrom = '', leadTo = '', leadBasis = 'bought', leadQ = '', leadArea = '', leadRegion = '';
   const LEAD_PERIODS = [['all', 'All time'], ['today', 'Today'], ['7', 'Last 7 days'], ['30', 'Last 30 days'], ['month', 'This month'], ['last', 'Last month'], ['since', 'Since last export'], ['custom', 'Custom dates']];
   // Bought-time range for My leads, in local time. "since" = after the last export (everything if never exported).
   const leadRange = () => {
@@ -510,42 +554,44 @@
   async function leads() {
     shell('leads');
     ({ leads: myLeads } = await api('leads'));
+    myLeads = myLeads.map(L);
     const draw = () => {
       const [from, to] = leadRange(), q = leadQ.toLowerCase();
       const inRange = myLeads.filter((l) => { const t = new Date(leadBasis === 'generated' ? l.received_at : l.purchased_at); return t >= from && t <= to; })
-        .filter((l) => (!leadPurpose || l.purpose === leadPurpose) && (!leadRev || l.annual_revenue === leadRev)
-          && (!q || [l.business, l.contact_name, l.email, l.phone, `#${l.id}`].join(' ').toLowerCase().includes(q)));
+        .filter((l) => (!leadArea || l.area === leadArea) && (!leadRegion || l.region === leadRegion)
+          && (!q || [l.contact_name, l.business_name, l.email, l.phone, l.postcode, l.matter_label, `#${l.id}`].join(' ').toLowerCase().includes(q)));
       const live = inRange.filter((l) => !l.archived_at), archived = inRange.filter((l) => l.archived_at);
       const counts = Object.fromEntries(STAGES.map(([k]) => [k, live.filter((l) => l.stage === k).length]));
       const list = stageFilter === 'archived' ? archived : live.filter((l) => !stageFilter || l.stage === stageFilter);
-      const purposes = [...new Set(myLeads.map((l) => l.purpose).filter(Boolean))].sort(), revs = (opts.turnovers || []).filter((t) => myLeads.some((l) => l.annual_revenue === t));
-      const fsel = (attr, val, any, list) => `<label class="pf-select"><select ${attr} aria-label="${any}"><option value="">${any}</option>${list.map((x) => `<option ${x === val ? 'selected' : ''}>${h(x)}</option>`).join('')}</select></label>`;
+      const areas = TX.areas.filter((a) => myLeads.some((l) => l.area === a.slug)).map((a) => [a.slug, a.label]);
+      const regions = TX.regions.filter((r) => myLeads.some((l) => l.region === r)).map((r) => [r, r]);
+      const fsel = (attr, val, any, opts) => `<label class="pf-select"><select ${attr} aria-label="${any}"><option value="">${any}</option>${opts.map(([v, t]) => `<option value="${h(v)}" ${v === val ? 'selected' : ''}>${h(t)}</option>`).join('')}</select></label>`;
       const lastExp = me.leads_exported_at ? new Date(me.leads_exported_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'never';
       view().innerHTML = myLeads.length ? `<div class="pf-toolbar"><div class="pf-period">
           <label class="pf-select"><select data-lb aria-label="Date"><option value="bought" ${leadBasis === 'bought' ? 'selected' : ''}>Date bought</option><option value="generated" ${leadBasis === 'generated' ? 'selected' : ''}>Date enquired</option></select></label>
           <label class="pf-select"><select data-lp aria-label="Period">${LEAD_PERIODS.map(([k, n]) => `<option value="${k}" ${leadPeriod === k ? 'selected' : ''}>${k === 'since' ? `Since last export (${lastExp})` : n}</option>`).join('')}</select></label>
           ${leadPeriod === 'custom' ? `<input type="date" data-lf value="${leadFrom}" aria-label="From"><span>to</span><input type="date" data-lt value="${leadTo}" aria-label="To">` : ''}</div>
-          <button class="pf-btn" data-csv ${list.length ? '' : 'disabled'} title="Exports the leads shown, using the dates, stage and filters you’ve picked">${I.download}Export ${num(list.length)} lead${list.length === 1 ? '' : 's'} (CSV)</button></div>
-        <div class="pf-toolbar pf-lfilters"><label class="pf-select pf-lsearch"><input type="search" data-lq placeholder="Search name, business, phone or email" value="${h(leadQ)}" aria-label="Search leads"></label>
-          ${fsel('data-lpur', leadPurpose, 'Any purpose', purposes)}${fsel('data-lrev', leadRev, 'Any revenue', revs)}
-          ${leadQ || leadPurpose || leadRev ? `<button class="pf-btn pf-btn-sm" data-lclr>${I.x}Clear</button>` : ''}</div>
+          <button class="pf-btn" data-csv ${list.length ? '' : 'disabled'} title="Exports the leads shown, using the dates, stage and filters picked">${I.download}Export ${num(list.length)} lead${list.length === 1 ? '' : 's'} (CSV)</button></div>
+        <div class="pf-toolbar pf-lfilters"><label class="pf-select pf-lsearch"><input type="search" data-lq placeholder="Search name, phone, email or postcode" value="${h(leadQ)}" aria-label="Search leads"></label>
+          ${fsel('data-larea', leadArea, 'Any practice area', areas)}${fsel('data-lreg', leadRegion, 'Any region', regions)}
+          ${leadQ || leadArea || leadRegion ? `<button class="pf-btn pf-btn-sm" data-lclr>${I.x}Clear</button>` : ''}</div>
         <div class="pf-toolbar"><div class="pf-seg pf-seg-scroll" role="group" aria-label="Stage">
           <button class="${stageFilter ? '' : 'on'}" data-st="">All <em>${live.length}</em></button>${STAGES.map(([k, n]) => `<button class="${stageFilter === k ? 'on' : ''}" data-st="${k}"><span class="pf-dot pf-st-${k}"></span>${n} <em>${counts[k]}</em></button>`).join('')}<button class="${stageFilter === 'archived' ? 'on' : ''}" data-st="archived">Archived <em>${archived.length}</em></button></div>
-          <span class="pf-hint">Last export: ${lastExp}</span></div>
-        <div class="pf-card pf-flush"><table class="pf-table pf-table-click"><thead><tr><th>Business</th><th>Need</th><th class="pf-hide-s">Profile</th><th>Stage</th><th class="pf-hide-s">${leadBasis === 'generated' ? 'Enquired' : 'Bought'}</th></tr></thead><tbody>
-        ${list.map((l) => `<tr data-lead="${l.id}" tabindex="0"><td><div class="pf-biz"><span class="pf-avatar pf-avatar-s">${initials(l.business)}</span><div><b>${h(l.business)}</b><span>${h(l.contact_name)}</span></div></div></td>
-          <td><b>${gbp(l.amount)}</b><span>${h(l.purpose)}</span></td><td class="pf-hide-s"><span>${h(l.annual_revenue)} revenue</span><span>${h(l.trading_for)} trading</span></td>
-          <td><span class="pf-stage pf-st-${l.stage}">${STAGE_NAME[l.stage]}</span>${l.refund ? `<span class="pf-refund-tag ${l.refund.status}">${l.refund.status === 'rejected' ? 'Not refunded' : `Refund ${l.refund.status}`}</span>` : ''}</td>
+          <span class="pf-hint">Last export ${lastExp}</span></div>
+        <div class="pf-card pf-flush"><table class="pf-table pf-table-click"><thead><tr><th>Client</th><th>Matter</th><th class="pf-hide-s">Location</th><th>Stage</th><th class="pf-hide-s">${leadBasis === 'generated' ? 'Enquired' : 'Bought'}</th></tr></thead><tbody>
+        ${list.map((l) => `<tr data-lead="${l.id}" tabindex="0"><td><div class="pf-biz"><span class="pf-avatar pf-avatar-s">${initials(l.contact_name)}</span><div><b>${h(l.contact_name)}</b><span>${h(l.business_name || l.phone || l.email || '')}</span></div></div></td>
+          <td><b>${leadTitle(l)}</b><span>${h(l.area_label || areaName(l.area))}${l.urgency === 'Urgently' ? ' · urgent' : ''}</span></td><td class="pf-hide-s"><span class="pf-strong">${h(l.region || '–')}</span><span>${h(l.postcode || '')}</span></td>
+          <td><span class="pf-stage pf-st-${l.stage}">${STAGE_NAME[l.stage] || h(l.stage)}</span>${l.stage === 'instructed' && l.instructed_value ? `<span>${gbp(l.instructed_value)}</span>` : ''}${l.refund ? `<span class="pf-refund-tag ${l.refund.status}">${l.refund.status === 'rejected' ? 'Not refunded' : `Refund ${l.refund.status}`}</span>` : ''}</td>
           <td class="pf-hide-s"><span class="pf-strong">${date(leadBasis === 'generated' ? l.received_at : l.purchased_at)}</span>${l.auto_bought ? `<span class="pf-auto">${I.spark}Auto-bought</span>` : ''}</td></tr>`).join('') || `<tr><td colspan="5" class="pf-hint pf-pad">${stageFilter === 'archived' ? 'No archived leads. Archive a lead from its panel to tidy it away.' : 'No leads match.'}</td></tr>`}
         </tbody></table></div>`
-        : empty('layers', 'No leads yet', 'Leads you buy, or that auto-buy picks for you, land here with full contact details. Track each one from first call to funded.', `<a class="pf-btn pf-btn-primary" href="${P}/opportunities">Browse opportunities</a>`);
+        : empty('layers', 'No leads yet', 'Leads bought by hand or by auto-buy land here with full contact details. Track each one from first call to instructed.', `<a class="pf-btn pf-btn-primary" href="${P}/opportunities">Browse opportunities</a>`);
       view().querySelectorAll('[data-st]').forEach((b) => (b.onclick = () => { stageFilter = b.dataset.st; draw(); }));
       const vq = (sel) => view().querySelector(sel);
       if (vq('[data-lb]')) vq('[data-lb]').onchange = (e) => { leadBasis = e.target.value; draw(); };
       if (vq('[data-lq]')) vq('[data-lq]').onchange = (e) => { leadQ = e.target.value.trim(); draw(); };
-      if (vq('[data-lpur]')) vq('[data-lpur]').onchange = (e) => { leadPurpose = e.target.value; draw(); };
-      if (vq('[data-lrev]')) vq('[data-lrev]').onchange = (e) => { leadRev = e.target.value; draw(); };
-      if (vq('[data-lclr]')) vq('[data-lclr]').onclick = () => { leadQ = leadPurpose = leadRev = ''; draw(); };
+      if (vq('[data-larea]')) vq('[data-larea]').onchange = (e) => { leadArea = e.target.value; draw(); };
+      if (vq('[data-lreg]')) vq('[data-lreg]').onchange = (e) => { leadRegion = e.target.value; draw(); };
+      if (vq('[data-lclr]')) vq('[data-lclr]').onclick = () => { leadQ = leadArea = leadRegion = ''; draw(); };
       const lp = view().querySelector('[data-lp]');
       if (lp) lp.onchange = () => { leadPeriod = lp.value; if (leadPeriod === 'custom' && !leadFrom) { leadTo = isoDay(new Date()); leadFrom = isoDay(new Date(Date.now() - 29 * 864e5)); } draw(); };
       view().querySelectorAll('[data-lf],[data-lt]').forEach((x) => (x.onchange = () => { if (x.dataset.lf !== undefined) leadFrom = x.value; else leadTo = x.value; if (leadFrom > leadTo) [leadFrom, leadTo] = [leadTo, leadFrom]; draw(); }));
@@ -554,12 +600,14 @@
         r.onclick = go; r.onkeydown = (e) => e.key === 'Enter' && go();
       });
       view().querySelector('[data-csv]')?.addEventListener('click', () => {
-        const cols = Object.keys(list[0]).filter((c) => !['notes', 'refund', 'refundable'].includes(c));
-        const flat = (v) => (v && typeof v === 'object' ? JSON.stringify(v) : v);
-        const cell = (v) => { const t = String(flat(v) ?? ''); return `"${(/^[=+\-@\t\r]/.test(t) ? `'${t}` : t).replace(/"/g, '""')}"`; }; // no spreadsheet formulas from form input
-        const csv = [cols, ...list.map((l) => cols.map((c) => l[c]))].map((r) => r.map(cell).join(',')).join('\n');
+        // Same columns as leadOut on the server (webhooks, HubSpot, Pipedrive); answers become one "question = answer" line each.
+        const skip = ['notes', 'refund', 'refundable', 'area', 'area_label', 'score', 'companies_house'];
+        const cols = [...new Set(list.flatMap((l) => Object.keys(l)))].filter((c) => !skip.includes(c));
+        const flat = (v, c) => (c === 'answers' && Array.isArray(v) ? v.map((x) => `${x.q} = ${x.a}`).join('\n') : Array.isArray(v) && v.every((x) => typeof x !== 'object') ? v.join(', ') : v && typeof v === 'object' ? JSON.stringify(v) : v);
+        const cell = (v, c) => { const t = String(flat(v, c) ?? ''); return `"${(/^[=+\-@\t\r]/.test(t) ? `'${t}` : t).replace(/"/g, '""')}"`; }; // no spreadsheet formulas from form input
+        const csv = [cols.map((c) => cell(c)), ...list.map((l) => cols.map((c) => cell(l[c], c)))].map((r) => r.join(',')).join('\n');
         const tag = (leadPeriod === 'all' ? '' : `-${leadBasis}-${isoDay(from)}-to-${isoDay(to)}`) + (stageFilter ? `-${stageFilter}` : '');
-        Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob(['\uFEFF' + csv], { type: 'text/csv' })), download: `leaflegal-leads${tag}.csv` }).click();
+        Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv' })), download: `leaflegal-leads${tag}.csv` }).click();
         api('leads-exported', {}).then((r) => { me.leads_exported_at = r.at; draw(); }).catch(() => {});
       });
     };
@@ -567,48 +615,57 @@
     if (openLead) { const l = myLeads.find((x) => x.id === openLead); openLead = null; if (l) leadDrawer(l, draw); }
   }
 
-  // Pre-filled first messages from the broker to the business (WhatsApp and email buttons).
+  // Pre-filled first messages from the firm to the client (WhatsApp and email buttons).
   const firstName = (n) => String(n || '').trim().split(/\s+/)[0] || '';
-  const firstMsg = (l) => `Hi ${firstName(l.contact_name) || 'there'}, it’s ${firstName(me.contact_name) || 'the team'} from ${me.company}. You enquired through Leaflegal about ${gbp(l.amount)} for ${String(l.purpose || 'your business').toLowerCase()}. I’d love to help. When’s a good time for a quick call?`;
+  const areaWords = (l) => String(l.area_label || areaName(l.area) || 'legal').toLowerCase();
+  const firstMsg = (l) => `Hi ${firstName(l.contact_name) || 'there'}, it’s ${firstName(me.contact_name) || 'the team'} from ${me.company}. You got in touch through Leaflegal about a ${areaWords(l)} matter and we’d be glad to help. When is a good time for a quick call?`;
   const waNum = (p) => { const d = String(p || '').replace(/[^\d+]/g, ''); return /^\+\d{8,15}$/.test(d) ? d.slice(1) : /^0\d{9,10}$/.test(d) ? '44' + d.slice(1) : /^44\d{9,10}$/.test(d) ? d : ''; };
   const waHref = (l) => (waNum(l.phone) ? `https://wa.me/${waNum(l.phone)}?text=${encodeURIComponent(firstMsg(l))}` : '');
-  const mailHref = (l) => `mailto:${l.email}?subject=${encodeURIComponent(`Your ${gbp(l.amount)} finance enquiry`)}&body=${encodeURIComponent(firstMsg(l))}`;
+  const mailHref = (l) => `mailto:${l.email}?subject=${encodeURIComponent(`Your ${areaWords(l)} enquiry`)}&body=${encodeURIComponent(firstMsg(l))}`;
+  // Refund reasons (spec). The server's list in /me options wins when it sends one.
+  const RETURN_REASONS = [{ reason: 'Phone number not in service', kind: 'auto' }, { reason: 'Phone number belongs to someone else', kind: 'auto' }, { reason: 'Email address bounces', kind: 'auto' },
+    { reason: 'Outside the practice area or region stated', kind: 'review', note: 'We check what the client told us against the lead before refunding.' }, { reason: 'Duplicate of a lead already bought', kind: 'review', note: 'Tell us the earlier lead number if you have it.' }];
+  const returnReasons = () => (opts?.returnReasons?.length ? opts.returnReasons.map((r) => (typeof r === 'string' ? { reason: r } : r)) : RETURN_REASONS);
   function leadDrawer(l, redraw) {
     if (!l) return;
     l.notes ||= []; l.stage ||= 'new';
     const render = () => {
       const at = STAGES.findIndex(([x]) => x === l.stage);
-      drawer(`<div class="pf-dh"><span class="pf-avatar pf-avatar-lg">${initials(l.business)}</span><div><span class="pf-eyebrow">Lead #${l.id} · bought ${ago(l.purchased_at)}${l.auto_bought ? ' · auto' : ''}${onTier() && l.tier ? ` · ${h(l.tier)}` : ''}</span><h2>${h(l.business)}</h2></div></div>
-        <div class="pf-contact"><div><b>${h(l.contact_name)}</b><span>${h(l.phone)}</span><span>${h(l.email)}</span></div>
+      drawer(`<div class="pf-dh"><span class="pf-avatar pf-avatar-lg">${initials(l.contact_name)}</span><div><span class="pf-eyebrow">Lead #${l.id} · bought ${ago(l.purchased_at)}${l.auto_bought ? ' · auto' : ''}</span><h2>${h(l.contact_name)}</h2><p class="pf-dsub">${leadTitle(l)} · ${h(l.area_label || areaName(l.area))}</p></div></div>
+        <div class="pf-contact"><div><b>${h(l.contact_name)}</b><span>${h(l.phone)}</span><span>${h(l.email)}</span>${l.postcode ? `<span>${h(l.postcode)}${l.region ? `, ${h(l.region)}` : ''}</span>` : ''}${l.business_name ? `<span>${h(l.business_name)}${l.company_number ? ` (${h(l.company_number)})` : ''}</span>` : ''}</div>
           <div class="pf-row-l"><a class="pf-btn pf-btn-primary" href="tel:${h(l.phone)}">${I.phone}Call</a>${waHref(l) ? `<a class="pf-btn" href="${waHref(l)}" target="_blank" rel="noopener">${I.wa}WhatsApp</a>` : ''}<a class="pf-btn" href="${mailHref(l)}">${I.mail}Email</a></div></div>
+        <ul class="pf-tips"><li>${I.phone}Call quickly. Enquiries go cold fast.</li><li>${I.shield}Check for conflicts before discussing the matter.</li><li>${I.doc}Tell the client in writing about the referral and the fee paid to Leaflegal.</li></ul>
         <h3 class="pf-dsec">Stage</h3>
         <div class="pf-stepper" role="group" aria-label="Pipeline stage">${STAGES.map(([k, n], i) => `<button data-set="${k}" aria-pressed="${l.stage === k}" class="pf-st-${k} ${l.stage === k ? 'on' : ''} ${l.stage !== 'lost' && k !== 'lost' && i < at ? 'done' : ''}">${l.stage !== 'lost' && k !== 'lost' && i < at ? I.check : ''}${n}</button>`).join('')}</div>
-        ${l.stage === 'funded' ? `<form class="pf-inline" data-funded><label>Amount funded<div class="pf-money"><i>£</i><input name="amt" inputmode="numeric" value="${l.funded_amount || ''}" placeholder="${num(l.amount)}"></div></label><button class="pf-btn">Save</button></form>` : ''}
-        <div class="pf-archrow"><span class="pf-hint">${l.archived_at ? `Archived ${date(l.archived_at)}. It’s under the Archived tab.` : 'Done with this lead? Archive it to tidy it out of your list. You can still find and export it.'}</span><button class="pf-btn pf-btn-sm" data-arch>${l.archived_at ? 'Unarchive' : 'Archive'}</button></div>
+        ${l.stage === 'instructed' ? `<form class="pf-inline" data-instructed><label>Instructed value (fees)<div class="pf-money"><i>£</i><input name="amt" inputmode="numeric" value="${l.instructed_value ? num(l.instructed_value) : ''}" placeholder="Expected fee"></div></label><button class="pf-btn">Save</button></form>` : ''}
+        <div class="pf-archrow"><span class="pf-hint">${l.archived_at ? `Archived ${date(l.archived_at)}. It’s under the Archived tab.` : 'Done with this lead? Archive it to tidy it out of the list. It can still be found and exported.'}</span><button class="pf-btn pf-btn-sm" data-arch>${l.archived_at ? 'Unarchive' : 'Archive'}</button></div>
         <h3 class="pf-dsec">Notes</h3>
-        <ul class="pf-notes">${l.notes.map((n) => `<li><p>${h(n.body)}</p><span>${date(n.created_at)}</span></li>`).join('') || '<li class="pf-notes-empty">No notes yet. Log calls, documents received and next steps.</li>'}</ul>
+        <ul class="pf-notes">${l.notes.map((n) => `<li><p>${h(n.body)}</p><span>${date(n.created_at)}</span></li>`).join('') || '<li class="pf-notes-empty">No notes yet. Log calls, conflict checks, consultations and next steps.</li>'}</ul>
         <form class="pf-noteform" data-note><textarea name="body" rows="2" placeholder="Add a note…" aria-label="Add a note"></textarea><button class="pf-btn pf-btn-primary">Add</button></form>
-        <h3 class="pf-dsec">Application</h3>
-        ${facts([['Loan amount', gbp(l.amount)], ['Purpose', h(l.purpose)], ['Needed', h(l.timeline)], ['Business type', h(l.structure)], ['Annual revenue', h(l.annual_revenue)], ['Trading for', h(l.trading_for)],
-          ['Homeowner or tenant', h(l.property || '–')], ['Missed payments / CCJs', l.adverse_credit === 'Not sure' ? '–' : h(l.adverse_credit)], ['Existing finance', h(l.existing_finance) + (l.left_to_repay ? ` · ${h(l.left_to_repay)}` : '')], ['Quality score', qBadge(l.quality)], ['Price paid', `${l.price_credits} credits`]])}
+        <h3 class="pf-dsec">Enquiry</h3>
+        ${enquiryFacts(l, [['Grade', `${gradeBadge(l)}`], ['Price paid', `${num(l.price_credits ?? l.price)} credits`], ['Enquired', date(l.received_at || l.created_at)]])}
+        ${tagList(l.tags)}
+        ${l.summary ? `<h3 class="pf-dsec">In the client’s words</h3><blockquote class="pf-summary">${h(l.summary)}</blockquote>` : ''}
+        <h3 class="pf-dsec">Qualifying answers</h3>${answersList(l.answers)}
         ${chBlock(l.companies_house, true)}
         ${l.refund ? `<div class="pf-refundbox ${l.refund.status}">${I.undo}<div><b>${l.refund.status === 'rejected' ? 'Sorry, we can’t refund this lead' : `Refund ${l.refund.status}`}</b><span>${h(l.refund.reason)}</span>${l.refund.note ? `<span>${h(l.refund.note.replace(/^Sorry, we can’t refund this\.\s*/, ''))}</span>` : l.refund.decision && !/^Declined automatically/.test(l.refund.decision) ? `<span>${h(l.refund.decision)}</span>` : ''}</div></div>`
           : l.refundable ? `<details class="pf-refund"><summary>${I.undo}Problem with this lead?</summary>
-            <form data-refund><label>Reason<select name="reason" required><option value="">Choose a reason</option>${opts.returnReasons.map((r) => `<option>${h(r.reason)}</option>`).join('')}</select></label>
+            <form data-refund><label>Reason<select name="reason" required><option value="">Choose a reason</option>${returnReasons().map((r) => `<option>${h(r.reason)}</option>`).join('')}</select></label>
             <p class="pf-hint" data-rnote hidden></p>
             <div data-rmore><label>Details <span data-ropt>(optional)</span><textarea name="details" rows="2"></textarea></label>
-            <p class="pf-hint">We review requests within one working day. You have ${opts.returnHours} hours from purchase.</p><div><button class="pf-btn">Send request</button></div></div>
+            <p class="pf-hint">We review requests within one working day. Refunds can be asked for up to ${opts?.returnHours || 72} hours after purchase.</p><div><button class="pf-btn">Send request</button></div></div>
             <p class="pf-hint" data-rcontact hidden>Want to talk it through? Email <a href="mailto:hello@leaflegal.co?subject=Lead%20%23${l.id}">hello@leaflegal.co</a>.</p></form></details>` : ''}`);
       modal.querySelectorAll('[data-set]').forEach((b) => (b.onclick = async () => {
         if (b.dataset.set === l.stage) return;
-        try { const r = await api('stage', { id: l.id, stage: b.dataset.set }); l.stage = r.stage; render(); redraw?.(); toast(`Moved to ${STAGE_NAME[l.stage]}`); } catch (ex) { toast(ex.message, true); }
+        try { const r = await api('stage', { id: l.id, stage: b.dataset.set }); l.stage = r.stage || b.dataset.set; render(); redraw?.(); toast(`Moved to ${STAGE_NAME[l.stage]}`); } catch (ex) { toast(ex.message, true); }
       }));
-      modal.querySelector('[data-funded]')?.addEventListener('submit', async (e) => {
+      modal.querySelector('[data-instructed]')?.addEventListener('submit', async (e) => {
         e.preventDefault();
-        try { const r = await api('stage', { id: l.id, stage: 'funded', funded_amount: String(e.target.amt.value).replace(/\D/g, '') }); l.funded_amount = r.funded_amount; toast('Funded amount saved'); redraw?.(); } catch (ex) { toast(ex.message, true); }
+        const v = String(e.target.amt.value).replace(/\D/g, '');
+        try { const r = await api('stage', { id: l.id, stage: 'instructed', instructed_value: v }); l.instructed_value = r.instructed_value ?? (+v || null); toast('Instructed value saved'); redraw?.(); } catch (ex) { toast(ex.message, true); }
       });
       modal.querySelector('[data-arch]').onclick = async () => {
-        try { const x = await api('archive', { id: l.id, archived: !l.archived_at }); l.archived_at = x.archived_at; render(); redraw?.(); toast(l.archived_at ? 'Lead archived' : 'Lead moved back to your list'); } catch (ex) { toast(ex.message, true); }
+        try { const x = await api('archive', { id: l.id, archived: !l.archived_at }); l.archived_at = x.archived_at; render(); redraw?.(); toast(l.archived_at ? 'Lead archived' : 'Lead moved back to the list'); } catch (ex) { toast(ex.message, true); }
       };
       modal.querySelector('[data-note]').addEventListener('submit', async (e) => {
         e.preventDefault(); const t = e.target.body.value.trim(); if (!t) return;
@@ -616,8 +673,8 @@
       });
       const rf = modal.querySelector('[data-refund]');
       if (rf) rf.reason.onchange = () => {
-        const r = opts.returnReasons.find((x) => x.reason === rf.reason.value), no = r?.kind === 'no';
-        rf.querySelector('[data-rnote]').hidden = !r; rf.querySelector('[data-rnote]').textContent = r?.note || '';
+        const r = returnReasons().find((x) => x.reason === rf.reason.value), no = r?.kind === 'no';
+        rf.querySelector('[data-rnote]').hidden = !r?.note; rf.querySelector('[data-rnote]').textContent = r?.note || '';
         rf.querySelector('[data-rmore]').hidden = false; rf.querySelector('[data-rcontact]').hidden = !no;
         rf.details.required = r?.kind === 'review'; rf.querySelector('[data-ropt]').textContent = r?.kind === 'review' ? '(required)' : '(optional)';
       };
@@ -635,73 +692,81 @@
   }
 
   // ------------------------------------------------ auto-buy
-  // Empty saved list means "any", so show everything ticked; brokers narrow down by unticking.
-  // Opt-in values (Under 6 months trading, £50k to £100k revenue) are only ticked when chosen, even when the saved list is empty ("any"). Same list as OPT_IN in api/_lib/platform.js.
-  const OPT_IN = ['Under 6 months', '£50k to £100k'];
-  // A ticked list saves as [] ("any") only when it means the same: every normal value ticked and no opt-in value ticked.
-  const anyOf = (ticked, names) => (names.filter((v) => !OPT_IN.includes(v)).every((v) => ticked.includes(v)) && !ticked.some((v) => OPT_IN.includes(v)) ? [] : ticked);
-  const chips = (name, list, sel = []) => `<div class="pf-chips" data-group="${name}">${list.map((v) => `<label class="pf-chip"><input type="checkbox" name="${name}" value="${h(v)}" ${sel?.includes(v) || (!sel?.length && !OPT_IN.includes(v)) ? 'checked' : ''}><span>${h(v)}</span></label>`).join('')}</div>`;
-  // One set of lead criteria; prefix 't_' is the tenant set.
-  const crit = (p, c) => `<div class="pf-two"><label>Minimum loan<div class="pf-money"><i>£</i><input name="${p}amountMin" inputmode="numeric" value="${c.amountMin ? num(c.amountMin) : ''}" placeholder="No minimum"></div></label>
-          <label>Maximum loan<div class="pf-money"><i>£</i><input name="${p}amountMax" inputmode="numeric" value="${c.amountMax ? num(c.amountMax) : ''}" placeholder="No maximum"></div></label></div>
-          <h4>Annual revenue</h4>${chips(p + 'turnovers', opts.turnovers, c.turnovers)}
-          <h4>Loan purpose</h4>${chips(p + 'purposes', opts.purposes, c.purposes)}
-          <h4>Time trading</h4>${chips(p + 'trading', opts.trading, c.trading)}
-          <label class="pf-switchrow"><input type="checkbox" role="switch" name="${p}cleanCredit" ${c.cleanCredit ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Clean credit only</b><em>No missed payments, defaults or CCJs in 6 years</em></span></label>`;
+  // Chip groups: an empty saved list means "any", so everything starts ticked and firms narrow down by unticking.
+  // A fully ticked group saves as [] ("any"). Practice areas are different: they're required, so an empty list means none.
+  const anyOf = (ticked, names) => (names.every((v) => ticked.includes(v)) ? [] : ticked);
+  const chips = (name, list, sel = [], allWhenEmpty = true) => `<div class="pf-chips" data-group="${name}">${list.map((x) => { const [v, t] = Array.isArray(x) ? x : [x, x];
+    return `<label class="pf-chip"><input type="checkbox" name="${name}" value="${h(v)}" ${sel?.includes(v) || (allWhenEmpty && !sel?.length) ? 'checked' : ''}><span>${h(t)}</span></label>`; }).join('')}</div>`;
+  const csvList = (v, up) => [...new Set(String(v || '').split(/[,;\s]+/).map((x) => (up ? x.toUpperCase().replace(/[^A-Z]/g, '') : x.trim().toLowerCase())).filter(Boolean))];
+  // Practice areas with their matters: tick an area to buy it, then untick any matter in it the firm doesn't handle.
+  // Only areas the firm's regulators allow are offered (same rule as allowedAreas on the server).
+  function areaPicker(f, allowed, compact) {
+    const on = f.areas || [], blocked = TX.areas.filter((a) => !allowed.includes(a.slug));
+    return `<div class="pf-areas">${TX.areas.filter((a) => allowed.includes(a.slug)).map((a) => { const ms = f.matters?.[a.slug] || [], ticked = on.includes(a.slug);
+      return `<div class="pf-area ${ticked ? 'on' : ''}" data-area="${a.slug}"><label class="pf-area-h"><input type="checkbox" name="areas" value="${a.slug}" ${ticked ? 'checked' : ''}><span class="pf-pic">${aIcon(a.slug)}</span><b>${h(a.label)}</b><em data-acount></em></label>
+        <div class="pf-area-m" ${ticked ? '' : 'hidden'}>${compact ? '' : '<p class="pf-hint pf-mt-0">Untick any matter the firm doesn’t handle.</p>'}${chips(`m_${a.slug}`, a.matters, ms)}</div></div>`; }).join('')}</div>
+      ${blocked.length ? `<p class="pf-hint">${blocked.map((a) => h(a.label)).join(', ')} ${blocked.length === 1 ? 'isn’t' : 'aren’t'} offered because the firm’s regulator doesn’t cover ${blocked.length === 1 ? 'it' : 'them'}. Immigration needs SRA, CILEx or IAA authorisation. CLC firms can take conveyancing and lease extensions. IPReg firms can take trademarks and IP.</p>` : ''}`;
+  }
+  const wireAreas = (root) => {
+    const sync = () => root.querySelectorAll('[data-area]').forEach((box) => { const on = box.querySelector('[name=areas]').checked, m = box.querySelectorAll('.pf-area-m input'), n = [...m].filter((x) => x.checked).length;
+      box.classList.toggle('on', on); box.querySelector('.pf-area-m').hidden = !on;
+      box.querySelector('[data-acount]').textContent = on ? (n === m.length ? 'Every matter' : `${n} of ${m.length} matters`) : 'Not bought'; });
+    root.addEventListener('change', sync); sync();
+  };
+  // Reads the area picker: areas ticked, and matters per area ([] or missing = every matter in it).
+  const readAreas = (form) => { const fd = new FormData(form), areas = fd.getAll('areas'), matters = {};
+    for (const a of areas) { const all = [...form.querySelectorAll(`[name="m_${a}"]`)].map((x) => x.value), t = fd.getAll(`m_${a}`); if (t.length && t.length < all.length) matters[a] = t; }
+    return { areas, matters }; };
+  // Client-side mirror of the server's matching, for the live preview (the server decides for real).
+  function fitsCriteria(f, l, allowed) {
+    const any = (list, v) => !list?.length || list.includes(v), tags = l.tags || [], vmin = l.value_min ?? l.value_max, vmax = l.value_max ?? l.value_min;
+    return allowed.includes(l.area) && (f.areas || []).includes(l.area) && any(f.matters?.[l.area], l.matter) && any(f.regions, l.region) && any(f.postcodeAreas, pcArea(l))
+      && any(f.audiences, l.audience) && any(f.urgencies, l.urgency) && any(f.grades, l.grade) && !(f.privatePayOnly && l.private_pay === 'quote')
+      && !(f.valueMin && vmax != null && vmax < f.valueMin) && !(f.valueMax && vmin != null && vmin > f.valueMax)
+      && (!f.tagsAny?.length || f.tagsAny.some((t) => tags.includes(t))) && !(f.tagsNone || []).some((t) => tags.includes(t)) && !(f.maxPrice && l.price > f.maxPrice);
+  }
   async function autobuy() {
     shell('autobuy');
-    const [{ leads: live }, ms] = await Promise.all([api('opportunities').catch(() => ({ leads: [] })), api('missed').catch(() => null)]);
-    const f = me.filters || {}, T = onTier(), tp = f.tierPlan || {};
-    // Tier clients: tick the tiers they want and give each a monthly auto-buy budget, instead of detailed criteria.
-    const tierPlanCard = `<section class="pf-card"><div class="pf-card-h"><h3>Lead tiers</h3><span>Tick the tiers you want and set what auto-buy can spend on each a month</span></div>
-      <table class="pf-table pf-tierplan"><thead><tr><th>Tier</th><th class="pf-num">Price per lead</th><th>Credits a month</th><th class="pf-hide-s">Works out at</th></tr></thead><tbody>
-      ${TIERS.names.map((t, i) => `<tr><td><label class="pf-tpick"><input type="checkbox" name="tierOn" value="${h(t)}" ${tp[t]?.on !== false ? 'checked' : ''}>${tierTag(t)}</label><span>${h(TIER_REV[t] || '')}</span></td>
-        <td class="pf-num"><b>${num(TIERS.prices[t])}</b><span>credits</span></td>
-        <td><input class="pf-tcred" name="tc_${i}" inputmode="numeric" value="${tp[t]?.credits ? num(tp[t].credits) : ''}" placeholder="0" aria-label="${h(t)} credits a month"></td>
-        <td class="pf-hide-s" data-tleads="${i}"></td></tr>`).join('')}</tbody></table>
-      <p class="pf-hint" data-ttotal></p>
-      <p class="pf-hint">Auto-buy buys a tier only while it has credits left this month, and never goes over your balance. Ticked tiers without credits still count as yours on Opportunities and in new-lead emails. Budgets reset on the 1st of each month.</p></section>`;
-    const tiers0 = f.tiers?.length ? { on: true, list: f.tiers } : { on: false, list: [{ ...f, name: 'Higher tier', share: 75 }, { ...f, name: 'Lower tier', share: 25 }] };
-    // What the saved criteria skipped over the last 30 days, each with an Allow button that ticks it in the form below.
+    const [{ leads: rawLive }, ms] = await Promise.all([api('opportunities').catch(() => ({ leads: [] })), api('missed').catch(() => null)]);
+    const live = rawLive.map(L), f = me.filters || {}, allowed = firmAreas(me);
+    const seenTags = [...new Set(live.flatMap((l) => l.tags || []))].sort();
+    // What the saved criteria skipped over the last 30 days, each with an Allow button that changes the form below.
     const missedCard = ms?.missed ? `<section class="pf-card pf-missed"><div class="pf-card-h"><h3>${me.mode === 'auto' ? 'Missed by auto-buy' : 'Outside these criteria'}</h3><span>Last ${ms.days} days</span></div>
-      <p class="pf-mt-0"><b>${num(ms.missed)} of ${num(ms.total)} leads</b> fell outside these criteria${me.mode === 'auto' ? ', so auto-buy skipped them' : ''}.${ms.sold ? ` <b>${num(ms.sold)}</b> went to other brokers.` : ''}${ms.mine ? ` ${num(ms.mine)} bought by hand.` : ''}${ms.live ? ` ${num(ms.live)} still on <a href="${P}/opportunities">Opportunities</a>.` : ''}</p>
-      <table class="pf-table pf-missed-t"><tbody>${ms.groups.map((g, i) => `<tr><td><b>${h(g.label)}</b><span>${g.only ? `${num(g.only)} would have been bought with this allowed` : 'other criteria also held these back'}</span></td><td class="pf-num">${num(g.n)} lead${g.n === 1 ? '' : 's'}</td><td class="pf-num"><button class="pf-btn pf-btn-sm" type="button" data-allow="${i}">Allow</button></td></tr>`).join('')}</tbody></table>
-      <p class="pf-hint">Each lead goes to one broker only, so wider criteria mean first pick of more leads. Allow changes the criteria below; save to apply.</p></section>` : '';
+      <p class="pf-mt-0"><b>${num(ms.missed)} of ${num(ms.total)} leads</b> fell outside these criteria${me.mode === 'auto' ? ', so auto-buy skipped them' : ''}.${ms.sold ? ` <b>${num(ms.sold)}</b> went to other firms.` : ''}${ms.mine ? ` ${num(ms.mine)} bought by hand.` : ''}${ms.live ? ` ${num(ms.live)} still on <a href="${P}/opportunities">Opportunities</a>.` : ''}</p>
+      <table class="pf-table pf-missed-t"><tbody>${(ms.groups || []).map((g, i) => `<tr><td><b>${h(g.label)}</b><span>${g.why ? h(g.why) : g.only ? `${num(g.only)} would have been bought with this allowed` : 'other criteria also held these back'}</span></td><td class="pf-num">${num(g.n)} lead${g.n === 1 ? '' : 's'}</td><td class="pf-num"><button class="pf-btn pf-btn-sm" type="button" data-allow="${i}" ${g.k === 'areas' && !allowed.includes(g.v) ? 'disabled title="Not covered by the firm’s regulator"' : ''}>Allow this</button></td></tr>`).join('')}</tbody></table>
+      <p class="pf-hint">Each lead goes to one firm only, so wider criteria mean first pick of more leads. Allow this changes the criteria below. Save to apply.</p></section>` : '';
+    const money = (name, v, ph) => `<div class="pf-money"><i>£</i><input name="${name}" inputmode="numeric" value="${v ? num(v) : ''}" placeholder="${ph}"></div>`;
     view().innerHTML = `<form class="pf-auto" id="pf-autoform" novalidate>
       <div class="pf-auto-main">
-        <section class="pf-card"><div class="pf-card-h"><h3>How do you want to buy?</h3></div>${modeCards(me.mode === 'auto')}</section>
+        <section class="pf-card"><div class="pf-card-h"><h3>Buying mode</h3></div>${modeCards(me.mode === 'auto')}</section>
         ${missedCard}
-        ${T ? `${tierPlanCard}${tierCalcSection()}` : ''}
-        ${T ? '' : `<section class="pf-card"><div class="pf-card-h"><h3>Lead criteria</h3><span>Everything is included. Untick what you don’t want</span></div>
-          <p class="pf-hint pf-mt-0" data-tiernote ${f.tiers?.length ? '' : 'hidden'}>Budget tiers are on, so each tier below has its own criteria.</p><div data-maincrit ${f.tiers?.length ? 'hidden' : ''}>
-          <h4>Business type</h4>${chips('structures', opts.structures, f.structures)}
-          <h4>Homeowner or tenant</h4>${chips('property', opts.property, f.property)}
-          ${crit('', f)}
-          <label class="pf-switchrow pf-mt-s"><input type="checkbox" role="switch" name="tenantOn" ${f.tenant ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Different criteria for tenants</b><em>The criteria above then apply to homeowners, and these to tenants</em></span></label>
-          <div class="pf-tenant" data-tenant ${f.tenant ? '' : 'hidden'}><h4>Tenant criteria</h4>${crit('t_', f.tenant || f)}</div></div></section>
-        <section class="pf-card"><div class="pf-card-h"><h3>Monthly budget</h3></div>
-          <label>Auto-buy limit (credits a month)<input name="monthly_cap" inputmode="numeric" value="${me.monthly_cap ? num(me.monthly_cap) : ''}" placeholder="No limit, up to your balance"></label>
-          <p class="pf-hint">For example, 5,000 spends up to 5,000 credits a month on auto-bought leads. We never go over your balance.</p>
+        <section class="pf-card"><div class="pf-card-h"><h3>Practice areas and matters</h3><span>Tick each area the firm takes on</span></div>${areaPicker(f, allowed)}</section>
+        <section class="pf-card"><div class="pf-card-h"><h3>Lead criteria</h3><span>Everything is included. Untick what the firm doesn’t want</span></div>
+          <h4>Regions</h4>${chips('regions', TX.regions, f.regions)}
+          <label class="pf-mt-s">Postcode areas <span>(optional, narrows the regions above)</span><input name="postcodeAreas" value="${h((f.postcodeAreas || []).join(', '))}" placeholder="e.g. SW, SE, M, LS" autocapitalize="characters"></label>
+          <p class="pf-hint">The letters at the start of a postcode, such as SW for south west London or M for Manchester. Leave blank for anywhere in the regions ticked.</p>
+          <h4>Client</h4>${chips('audiences', TX.audiences, f.audiences)}
+          <h4>Urgency</h4>${chips('urgencies', TX.urgency, f.urgencies)}
+          <h4>Grade</h4>${chips('grades', TX.grades.map((g) => [g, { A: 'A, detailed and ready to go', B: 'B, good', C: 'C, thinner answers' }[g] || g]), f.grades)}
+          <label class="pf-switchrow pf-mt-s"><input type="checkbox" role="switch" name="privatePayOnly" ${f.privatePayOnly ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Private pay only</b><em>Skip clients who said they’ll only pay if the cost is right</em></span></label>
+          <div class="pf-two pf-mt-s"><label>Minimum value${money('valueMin', f.valueMin, 'No minimum')}</label><label>Maximum value${money('valueMax', f.valueMax, 'No maximum')}</label></div>
+          <p class="pf-hint">Value is the property price, debt or similar figure the client gave. Only applied to leads that have one.</p>
+          <div class="pf-two pf-mt-s"><label>Only leads tagged <span>(any of)</span><input name="tagsAny" value="${h((f.tagsAny || []).join(', '))}" placeholder="No tag needed" list="pf-tags-dl"></label>
+            <label>Never leads tagged<input name="tagsNone" value="${h((f.tagsNone || []).join(', '))}" placeholder="None excluded" list="pf-tags-dl"></label></div>
+          <datalist id="pf-tags-dl">${seenTags.map((t) => `<option value="${h(t)}">`).join('')}</datalist>
+          ${seenTags.length ? `<p class="pf-hint">Tags on live leads now ${seenTags.slice(0, 14).map(h).join(', ')}. Separate several with commas.</p>` : ''}</section>
+        <section class="pf-card"><div class="pf-card-h"><h3>Limits</h3></div>
+          <label>Auto-buy limit (credits a month)<input name="monthly_cap" inputmode="numeric" value="${me.monthly_cap ? num(me.monthly_cap) : ''}" placeholder="No limit, up to the balance"></label>
+          <p class="pf-hint">For example, 2,000 spends up to 2,000 credits a month on auto-bought leads. We never go over the balance.</p>
           <div class="pf-two pf-mt-s"><label>Leads per day<input name="dailyLeads" inputmode="numeric" value="${f.dailyLeads || ''}" placeholder="No limit"></label>
             <label>Credits per day<input name="dailyCredits" inputmode="numeric" value="${f.dailyCredits || ''}" placeholder="No limit"></label></div>
-          <label class="pf-mt-s">Maximum credits per lead<input name="maxPrice" inputmode="numeric" value="${f.maxPrice || ''}" placeholder="No maximum (leads cost up to ${pricing.max})"></label>
-          <p class="pf-hint">Lead prices change with demand and can move without notice, so this is your safety net. Leads that cost more than this are never auto-bought. They stay on Opportunities for you to buy manually, and we email you when one matches (see <a href="${P}/notifications">Notifications</a>).</p></section>
-        <section class="pf-card"><div class="pf-card-h"><h3>Budget tiers</h3><span>Advanced, optional</span></div>
-          <label class="pf-switchrow"><input type="checkbox" role="switch" name="tiersOn" ${tiers0.on ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Split the monthly budget into tiers</b><em>Give each type of lead its own criteria and share of the auto-buy limit, e.g. 75% on larger businesses and 25% on smaller ones</em></span></label>
-          <div data-tiers ${tiers0.on ? '' : 'hidden'}>${[0, 1, 2, 3].map((i) => { const t = tiers0.list[i] || { ...f, name: `Tier ${i + 1}`, share: '' }, used = me.tierSpend?.[i]; return `<div class="pf-tier" data-tier="${i}" ${i < tiers0.list.length ? '' : 'hidden'}>
-            <div class="pf-two"><label>Tier name<input name="x${i}_name" value="${h(t.name || '')}" maxlength="40"></label><label>Share of monthly limit (%)<input name="x${i}_share" inputmode="numeric" value="${t.share || ''}" placeholder="e.g. 75"></label></div>
-            ${used != null && me.monthly_cap && t.share ? `<p class="pf-hint pf-mt-0">${num(used)} of ${num(Math.floor((me.monthly_cap * t.share) / 100))} credits used this month</p>` : ''}
-            <h4>Business type</h4>${chips(`x${i}_structures`, opts.structures, t.structures)}
-            <h4>Homeowner or tenant</h4>${chips(`x${i}_property`, opts.property, t.property)}
-            ${crit(`x${i}_`, t)}
-            <div class="pf-row-l"><button type="button" class="pf-btn pf-btn-sm" data-tier-remove="${i}">Remove tier</button></div></div>`; }).join('')}
-            <div class="pf-row-l"><button type="button" class="pf-btn" data-tier-add>Add a tier</button></div>
-            <p class="pf-hint">Each new lead goes to the first tier it fits that still has budget this month. Shares are of the monthly auto-buy limit above and can add up to 100% at most. Maximum credits per lead and the daily limits still apply to every tier.</p></div></section>`}
+          <label class="pf-mt-s">Maximum credits per lead<input name="maxPrice" inputmode="numeric" value="${f.maxPrice || ''}" placeholder="No maximum (leads cost up to ${pricing?.max || 400})"></label>
+          <p class="pf-hint">Lead prices change with demand and can move without notice, so this is the safety net. Leads that cost more are never auto-bought. They stay on Opportunities to buy by hand, and we email when one matches (see <a href="${P}/notifications">Notifications</a>).</p></section>
         <section class="pf-card"><div class="pf-card-h"><h3>Delivery</h3><span>Where bought leads are sent, whether bought by hand or by auto-buy</span></div>
-          <div class="pf-opt"><label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" name="deliver_on" ${me.deliver_on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Email each lead</b><em>Full contact details, the moment it’s bought</em></span></label>
+          <div class="pf-opt"><label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" name="deliver_on" ${me.deliver_on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Email each lead</b><em>Full contact details and answers, the moment it’s bought</em></span></label>
             ${listField('deliver_emails', me.deliver_emails, 'email', me.email, 'Add another email', 10)}
             <p class="pf-hint">Leave blank to use ${h(me.email)}.</p></div>
-          <div class="pf-opt"><label class="pf-switchrow"><input type="checkbox" role="switch" name="webhook_on" ${me.webhook_on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Send to CRM webhooks</b><em>Each lead is posted as JSON. Works with Zapier, Make, HubSpot, Pipedrive and any CRM that accepts webhooks</em></span></label>
+          <div class="pf-opt"><label class="pf-switchrow"><input type="checkbox" role="switch" name="webhook_on" ${me.webhook_on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Send to webhooks</b><em>Each lead is posted as JSON. Works with Zapier, Make, case management systems and any CRM that accepts webhooks</em></span></label>
             ${listField('webhook_urls', me.webhook_urls?.length ? me.webhook_urls : me.webhook_url ? [me.webhook_url] : [], 'url', 'https://hooks.zapier.com/…', 'Add another webhook', 5)}
             <label class="pf-mt-s">Signing secret (optional)<input name="webhook_secret" type="password" autocomplete="off" spellcheck="false" value="${h(me.webhook_secret || '')}" placeholder="Paste a secret, or generate one"></label>
             <div class="pf-row-l"><button type="button" class="pf-btn pf-btn-sm" data-secret-gen>Generate</button><button type="button" class="pf-btn pf-btn-sm" data-secret-show>Show</button></div>
@@ -709,75 +774,66 @@
             <div class="pf-row-l"><button type="button" class="pf-btn" data-test>${I.webhook}Send a test lead</button></div></div>
           <div class="pf-opt"><label class="pf-switchrow"><input type="checkbox" role="switch" name="hubspot_on" ${me.hubspot?.on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Send to HubSpot</b><em>Each lead becomes a HubSpot contact through a HubSpot form. Works on every HubSpot plan, no Zapier needed</em></span></label>
             <label>HubSpot form embed code or link<textarea name="hubspot_form" rows="2" placeholder="Paste the form’s embed code or the link to its editor">${h(me.hubspot?.form ? `hbspt.forms.create({ region: "${me.hubspot.region || 'na1'}", portalId: "${me.hubspot.portal}", formId: "${me.hubspot.form}" })` : '')}</textarea></label>
-            <p class="pf-hint">${me.hubspot?.form ? `Connected to HubSpot account ${h(me.hubspot.portal)}. ` : ''}The form needs Email, First name, Last name, Phone number, Company name and Message fields. <a href="https://leaflegal.co/partners/hubspot-guide.pdf" target="_blank" rel="noopener">Setup guide (PDF)</a></p>
+            <p class="pf-hint">${me.hubspot?.form ? `Connected to HubSpot account ${h(me.hubspot.portal)}. ` : ''}The form needs Email, First name, Last name, Phone number, Company name and Message fields.</p>
             <div class="pf-row-l"><button type="button" class="pf-btn" data-test-hs>${I.webhook}Send a test lead to HubSpot</button></div></div>
-          <div class="pf-opt"><label class="pf-switchrow"><input type="checkbox" role="switch" name="pipedrive_on" ${me.pipedrive?.on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Send to Pipedrive</b><em>Each lead becomes an organisation, a person and a deal with a note of everything they told us. No Zapier needed</em></span></label>
+          <div class="pf-opt"><label class="pf-switchrow"><input type="checkbox" role="switch" name="pipedrive_on" ${me.pipedrive?.on !== false ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Send to Pipedrive</b><em>Each lead becomes a person and a deal with a note of everything the client told us. No Zapier needed</em></span></label>
             <label>Pipedrive API token<input name="pipedrive_token" type="password" autocomplete="off" spellcheck="false" value="${h(me.pipedrive?.token || '')}" placeholder="40 letters and numbers"></label>
             <p class="pf-hint">${me.pipedrive?.token ? 'Connected to Pipedrive. ' : ''}In Pipedrive, open Settings, then Personal preferences, then API, and copy the token. Deals land in the default pipeline, owned by the token’s user.</p>
             <div class="pf-row-l"><button type="button" class="pf-btn" data-test-pd>${I.webhook}Send a test lead to Pipedrive</button></div></div></section>
       </div>
       <aside class="pf-auto-side"><div class="pf-card pf-preview"><span class="pf-eyebrow">Live preview</span><div class="pf-preview-n"><b data-pcount>0</b><span data-pof></span></div><p data-ptext></p><div class="pf-meter"><i data-pbar></i></div></div></aside>
 </form>
-      <div class="pf-savebar"><span>Changes apply to new leads as soon as you save.</span><button class="pf-btn pf-btn-primary pf-btn-lg" type="submit" form="pf-autoform">Save settings</button></div>`;
+      <div class="pf-savebar"><span>Changes apply to new leads as soon as they’re saved.</span><button class="pf-btn pf-btn-primary pf-btn-lg" type="submit" form="pf-autoform">Save settings</button></div>`;
     const form = view().querySelector('form');
+    wireAreas(form);
     if (me.restricted && !acting) { // commission client: rules set by Leaflegal, delivery still editable
       form.querySelectorAll('.pf-auto-main > section.pf-card').forEach((sec) => { if (sec.querySelector('[name=deliver_on]')) return; sec.querySelectorAll('input,select,textarea,button').forEach((x) => (x.disabled = true)); sec.classList.add('is-locked'); });
-      form.querySelector('.pf-auto-main').insertAdjacentHTML('afterbegin', `<div class="pf-banner">${I.shield}<div><b>Leaflegal manages auto-buy for this account.</b> The criteria and budget below are set for you. To change them, email hello@leaflegal.co. Delivery settings can still be changed.</div></div>`);
+      form.querySelector('.pf-auto-main').insertAdjacentHTML('afterbegin', `<div class="pf-banner">${I.shield}<div><b>Leaflegal manages auto-buy for this account.</b> The criteria and limits below are set by Leaflegal. To change them, email hello@leaflegal.co. Delivery settings can still be changed.</div></div>`);
     }
     const digits = (v) => +String(v || '').replace(/\D/g, '') || null;
     const read = () => {
       const fd = new FormData(form);
       const vals = (k) => fd.getAll(k).map((x) => String(x).trim()).filter(Boolean);
-      const set = (p) => ({ amountMin: digits(fd.get(p + 'amountMin')), amountMax: digits(fd.get(p + 'amountMax')), turnovers: fd.getAll(p + 'turnovers'), purposes: fd.getAll(p + 'purposes'), trading: fd.getAll(p + 'trading'), cleanCredit: !!fd.get(p + 'cleanCredit') });
-      const common = { mode: fd.get('mode'), deliver_on: !!fd.get('deliver_on'), deliver_emails: vals('deliver_emails'), webhook_on: !!fd.get('webhook_on'), webhook_urls: vals('webhook_urls'), webhook_secret: String(fd.get('webhook_secret') || '').trim(), hubspot: { form: String(fd.get('hubspot_form') || ''), on: !!fd.get('hubspot_on') }, pipedrive: { token: String(fd.get('pipedrive_token') || '').trim(), on: !!fd.get('pipedrive_on') } };
-      if (T) return { ...common, monthly_cap: String(me.monthly_cap || ''), filters: { ...f, tierPlan: Object.fromEntries(TIERS.names.map((t, i) => [t, { on: fd.getAll('tierOn').includes(t), credits: digits(fd.get(`tc_${i}`)) || 0 }])) } };
-      return { mode: fd.get('mode'), monthly_cap: String(fd.get('monthly_cap')).replace(/\D/g, ''),
-        deliver_on: !!fd.get('deliver_on'), deliver_emails: vals('deliver_emails'), webhook_on: !!fd.get('webhook_on'), webhook_urls: vals('webhook_urls'), webhook_secret: String(fd.get('webhook_secret') || '').trim(), hubspot: { form: String(fd.get('hubspot_form') || ''), on: !!fd.get('hubspot_on') }, pipedrive: { token: String(fd.get('pipedrive_token') || '').trim(), on: !!fd.get('pipedrive_on') },
-        filters: { dailyLeads: digits(fd.get('dailyLeads')), dailyCredits: digits(fd.get('dailyCredits')), maxPrice: digits(fd.get('maxPrice')), ...set(''), property: fd.getAll('property'), structures: fd.getAll('structures'), tenant: fd.get('tenantOn') ? set('t_') : null,
-          tiers: fd.get('tiersOn') ? [...form.querySelectorAll('[data-tier]:not([hidden])')].map((el) => { const p = `x${el.dataset.tier}_`; return { name: String(fd.get(p + 'name') || '').trim(), share: digits(fd.get(p + 'share')), ...set(p), structures: fd.getAll(p + 'structures'), property: fd.getAll(p + 'property') }; }) : null } };
+      const group = (k) => anyOf(fd.getAll(k), [...form.querySelectorAll(`[name=${k}]`)].map((i) => i.value));
+      return { mode: fd.get('mode'), monthly_cap: String(fd.get('monthly_cap') || '').replace(/\D/g, ''),
+        deliver_on: !!fd.get('deliver_on'), deliver_emails: vals('deliver_emails'), webhook_on: !!fd.get('webhook_on'), webhook_urls: vals('webhook_urls'), webhook_secret: String(fd.get('webhook_secret') || '').trim(),
+        hubspot: { form: String(fd.get('hubspot_form') || ''), on: !!fd.get('hubspot_on') }, pipedrive: { token: String(fd.get('pipedrive_token') || '').trim(), on: !!fd.get('pipedrive_on') },
+        filters: { ...readAreas(form), regions: group('regions'), postcodeAreas: csvList(fd.get('postcodeAreas'), true), audiences: group('audiences'), urgencies: group('urgencies'), grades: group('grades'),
+          privatePayOnly: !!fd.get('privatePayOnly'), valueMin: digits(fd.get('valueMin')), valueMax: digits(fd.get('valueMax')), tagsAny: csvList(fd.get('tagsAny')), tagsNone: csvList(fd.get('tagsNone')),
+          maxPrice: digits(fd.get('maxPrice')), dailyLeads: digits(fd.get('dailyLeads')), dailyCredits: digits(fd.get('dailyCredits')) } };
     };
-    const one = (c, l) => { const ok = (a, v) => (OPT_IN.includes(v) ? !!a?.includes(v) : !a?.length || a.includes(v)); return ok(c.structures, l.structure) && !(l.property && !ok(c.property, l.property)) && !(c.amountMin && l.amount < c.amountMin) && !(c.amountMax && l.amount > c.amountMax) && !(c.cleanCredit && l.credit === 'Yes') && ok(c.turnovers, l.turnover) && ok(c.purposes, l.purpose) && ok(c.trading, l.trading); };
-    const fits = (f, l) => T ? !!f.tierPlan[l.tier]?.on : !(f.maxPrice && l.price > f.maxPrice) && (f.tiers?.length ? f.tiers.some((t) => one(t, l)) : one(l.property === 'Tenant' && f.tenant ? { ...f, ...f.tenant } : f, l));
     const preview = () => {
-      const v = read(), n = live.filter((l) => fits(v.filters, l)).length;
+      const v = read(), n = live.filter((l) => fitsCriteria(v.filters, l, allowed)).length;
       form.querySelector('[data-pcount]').textContent = n;
       form.querySelector('[data-pof]').textContent = live.length ? `of ${live.length} live` : '';
-      form.querySelector('[data-ptext]').textContent = live.length ? `${T ? 'leads are in your tiers' : 'leads match these criteria'}. ${v.mode === 'auto' ? 'New matches will be bought automatically.' : 'Switch to Automatic to buy new matches instantly.'}` : `No live leads to compare against right now. ${v.mode === 'auto' ? 'New matches will be bought automatically.' : ''}`;
+      form.querySelector('[data-ptext]').textContent = !v.filters.areas.length ? 'No practice areas ticked, so no leads match. Tick at least one area.' : live.length ? `leads match these criteria. ${v.mode === 'auto' ? 'New matches will be bought automatically.' : 'Switch to Automatic to buy new matches instantly.'}` : `No live leads to compare against right now. ${v.mode === 'auto' ? 'New matches will be bought automatically.' : ''}`;
       form.querySelector('[data-pbar]').style.width = live.length ? `${(n / live.length) * 100}%` : '0';
-      if (T) { // credits per tier → leads a month, and what's used so far
-        let total = 0;
-        TIERS.names.forEach((t, i) => { const c = v.filters.tierPlan[t].credits, p = TIERS.prices[t], used = me.tierUsed?.[t] || 0; total += c;
-          form.querySelector(`[data-tleads="${i}"]`).textContent = c ? `About ${num(Math.floor(c / p))} lead${Math.floor(c / p) === 1 ? '' : 's'} a month${used ? ` · ${num(used)} used this month` : ''}` : used ? `${num(used)} used this month` : 'Not auto-bought'; });
-        form.querySelector('[data-ttotal]').innerHTML = total ? `<b>${num(total)} credits a month</b> across your tiers. You have ${num(me.credits)} credits.` : 'No credits set yet, so auto-buy won’t buy anything. Set credits for at least one tier.';
-      }
     };
     form.addEventListener('input', preview); form.addEventListener('change', preview); preview();
-    if (T) wireTierCalc(view());
-    if (!T) form.elements.tenantOn.addEventListener('change', (e) => (form.querySelector('[data-tenant]').hidden = !e.target.checked));
-    const tiersShown = () => { const on = form.elements.tiersOn.checked; form.querySelector('[data-tiers]').hidden = !on; form.querySelector('[data-maincrit]').hidden = on; form.querySelector('[data-tiernote]').hidden = !on;
-      const n = form.querySelectorAll('[data-tier]:not([hidden])').length; form.querySelector('[data-tier-add]').hidden = n >= 4; form.querySelectorAll('[data-tier-remove]').forEach((b) => (b.hidden = n <= 1)); preview(); };
-    if (!T) {
-      form.elements.tiersOn.addEventListener('change', tiersShown);
-      form.querySelector('[data-tier-add]').onclick = () => { const t = form.querySelector('[data-tier][hidden]'); if (t) t.hidden = false; tiersShown(); };
-      form.querySelectorAll('[data-tier-remove]').forEach((b) => (b.onclick = () => { form.querySelector(`[data-tier="${b.dataset.tierRemove}"]`).hidden = true; tiersShown(); }));
-      tiersShown();
-    }
+    // "Allow this" on a missed-leads row: tick the value (k, v from missGroups on the server) in the form, or lift the limit.
     view().querySelectorAll('[data-allow]').forEach((btn) => btn.addEventListener('click', () => {
-      const g = ms.groups[btn.dataset.allow], el = (n) => form.querySelector(`[name=${n}]`);
-      if (/amountM(in|ax)$/.test(g.k)) el(g.k).value = '';
-      else if (/cleanCredit$/.test(g.k)) el(g.k).checked = false;
-      else { const box = [...form.querySelectorAll(`[name=${g.k}]`)].find((x) => x.value === g.v); if (box) box.checked = true; }
+      const g = ms.groups[btn.dataset.allow], el = (n) => form.querySelector(`[name="${n}"]`), tick = (name, v) => { const box = [...form.querySelectorAll(`[name="${name}"]`)].find((x) => x.value === v); if (box) box.checked = true; return !!box; };
+      const addTo = (n, v, up) => { const cur = csvList(el(n).value, up); if (!cur.includes(v)) el(n).value = [...cur, v].join(', '); };
+      const dropFrom = (n, v, up) => { el(n).value = csvList(el(n).value, up).filter((x) => x !== String(v)).join(', '); };
+      if (g.k === 'areas') tick('areas', g.v);
+      else if (g.k === 'matters') { const [a, m] = String(g.v).split('/'); tick('areas', a); tick(`m_${a}`, m); }
+      else if (['regions', 'audiences', 'urgencies', 'grades'].includes(g.k)) tick(g.k, g.v);
+      else if (g.k === 'postcodeAreas') { if (el('postcodeAreas').value.trim()) addTo('postcodeAreas', String(g.v).toUpperCase(), true); }
+      else if (g.k === 'privatePayOnly') el('privatePayOnly').checked = false;
+      else if (g.k === 'valueMin' || g.k === 'valueMax') el(g.k).value = '';
+      else if (g.k === 'tagsAny') el('tagsAny').value = g.v ? (addTo('tagsAny', String(g.v).toLowerCase()), el('tagsAny').value) : '';
+      else if (g.k === 'tagsNone') dropFrom('tagsNone', String(g.v).toLowerCase());
+      form.dispatchEvent(new Event('change'));
       btn.disabled = true; btn.textContent = 'Allowed'; preview(); toast('Allowed. Save settings to apply it.');
     }));
-        wireLists(form);
-    const empty = () => [...form.querySelectorAll('[data-group]')].find((g) => !g.closest('[hidden]') && !g.querySelector('input:checked'));
+    wireLists(form);
+    const emptyGroup = () => [...form.querySelectorAll('.pf-chips[data-group]')].find((g) => !g.closest('[hidden]') && !g.querySelector('input:checked'));
     const save = async () => {
-      const g = empty(); if (g) throw new Error('Tick at least one option in each group (untick to narrow down).');
+      const g = emptyGroup(); if (g) throw new Error('Tick at least one option in each group (untick to narrow down).');
       const v = read();
-      const all = (o, p, keys) => { for (const k of keys) o[k] = anyOf(o[k], [...form.querySelectorAll(`[name=${p}${k}]`)].map((i) => i.value)); }; // all ticked = any
-      if (!T) all(v.filters, '', ['turnovers', 'purposes', 'trading', 'property', 'structures']); if (!T && v.filters.tenant) all(v.filters.tenant, 't_', ['turnovers', 'purposes', 'trading']);
-      if (!T) (v.filters.tiers || []).forEach((t, i) => all(t, `x${form.querySelectorAll('[data-tier]:not([hidden])')[i].dataset.tier}_`, ['turnovers', 'purposes', 'trading', 'structures', 'property']));
-      const r = await api('settings', v); Object.assign(me, v, { filters: r.filters, hubspot: r.hubspot, pipedrive: r.pipedrive, webhook_secret: v.webhook_secret || null, monthly_cap: +v.monthly_cap || 0 }); };
+      if (v.mode === 'auto' && !v.filters.areas.length) throw new Error('Tick at least one practice area for auto-buy.');
+      if (v.filters.valueMin && v.filters.valueMax && v.filters.valueMin > v.filters.valueMax) throw new Error('The minimum value is higher than the maximum.');
+      const r = await api('settings', v); Object.assign(me, v, { filters: r.filters || v.filters, hubspot: r.hubspot, pipedrive: r.pipedrive, webhook_secret: v.webhook_secret || null, monthly_cap: +v.monthly_cap || 0 }); };
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       try { await save(); toast(me.mode === 'auto' ? 'Saved. Auto-buy is on.' : 'Settings saved'); await autobuy(); } catch (ex) { return toast(ex.message, true); }
@@ -787,34 +843,35 @@
     form.querySelector('[data-secret-gen]').onclick = () => { const b = crypto.getRandomValues(new Uint8Array(32)); sec.value = 'whsec_' + [...b].map((x) => x.toString(16).padStart(2, '0')).join(''); sec.type = 'text'; toast('Secret generated. Copy it to the receiving end, then save.'); };
     form.querySelector('[data-secret-show]').onclick = (e) => { sec.type = sec.type === 'password' ? 'text' : 'password'; e.target.textContent = sec.type === 'password' ? 'Show' : 'Hide'; };
     form.querySelector('[data-test-hs]').onclick = async () => {
-      try { await save(); const { result } = await api('test-webhook', { to: 'hubspot' }); toast(result === 'ok' ? 'Test lead sent to HubSpot. Look for Sam Sample in Contacts.' : `HubSpot said: ${result}`, result !== 'ok'); } catch (ex) { toast(ex.message, true); }
+      try { await save(); const { result } = await api('test-webhook', { to: 'hubspot' }); toast(result === 'ok' ? 'Test lead sent to HubSpot. Look for Sam Sample in Contacts.' : `HubSpot replied ${result}`, result !== 'ok'); } catch (ex) { toast(ex.message, true); }
     };
     form.querySelector('[data-test-pd]').onclick = async () => {
-      try { await save(); const { result } = await api('test-webhook', { to: 'pipedrive' }); toast(result === 'ok' ? 'Test lead sent to Pipedrive. Look for the Sample Trading Ltd deal.' : `Pipedrive said: ${result}`, result !== 'ok'); } catch (ex) { toast(ex.message, true); }
+      try { await save(); const { result } = await api('test-webhook', { to: 'pipedrive' }); toast(result === 'ok' ? 'Test lead sent to Pipedrive. Look for the Sam Sample deal.' : `Pipedrive replied ${result}`, result !== 'ok'); } catch (ex) { toast(ex.message, true); }
     };
     form.querySelector('[data-test]').onclick = async () => {
-      try { await save(); const { result, results = [] } = await api('test-webhook', {}); toast(result === 'ok' ? `Test lead delivered to ${results.length > 1 ? `all ${results.length} webhooks` : 'your webhook'}` : `Not accepted: ${result}`, result !== 'ok'); } catch (ex) { toast(ex.message, true); }
+      try { await save(); const { result, results = [] } = await api('test-webhook', {}); toast(result === 'ok' ? `Test lead delivered to ${results.length > 1 ? `all ${results.length} webhooks` : 'the webhook'}` : `Not accepted (${result})`, result !== 'ok'); } catch (ex) { toast(ex.message, true); }
     };
   }
 
   // ------------------------------------------------ credits
-  // Lead price calculator: mirrors price() in api/_lib/platform.js using the live pricing weights.
-  const CALC_AMOUNTS = [5000, 10000, 15000, 25000, 50000, 75000, 100000, 150000, 250000, 500000, 750000, 1000000, 1500000, 2000000, 5000000];
-  function calcPrice(l, P) {
-    const amount = Math.max(1000, l.amount), rev = P.revenueMid[l.turnover] || 100000, ratio = amount / rev;
-    let size = Math.min(1, Math.max(0, (Math.log10(amount) - 4) / 2.2)); // £10k or less scores 0 on size (user, 18 Nov 2026: a £5k loan at £50k–£100k revenue should be about 20)
-    const from = P.sizeFrom ?? 50000, sf = P.sizeFloor ?? 0.4; // mirrors price(): loan size matters less from £50k up
-    if (amount >= from) size = Math.max(size, sf + (1 - sf) * Math.min(1, (Math.log10(amount) - Math.log10(from)) / (Math.log10(2e6) - Math.log10(from))));
-    const f = { size, aff: Math.min(1, (1 + Math.pow(0.5, 2.2)) / (1 + Math.pow(ratio, 2.2))),
-      age: P.age[l.trading] ?? 0.6, rev: P.revenue[l.turnover] ?? 0.7, credit: l.credit === 'Yes' ? P.adverse : l.credit === 'Not sure' ? P.unsure : 1 };
-    const raw = P.min + (P.max - P.min) * f.size * f.aff * f.age * f.rev * f.credit;
-    const rv = P.revenueMid[l.turnover] || 0, prime = rv >= 750000 && l.trading === '5+ years' && l.credit !== 'Yes';
-    const floor = Math.max(P.min, rv >= 100000 ? P.floor100k ?? 40 : 0, prime ? P.floorPrime ?? 0 : 0);
-    return { ...f, ratio, price: Math.min(P.max, Math.max(floor, Math.round(raw / 5) * 5)) };
+  // Lead pricing: mirrors price() in api/_lib/platform.js (spec), using the live weights from /api/platform?action=pricing.
+  const DEFAULT_PRICING = { min: 15, max: 400,
+    areas: { conveyancing: 35, immigration: 60, 'family-law': 55, 'debt-recovery': 45, 'motoring-offences': 50, licensing: 55, 'lease-extensions': 60, trademarks: 50 },
+    matters: { 'immigration/sponsor-licences': 120, 'family-law/financial-settlements': 75, 'motoring-offences/drink-driving': 70,
+      'motoring-offences/dangerous-driving': 80, 'licensing/premises-licence-applications': 70, 'lease-extensions/collective-enfranchisement': 110,
+    'trademarks/trademark-infringement': 75, 'trademarks/objections-and-oppositions': 65 },
+    grade: { A: 1.3, B: 1, C: 0.7 }, urgent: 1.15, business: 1.1, value: [[1000000, 1.4], [500000, 1.25], [250000, 1.1]] };
+  const PR = () => ({ ...DEFAULT_PRICING, ...(pricing?.areas ? pricing : {}) });
+  const round5 = (n) => Math.round(n / 5) * 5;
+  // l: { area, matter, grade, urgency, audience, value_min }
+  function leadPrice(l, P = PR()) {
+    const base = P.matters?.[`${l.area}/${l.matter}`] ?? P.areas?.[l.area] ?? 50, g = P.grade?.[l.grade] ?? 1;
+    const u = l.urgency === 'Urgently' ? P.urgent ?? 1 : 1, b = l.audience === 'business' ? P.business ?? 1 : 1;
+    const v = (P.value || []).find(([min]) => (l.value_min || 0) >= min)?.[1] ?? 1;
+    return { base, g, u, b, v, price: Math.min(P.max, Math.max(P.min, round5(base * g * u * b * v))) };
   }
-  const ratioText = (r) => r <= 0.5 ? 'A sensible ask for a business this size' : r <= 1 ? 'A big ask, around a year’s revenue' : r <= 3 ? `Ambitious: ${r.toFixed(1)}× annual revenue` : `Unrealistic: ${Math.round(r)}× annual revenue`;
-  const range = (name, list, i, label) => `<label class="pf-calc-row"><span class="pf-calc-l">${label}<b data-out="${name}">${h(list[i])}</b></span>
-    <input type="range" name="${name}" min="0" max="${list.length - 1}" step="1" value="${i}" aria-label="${label}"><span class="pf-calc-ends"><em>${h(list[0])}</em><em>${h(list[list.length - 1])}</em></span></label>`;
+  let pricingReady = null; // fetched once, for the Credits page and onboarding (the /me response may already carry it)
+  const loadPricing = () => (pricing?.areas ? Promise.resolve() : (pricingReady ||= fetch('/api/platform?action=pricing').then((r) => r.json()).then((d) => { if (d?.pricing?.areas) pricing = { ...(pricing || {}), ...d.pricing }; }).catch(() => {})));
 
   // Stripe's embedded checkout, mounted in a dialog inside the platform.
   let stripeJs = null, payCheckout = null, stripeObj = null;
@@ -834,7 +891,7 @@
   });
   async function payInline({ clientSecret, publishableKey }) {
     modal.className = 'pf-pay'; modal.onclick = null;
-    modal.innerHTML = `<div class="pf-pay-in"><h2>Start your subscription</h2><button class="pf-iconbtn pf-drawer-x" aria-label="Close" data-close>${I.x}</button><div id="pf-pay-mount"><div class="pf-pay-load">Loading secure payment form…</div></div></div>`;
+    modal.innerHTML = `<div class="pf-pay-in"><h2>Start the subscription</h2><button class="pf-iconbtn pf-drawer-x" aria-label="Close" data-close>${I.x}</button><div id="pf-pay-mount"><div class="pf-pay-load">Loading secure payment form…</div></div></div>`;
     modal.onclose = () => { killPay(); modal.onclose = null; };
     modal.querySelector('[data-close]').onclick = () => modal.close();
     modal.showModal();
@@ -842,111 +899,62 @@
     await mountPay({ clientSecret, publishableKey }, '#pf-pay-mount');
   }
 
-  // Shared lead price calculator (Billing page and onboarding).
+  // Shared lead price calculator and examples (Billing page and onboarding).
+  const mult = (x) => `×${(+x).toLocaleString('en-GB', { maximumFractionDigits: 2 })}`;
+  const VALUE_STEPS = [[0, 'No value given or under £250k'], [250000, '£250k to £500k'], [500000, '£500k to £1m'], [1000000, '£1m+']];
+  function priceExamples() {
+    const P = PR(), ex = TX.areas.map((a) => { const m = a.matters.find(([k]) => P.matters?.[`${a.slug}/${k}`]) || a.matters[0];
+      return { a, m, typical: leadPrice({ area: a.slug, matter: '', grade: 'B' }, P).price, low: leadPrice({ area: a.slug, matter: '', grade: 'C' }, P).price, high: leadPrice({ area: a.slug, matter: m?.[0], grade: 'A', urgency: 'Urgently' }, P).price }; });
+    return `<table class="pf-table pf-mini pf-ex"><thead><tr><th>Practice area</th><th class="pf-r">Grade C</th><th class="pf-r">Grade B</th><th class="pf-r pf-hide-s">Top end</th></tr></thead><tbody>
+      ${ex.map(({ a, m, typical, low, high }) => `<tr><td><b>${h(a.label)}</b><span>Top end is an urgent grade A ${h(String(m?.[1] || '').toLowerCase())} lead</span></td><td class="pf-r">${num(low)}</td><td class="pf-r"><b>${num(typical)}</b></td><td class="pf-r pf-hide-s">${num(high)}</td></tr>`).join('')}</tbody></table>
+      <p class="pf-hint">Credits per lead for an individual client with no stated value. Business clients cost ${mult(P.business)} and higher value matters up to ${mult(Math.max(1, ...(P.value || []).map((x) => x[1])))}. Every lead costs ${num(P.min)} to ${num(P.max)} credits.</p>`;
+  }
   function calcSection(extra = '') {
-    const P = pricing, amounts = CALC_AMOUNTS.map(short);
-    return `<section class="pf-card pf-calc"><div class="pf-card-h"><h3>Lead price calculator</h3><span>Every lead costs £${P.min} to £${P.max}</span></div>${extra}
+    const P = PR(), a0 = TX.areas[0];
+    const seg = (name, list, on) => `<div class="pf-seg" role="group" aria-label="${name}">${list.map(([v, t]) => `<button type="button" data-${name}="${h(v)}" class="${v === on ? 'on' : ''}">${h(t)}</button>`).join('')}</div>`;
+    return `<section class="pf-card pf-calc"><div class="pf-card-h"><h3>Lead price calculator</h3><span>Every lead costs ${num(P.min)} to ${num(P.max)} credits</span></div>${extra}
         <div class="pf-calc-grid"><div class="pf-calc-in">
-          ${range('c_amount', amounts, 6, 'Loan amount')}${range('c_turnover', opts.turnovers, 3, 'Annual revenue')}${range('c_trading', opts.trading, 3, 'Time trading')}
-          <div class="pf-calc-row"><span class="pf-calc-l">Missed payments or CCJs</span><div class="pf-seg" role="group" aria-label="Credit history">${['No', 'Not sure', 'Yes'].map((c, i) => `<button type="button" data-credit="${c}" class="${i ? '' : 'on'}">${c}</button>`).join('')}</div></div>
+          <label class="pf-calc-row"><span class="pf-calc-l">Practice area</span><span class="pf-select"><select name="c_area">${TX.areas.map((a) => `<option value="${a.slug}">${h(a.label)}</option>`).join('')}</select></span></label>
+          <label class="pf-calc-row"><span class="pf-calc-l">Matter</span><span class="pf-select"><select name="c_matter">${(a0?.matters || []).map(([k, t]) => `<option value="${k}">${h(t)}</option>`).join('')}</select></span></label>
+          <div class="pf-calc-row"><span class="pf-calc-l">Grade</span>${seg('cgrade', [['A', 'A'], ['B', 'B'], ['C', 'C']], 'B')}</div>
+          <div class="pf-calc-row"><span class="pf-calc-l">Urgency</span>${seg('curg', [['Urgently', 'Urgently'], ['', 'Not urgent']], '')}</div>
+          <div class="pf-calc-row"><span class="pf-calc-l">Client</span>${seg('caud', [['individual', 'Individual'], ['business', 'Business']], 'individual')}</div>
+          <label class="pf-calc-row"><span class="pf-calc-l">Value stated</span><span class="pf-select"><select name="c_value">${VALUE_STEPS.map(([v, t]) => `<option value="${v}">${h(t)}</option>`).join('')}</select></span></label>
         </div>
-        <div class="pf-calc-out"><span class="pf-eyebrow">This lead costs</span><div class="pf-calc-price"><b data-cprice>0</b><span>credits</span></div><p data-cratio></p>
-          <ul class="pf-factors">${[['size', 'Loan size'], ['aff', 'Affordability'], ['age', 'Company age'], ['rev', 'Revenue'], ['credit', 'Credit history']].map(([k, n]) => `<li><span>${n}</span><i><b data-f="${k}"></b></i></li>`).join('')}</ul>
-          <p class="pf-hint">The price is highest when every bar is full: a large, realistic loan for an established, profitable business with clean credit.</p></div></div></section>`;
+        <div class="pf-calc-out"><span class="pf-eyebrow">This lead costs</span><div class="pf-calc-price"><b data-cprice>0</b><span>credits</span></div>
+          <ul class="pf-breakdown" data-cbreak></ul>
+          <p class="pf-hint">The base price is set per practice area, with some matters priced on their own. Grade, urgency, business clients and higher values then adjust it, rounded to the nearest 5.</p></div></div>
+        <h4 class="pf-mt">Typical prices</h4>${priceExamples()}</section>`;
   }
   function wireCalc(root) {
-    const P = pricing, amounts = CALC_AMOUNTS.map(short), cf = root.querySelector('.pf-calc-in'); let credit = 'No';
-    const el = (n) => cf.querySelector(`[name=${n}]`);
-    const lists = { c_amount: amounts, c_turnover: opts.turnovers, c_trading: opts.trading };
+    const cf = root.querySelector('.pf-calc-in'); if (!cf) return;
+    const st = { grade: 'B', urgency: '', audience: 'individual' }, el = (n) => cf.querySelector(`[name=${n}]`);
+    const fillMatters = () => { const a = areaOf(el('c_area').value); el('c_matter').innerHTML = (a?.matters || []).map(([k, t]) => `<option value="${k}">${h(t)}</option>`).join(''); };
     const run = () => {
-      const v = (n) => +el(n).value;
-      Object.keys(lists).forEach((n) => { cf.querySelector(`[data-out="${n}"]`).textContent = lists[n][v(n)]; el(n).style.setProperty('--p', `${(v(n) / (lists[n].length - 1)) * 100}%`); });
-      const r = calcPrice({ amount: CALC_AMOUNTS[v('c_amount')], turnover: opts.turnovers[v('c_turnover')], trading: opts.trading[v('c_trading')], credit }, P);
-      root.querySelector('[data-cprice]').textContent = r.price;
-      root.querySelector('[data-cratio]').textContent = ratioText(r.ratio);
-      Object.entries({ size: r.size, aff: r.aff, age: r.age, rev: r.rev, credit: r.credit }).forEach(([k, x]) => (root.querySelector(`[data-f="${k}"]`).style.width = `${Math.min(100, x * 100)}%`));
+      const r = leadPrice({ area: el('c_area').value, matter: el('c_matter').value, grade: st.grade, urgency: st.urgency, audience: st.audience, value_min: +el('c_value').value });
+      root.querySelector('[data-cprice]').textContent = num(r.price);
+      root.querySelector('[data-cbreak]').innerHTML = [['Base price', `${num(r.base)} credits`], [`Grade ${st.grade}`, mult(r.g)], ['Urgency', mult(r.u)], ['Client', mult(r.b)], ['Value', mult(r.v)]]
+        .map(([k, v]) => `<li><span>${k}</span><b>${v}</b></li>`).join('');
     };
-    cf.addEventListener('input', run);
-    cf.querySelectorAll('[data-credit]').forEach((b) => (b.onclick = () => { credit = b.dataset.credit; cf.querySelectorAll('[data-credit]').forEach((x) => x.classList.toggle('on', x === b)); run(); }));
+    el('c_area').onchange = () => { fillMatters(); run(); };
+    cf.addEventListener('change', run);
+    [['cgrade', 'grade'], ['curg', 'urgency'], ['caud', 'audience']].forEach(([d, k]) => cf.querySelectorAll(`[data-${d}]`).forEach((b) => (b.onclick = () => { st[k] = b.dataset[d]; cf.querySelectorAll(`[data-${d}]`).forEach((x) => x.classList.toggle('on', x === b)); run(); })));
     run();
   }
-  // ------------------------------------------------ lead tiers (clients on tier pricing)
-  const onTier = () => me?.pricing === 'tier';
-  const TIERS_ADMIN = false; // tier pricing paused (17 Nov 2026): set true to show tiers, tier prices and the pricing switch in admin again
-  const tierTag = (t) => (t ? `<span class="pf-tierb pf-tierb-${t.toLowerCase().replace('+', '-plus')}">${h(t)}</span>` : '');
-  // One plain example per tier (shown under each tier); the calculator covers the rest.
-  const TIER_REV = { Bronze: 'e.g. £80k revenue, trading 4 years, clean credit', Silver: 'e.g. £180k revenue, trading 5 years, clean credit', Gold: 'e.g. £400k revenue, trading 3 years, clean credit', Platinum: 'e.g. £750k revenue, trading 6 years, clean credit', 'Platinum+': 'e.g. £2m revenue, trading 10 years, clean credit' };
-  // Same rule as lead_tier() in the database: revenue sets the tier; under 1 year trading drops one tier, 1 to 2 years drops one
-  // unless a homeowner; Bronze is the floor. Under £50k revenue has no tier.
-  function tierOf({ turnover, trading, property, credit }) {
-    const base = { '£50k to £100k': 0, '£100k to £250k': 1, '£250k to £500k': 2, '£500k to £1m': 3, '£1m to £5m': 4, '£5m+': 4 }[turnover];
-    if (base == null) return { tier: null };
-    const age = { 'Under 6 months': 0.25, '6 to 12 months': 0.75, '1 to 2 years': 1.5, '2 to 5 years': 3, '5+ years': 6 }[trading];
-    const drop = age != null && (age < 1 || (age < 2 && property !== 'Homeowner')), adverse = credit === 'Yes', names = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Platinum+'];
-    return { tier: names[Math.max(0, base - (drop ? 1 : 0) - (adverse ? 1 : 0))], base: names[base], drop, adverse, saved: age != null && age >= 1 && age < 2 && property === 'Homeowner' };
-  }
-  const tierWhy = (r, l) => {
-    if (!r.tier) return 'Businesses with under £50k revenue aren’t sold as leads.';
-    const why = [r.drop && `trading ${l.trading.toLowerCase()}`, r.adverse && 'missed payments or CCJs'].filter(Boolean);
-    if (!why.length) return r.saved ? `${l.turnover} revenue is ${r.base}. Trading 1 to 2 years would drop it a tier, but homeowners keep theirs.` : `${l.turnover} revenue, ${l.trading.toLowerCase()} trading, clean credit.`;
-    if (r.base === r.tier) return `${l.turnover} revenue is Bronze, the lowest tier, so ${why.join(' and ')} can’t drop it further.`;
-    return `${l.turnover} revenue is ${r.base}. ${why.join(' and ').replace(/^./, (c) => c.toUpperCase())} drop${why.length > 1 || !r.drop ? '' : 's'} it to ${r.tier}${r.drop && TRADING_YRS[l.trading] >= 1 && TRADING_YRS[l.trading] < 2 ? ' (homeowners trading 1 to 2 years keep their tier)' : ''}.`;
-  };
-  const TRADING_YRS = { 'Under 6 months': 0.25, '6 to 12 months': 0.75, '1 to 2 years': 1.5, '2 to 5 years': 3, '5+ years': 6 };
-  const tierTable = () => `<table class="pf-table pf-mini pf-tiers-t"><thead><tr><th>Tier</th><th class="pf-num">Price per lead</th></tr></thead><tbody>${TIERS.names.map((t) => `<tr><td>${tierTag(t)}<span>${h(TIER_REV[t] || '')}</span></td><td class="pf-num"><b>${num(TIERS.prices[t])}</b> credits</td></tr>`).join('')}</tbody></table>
-    <p class="pf-hint">Revenue sets the starting tier. Trading under a year drops it one tier, and 1 to 2 years drops one unless the owner is a homeowner. Missed payments or CCJs drop it one more. Bronze is the lowest tier, and loan size doesn’t change it. Unsold leads under £250k revenue drop to half price after 72 hours.</p>`;
-  function tierCalcSection(extra = '') {
-    const amounts = CALC_AMOUNTS.map(short), revs = opts.turnovers.filter((t) => t !== 'Under £50k');
-    return `<section class="pf-card pf-calc pf-tcalc"><div class="pf-card-h"><h3>Which tier is this lead?</h3><span>Move the sliders to see a lead’s tier and price</span></div>${extra}
-        <div class="pf-calc-grid"><div class="pf-calc-in">
-          ${range('c_amount', amounts, 6, 'Loan amount')}${range('c_turnover', revs, 2, 'Annual revenue')}${range('c_trading', opts.trading, 4, 'Time trading')}
-          <div class="pf-calc-row"><span class="pf-calc-l">Homeowner or tenant</span><div class="pf-seg" role="group" aria-label="Homeowner or tenant">${['Homeowner', 'Tenant'].map((c, i) => `<button type="button" data-prop="${c}" class="${i ? 'on' : ''}">${c}</button>`).join('')}</div></div>
-          <div class="pf-calc-row"><span class="pf-calc-l">Missed payments or CCJs</span><div class="pf-seg" role="group" aria-label="Missed payments or CCJs">${['No', 'Not sure', 'Yes'].map((c, i) => `<button type="button" data-tcredit="${c}" class="${i ? '' : 'on'}">${c}</button>`).join('')}</div></div>
-        </div>
-        <div class="pf-calc-out"><span class="pf-eyebrow">This lead is</span><div class="pf-tcalc-tier" data-ttier></div><div class="pf-calc-price"><b data-cprice>0</b><span>credits</span></div><p data-twhy></p></div></div>
-        <h4 class="pf-mt">Tiers and prices</h4>${tierTable()}</section>`;
-  }
-  function wireTierCalc(root) {
-    const amounts = CALC_AMOUNTS.map(short), revs = opts.turnovers.filter((t) => t !== 'Under £50k'), cf = root.querySelector('.pf-tcalc .pf-calc-in'); let property = 'Tenant', credit = 'No';
-    if (!cf) return;
-    const el = (n) => cf.querySelector(`[name=${n}]`), lists = { c_amount: amounts, c_turnover: revs, c_trading: opts.trading };
-    const run = () => {
-      const v = (n) => +el(n).value;
-      Object.keys(lists).forEach((n) => { cf.querySelector(`[data-out="${n}"]`).textContent = lists[n][v(n)]; el(n).style.setProperty('--p', `${(v(n) / (lists[n].length - 1)) * 100}%`); });
-      const l = { turnover: revs[v('c_turnover')], trading: opts.trading[v('c_trading')], property, credit }, r = tierOf(l);
-      root.querySelector('[data-ttier]').innerHTML = tierTag(r.tier) || '–';
-      root.querySelector('[data-cprice]').textContent = r.tier ? num(TIERS.prices[r.tier]) : '–';
-      root.querySelector('[data-twhy]').textContent = tierWhy(r, l);
-    };
-    cf.addEventListener('input', run);
-    cf.querySelectorAll('[data-prop]').forEach((b) => (b.onclick = () => { property = b.dataset.prop; cf.querySelectorAll('[data-prop]').forEach((x) => x.classList.toggle('on', x === b)); run(); }));
-    cf.querySelectorAll('[data-tcredit]').forEach((b) => (b.onclick = () => { credit = b.dataset.tcredit; cf.querySelectorAll('[data-tcredit]').forEach((x) => x.classList.toggle('on', x === b)); run(); }));
-    run();
-  }
-  // The calculator and explainer for this client's pricing system.
-  const priceCalc = (extra) => (onTier() ? tierCalcSection(extra) : calcSection(extra));
-  const wirePriceCalc = (root) => (onTier() ? wireTierCalc(root) : wireCalc(root));
-  const HOW_TIERS = `<div class="pf-how"><h3>How credits work</h3><ol>
-    <li><b>1 credit = £1 of lead value.</b> Your plan adds credits every month.</li>
-    <li><b>Every lead has a tier</b>, from Bronze to Platinum+, set by the business’s revenue, how long it has been trading (and, at 1 to 2 years, whether the owner is a homeowner) and its credit history. Each tier has one flat price.</li>
-    <li><b>You choose your tiers.</b> Auto-buy buys the tiers you pick, up to the monthly credits you give each one.</li>
-    <li><b>Unsold leads under £250k revenue drop to half price</b> after 72 hours.</li>
-    <li><b>Every lead is exclusive</b> to the broker who buys it.</li>
-    <li><b>Unused credits roll over</b> while you're subscribed. Leads with an invalid phone number or email address can be refunded if you ask within 72 hours.</li></ol></div>`;
-  const howCredits = () => (onTier() ? HOW_TIERS : HOW_CREDITS);
-  const HOW_CREDITS = `<div class="pf-how"><h3>How credits work</h3><ol>
-    <li><b>1 credit = £1 of lead value.</b> Your plan adds credits every month.</li>
-    <li><b>Each lead is priced from £20 to £300</b> (in credits) by how fundable it is: loan size, revenue, time trading, credit history and whether the ask is realistic.</li>
-    <li><b>Prices move.</b> Leaflegal is a marketplace, so lead prices change with demand and lead quality, at any time and without notice, including for auto-buy. Unsold leads also drop to half price after 72 hours.</li>
-    <li><b>You stay in control.</b> You see the price before you buy manually, and auto-buy never pays more than the maximum price per lead you set.</li>
-    <li><b>Every lead is exclusive</b> to the broker who buys it.</li>
-    <li><b>Unused credits roll over</b> while you're subscribed. Leads with an invalid phone number or email address can be refunded if you ask within 72 hours.</li></ol></div>`;
+  const priceCalc = (extra) => calcSection(extra);
+  const wirePriceCalc = (root) => wireCalc(root);
+  const howCredits = () => `<div class="pf-how"><h3>How credits work</h3><ol>
+    <li><b>1 credit = £1 + VAT of lead value.</b> The plan adds credits every month.</li>
+    <li><b>Each lead is priced by practice area and matter</b>, then adjusted for its grade, urgency, whether the client is a business and the value at stake. Every lead costs ${num(PR().min)} to ${num(PR().max)} credits.</li>
+    <li><b>Prices move.</b> Leaflegal is a marketplace, so lead prices change with demand, at any time and without notice, including for auto-buy. Unsold leads drop to half price after 72 hours.</li>
+    <li><b>The firm stays in control.</b> The price shows before buying by hand, and auto-buy never pays more than the maximum per lead that’s been set.</li>
+    <li><b>Every lead is exclusive</b> to the firm that buys it.</li>
+    <li><b>Unused credits roll over</b> while subscribed. Leads with a phone number that isn’t in service or belongs to someone else, or an email that bounces, can be refunded if asked within 72 hours.</li></ol></div>`;
 
   async function credits() {
     shell('billing');
-    const [{ entries }, { subscription }] = await Promise.all([api('ledger'), api('subscription').catch(() => ({ subscription: null }))]);
+    const [{ entries }, { subscription }] = await Promise.all([api('ledger'), api('subscription').catch(() => ({ subscription: null })), loadPricing()]);
     if (new URLSearchParams(location.search).get('paid')) { toast('Payment received. Credits arrive within a minute.'); history.replaceState(null, '', location.pathname); }
-    const P = pricing, amounts = CALC_AMOUNTS.map(short);
     const cur = subscription, curPence = cur ? cur.pounds * 100 : 0;
     const planBtn = (k, pence) => {
       if (!me.approved) return `<button class="pf-btn pf-btn-lg" disabled>Available once approved</button>`;
@@ -959,7 +967,7 @@
     const isCur = (pence) => cur && pence === curPence;
     const curCustom = cur && !Object.values(packs).some((p) => p.pence === curPence) ? cur.pounds : null;
     const startCustom = curCustom || custom.min * 2;
-    view().innerHTML = `<section class="pf-hero-credits"><div><span>Current balance</span><b>${num(me.credits)}</b><em>credits · 1 credit = £1 of lead value · unused credits roll over</em></div>
+    view().innerHTML = `<section class="pf-hero-credits"><div><span>Current balance</span><b>${num(me.credits)}</b><em>credits · 1 credit = £1 + VAT of lead value · unused credits roll over</em></div>
         <div class="pf-curplan">${cur?.trial ? `<span class="pf-eyebrow">Current plan</span><b>First month offer · ${gbp(trial.pence / 100)}<small> + VAT</small></b>
           <em>${num(trial.credits)} credits · becomes ${h(cur.plan)} (${gbp(cur.pounds)} + VAT, ${num(cur.credits)} credits a month)${cur.renews ? ` on ${new Date(cur.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}</em>`
           : cur ? `<span class="pf-eyebrow">Current plan</span><b>${h(cur.plan)} · ${gbp(cur.pounds)}<small> a month + VAT</small></b>
@@ -982,13 +990,13 @@
           <div class="pf-custom-in"><span>£</span><input name="customAmount" inputmode="numeric" value="${num(startCustom)}" aria-label="Monthly spend in pounds"><span>/month</span></div>
           <ul><li>${I.check}Full credit value</li></ul><div data-cbtn></div></div></div>
       <div class="pf-two-col pf-mb2">
-        <section class="pf-card pf-form"><div class="pf-card-h"><h3>Your subscription</h3></div>
+        <section class="pf-card pf-form"><div class="pf-card-h"><h3>Subscription</h3></div>
           ${cur ? `<div class="pf-status ${cur.cancelling || cur.status === 'past_due' ? '' : 'ok'}">${cur.cancelling ? I.clock : cur.status === 'past_due' ? I.x : I.check}<div>
               <b>${h(cur.plan)} · ${gbp(cur.pounds)} a month + VAT</b>
-              <span>${cur.cancelling ? `Cancelled. Ends on ${new Date(cur.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}; your credits stay usable until then.` : cur.status === 'past_due' ? 'Your last payment failed. Update your card to keep receiving credits.' : `Renews on ${new Date(cur.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.`}</span></div></div>
+              <span>${cur.cancelling ? `Cancelled. Ends on ${new Date(cur.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}. Credits stay usable until then.` : cur.status === 'past_due' ? 'Your last payment failed. Update your card to keep receiving credits.' : `Renews on ${new Date(cur.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.`}</span></div></div>
             <div class="pf-row-l">${me.billing ? `<button class="pf-btn" data-billing>${I.coins}Update card or billing details</button>` : ''}
-              ${cur.cancelling ? `<button class="pf-btn pf-btn-primary" data-resume>Keep my subscription</button>` : `<button class="pf-btn pf-btn-danger" data-cancel>Cancel subscription</button>`}</div>`
-            : `<p class="pf-hint">You don't have a subscription yet. Choose a plan above to start receiving credits every month.</p>`}
+              ${cur.cancelling ? `<button class="pf-btn pf-btn-primary" data-resume>Keep the subscription</button>` : `<button class="pf-btn pf-btn-danger" data-cancel>Cancel subscription</button>`}</div>`
+            : `<p class="pf-hint">No subscription yet. Choose a plan above to start receiving credits every month.</p>`}
         </section>
         <section class="pf-card pf-flush"><div class="pf-card-h pf-pad"><h3>Invoices</h3></div><div data-invoices><p class="pf-hint pf-pad">Loading…</p></div></section>
       </div>
@@ -1052,10 +1060,10 @@
     view().querySelector('[data-cancel]')?.addEventListener('click', () => {
       const end = new Date(cur.renews).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
       modal.className = 'pf-modal'; modal.onclick = null;
-      modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>Cancel your subscription?</h2>
+      modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>Cancel the subscription?</h2>
         <p>Your ${h(cur.plan)} plan stays active until <b>${end}</b>. You won't be charged again, and you can keep using your credits until then. You can change your mind any time before that date.</p>
-        <fieldset class="pf-reasons"><legend>Why are you cancelling?</legend>${(opts.cancelReasons || []).map((x) => `<label class="pf-check"><input type="radio" name="reason" value="${h(x)}" required>${h(x)}</label>`).join('')}</fieldset>
-        <label>Anything we could have done better? <span>(optional)</span><textarea name="feedback" rows="3" maxlength="2000" placeholder="Your feedback goes straight to the Leaflegal team"></textarea></label>
+        <fieldset class="pf-reasons"><legend>Reason for cancelling</legend>${(opts.cancelReasons || []).map((x) => `<label class="pf-check"><input type="radio" name="reason" value="${h(x)}" required>${h(x)}</label>`).join('')}</fieldset>
+        <label>Anything we could have done better <span>(optional)</span><textarea name="feedback" rows="3" maxlength="2000" placeholder="Your feedback goes straight to the Leaflegal team"></textarea></label>
         <div class="pf-row"><button class="pf-btn" value="cancel" formnovalidate>Keep subscription</button><button class="pf-btn pf-btn-danger-solid" value="ok">Cancel subscription</button></div></form>`;
       modal.onclose = async () => {
         modal.onclose = null; if (modal.returnValue !== 'ok') return;
@@ -1089,19 +1097,19 @@
   function profEditor(p) {
     return `<div class="pf-prof"><div class="pf-form pf-prof-form" data-prof>
       <div class="pf-prof-scan"><label>Website<input name="website" value="${h(p.website || '')}" placeholder="yourfirm.co.uk" inputmode="url" autocomplete="url"></label>
-        <button type="button" class="pf-btn" data-scan>${I.spark}Fill in from my website</button></div>
-      <div class="pf-prof-logo"><div class="pf-prof-logobox" data-logobox>${p.logo ? `<img src="${h(p.logo)}" alt="Your logo">` : '<span>No logo yet</span>'}</div>
+        <button type="button" class="pf-btn" data-scan>${I.spark}Fill in from the website</button></div>
+      <div class="pf-prof-logo"><div class="pf-prof-logobox" data-logobox>${p.logo ? `<img src="${h(p.logo)}" alt="Firm logo">` : '<span>No logo yet</span>'}</div>
         <div><b>Logo</b><span>PNG, JPG, SVG or WebP. We resize it to fit.</span><div class="pf-row-l"><label class="pf-btn pf-btn-sm">${I.plus}${p.logo ? 'Change logo' : 'Upload logo'}<input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" data-logofile hidden></label>
           ${p.logo ? '<button type="button" class="pf-btn pf-btn-sm" data-logorm>Remove</button>' : ''}</div></div></div>
-      <label>Company name<input name="name" value="${h(p.name || '')}" required></label>
-      <label>Short description <span>(optional, up to 240 characters)</span><textarea name="about" rows="2" maxlength="240" placeholder="e.g. Asset and working-capital finance for UK SMEs since 2009">${h(p.about || '')}</textarea></label>
-      ${sw('person', 'Show a contact person', 'Turn off to show just the company', `<input name="person" value="${h(p.person || '')}" placeholder="Name" aria-label="Contact name"><input name="role" value="${h(p.role || '')}" placeholder="Role, e.g. Director" aria-label="Contact role">`, p)}
+      <label>Firm name<input name="name" value="${h(p.name || '')}" required></label>
+      <label>Short description <span>(optional, up to 240 characters)</span><textarea name="about" rows="2" maxlength="240" placeholder="e.g. Conveyancing and lease extension solicitors in Leeds since 2009">${h(p.about || '')}</textarea></label>
+      ${sw('person', 'Show a contact person', 'Turn off to show just the firm', `<input name="person" value="${h(p.person || '')}" placeholder="Name" aria-label="Contact name"><input name="role" value="${h(p.role || '')}" placeholder="Role, e.g. Partner" aria-label="Contact role">`, p)}
       ${sw('phone', 'Phone', 'Shown with a tap-to-call button', `<input name="phone" value="${h(p.phone || '')}" type="tel" placeholder="01234 567890" aria-label="Phone">`, p)}
-      ${sw('whatsapp', 'WhatsApp', 'Lets them message you on WhatsApp', `<input name="whatsapp" value="${h(p.whatsapp || '')}" type="tel" placeholder="07700 900123" aria-label="WhatsApp number">`, p)}
+      ${sw('whatsapp', 'WhatsApp', 'Lets the client message the firm on WhatsApp', `<input name="whatsapp" value="${h(p.whatsapp || '')}" type="tel" placeholder="07700 900123" aria-label="WhatsApp number">`, p)}
       ${sw('sms', 'Text messages', 'Lets them text a different number. Leave blank to use the WhatsApp or phone mobile', `<input name="sms" value="${h(p.sms || '')}" type="tel" placeholder="07700 900123" aria-label="Text message number">`, p)}
       ${sw('email', 'Email', 'Shown with an email button', `<input name="email" value="${h(p.email || '')}" type="email" placeholder="you@yourfirm.co.uk" aria-label="Email">`, p)}
       ${sw('website', 'Website link', 'Uses the website address above', '', p)}
-      </div><aside class="pf-prof-side"><div class="pf-row-l pf-prof-tabs"><span class="pf-eyebrow">What the business sees</span>
+      </div><aside class="pf-prof-side"><div class="pf-row-l pf-prof-tabs"><span class="pf-eyebrow">What the client sees</span>
           <div class="pf-seg" role="group" aria-label="Preview"><button type="button" class="${profTab === 'page' ? 'on' : ''}" data-ptab="page">Confirmation page</button><button type="button" class="${profTab === 'email' ? 'on' : ''}" data-ptab="email">Email</button><button type="button" class="${profTab === 'whatsapp' ? 'on' : ''}" data-ptab="whatsapp">WhatsApp</button><button type="button" class="${profTab === 'sms' ? 'on' : ''}" data-ptab="sms">Text</button></div></div>
         <p class="pf-hint" data-psub>${PSUB[profTab]}</p>
         <div class="pf-prof-frame"><iframe title="Preview" data-pframe></iframe></div></aside></div>`;
@@ -1128,7 +1136,7 @@
       const empty = (p) => p[3] < 24 || (solid && near(p, bg));
       let x1 = W0, y1 = H0, x2 = -1, y2 = -1;
       for (let y = 0; y < H0; y++) for (let x = 0; x < W0; x++) if (!empty(px(x, y))) { if (x < x1) x1 = x; if (x > x2) x2 = x; if (y < y1) y1 = y; if (y > y2) y2 = y; }
-      // A white logo made for a dark header would vanish on the white cards businesses see: recolour it dark.
+      // A white logo made for a dark header would vanish on the white cards clients see, so recolour it dark.
       if (!solid) { let lightN = 0, all = 0; for (let i = 3; i < d.length; i += 16) if (d[i] > 128) { all++; if (d[i - 3] > 225 && d[i - 2] > 225 && d[i - 1] > 225) lightN++; }
         if (all && lightN / all > 0.9) { const im = g0.getImageData(0, 0, W0, H0); for (let i = 0; i < im.data.length; i += 4) { im.data[i] = 27; im.data[i + 1] = 51; im.data[i + 2] = 41; } g0.putImageData(im, 0, 0); } }
       if (x2 >= x1 && y2 >= y1) { const pad = Math.round(Math.max(x2 - x1, y2 - y1) * 0.03); box = [Math.max(0, x1 - pad), Math.max(0, y1 - pad), Math.min(W0, x2 + pad + 1), Math.min(H0, y2 + pad + 1)]; }
@@ -1143,12 +1151,12 @@
     throw new Error('That logo is too detailed to save. Please try a simpler or smaller image.');
   }
   let profTab = 'page', prevSeq = 0;
-  const PSUB = { page: 'Shown straight after they send the form, when auto-buy matches them with you.',
-    email: 'Sent to the business whenever you get their lead: bought, auto-bought or given to you by Leaflegal.',
-    whatsapp: 'Sent to the business’s mobile at the same time as the email.',
+  const PSUB = { page: 'Shown straight after the client sends the form, when auto-buy matches them with the firm.',
+    email: 'Sent to the client whenever the firm gets their lead, whether bought, auto-bought or given by Leaflegal. It never repeats what they told us about their matter.',
+    whatsapp: 'Sent to the client’s mobile at the same time as the email.',
     sms: 'Sent instead of the WhatsApp if their number isn’t on WhatsApp.' };
   function wireProfile(box, p, refresh) {
-    // Drawn at real desktop width, then scaled down to fit the column, so the broker sees the whole page as the business does.
+    // Drawn at real desktop width, then scaled down to fit the column, so the firm sees the whole page as the client does.
     const frame = box.querySelector('[data-pframe]'), wrap = frame.parentElement;
     const fit = () => { try {
       const W = Math.max(profTab === 'page' ? 860 : profTab === 'email' ? 660 : 380, wrap.clientWidth), k = wrap.clientWidth / W; // wider panel: fill it, so the content centres
@@ -1181,8 +1189,8 @@
     box.querySelector('[data-logorm]')?.addEventListener('click', () => { p.logo = ''; p.removeLogo = true; refresh(profRead(box, p)); });
     box.querySelector('[data-scan]').onclick = async (e) => {
       const btn = e.currentTarget, url = box.querySelector('[name=website]').value.trim();
-      if (!url) { box.querySelector('[name=website]').focus(); return toast('Enter your website address first', true); }
-      btn.disabled = true; btn.lastChild.textContent = 'Reading your website…';
+      if (!url) { box.querySelector('[name=website]').focus(); return toast('Enter the website address first', true); }
+      btn.disabled = true; btn.lastChild.textContent = 'Reading the website…';
       try {
         const d = await api('profile-scan', { url }), cur = profRead(box, p), got = [];
         // Fill only what's empty, so nothing you've typed is overwritten.
@@ -1190,16 +1198,16 @@
         cur.website = d.website || cur.website;
         if (!cur.whatsapp && mobileOf(cur.phone)) cur.whatsapp = mobileOf(cur.phone);
         if (d.whatsapp) cur.show.whatsapp = true;
-        if (d.logo && (!p.logo || confirm('We found a logo on your website. Use it instead of your current logo?'))) { try { await upload(d.logo); cur.logo = p.logo; cur.logoW = p.logoW; cur.logoH = p.logoH; got.push('logo'); } catch {} }
-        refresh(cur); toast(got.length ? `Filled in ${got.length} detail${got.length === 1 ? '' : 's'} from your website. Check them over.` : 'We read your website but found nothing new to add.');
-      } catch (ex) { btn.disabled = false; btn.lastChild.textContent = 'Fill in from my website'; toast(ex.message, true); }
+        if (d.logo && (!p.logo || confirm('We found a logo on the website. Use it instead of the current logo?'))) { try { await upload(d.logo); cur.logo = p.logo; cur.logoW = p.logoW; cur.logoH = p.logoH; got.push('logo'); } catch {} }
+        refresh(cur); toast(got.length ? `Filled in ${got.length} detail${got.length === 1 ? '' : 's'} from the website. Check them over.` : 'We read the website but found nothing new to add.');
+      } catch (ex) { btn.disabled = false; btn.lastChild.textContent = 'Fill in from the website'; toast(ex.message, true); }
     };
   }
-  const profValid = (p) => !p.name ? 'Please enter your company name.' : !['phone', 'whatsapp', 'sms', 'email', 'website'].some((k) => p.show?.[k] && p[k]) ? 'Switch on at least one way for the business to contact you.' : '';
+  const profValid = (p) => !p.name ? 'Please enter the firm name.' : !['phone', 'whatsapp', 'sms', 'email', 'website'].some((k) => p.show?.[k] && p[k]) ? 'Switch on at least one way for the client to get in touch.' : '';
 
   function profile() {
     let prof = { ...profOf() };
-    shell('profile', `<section class="pf-card"><div class="pf-card-h"><h3>Your public profile</h3><span>Who we tell a business to expect when it's matched with you</span></div>
+    shell('profile', `<section class="pf-card"><div class="pf-card-h"><h3>Public profile</h3><span>Who we tell a client to expect when they’re matched with the firm</span></div>
         <div data-profbox>${profEditor(prof)}</div><div class="pf-row-l pf-mt-s"><button class="pf-btn pf-btn-primary" data-profsave>Save profile</button></div></section>`);
     const pbox = view().querySelector('[data-profbox]');
     const redraw = (p) => { prof = p; pbox.innerHTML = profEditor(p); wireProfile(pbox, prof, redraw); };
@@ -1216,9 +1224,9 @@
   const modeCards = (auto) => { const list = (xs) => `<ul class="pf-mc-list">${xs.map((x) => `<li>${I.check}<span>${x}</span></li>`).join('')}</ul>`;
     return `<div class="pf-modes">
     <label class="pf-modecard pf-modecard-rec"><em class="pf-ribbon">Recommended</em><input type="radio" name="mode" value="auto" ${auto ? 'checked' : ''}><span class="pf-mc-ic">${I.spark}</span><b>Automatic</b>
-      ${list(['<b>The best leads</b>, bought the moment they arrive', '<b>Matched instantly</b>: the business sees your profile on their confirmation page', '<b>Emailed straight away</b>: they get your details, you get the lead'])}</label>
+      ${list(['<b>First pick of new enquiries</b>, bought the moment they arrive', '<b>Matched instantly</b>, so the client sees the firm’s profile on their confirmation page', '<b>Emailed straight away</b>, so the client gets the firm’s details and the firm gets the lead'])}</label>
     <label class="pf-modecard"><input type="radio" name="mode" value="manual" ${auto ? '' : 'checked'}><span class="pf-mc-ic">${I.inbox}</span><b>Manual</b>
-      ${list(['<b>Full control</b> over every lead you buy', 'Browse and pick the leads you want', 'We email you when a matching lead arrives'])}</label></div>`; };
+      ${list(['<b>Full control</b> over every lead bought', 'Browse and pick the leads the firm wants', 'We email when a matching lead arrives'])}</label></div>`; };
 
   // Account → Team: invite people, set what they can do, remove them.
   async function team(box) {
@@ -1246,19 +1254,21 @@
   function account() {
     shell('account', `<div class="pf-two-col"><form class="pf-card pf-form" novalidate><div class="pf-card-h"><h3>Firm details</h3></div>
       <label>Firm name<input name="company" value="${h(me.company)}"></label><label>Phone<input name="phone" value="${h(me.phone || '')}"></label>
-      <label>Sign-in email<input value="${h(me.member?.email || me.email)}" disabled></label>${can('settings') ? '<div><button class="pf-btn pf-btn-primary" type="submit">Save changes</button></div>' : ''}</form>
+      <label>Sign-in email<input value="${h(me.member?.email || me.email)}" disabled></label>
+      <div class="pf-regline"><span class="pf-lbl">Regulators</span>${(me.regulators || []).length ? (me.regulators || []).map((r) => `<span class="pf-tag">${h(regShort(r.id))} ${h(r.number || '')}</span>`).join('') : '<em>None given yet</em>'}${me.regulator_checked_at ? `<span class="pf-hint">${I.check}Checked on the register ${dayOnly(me.regulator_checked_at)}</span>` : ''}</div>
+      <p class="pf-hint pf-mt-0">To change regulators, email hello@leaflegal.co so we can check the register again.</p>${can('settings') ? '<div><button class="pf-btn pf-btn-primary" type="submit">Save changes</button></div>' : ''}</form>
       <form class="pf-card pf-form" data-pw novalidate><div class="pf-card-h"><h3>Change password</h3></div>
         <label>New password <span>(12+ characters with upper and lower case, a number and a symbol)</span><input name="pw" type="password" autocomplete="new-password"></label>
         <label>Confirm new password<input name="pw2" type="password" autocomplete="new-password"></label>
         <div><button class="pf-btn pf-btn-primary">Update password</button></div></form>
       ${can('team') ? '<section class="pf-card pf-form pf-team" data-team><div class="pf-card-h"><h3>Team</h3><span>People who can sign in to this account</span></div><div class="pf-skel"></div></section>' : ''}
-      <section class="pf-card pf-form" ${can('billing') ? '' : 'hidden'}><div class="pf-card-h"><h3>Partner agreement</h3></div>
+      <section class="pf-card pf-form" ${can('billing') ? '' : 'hidden'}><div class="pf-card-h"><h3>Referral agreement</h3></div>
         ${me.agreement ? `<div class="pf-status ${me.agreementCurrent ? 'ok' : ''}">${me.agreementCurrent ? I.check : I.clock}<div><b>Signed ${new Date(me.agreement.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</b><span>Reference LL-PA-${String(me.agreement.id).padStart(5, '0')} · version ${h(me.agreement.version)}${me.agreementCurrent ? '' : ' · an updated version needs signing'}</span></div></div>
-          <div class="pf-row-l"><button class="pf-btn" data-agreement>${I.download}View or download</button>${me.agreementCurrent ? '' : '<a class="pf-btn pf-btn-primary" href="${P}/onboarding" data-sign>Sign latest version</a>'}</div>`
-          : `<p class="pf-hint">You haven't signed the partner agreement yet. You need to sign it before you can subscribe or buy leads.</p><div class="pf-row-l"><a class="pf-btn pf-btn-primary" href="${P}/onboarding" data-sign>Review and sign</a></div>`}</section>
+          <div class="pf-row-l"><button class="pf-btn" data-agreement>${I.download}View or download</button>${me.agreementCurrent ? '' : `<a class="pf-btn pf-btn-primary" href="${P}/onboarding" data-sign>Sign latest version</a>`}</div>`
+          : `<p class="pf-hint">The referral agreement isn’t signed yet. It needs signing before subscribing or buying leads.</p><div class="pf-row-l"><a class="pf-btn pf-btn-primary" href="${P}/onboarding" data-sign>Review and sign</a></div>`}</section>
       <section class="pf-card pf-form"><div class="pf-card-h"><h3>Account status</h3></div>
-        <div class="pf-status ${me.approved ? 'ok' : ''}">${me.approved ? I.check : I.clock}<div><b>${me.approved ? 'Approved' : 'Awaiting approval'}</b><span>${me.approved ? 'You can buy credits and leads.' : 'We review every firm before it can buy leads.'}</span></div></div>
-        <p class="pf-hint">To close your account or change your sign-in email, contact hello@leaflegal.co.</p>
+        <div class="pf-status ${me.approved ? 'ok' : ''}">${me.approved ? I.check : I.clock}<div><b>${me.approved ? 'Approved' : 'Awaiting approval'}</b><span>${me.approved ? 'Credits and leads can be bought.' : 'We check every firm and its regulator before it can buy leads.'}</span></div></div>
+        <p class="pf-hint">To close the account or change the sign-in email, contact hello@leaflegal.co.</p>
         <div class="pf-row-l"><a class="pf-btn" href="${P}/billing">${I.coins}Billing and subscription</a></div>
         <div><button class="pf-btn" data-out2>${I.out}Sign out</button></div></section></div>`);
     view().querySelector('[data-out2]').onclick = signOut;
@@ -1269,7 +1279,7 @@
       const w = window.open('', '_blank');
       try {
         const r = await fetch('/api/platform?action=agreement', { headers: { Authorization: `Bearer ${session.access}` } });
-        if (!r.ok) throw new Error('Could not load your agreement');
+        if (!r.ok) throw new Error('Could not load the agreement');
         const url = URL.createObjectURL(new Blob([await r.arrayBuffer()], { type: 'application/pdf' }));
         if (w) w.location = url; else location.href = url;
       } catch (ex) { w?.close(); toast(ex.message, true); }
@@ -1294,7 +1304,7 @@
 
   // ------------------------------------------------ admin
   // Admin sections: sidebar group on desktop, a sticky chip row on phones. URL: /admin/<section>.
-  const ADM = [['overview', 'Overview', 'grid'], ['leads', 'All leads', 'inbox'], ['brokers', 'Clients', 'user'], ['finance', 'Finance', 'chart'], ['ads', 'Ads performance', 'target'], ['refunds', 'Refunds', 'undo'], ['invites', 'Invites', 'mail'], ['agreements', 'Agreements', 'doc'], ['forecast', 'Ad simulator', 'spark'], ['pricing', 'Pricing', 'coins'], ['emails', 'Emails', 'bell'], ['blog', 'Blog', 'star'], ['audit', 'Activity log', 'clock']];
+  const ADM = [['overview', 'Overview', 'grid'], ['leads', 'All leads', 'inbox'], ['brokers', 'Clients', 'user'], ['finance', 'Revenue', 'chart'], ['ads', 'Ads performance', 'target'], ['refunds', 'Refunds', 'undo'], ['invites', 'Invites', 'mail'], ['agreements', 'Agreements', 'doc'], ['forecast', 'Ad simulator', 'spark'], ['pricing', 'Pricing', 'coins'], ['emails', 'Emails', 'bell'], ['blog', 'Blog', 'star'], ['audit', 'Activity log', 'clock']];
   let adminTab = 'overview', finPeriod = 'month', finGroup = 'day', finData = null, finAt = 0, finCustom = null, cFilter = 'all', cSort = 'active';
   // Finance data is reused between views but refetched after 5 minutes, so a tab left open still picks up today's ad spend.
   const loadFin = async () => { if (!finData || Date.now() - finAt > 3e5) { finData = await apiFetch('admin-finance'); finAt = Date.now(); adsCache = {}; } return finData; };
@@ -1312,16 +1322,16 @@
   const paidTag = (l) => l.paid == null ? priceTag(l) : `<b>${num(l.paid)}${l.paid ? ' cr' : ''}</b><span>${l.paid_why === 'commission' ? `commission client · list ${num(l.price)}` : l.paid_why === 'free' ? `given free · list ${num(l.price)}` : l.paid_why === 'refunded' ? `refunded · list ${num(l.price)}` : 'paid'}</span>`;
   const leadLive = (l) => !l.buyer && !l.hidden_at && (l.price_fixed || Date.now() - new Date(l.created_at) < 30 * 864e5);
   function filterLeads(d) {
-    const T = d.turnovers, A = d.ages, f = lf, dr = dateRange(f);
-    return d.leads.filter((l) => {
+    const f = lf, dr = dateRange(f);
+    return d.leads.map(L).filter((l) => {
       if (dr && (ymd(l.created_at) < dr[0] || ymd(l.created_at) > dr[1])) return false;
       const days = (Date.now() - new Date(l.created_at)) / 864e5;
       if (f.status === 'hidden' ? !l.hidden_at : l.hidden_at) return false; // hidden leads only show under the Hidden filter
       return (!f.status || f.status === 'hidden' || (f.status === 'live' ? leadLive(l) : f.status === 'expired' ? !l.buyer && !leadLive(l) : f.status === 'sold' ? !!l.buyer : f.status === 'deal' ? l.discounted : f.status === 'suppressed' ? l.suppressed : !l.buyer))
         && (!f.age || (days >= LAGE[f.age][0] && days < LAGE[f.age][1]))
-        && (!f.rev || T.indexOf(l.turnover) >= T.indexOf(f.rev)) && (!f.trade || A.indexOf(l.trading) >= A.indexOf(f.trade))
+        && (!f.area || l.area === f.area) && (!f.region || l.region === f.region) && (!f.grade || l.grade === f.grade)
         && (!f.stage || (l.buyer && (f.stage === 'archived' ? !!l.archived_at : (l.stage || 'new') === f.stage)))
-        && (!f.buyer || l.buyer === f.buyer) && (!f.src || l.channel === f.src) && (!f.camp || l.campaign_name === f.camp) && (!f.tier || (f.tier === 'none' ? !l.tier : l.tier === f.tier)) && (!f.q || `#${l.id} ${l.business || ''}`.toLowerCase().includes(f.q.toLowerCase()));
+        && (!f.buyer || l.buyer === f.buyer) && (!f.src || l.channel === f.src) && (!f.camp || l.campaign_name === f.camp) && (!f.q || `#${l.id} ${l.contact_name || ''} ${l.email || ''} ${l.business_name || ''} ${l.matter_label || ''} ${l.postcode || ''}`.toLowerCase().includes(f.q.toLowerCase()));
     });
   }
   const adPath = (l) => [l.campaign_name, l.adset, l.ad].filter(Boolean).join(' › '); // admin only: brokers never receive these fields
@@ -1334,7 +1344,7 @@
     return `<div class="pf-card"><table class="pf-table"><thead><tr><th>Source</th><th>Leads</th><th>Ad spend</th><th>Cost per lead</th></tr></thead><tbody>${rows.map(([k, c]) => `<tr><td><b>${h(k)}</b></td><td>${num(c.n)}</td><td>${c.priced ? pence(c.cost) : '–'}</td><td>${c.priced ? pence(c.cost / c.priced) : '–'}</td></tr>`).join('')}</tbody></table>
       <p class="pf-hint">${Object.entries(adStatus || {}).filter(([, v]) => v !== 'ok').map(([k, v]) => `${h(k)} spend ${v === 'no token' ? 'isn’t connected' : 'couldn’t be loaded'}, so its cost per lead isn’t shown. `).join('')}Cost per lead covers Meta and LinkedIn ads: each lead’s campaign (Meta) or ad set (LinkedIn) spend that week, shared across its leads that week. Uses the filters above.</p></div>`;
   }
-  // Where each buyer has got to with the leads shown: their own stages (New → Funded / Lost) and archived.
+  // Where each buyer has got to with the leads shown: their own stages (New to Instructed or Lost) and archived.
   function pipelineSummary(list, d) {
     const by = {};
     for (const l of list.filter((x) => x.buyer)) { const r = (by[l.buyer] ||= { n: 0, archived: 0, ...Object.fromEntries(STAGES.map(([k]) => [k, 0])) }); r.n++; r[l.stage || 'new']++; if (l.archived_at) r.archived++; }
@@ -1343,38 +1353,38 @@
     return `<div class="pf-card"><div class="pf-scroll"><table class="pf-table pf-mini pf-fin-table"><thead><tr><th>Buyer</th><th class="pf-r">Leads</th>${STAGES.map(([, n]) => `<th class="pf-r">${n}</th>`).join('')}<th class="pf-r">Archived</th></tr></thead><tbody>
       ${rows.map(([id, r]) => `<tr><td><b>${h(name(id))}</b></td><td class="pf-r">${r.n}</td>${STAGES.map(([k]) => `<td class="pf-r">${r[k] || '–'}</td>`).join('')}<td class="pf-r">${r.archived || '–'}</td></tr>`).join('')}
       <tr class="pf-fin-total"><td><b>Total</b></td><td class="pf-r">${tot('n')}</td>${STAGES.map(([k]) => `<td class="pf-r">${tot(k) || '–'}</td>`).join('')}<td class="pf-r">${tot('archived') || '–'}</td></tr></tbody></table></div>
-      <p class="pf-hint">Brokers move leads through these stages themselves, so untouched leads stay at New. Filter by Buyer stage above to list them.</p></div>`;
+      <p class="pf-hint">Firms move leads through these stages themselves, so untouched leads stay at New. Filter by Buyer stage above to list them.</p></div>`;
   }
   function leadsTab(d) {
-    const list = filterLeads(d), T = d.turnovers, A = d.ages;
+    const list = filterLeads(d);
     for (const id of [...lsel]) if (!list.some((l) => l.id === id)) lsel.delete(id);
     const fs = (key, label, options) => `<label class="pf-select pf-fsel ${lf[key] ? 'is-set' : ''}"><span class="pf-vh">${label}</span><select data-lf="${key}">${options.map(([v, t]) => `<option value="${h(v)}" ${String(lf[key] || '') === String(v) ? 'selected' : ''}>${h(t)}</option>`).join('')}</select></label>`;
     const buyers = d.brokers.filter((b) => d.leads.some((l) => l.buyer === b.id));
     const active = Object.entries(lf).filter(([k, v]) => v && k !== 'from' && k !== 'to').length, all = list.length && list.every((l) => lsel.has(l.id));
     return `<div class="pf-filters" role="group" aria-label="Filter leads">
-        <label class="pf-select pf-fsel ${lf.q ? 'is-set' : ''}"><span class="pf-vh">Search</span><input data-lq type="search" placeholder="Search # or business" value="${h(lf.q || '')}"></label>
+        <label class="pf-select pf-fsel ${lf.q ? 'is-set' : ''}"><span class="pf-vh">Search</span><input data-lq type="search" placeholder="Search #, name, email or postcode" value="${h(lf.q || '')}"></label>
         ${fs('status', 'Status', [['', 'Any status'], ['live', 'Live in Opportunities'], ['unsold', 'Unsold (all)'], ['expired', 'Unsold, over 30 days'], ['deal', '50% off now'], ['sold', 'Sold'], ['suppressed', 'Email suppressed'], ['hidden', 'Hidden']])}
         ${fs('date', 'Date', [['', 'Any date'], ['today', 'Today'], ['yesterday', 'Yesterday'], ['7d', 'Last 7 days'], ['30d', 'Last 30 days'], ['month', 'This month'], ['custom', 'Custom range…']])}
         ${lf.date === 'custom' ? `<label class="pf-select pf-fsel is-set"><span class="pf-vh">From</span><input type="date" data-lf="from" value="${h(lf.from || '')}" aria-label="From"></label><label class="pf-select pf-fsel is-set"><span class="pf-vh">To</span><input type="date" data-lf="to" value="${h(lf.to || '')}" aria-label="To"></label>` : ''}
         ${fs('age', 'Age', [['', 'Any age'], ['1d', 'Under 24 hours'], ['3d', 'Under 72 hours'], ['3-7', '3 to 7 days'], ['7-30', '7 to 30 days'], ['30+', 'Over 30 days']])}
-        ${fs('rev', 'Minimum revenue', [['', 'Any revenue'], ...T.map((t) => [t, `${t.replace(/ to .*/, '').replace(/\+$/, '')}+ revenue`])])}
-        ${fs('trade', 'Minimum time trading', [['', 'Any trading time'], ...A.filter((t) => TRADE_MIN[t]).map((t) => [t, `${TRADE_MIN[t]}+ trading`])])}
+        ${fs('area', 'Practice area', [['', 'Any practice area'], ...TX.areas.map((a) => [a.slug, a.label])])}
+        ${fs('region', 'Region', [['', 'Any region'], ...TX.regions.map((r) => [r, r])])}
+        ${fs('grade', 'Grade', [['', 'Any grade'], ...TX.grades.map((g) => [g, `Grade ${g}`])])}
         ${fs('stage', 'Buyer stage', [['', 'Any stage'], ...STAGES.map(([k, n]) => [k, n]), ['archived', 'Archived by buyer']])}
         ${fs('buyer', 'Buyer', [['', 'Any buyer'], ...buyers.map((b) => [b.id, b.contact_name ? `${b.company} (${b.contact_name})` : b.company])])}
         ${fs('src', 'Source', [['', 'Any source'], ...[...new Set(d.leads.map((l) => l.channel).filter(Boolean))].sort().map((c) => [c, c])])}
-        ${TIERS_ADMIN ? fs('tier', 'Tier', [['', 'Any tier'], ...(d.tierNames || []).map((t) => [t, t]), ['none', 'No tier']]) : ''}
         ${fs('camp', 'Campaign', [['', 'Any campaign'], ...[...new Set(d.leads.map((l) => l.campaign_name).filter(Boolean))].sort().map((c) => [c, c])])}
         ${active ? `<button class="pf-btn pf-btn-sm pf-clear" data-lclear>${I.x}Clear ${active} filter${active === 1 ? '' : 's'}</button>` : ''}</div>
       <div class="pf-bulk ${lsel.size ? 'on' : ''}"><span>${lsel.size ? `<b>${lsel.size}</b> selected` : `${list.length} lead${list.length === 1 ? '' : 's'}${list.length !== d.leads.length ? ` of ${d.leads.length}` : ''}`}</span>
         ${lsel.size ? `<label class="pf-select pf-fsel"><span class="pf-vh">Bulk action</span><select data-bulk><option value="">Choose an action…</option>
-          <optgroup label="Unsold leads"><option value="give">Give to a broker (free)</option><option value="sell">Sell to a broker (charge credits)</option><option value="half">50% off</option><option value="price">Set a price…</option><option value="full">Back to full price</option></optgroup>
+          <optgroup label="Unsold leads"><option value="give">Give to a firm (free)</option><option value="sell">Sell to a firm (charge credits)</option><option value="half">50% off</option><option value="price">Set a price…</option><option value="full">Back to full price</option></optgroup>
           <optgroup label="Sold leads"><option value="relist">Take back and put in Opportunities</option></optgroup>
           <optgroup label="Any"><option value="suppress">Suppress email (never email again)</option><option value="unsuppress">Remove from suppression list</option><option value="hide">Hide</option><option value="unhide">Unhide</option><option value="delete">Delete</option></optgroup></select></label><button class="pf-btn pf-btn-sm" data-lnone>Clear selection</button>` : ''}</div>
       ${list.length ? fold('src', 'Leads by source', `${num(list.length)} leads · ad spend and cost per lead`, sourceSummary(list, d.adStatus)) : ''}
-      ${list.some((l) => l.buyer) ? fold('pipe', 'Buyers’ pipeline', 'stages brokers have set', pipelineSummary(list, d)) : ''}
-      ${list.length ? `<div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th class="pf-chk"><input type="checkbox" data-lall aria-label="Select all ${list.length} shown" ${all ? 'checked' : ''}></th><th>Lead</th><th>Need</th><th class="pf-hide-s">Revenue</th><th class="pf-hide-s">Source</th><th class="pf-hide-s">${TIERS_ADMIN ? 'Price (original · tier)' : 'Price'}</th><th>Buyer</th></tr></thead><tbody>
-        ${list.map((l) => `<tr class="pf-rowlink ${lsel.has(l.id) ? 'is-sel' : ''}" data-alead="${l.id}" tabindex="0"><td class="pf-chk"><input type="checkbox" data-lsel="${l.id}" aria-label="Select lead #${l.id}" ${lsel.has(l.id) ? 'checked' : ''}></td><td><b>#${l.id} ${h(l.business)}</b><span>${date(l.created_at)}${l.suppressed ? ' · <b class="pf-neg">Email suppressed</b>' : ''}${l.hidden_at ? ' · <b>Hidden</b>' : ''}</span></td><td><b>${gbp(l.amount)}</b><span>${h(l.purpose)}</span></td><td class="pf-hide-s"><b>${h(l.turnover)}</b><span>${h(l.trading || '')}</span></td><td class="pf-hide-s"><b>${h(l.channel || 'Direct or unknown')}</b><span>${l.ad_cost != null ? `${pence(l.ad_cost)} ad cost${l.ad_by === 'week' ? ' (week average)' : ''}` : ''}</span>${adPath(l) ? `<span class="pf-adpath" title="${h(adPath(l))}">${h(adPath(l))}</span>` : ''}</td><td class="pf-hide-s">${!TIERS_ADMIN && l.buyer ? paidTag(l) : TIERS_ADMIN ? `<b>${priceTag(l)}${l.buyer ? '' : ' cr'}</b><span>${tierTag(l.tier)} ${l.buyer ? `paid on ${l.brokers?.pricing === 'tier' ? 'tiers' : 'original pricing'}` : l.tier ? `${num(l.tier_price)} cr on tiers` : 'No tier'}</span>` : priceTag(l)}</td>
-          <td>${l.buyer ? `<b>${h(l.brokers?.company || '')}</b><span>${l.auto ? 'Auto' : 'Manual'} · ${STAGE_NAME[l.stage]}</span>` : leadLive(l) ? '<span class="pf-stage pf-st-new">Live</span>' : '<span class="pf-stage pf-st-lost">Unsold</span>'}</td></tr>`).join('')}</tbody></table></div>`
+      ${list.some((l) => l.buyer) ? fold('pipe', 'Buyers’ pipeline', 'stages firms have set', pipelineSummary(list, d)) : ''}
+      ${list.length ? `<div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th class="pf-chk"><input type="checkbox" data-lall aria-label="Select all ${list.length} shown" ${all ? 'checked' : ''}></th><th>Lead</th><th>Client</th><th class="pf-hide-s">Location</th><th class="pf-hide-s">Grade</th><th class="pf-hide-s">Source</th><th class="pf-hide-s">Price</th><th>Buyer</th></tr></thead><tbody>
+        ${list.map((l) => `<tr class="pf-rowlink ${lsel.has(l.id) ? 'is-sel' : ''}" data-alead="${l.id}" tabindex="0"><td class="pf-chk"><input type="checkbox" data-lsel="${l.id}" aria-label="Select lead #${l.id}" ${lsel.has(l.id) ? 'checked' : ''}></td><td><b>#${l.id} ${leadTitle(l)}</b><span>${h(l.area_label || areaName(l.area))} · ${date(l.created_at)}${l.urgency === 'Urgently' ? ' · <b>Urgent</b>' : ''}${l.suppressed ? ' · <b class="pf-neg">Email suppressed</b>' : ''}${l.hidden_at ? ' · <b>Hidden</b>' : ''}</span></td><td><b>${h(l.contact_name || '–')}</b><span>${h(l.business_name || audName(l.audience))}${l.private_pay === 'yes' ? ' · private pay' : ''}</span></td><td class="pf-hide-s"><b>${h(l.region || '–')}</b><span>${h(l.postcode || l.postcode_district || '')}</span></td><td class="pf-hide-s">${gradeBadge(l)}${l.value_band ? `<span>${h(l.value_band)}</span>` : ''}</td><td class="pf-hide-s"><b>${h(l.channel || 'Direct or unknown')}</b><span>${l.ad_cost != null ? `${pence(l.ad_cost)} ad cost${l.ad_by === 'week' ? ' (week average)' : ''}` : ''}</span>${adPath(l) ? `<span class="pf-adpath" title="${h(adPath(l))}">${h(adPath(l))}</span>` : ''}</td><td class="pf-hide-s">${l.buyer ? paidTag(l) : priceTag(l)}</td>
+          <td>${l.buyer ? `<b>${h(l.brokers?.company || '')}</b><span>${l.auto ? 'Auto' : 'Manual'} · ${STAGE_NAME[l.stage || 'new']}</span>` : leadLive(l) ? '<span class="pf-stage pf-st-new">Live</span>' : '<span class="pf-stage pf-st-lost">Unsold</span>'}</td></tr>`).join('')}</tbody></table></div>`
       : empty('inbox', 'No leads match these filters', 'Try widening or clearing the filters.', '<button class="pf-btn" data-lclear>Clear filters</button>')}`;
   }
   function wireLeadsTab(d, redraw) {
@@ -1399,8 +1409,8 @@
     if (op === 'give' || op === 'sell') {
       const brokers = d.brokers.filter((x) => !x.is_admin && !x.suspended_at).sort((a, c) => (c.approved - a.approved) || a.company.localeCompare(c.company));
       modal.className = 'pf-modal'; modal.onclick = null; modal.onclose = null;
-      modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>${op === 'sell' ? 'Sell' : 'Give'} ${n} lead${s} to a broker</h2><p>${op === 'sell' ? `Each lead is charged at its current price (${num(targets.reduce((a, l) => a + l.price, 0))} credits in total). Stops if they run out of credits.` : 'No credits are charged.'} They get the usual new-lead email for each one.${note}</p>
-        <label>Broker<select name="b" required><option value="">Choose a broker</option>${brokers.map((x) => `<option value="${x.id}">${h(x.company)}${x.contact_name ? ` (${h(x.contact_name)})` : ''} · ${num(x.credits)} credits${x.approved ? '' : ' · not approved'}</option>`).join('')}</select></label>
+      modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>${op === 'sell' ? 'Sell' : 'Give'} ${n} lead${s} to a firm</h2><p>${op === 'sell' ? `Each lead is charged at its current price (${num(targets.reduce((a, l) => a + l.price, 0))} credits in total). Stops if they run out of credits.` : 'No credits are charged.'} They get the usual new-lead email for each one.${note}</p>
+        <label>Firm<select name="b" required><option value="">Choose a firm</option>${brokers.map((x) => `<option value="${x.id}">${h(x.company)}${x.contact_name ? ` (${h(x.contact_name)})` : ''} · ${num(x.credits)} credits${x.approved ? '' : ' · not approved'}</option>`).join('')}</select></label>
         <div class="pf-row"><button class="pf-btn" value="cancel" formnovalidate>Cancel</button><button class="pf-btn pf-btn-primary" value="ok">${op === 'sell' ? 'Sell' : 'Give'} ${n} lead${s}</button></div></form>`;
       modal.showModal();
       const broker = await new Promise((done) => (modal.onclose = () => { modal.onclose = null; done(modal.returnValue === 'ok' ? modal.querySelector('select').value : null); }));
@@ -1415,10 +1425,10 @@
     } else {
       const C = { half: [`Put ${n} lead${s} at 50% off?`, 'Half of each lead’s full price. The old price shows crossed out.', '50% off'],
         full: [`Put ${n} lead${s} back to full price?`, 'Removes any discount, including the automatic 72-hour one.', 'Full price'],
-        relist: [`Take ${n} sold lead${s} back and put them in Opportunities?`, 'At full price. This doesn’t refund the brokers who bought them. Approve their refunds first if they’re owed one.', 'Put back'],
-        suppress: [`Suppress email for ${n} lead${s}?`, 'Adds their email addresses to the suppression list. Leaflegal and brokers’ CRMs won’t email them again, including match emails. Texts and WhatsApp aren’t affected.', 'Suppress'],
+        relist: [`Take ${n} sold lead${s} back and put them in Opportunities?`, 'At full price. This doesn’t refund the firms that bought them. Approve their refunds first if they’re owed one.', 'Put back'],
+        suppress: [`Suppress email for ${n} lead${s}?`, 'Adds their email addresses to the suppression list. Leaflegal and firms’ CRMs won’t email them again, including match emails. Texts and WhatsApp aren’t affected.', 'Suppress'],
         unsuppress: [`Remove ${n} lead${s} from the suppression list?`, 'They can be emailed again. Only do this if they’ve asked to hear from us.', 'Remove'],
-        hide: [`Hide ${n} lead${s}?`, 'They leave this list (find them under Status → Hidden) and come off Opportunities, so brokers can’t buy them. Sold leads stay with their buyer.', 'Hide'],
+        hide: [`Hide ${n} lead${s}?`, 'They leave this list (find them under Status → Hidden) and come off Opportunities, so firms can’t buy them. Sold leads stay with their buyer.', 'Hide'],
         unhide: [`Unhide ${n} lead${s}?`, 'They come back to this list, and unsold ones go back on Opportunities.', 'Unhide'],
         delete: [`Delete ${n} lead${s}?`, `This can’t be undone. Type <b>delete</b> to confirm.`, 'Delete'] }[op];
       const r = await confirmBox({ title: C[0], text: C[1] + note, ok: C[2], danger: op === 'delete' || op === 'relist', input: op === 'delete' ? 'Confirm' : undefined });
@@ -1445,8 +1455,8 @@
       d.stats.for_sale.leads && [`${d.stats.for_sale.leads} lead${d.stats.for_sale.leads === 1 ? '' : 's'} for sale`, `£${num(d.stats.for_sale.credits)} unsold, last 30 days`, 'leads', 'inbox'],
     ].filter(Boolean);
     const card = (title, link, rows) => `<section class="pf-card pf-ov-card"><div class="pf-card-h"><h3>${title}</h3><a href="${P}/admin/${link}">See all${I.arrow}</a></div>${rows}</section>`;
-    const leadRows = d.leads.slice(0, 8).map((l) => `<button type="button" class="pf-ov-row" data-alead="${l.id}"><span class="pf-ov-main"><b>${h(l.business || `Lead #${l.id}`)}</b><span>${gbp(l.amount)} · ${h(l.purpose)} · ${ago(l.created_at)}</span></span>
-      <span class="pf-ov-side">${l.buyer ? `<b>${h(l.brokers?.company || '')}</b><span>${l.paid != null ? `${l.paid ? `${num(l.paid)} cr` : '£0'} · ` : ''}${STAGE_NAME[l.stage]}</span>` : leadLive(l) ? '<span class="pf-stage pf-st-new">Live</span>' : '<span class="pf-stage pf-st-lost">Unsold</span>'}</span></button>`).join('') || '<p class="pf-hint">No leads yet.</p>';
+    const leadRows = d.leads.slice(0, 8).map(L).map((l) => `<button type="button" class="pf-ov-row" data-alead="${l.id}"><span class="pf-ov-main"><b>${leadTitle(l)}</b><span>${h(l.area_label || areaName(l.area))} · ${h(l.region || '–')} · ${ago(l.created_at)}</span></span>
+      <span class="pf-ov-side">${l.buyer ? `<b>${h(l.brokers?.company || '')}</b><span>${l.paid != null ? `${l.paid ? `${num(l.paid)} cr` : '£0'} · ` : ''}${STAGE_NAME[l.stage || 'new']}</span>` : leadLive(l) ? '<span class="pf-stage pf-st-new">Live</span>' : '<span class="pf-stage pf-st-lost">Unsold</span>'}</span></button>`).join('') || '<p class="pf-hint">No leads yet.</p>';
     const bought = (id) => d.leads.filter((l) => l.buyer === id).length;
     const clientRows = [...cl].sort((a, z) => (z.created_at || '').localeCompare(a.created_at || '')).slice(0, 6).map((b) => `<button type="button" class="pf-ov-row" data-client="${b.id}"><span class="pf-avatar pf-avatar-s">${initials(b.company)}</span><span class="pf-ov-main"><b>${h(b.company)}</b><span>${h(b.contact_name || b.email)} · joined ${dayOnly(b.created_at)}</span></span>
       <span class="pf-ov-side"><b>${num(b.credits)} cr</b><span>${bought(b.id)} lead${bought(b.id) === 1 ? '' : 's'}</span></span></button>`).join('') || '<p class="pf-hint">No clients yet.</p>';
@@ -1473,11 +1483,11 @@
       const shown = cl.filter((b) => cFilter === 'all' || (cFilter === 'live') === live(b)).sort(SORTS[cSort][1]);
       if (adminTab === 'brokers') body = `<div class="pf-toolbar pf-mb"><div class="pf-row-l"><div class="pf-seg" role="tablist" aria-label="Filter clients">${[['all', 'All', cl.length], ['live', 'Plan or credits', nLive], ['none', 'No plan or credits', cl.length - nLive]].map(([k, n, c]) => `<button type="button" data-cf="${k}" class="${cFilter === k ? 'on' : ''}">${n} <em class="pf-badge">${c}</em></button>`).join('')}</div>
           <label class="pf-select"><select data-csort aria-label="Sort clients">${Object.entries(SORTS).map(([k, [n]]) => `<option value="${k}" ${cSort === k ? 'selected' : ''}>${n}</option>`).join('')}</select></label></div>
-        <button class="pf-btn pf-btn-primary" data-invite>${I.mail}Invite a supplier</button></div><div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th>Firm</th><th class="pf-hide-s">Contact</th><th>Credits</th><th>Status</th><th></th></tr></thead><tbody>
+        <button class="pf-btn pf-btn-primary" data-invite>${I.mail}Invite a firm</button></div><div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th>Firm</th><th class="pf-hide-s">Contact</th><th>Credits</th><th>Status</th><th></th></tr></thead><tbody>
         ${shown.map((b) => `<tr class="pf-rowlink" data-client="${b.id}" tabindex="0"><td><div class="pf-biz"><span class="pf-avatar pf-avatar-s">${initials(b.company)}</span><div><b>${h(b.company)}</b><span>${h(b.email)}</span></div></div></td>
-          <td class="pf-hide-s"><span class="pf-strong">${h(b.contact_name || '–')}</span><span>${h(b.phone || '')}${b.fca_number ? ` · FCA ${h(b.fca_number)}` : ''}</span></td>
-          <td><b>${num(b.credits)}</b><span>${b.mode === 'auto' ? 'Auto-buy' : 'Manual'}${TIERS_ADMIN ? ` · ${b.pricing === 'tier' ? 'Tier pricing' : 'Original credit pricing'}` : ''}</span></td>
-          <td>${b.suspended_at ? '<span class="pf-stage pf-st-lost">Suspended</span>' : b.approved ? '<span class="pf-stage pf-st-funded">Approved</span>' : '<span class="pf-stage pf-st-application">Pending</span>'}${b.plan ? `<span>${h(b.plan.name)} · ${b.plan.commission ? 'commission' : 'invoiced'}</span>` : ''}${(() => { const g = (d.agreements || []).find((x) => x.broker === b.id); return `<span>${g ? `Agreement signed ${dayOnly(g.created_at)}${g.version !== d.termsVersion ? ' (older version)' : ''}` : (d.waived || []).includes(b.id) ? 'Agreement not needed' : 'No agreement yet'}</span>`; })()}</td>
+          <td class="pf-hide-s"><span class="pf-strong">${h(b.contact_name || '–')}</span><span>${h(b.phone || '')}${(b.regulators || []).length ? ` · ${b.regulators.map((r) => `${regShort(r.id)} ${h(r.number || '')}`).join(', ')}` : ''}${b.regulator_checked_at ? ' · checked' : ''}</span></td>
+          <td><b>${num(b.credits)}</b><span>${b.mode === 'auto' ? 'Auto-buy' : 'Manual'}</span></td>
+          <td>${b.suspended_at ? '<span class="pf-stage pf-st-lost">Suspended</span>' : b.approved ? '<span class="pf-stage pf-st-instructed">Approved</span>' : '<span class="pf-stage pf-st-consultation">Pending</span>'}${b.plan ? `<span>${h(b.plan.name)} · ${b.plan.commission ? 'commission' : 'invoiced'}</span>` : ''}${(() => { const g = (d.agreements || []).find((x) => x.broker === b.id); return `<span>${g ? `Agreement signed ${dayOnly(g.created_at)}${g.version !== d.termsVersion ? ' (older version)' : ''}` : (d.waived || []).includes(b.id) ? 'Agreement not needed' : 'No agreement yet'}</span>`; })()}</td>
           <td class="pf-r"><div class="pf-actions">${b.approved || b.suspended_at ? '' : `<button class="pf-btn pf-btn-sm pf-btn-primary" data-approve="${b.id}" data-v="1">Approve</button>`}<button class="pf-btn pf-btn-sm" data-credit="${b.id}">${I.coins}Credits</button><button class="pf-btn pf-btn-sm" type="button">Manage</button></div></td></tr>`).join('') || '<tr><td colspan="5" class="pf-hint">No clients in this view.</td></tr>'}</tbody></table></div>
         ${d.brokers.some((b) => b.is_admin) ? `<div class="pf-card-h pf-mt"><h3>Team</h3><span>admin accounts · not counted as clients</span></div>
         <div class="pf-card pf-flush"><table class="pf-table"><tbody>${d.brokers.filter((b) => b.is_admin).map((b) => `<tr class="pf-rowlink" data-client="${b.id}" tabindex="0"><td><div class="pf-biz"><span class="pf-avatar pf-avatar-s">${initials(b.contact_name || b.company)}</span><div><b>${h(b.contact_name || b.company)}</b><span>${h(b.email)}</span></div></div></td><td class="pf-r"><span class="pf-stage pf-st-contacted">Admin</span></td></tr>`).join('')}</tbody></table></div>` : ''}
@@ -1487,33 +1497,32 @@
           <td class="pf-hide-s"><b>${h(g.signer_name)}</b><span>${h(g.signer_title || '')}${g.signer_email ? ` · ${h(g.signer_email)}` : ''}</span></td>
           <td><b>${dayOnly(g.created_at)}</b><span>v${h(g.version)}${g.version === d.termsVersion ? ' · current' : ' · older version'}</span></td>
           <td class="pf-r"><div class="pf-actions"><button class="pf-btn pf-btn-sm" data-agv="${g.id}">View</button><button class="pf-btn pf-btn-sm" data-agd="${g.id}">${I.download}Download</button></div></td></tr>`).join('')}</tbody></table></div>`
-        : empty('doc' in I ? 'doc' : 'shield', 'No signed agreements yet', 'When a broker accepts the partner agreement, it appears here and they get a copy by email.');
-      if (adminTab === 'refunds') body = d.returns.length ? `<div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th>Lead</th><th class="pf-hide-s">Broker</th><th>Reason</th><th>Status</th><th></th></tr></thead><tbody>
-        ${d.returns.map((r) => `<tr><td><b>#${r.lead_id} ${h(r.leads?.business || '')}</b><span>${r.leads?.price} credits · ${ago(r.created_at)}</span></td><td class="pf-hide-s">${h(r.brokers?.company || '')}</td>
+        : empty('doc', 'No signed agreements yet', 'When a firm accepts the referral agreement, it appears here and they get a copy by email.');
+      if (adminTab === 'refunds') body = d.returns.length ? `<div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th>Lead</th><th class="pf-hide-s">Firm</th><th>Reason</th><th>Status</th><th></th></tr></thead><tbody>
+        ${d.returns.map((r) => `<tr><td><b>#${r.lead_id} ${h(r.leads?.matter_label || r.leads?.full_name || r.leads?.business || '')}</b><span>${r.leads?.price} credits · ${ago(r.created_at)}</span></td><td class="pf-hide-s">${h(r.brokers?.company || '')}</td>
           <td><b>${h(r.reason)}</b><span>${h(r.details || '')}</span>${r.decision ? `<span>${/^Declined automatically/.test(r.decision) ? 'Told it isn’t refundable (feedback only)' : `Declined: ${h(r.decision)}`}</span>` : ''}</td><td><span class="pf-refund-tag ${r.status}">${/^Declined automatically/.test(r.decision || '') ? 'Feedback' : r.status}</span></td>
           <td class="pf-r">${r.status === 'pending' ? `<div class="pf-actions"><button class="pf-btn pf-btn-sm pf-btn-primary" data-refund="${r.id}" data-v="1">Refund</button><button class="pf-btn pf-btn-sm" data-refund="${r.id}" data-v="0">Decline</button></div>` : `<button class="pf-btn pf-btn-sm" data-alead="${r.lead_id}">Open lead</button>`}</td></tr>`).join('')}</tbody></table></div>`
-        : empty('undo', 'No refund requests', 'When a broker reports a bad lead it appears here for you to approve or decline.');
+        : empty('undo', 'No refund requests', 'When a firm reports a bad lead it appears here to approve or decline.');
       if (adminTab === 'leads') body = leadsTab(d);
       if (adminTab === 'pricing') {
-        const P = d.pricing, row = (name, label, v) => `<tr><td>${label}</td><td><input name="${h(name)}" inputmode="decimal" value="${v}" aria-label="${h(label)}"></td></tr>`;
-        const nTier = d.brokers.filter((b) => !b.is_admin && b.pricing === 'tier').length, nCredit = d.brokers.filter((b) => !b.is_admin && b.pricing !== 'tier').length;
-        body = `${TIERS_ADMIN ? `<form class="pf-card pf-mb2" data-tierprices><div class="pf-card-h"><h3>Tier prices</h3><span>Credits per lead for the ${nTier} client${nTier === 1 ? '' : 's'} on tier pricing</span></div>
-          <table class="pf-table pf-mini pf-inputs"><tbody>${d.tierNames.map((t) => `<tr><td>${tierTag(t)} <span>${h(TIER_REV[t] || '')}</span></td><td><input name="${h(t)}" inputmode="numeric" value="${d.tierPrices[t]}" aria-label="${h(t)} price"></td></tr>`).join('')}</tbody></table>
-          <p class="pf-hint">Unsold leads take a new tier price straight away. Sold leads keep what was paid. Under a year trading drops a lead one tier; 1 to 2 years drops one unless a homeowner; Bronze is the floor. Switch a client between systems under Clients → Manage.</p>
-          <div class="pf-row-l"><button class="pf-btn pf-btn-primary">Save tier prices</button></div></form>
-          <h3 class="pf-dsec">Original credit pricing</h3><p class="pf-hint">For the ${nCredit} client${nCredit === 1 ? '' : 's'} who paid before tier pricing. Each lead is priced by the formula below.</p>` : ''}
-          <form class="pf-two-col" data-pricing><section class="pf-card"><div class="pf-card-h"><h3>Price range</h3><span>£ per lead (1 credit = £1)</span></div>
+        const P = { ...DEFAULT_PRICING, ...(d.pricing?.areas ? d.pricing : pricing?.areas ? pricing : {}) };
+        const row = (name, label, v, ph = '') => `<tr><td>${label}</td><td><input name="${h(name)}" inputmode="decimal" value="${v ?? ''}" placeholder="${h(ph)}" aria-label="${h(String(label).replace(/<[^>]+>/g, ''))}"></td></tr>`;
+        const vals = [...(P.value || [])].concat([[null, null], [null, null]]).slice(0, Math.max(3, (P.value || []).length + 1));
+        body = `<form data-pricing><div class="pf-two-col"><section class="pf-card"><div class="pf-card-h"><h3>Base price per practice area</h3><span>Credits (1 credit = £1 + VAT)</span></div>
+          <table class="pf-table pf-mini pf-inputs"><tbody>${TX.areas.map((a) => row(`area:${a.slug}`, h(a.label), P.areas?.[a.slug] ?? 50)).join('')}</tbody></table>
+          <div class="pf-card-h pf-mt"><h3>Range and multipliers</h3></div>
           <table class="pf-table pf-mini pf-inputs"><tbody>${row('min', 'Minimum lead price', P.min)}${row('max', 'Maximum lead price', P.max)}
-            ${row('adverse', 'Adverse credit multiplier', P.adverse)}${row('unsure', '“Not sure” credit multiplier', P.unsure)}
-            ${row('sizeFloor', 'Loan size score at £50k (0 to 1; higher = loan size matters less)', P.sizeFloor ?? 0.4)}${row('floorPrime', 'Minimum for £500k+ revenue, 5+ years, clean credit (0 = off)', P.floorPrime ?? 0)}</tbody></table>
-          <div class="pf-card-h pf-mt"><h3>Company age weight</h3></div>
-          <table class="pf-table pf-mini pf-inputs"><tbody>${d.ages.map((t) => row(`a:${t}`, h(t), P.age[t] ?? 1)).join('')}</tbody></table></section>
-          <section class="pf-card"><div class="pf-card-h"><h3>Revenue weight</h3></div>
-          <table class="pf-table pf-mini pf-inputs"><tbody>${d.turnovers.map((t) => row(`r:${t}`, h(t), P.revenue[t] ?? 1)).join('')}</tbody></table>
-          <p class="pf-hint">Price = min + (max − min) × loan size × affordability × age × revenue × credit. Affordability is full up to half a year's revenue and drops sharply once the loan asked for exceeds about a year's revenue, so unrealistic asks fall to the minimum. Weights run 0 to 1.5 and apply to new leads only.</p>
-          <div class="pf-card-h pf-mt"><h3>Current prices</h3></div>
-          <table class="pf-table pf-mini"><tbody>${d.examples.map((e) => `<tr><td><b>${short(e.amount)} loan</b><span>${h(e.turnover)} revenue · trading ${h(e.trading)}</span></td><td class="pf-r"><b>£${e.price}</b></td></tr>`).join('')}</tbody></table>
-          <div class="pf-row-l"><button class="pf-btn pf-btn-primary">Save pricing</button><button type="button" class="pf-btn" data-reset>Reset to defaults</button></div></section></form>`;
+            ${TX.grades.map((g) => row(`grade:${g}`, `Grade ${g} multiplier`, P.grade?.[g] ?? 1)).join('')}
+            ${row('urgent', 'Urgent (needed urgently) multiplier', P.urgent)}${row('business', 'Business client multiplier', P.business)}</tbody></table>
+          <div class="pf-card-h pf-mt"><h3>Value multipliers</h3><span>First match from the top, by the lead’s minimum value</span></div>
+          <table class="pf-table pf-mini pf-inputs"><thead><tr><th>Value at or above (£)</th><th>Multiplier</th></tr></thead><tbody>${vals.map(([v, m], i) => `<tr><td><input name="vmin:${i}" inputmode="numeric" value="${v != null ? num(v) : ''}" aria-label="Value threshold ${i + 1}"></td><td><input name="vmul:${i}" inputmode="decimal" value="${m ?? ''}" aria-label="Value multiplier ${i + 1}"></td></tr>`).join('')}</tbody></table>
+          <p class="pf-hint">Price = base × grade × urgent × business × value, rounded to the nearest 5 and kept between the minimum and maximum. Base is the matter’s own price when it has one, otherwise the area’s. Applies to new leads.</p></section>
+          <section class="pf-card"><div class="pf-card-h"><h3>Matter prices</h3><span>Leave blank to use the area’s base price</span></div>
+          ${TX.areas.map((a) => `<details class="pf-fold" ${a.matters.some(([k]) => P.matters?.[`${a.slug}/${k}`] != null) ? 'open' : ''}><summary><b>${h(a.label)}</b><span>base ${num(P.areas?.[a.slug] ?? 50)} · ${a.matters.filter(([k]) => P.matters?.[`${a.slug}/${k}`] != null).length} set</span></summary>
+            <table class="pf-table pf-mini pf-inputs"><tbody>${a.matters.map(([k, t]) => row(`matter:${a.slug}/${k}`, h(t), P.matters?.[`${a.slug}/${k}`], 'Area base')).join('')}</tbody></table></details>`).join('')}
+          <div class="pf-card-h pf-mt"><h3>Current prices</h3><span>Grade B, individual, not urgent</span></div>
+          ${priceExamples()}</section></div>
+          <div class="pf-row-l pf-mt"><button class="pf-btn pf-btn-primary">Save pricing</button><button type="button" class="pf-btn" data-reset>Reset to defaults</button></div></form>`;
       }
       if (adminTab === 'audit') body = d.audit?.length ? `<div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th>When</th><th>Admin</th><th>Action</th><th class="pf-hide-s">Detail</th></tr></thead><tbody>
         ${d.audit.map((x) => `<tr><td>${date(x.at)}</td><td>${h(x.brokers?.company || '–')}</td><td><b>${h(x.action)}</b><span>${h(x.target)}</span></td><td class="pf-hide-s"><span class="pf-mono">${h(JSON.stringify(x.detail || {})).slice(0, 160)}</span></td></tr>`).join('')}</tbody></table></div>`
@@ -1530,9 +1539,9 @@
           <div class="pf-kpi pf-kpi-dark"><span>${I.target}MRR</span><b>${M.mrr == null ? '–' : '£' + num(Math.round(M.mrr))}</b><em>${M.mrr == null ? 'Stripe not connected' : `${M.subs} active plan${M.subs === 1 ? '' : 's'}${M.cancelling ? ` · ${M.cancelling} cancelling` : ''} · ex VAT`}</em></div>
           <div class="pf-kpi"><span>${I.coins}Cash collected</span><b>${M.cash == null ? '–' : '£' + num(Math.round(M.cash))}</b><em>${M.cash == null ? 'Stripe not connected' : `£${num(Math.round(M.cash_ex_vat))} ex VAT${M.refunded ? ` · £${num(Math.round(M.refunded))} refunded` : ''} · all time`}</em></div>
           <div class="pf-kpi"><span>${I.spark}Credits spent</span><b>${num(M.spent)}</b><em>on leads, after refunds · all time</em></div>
-          <div class="pf-kpi"><span>${I.layers}Credits left to spend</span><b>${num(M.unspent)}</b><em>across ${M.holders} broker${M.holders === 1 ? '' : 's'} · paid for, not yet used</em></div></div>
+          <div class="pf-kpi"><span>${I.layers}Credits left to spend</span><b>${num(M.unspent)}</b><em>across ${M.holders} firm${M.holders === 1 ? '' : 's'} · paid for, not yet used</em></div></div>
         <div class="pf-kpis">
-          <div class="pf-kpi"><span>${I.user}Brokers</span><b>${d.stats.brokers}</b><em>${d.stats.active ?? 0} on a plan${d.stats.commission ? ` · ${d.stats.commission} on commission` : ''} · ${d.stats.pending} awaiting approval</em></div>
+          <div class="pf-kpi"><span>${I.user}Firms</span><b>${d.stats.brokers}</b><em>${d.stats.active ?? 0} on a plan${d.stats.commission ? ` · ${d.stats.commission} on commission` : ''} · ${d.stats.pending} awaiting approval</em></div>
           <div class="pf-kpi"><span>${I.inbox}Leads (latest 500)</span><b>${d.stats.leads}</b><em>${d.stats.sold} sold</em></div>
           <div class="pf-kpi"><span>${I.spark}Leads for sale</span><b>£${num(d.stats.for_sale.credits)}</b><em>${d.stats.for_sale.leads} unsold lead${d.stats.for_sale.leads === 1 ? '' : 's'}${d.stats.for_sale.full !== d.stats.for_sale.credits ? ` · £${num(d.stats.for_sale.full)} before discounts` : ''}</em></div>
           <div class="pf-kpi"><span>${I.undo}Refund requests</span><b>${d.stats.refunds}</b><em>pending</em></div>
@@ -1544,7 +1553,7 @@
       view().querySelector('[data-csort]')?.addEventListener('change', (e) => { cSort = e.target.value; draw(); });
       view().querySelectorAll('[data-approve]').forEach((b) => (b.onclick = async (e) => {
         e.stopPropagation(); // don't also open the client drawer from the row
-        try { await api('admin-broker', { id: b.dataset.approve, approved: b.dataset.v === '1' }); toast(b.dataset.v === '1' ? 'Broker approved and emailed' : 'Broker suspended'); admin(); } catch (ex) { toast(ex.message, true); }
+        try { await api('admin-broker', { id: b.dataset.approve, approved: b.dataset.v === '1' }); toast(b.dataset.v === '1' ? 'Firm approved and emailed' : 'Firm suspended'); admin(); } catch (ex) { toast(ex.message, true); }
       }));
       view().querySelector('[data-invite]')?.addEventListener('click', inviteModal);
       view().querySelectorAll('[data-uninvite]').forEach((b) => (b.onclick = async () => {
@@ -1567,24 +1576,22 @@
       view().querySelectorAll('[data-refund]').forEach((b) => (b.onclick = async () => {
         const r = d.returns.find((x) => x.id === +b.dataset.refund);
         if (b.dataset.v === '0') return declineModal(r);
-        if (await confirmBox({ title: `Refund ${r.leads?.price} credits to ${h(r.brokers?.company || 'the broker')}?`, text: `For lead #${r.lead_id}. They’ll be emailed. Next you can put the lead back in Opportunities or give it to another broker.`, ok: 'Refund' }) === null) return;
-        try { await api('admin-refund', { id: r.id, approve: true }); toast('Refunded and broker emailed'); admin(); adminLeadDrawer(r.lead_id); } catch (ex) { toast(ex.message, true); }
+        if (await confirmBox({ title: `Refund ${r.leads?.price} credits to ${h(r.brokers?.company || 'the firm')}?`, text: `For lead #${r.lead_id}. They’ll be emailed. Next the lead can go back in Opportunities or to another firm.`, ok: 'Refund' }) === null) return;
+        try { await api('admin-refund', { id: r.id, approve: true }); toast('Refunded and firm emailed'); admin(); adminLeadDrawer(r.lead_id); } catch (ex) { toast(ex.message, true); }
       }));
       const pf = view().querySelector('[data-pricing]');
       if (pf) {
-        const sendPricing = async (P) => { try { await api('admin-pricing', P); toast('Pricing saved'); admin(); } catch (ex) { toast(ex.message, true); } };
+        const sendPricing = async (P) => { try { const r = await api('admin-pricing', P); if (r?.pricing) pricing = { ...(pricing || {}), ...r.pricing }; toast('Pricing saved'); admin(); } catch (ex) { toast(ex.message, true); } };
         pf.onsubmit = (e) => {
-          e.preventDefault(); const fd = new FormData(pf);
-          sendPricing({ min: fd.get('min'), max: fd.get('max'), adverse: fd.get('adverse'), unsure: fd.get('unsure'), sizeFloor: fd.get('sizeFloor'), floorPrime: fd.get('floorPrime'),
-            age: Object.fromEntries(d.ages.map((t) => [t, fd.get(`a:${t}`)])), revenue: Object.fromEntries(d.turnovers.map((t) => [t, fd.get(`r:${t}`)])) });
+          e.preventDefault(); const fd = new FormData(pf), n = (k) => { const v = String(fd.get(k) ?? '').replace(/[^\d.]/g, ''); return v === '' ? null : Number(v); };
+          const value = [...fd.keys()].filter((k) => k.startsWith('vmin:')).map((k) => [n(k), n(`vmul:${k.slice(5)}`)]).filter(([v, m]) => v != null && m != null).sort((x, y) => y[0] - x[0]);
+          sendPricing({ min: n('min'), max: n('max'), urgent: n('urgent'), business: n('business'),
+            areas: Object.fromEntries(TX.areas.map((a) => [a.slug, n(`area:${a.slug}`)]).filter(([, v]) => v != null)),
+            matters: Object.fromEntries([...fd.keys()].filter((k) => k.startsWith('matter:')).map((k) => [k.slice(7), n(k)]).filter(([, v]) => v != null)),
+            grade: Object.fromEntries(TX.grades.map((g) => [g, n(`grade:${g}`)]).filter(([, v]) => v != null)), value });
         };
-        pf.querySelector('[data-reset]').onclick = () => sendPricing(d.defaults);
+        pf.querySelector('[data-reset]').onclick = async () => { if (await confirmBox({ title: 'Reset pricing to the defaults?', text: 'Every area, matter and multiplier goes back to the standard prices. Applies to new leads.', ok: 'Reset', danger: true }) === null) return; modal.close(); sendPricing(d.defaults || DEFAULT_PRICING); };
       }
-      const tpf = view().querySelector('[data-tierprices]');
-      if (tpf) tpf.onsubmit = async (e) => {
-        e.preventDefault(); const fd = new FormData(tpf);
-        try { await api('admin-tier-prices', { prices: Object.fromEntries(d.tierNames.map((t) => [t, +String(fd.get(t)).replace(/\D/g, '')])) }); toast('Tier prices saved'); admin(); } catch (ex) { toast(ex.message, true); }
-      };
     };
     draw();
   }
@@ -1627,7 +1634,7 @@
     const shownC = allC.filter((c) => c.status === 'ACTIVE' || spentC.has(c.id) || (c.updated && Date.parse(c.updated) >= weekAgo));
     const pick = adsCamp && allC.find((c) => c.id === adsCamp);
     if (pick) A = { ...A, ads: A.ads.filter((a) => a.campaign_id === pick.id), attrib: Object.fromEntries(Object.entries(A.attrib).filter(([, t]) => t[0] === pick.id || t[0] === pick.name)) };
-    const cardC = pick ? [pick] : shownC, cState = (c) => c.status === 'ACTIVE' ? ['Live', 'pf-st-funded'] : c.status === 'UNKNOWN' ? ['Off', 'pf-st-lost'] : [/PAUSED/.test(c.status) ? 'Paused' : 'Off', 'pf-st-lost'];
+    const cardC = pick ? [pick] : shownC, cState = (c) => c.status === 'ACTIVE' ? ['Live', 'pf-st-instructed'] : c.status === 'UNKNOWN' ? ['Off', 'pf-st-lost'] : [/PAUSED/.test(c.status) ? 'Paused' : 'Off', 'pf-st-lost'];
     const B = finBase(finData), rev = {}, sold = B.paidSold, taken = new Set(finData.leads.filter((l) => l.buyer).map((l) => l.id));
     for (const m of B.L) if (m.paid && m.lead) rev[m.lead] = (rev[m.lead] || 0) + (m.kind === 'sale' ? m.val : m.kind === 'refund' ? -m.val : 0);
     // Rows for one level: Meta stats summed per campaign / ad set / ad, then our leads, sales and revenue matched on by ID (or name).
@@ -1658,13 +1665,13 @@
         <label class="pf-select"><select data-as aria-label="Sort">${Object.entries(SORT).map(([k, n]) => `<option value="${k}" ${adsSort === k ? 'selected' : ''}>${n}</option>`).join('')}</select></label></div>
       ${A.status !== 'ok' ? `<div class="pf-banner pf-banner-warn pf-mb">${I.shield}<div><b>Couldn’t load Meta ad stats.</b> ${h(A.status)}</div></div>` : ''}
       <div class="pf-kpis">${kpi(`${I.target}Meta spend`, money2(T.spend), `${num(T.clicks)} clicks · ${pct(T.clicks, T.impressions)} CTR`)}${kpi(`${I.inbox}Leads`, num(T.leads), `${T.leads ? money2(T.spend / T.leads) : '–'} per lead${untracked ? ` · ${untracked} not tagged to an ad` : ''}`)}
-        ${kpi(`${I.check}Sold (paid)`, num(T.sold), `${pct(T.sold, T.leads)} of leads${T.free ? ` · ${T.free} more given free or to Aureum` : ''}`)}${kpi(`${I.coins}ROAS`, T.spend ? x2(T.rev / T.spend) : '–', `${money2(T.rev)} revenue · profit ${money2(T.rev - T.spend)}`, `pf-kpi-dark ${T.rev < T.spend ? 'pf-kpi-loss' : ''}`)}</div>
+        ${kpi(`${I.check}Sold (paid)`, num(T.sold), `${pct(T.sold, T.leads)} of leads${T.free ? ` · ${T.free} more given free or on commission` : ''}`)}${kpi(`${I.coins}ROAS`, T.spend ? x2(T.rev / T.spend) : '–', `${money2(T.rev)} revenue · profit ${money2(T.rev - T.spend)}`, `pf-kpi-dark ${T.rev < T.spend ? 'pf-kpi-loss' : ''}`)}</div>
       ${cardC.length ? `<h3 class="pf-dsec">${pick ? 'Campaign' : 'Campaigns · live or run in the last 7 days'}</h3><div class="pf-ads-live">${cardC.map((c) => { const r = camps[c.id] || { spend: 0, leads: 0, sold: 0, free: 0, rev: 0, clicks: 0, ids: [] };
         const ids = Object.entries(A.attrib).filter(([, t]) => t[0] === c.id || t[0] === c.name).map(([id]) => +id).sort((a, z) => z - a), roas = r.spend ? r.rev / r.spend : 0;
         return `<details class="pf-card pf-ads-camp"><summary><div class="pf-ads-camp-h"><span class="pf-stage ${cState(c)[1]}">${cState(c)[0]}</span><b>${h(c.name)}</b><span>${c.daily ? `${money2(c.daily)} a day` : c.lifetime ? `${money2(c.lifetime)} lifetime budget` : 'Budget set on ad sets'}</span></div>
           <dl class="pf-ads-camp-n"><div><dt>Spend</dt><dd>${money2(r.spend)}</dd></div><div><dt>Leads</dt><dd>${num(ids.length)}</dd></div><div><dt>Cost per lead</dt><dd>${ids.length ? money2(r.spend / ids.length) : '–'}</dd></div><div><dt>Sold (paid)</dt><dd>${num(r.sold)} · ${pct(r.sold, ids.length)}</dd>${r.free ? `<dd class="pf-ads-free">+${r.free} free / Aureum</dd>` : ''}</div><div><dt>Revenue</dt><dd>${money2(r.rev)}</dd></div><div><dt>ROAS</dt><dd class="${r.spend && roas < 1 ? 'pf-neg' : 'pf-pos'}">${r.spend ? x2(roas) : '–'}</dd></div></dl>
           <span class="pf-ads-camp-more">${ids.length ? `See ${ids.length} lead${ids.length === 1 ? '' : 's'}` : 'No leads in this period'}${I.chev}</span></summary>
-          ${ids.length ? `<div class="pf-ads-leads">${ids.map((id) => { const l = leadById[id] || { id }, t = A.attrib[id]; return `<button type="button" class="pf-ov-row" data-alead="${id}"><span class="pf-ov-main"><b>#${id} ${h(l.business || '')}</b><span>${h(adName[t[2]] || t[2] || 'Ad not tagged')} · ${l.created_at ? ago(l.created_at) : ''}</span></span>
+          ${ids.length ? `<div class="pf-ads-leads">${ids.map((id) => { const l = leadById[id] || { id }, t = A.attrib[id]; return `<button type="button" class="pf-ov-row" data-alead="${id}"><span class="pf-ov-main"><b>#${id} ${h(l.matter_label || matterName(l.area || l.practice_area, l.matter) || '')}</b><span>${h(adName[t[2]] || t[2] || 'Ad not tagged')} · ${l.created_at ? ago(l.created_at) : ''}</span></span>
             <span class="pf-ov-side">${l.buyer ? `<b>${h(l.buyer)}</b><span>${sold.has(id) ? money2(rev[id] || 0) : 'Free · £0'} · ${STAGE_NAME[l.stage] || ''}</span>` : '<span class="pf-stage pf-st-lost">Unsold</span>'}</span></button>`; }).join('')}</div>` : ''}</details>`; }).join('')}</div>` : ''}
       ${best.length ? `<h3 class="pf-dsec">Best performing creative</h3><div class="pf-ads-best">${best.map((r, i) => `<article class="pf-card pf-ads-card">${r.thumb ? `<img src="${h(r.thumb)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<div class="pf-ads-noimg">${I.target}</div>`}
         <div class="pf-ads-cb"><span class="pf-ads-rank">#${i + 1}${r.live ? ' · Live' : ''}</span><b>${h(r.name || 'Unnamed ad')}</b><span>${h(r.campaign || '')}</span>${r.title ? `<em>${h(r.title)}</em>` : ''}
@@ -1676,7 +1683,7 @@
           <td data-l="Sold (paid)"><b>${num(r.sold)}</b><span>${pct(r.sold, r.leads)}${r.free ? ` · +${r.free} free` : ''}</span></td><td data-l="Revenue"><b>${money2(r.rev)}</b><span class="${r.profit < 0 ? 'pf-neg' : 'pf-pos'}">${money2(r.profit)} profit</span></td><td data-l="ROAS"><b class="${r.spend && r.roas < 1 ? 'pf-neg' : 'pf-pos'}">${r.spend ? x2(r.roas) : '–'}</b></td></tr>`).join('')}</tbody></table>`
         : `<p class="pf-hint pf-pad">No Meta ads with spend or leads in this period.</p>`}</section>
       <p class="pf-hint pf-mt">Leads are matched to ads by the tags on the ad link. Revenue is what clients paid for those leads (bonus and free credits £0, refunds taken off), counted for leads that came in during the period, whenever they sold. Recent leads may still sell. Ex VAT.</p>
-      <p class="pf-hint">Finance for the same period: ${num(FT.leads)} leads, ${money2(FT.rev)} revenue, ${money2(FT.ad)} ad spend. Finance counts every lead (LinkedIn, Google, direct and leads not tagged to a Meta ad), commission and non-Meta spend; this page counts Meta-tagged leads and Meta spend only${FT.rev - T.rev > 0.5 ? `, so ${money2(FT.rev - T.rev)} of revenue isn’t here` : ''}.</p>`;
+      <p class="pf-hint">The Revenue tab for the same period shows ${num(FT.leads)} leads, ${money2(FT.rev)} revenue, ${money2(FT.ad)} ad spend. It counts every lead (LinkedIn, Google, direct and leads not tagged to a Meta ad), commission and non-Meta spend; and this page counts Meta-tagged leads and Meta spend only${FT.rev - T.rev > 0.5 ? `, so ${money2(FT.rev - T.rev)} of revenue isn’t here` : ''}.</p>`;
     box.querySelectorAll('[data-alead]').forEach((b) => (b.onclick = () => adminLeadDrawer(+b.dataset.alead)));
     box.querySelectorAll('[data-ap]').forEach((b) => (b.onclick = () => { adsP = b.dataset.ap; box.innerHTML = '<div class="pf-skel"></div>'; adsTab(box); }));
     box.querySelectorAll('[data-al]').forEach((b) => (b.onclick = () => { adsLvl = b.dataset.al; adsTab(box); }));
@@ -1716,12 +1723,12 @@
         <div class="pf-kpis">${kpi(`${I.inbox}Leads`, num(Math.round(r.leads)), `at ${money2(r.cpl)} each`)}${kpi(`${I.check}Leads sold`, num(Math.round(r.sold)), `${pct(b.sell)} sell-through`)}
           ${kpi(`${I.coins}Revenue`, money2(r.rev), `${r.roas.toFixed(2)}× spend`)}${kpi(`${I.spark}Profit`, money2(r.profit), `revenue − ${money2(simSpend)} ads · ex VAT`, `pf-kpi-dark ${r.profit < 0 ? 'pf-kpi-loss' : ''}`)}</div>
         <p class="pf-hint">At ${h(name)}’s daily spend (${money2(b.ad / b.days)}) that’s about ${num(Math.ceil(simSpend / (b.ad / b.days)))} days of ads.${young ? ' Leads this recent may still sell, so revenue here can be understated.' : ''}</p>
-        ${short ? `<div class="pf-banner pf-banner-warn pf-mt">${I.coins}<div><b>Brokers would need to buy ${money2(need)} of leads.</b> They hold ${money2(M.unspent || 0)} of unspent credits and plans add about ${money2(monthly)} a month, so more plans are needed to sell this many.</div></div>` : ''}` : ''}
+        ${short ? `<div class="pf-banner pf-banner-warn pf-mt">${I.coins}<div><b>Firms would need to buy ${money2(need)} of leads.</b> They hold ${money2(M.unspent || 0)} of unspent credits and plans add about ${money2(monthly)} a month, so more plans are needed to sell this many.</div></div>` : ''}` : ''}
         <section class="pf-card pf-mt pf-flush"><div class="pf-card-h pf-pad"><h3>Every period at ${money2(simSpend)}</h3><span>same spend, each period’s rates</span></div>
           <table class="pf-table"><thead><tr><th>Based on</th><th>Spend · leads</th><th>Cost per lead</th><th>Sold</th><th>Revenue at ${money2(simSpend)}</th><th>Profit at ${money2(simSpend)}</th></tr></thead><tbody>
           ${PER.map(([k, n]) => { const x = all[k], y = at(x, simSpend); return `<tr class="${k === simP ? 'is-sel' : ''}"><td><b>${n}</b></td><td data-l="Spend"><b>${money2(x.ad)}</b><span>${num(x.leads)} leads</span></td><td data-l="Cost per lead">${x.cpl ? money2(x.cpl) : '–'}</td><td data-l="Sold">${pct(x.sell)}</td>
             <td data-l="Revenue">${x.ad ? money2(y.rev) : '–'}</td><td data-l="Profit">${x.ad ? `<b class="${y.profit < 0 ? 'pf-neg' : 'pf-pos'}">${money2(y.profit)}</b>` : '–'}</td></tr>`; }).join('')}</tbody></table></section>
-        <p class="pf-hint pf-mt">Revenue counts only what clients pay (bonus and free credits are £0, refunds taken off, commission added), the same as the Finance tab. Figures exclude VAT.</p>`;
+        <p class="pf-hint pf-mt">Revenue counts only what clients pay (bonus and free credits are £0, refunds taken off, commission added), the same as the Revenue tab. Figures exclude VAT.</p>`;
       box.querySelectorAll('[data-sp]').forEach((x) => (x.onclick = () => { simP = x.dataset.sp; draw(); }));
       box.querySelectorAll('[data-sv]').forEach((x) => (x.onclick = () => { simSpend = +x.dataset.sv; draw(); }));
       const num0 = (v) => Math.max(0, Number(String(v).replace(/[^\d.]/g, '')) || 0);
@@ -1777,7 +1784,7 @@
       const s = sum(sales, 'val'), r = sum(refunds, 'val'), c = sum(rows.comm, 'amount'), ad = sum(rows.spend, 'amount'), fee = sum(rows.fees || [], 'fee'), rev = s - r + c;
       return { sales, refunds, free, s, r, c, ad, fee, rev, bonus: sum(sales, 'credits') - s, profit: rev - ad, leads: rows.leads.length };
     };
-    // "Sold" = a paid sale that wasn't refunded. Free assignments and commission clients (Aureum) don't count.
+    // "Sold" = a paid sale that wasn't refunded. Free assignments and commission clients don't count.
     const paidSold = new Set(L.filter((m) => m.kind === 'sale' && m.paid).map((m) => m.lead));
     for (const m of L) if (m.kind === 'refund' && m.paid) paidSold.delete(m.lead);
     return { at, sum, byId, isComm, name, rate, madeAt, L, feesAll, commAll, otherAll, spendAll, P, paidSold };
@@ -1891,21 +1898,21 @@
 
   // ------------------------------------------------ admin: client detail
   // Admin: one lead in full, with price, assign and delete.
-  // Decline a refund with a reason the broker sees in the email (pick one, add to it, or write your own).
-  const DECLINE = [['valid', 'Contact details are valid'], ['interest', 'They’re no longer interested'], ['brief', 'They’ve changed what they need or don’t want funding'],
-    ['figures', 'Revenue and trading figures check out'], ['attempts', 'Not enough attempts to reach them'], ['late', 'Asked after the 72-hour window'], ['', 'Other (write your own)']];
+  // Decline a refund with a reason the firm sees in the email (pick one, add to it, or write your own).
+  const DECLINE = [['valid', 'Contact details are valid'], ['interest', 'They’re no longer interested'], ['brief', 'They’ve changed what they need or found another firm'],
+    ['matches', 'The matter and region match what they told us'], ['attempts', 'Not enough attempts to reach them'], ['late', 'Asked after the 72-hour window'], ['', 'Other (write your own)']];
   function declineModal(r) {
     modal.className = 'pf-modal'; modal.onclick = null;
     modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>Decline refund for lead #${r.lead_id}?</h2>
       <p>${h(r.brokers?.company || '')} asked: <b>${h(r.reason)}</b>${r.details ? `<br>“${h(r.details)}”` : ''}</p>
       <label>Reason <span>(goes in the email to them)</span><select name="why">${DECLINE.map(([k, t]) => `<option value="${k}">${h(t)}</option>`).join('')}</select></label>
-      <label>Anything to add <span>(optional unless “Other”)</span><textarea name="note" rows="3" placeholder="e.g. We called the number on 12 Nov and spoke to the director."></textarea></label>
+      <label>Anything to add <span>(optional unless “Other”)</span><textarea name="note" rows="3" placeholder="e.g. We called the number on 12 Nov and spoke to the client."></textarea></label>
       <p class="pf-hint">They’re told they can reply if they think it’s wrong.</p>
       <div class="pf-row"><button class="pf-btn" value="cancel" formnovalidate>Cancel</button><button class="pf-btn pf-btn-danger" value="ok">Decline and email them</button></div></form>`;
     modal.onclose = async () => {
       modal.onclose = null; if (modal.returnValue !== 'ok') return;
       const f = modal.querySelector('form');
-      try { await api('admin-refund', { id: r.id, approve: false, why: f.why.value, note: f.note.value }); toast('Refund declined and broker emailed'); admin(); }
+      try { await api('admin-refund', { id: r.id, approve: false, why: f.why.value, note: f.note.value }); toast('Refund declined and firm emailed'); admin(); }
       catch (ex) { toast(ex.message, true); declineModal(r); }
     };
     modal.returnValue = ''; if (!modal.open) modal.showModal();
@@ -1914,39 +1921,42 @@
   async function adminLeadDrawer(id) {
     drawer('<div class="pf-skel"></div>');
     let d; try { d = await api(`admin-lead&id=${id}`); } catch (ex) { modal.close(); return toast(ex.message, true); }
-    const l = d.lead, sold = !!l.buyer;
+    const l = L(d.lead), sold = !!l.buyer;
     const kv = (o) => o && typeof o === 'object' ? Object.entries(o).map(([k, v]) => [h(k), h(typeof v === 'object' ? JSON.stringify(v) : v)]) : [];
     const brokers = d.brokers.filter((b) => b.approved).concat(d.brokers.filter((b) => !b.approved));
-    drawer(`<div class="pf-dh"><span class="pf-pic pf-pic-lg">${pIcon(l.purpose)}</span><div><span class="pf-eyebrow">Lead #${l.id} · ${date(l.created_at)}</span><h2>${h(l.business || 'Unnamed business')}</h2></div></div>
-      <div class="pf-kpis pf-kpis-3"><div class="pf-kpi"><span>Amount</span><b>${short(l.amount)}</b><em>${h(l.purpose)}</em></div>
-        <div class="pf-kpi"><span>${sold ? 'Price paid' : TIERS_ADMIN ? 'Original price' : 'Price'}</span><b class="pf-kpi-sm">${sold && l.paid != null ? `${num(l.paid)} credits` : priceTag(l, ' credits')}</b><em>${sold ? (l.paid_why ? `${l.paid_why === 'commission' ? 'commission client, so no credits' : l.paid_why === 'refunded' ? 'refunded' : 'given free'} · list price ${num(l.price)}` : TIERS_ADMIN ? `paid on ${l.brokers?.pricing === 'tier' ? 'tier' : 'original'} pricing` : 'paid') : l.discounted ? 'discount live' : l.discount_at ? `50% off from ${date(l.discount_at)}` : 'never discounted (£250k+ revenue)'}</em>${TIERS_ADMIN ? `<em>${l.tier ? `${tierTag(l.tier)} ${sold ? 'tier' : `${num(l.tier_price)} credits on tiers`}` : 'No tier (under £50k revenue)'}</em>` : ''}</div>
-        <div class="pf-kpi"><span>Status</span><b class="pf-kpi-sm">${sold ? h(l.brokers?.company || 'Sold') : 'Live'}</b><em>${sold ? `${l.auto ? 'Auto' : 'Manual'} · ${date(l.bought_at)}` : 'not sold yet'}</em></div></div>
+    const firmOk = (b) => (b.can_take !== undefined ? b.can_take : !(b.regulators || []).length || allowedAreas(b.regulators).includes(l.area));
+    drawer(`<div class="pf-dh"><span class="pf-pic pf-pic-lg">${aIcon(l.area)}</span><div><span class="pf-eyebrow">Lead #${l.id} · ${date(l.created_at)} · ${h(l.area_label || areaName(l.area))}</span><h2>${leadTitle(l)}</h2><p class="pf-dsub">${h(l.contact_name || 'No name')}${l.business_name ? ` · ${h(l.business_name)}` : ''}</p></div></div>
+      <div class="pf-kpis pf-kpis-3"><div class="pf-kpi"><span>Grade</span><b>${h(l.grade || '–')}</b><em>score ${l.score ?? '–'}${(l.flags || []).length ? ` · flagged ${h(l.flags.join(', '))}` : ''}</em></div>
+        <div class="pf-kpi"><span>${sold ? 'Price paid' : 'Price'}</span><b class="pf-kpi-sm">${sold && l.paid != null ? `${num(l.paid)} credits` : priceTag(l, ' credits')}</b><em>${sold ? (l.paid_why ? `${l.paid_why === 'commission' ? 'commission client, so no credits' : l.paid_why === 'refunded' ? 'refunded' : 'given free'} · list price ${num(l.price)}` : 'paid') : l.discounted ? 'discount live' : l.discount_at ? `50% off from ${date(l.discount_at)}` : l.price_fixed ? 'price set by hand' : 'not discounted'}</em></div>
+        <div class="pf-kpi"><span>Status</span><b class="pf-kpi-sm">${sold ? h(l.brokers?.company || 'Sold') : l.hidden_at ? 'Hidden' : 'Live'}</b><em>${sold ? `${l.auto ? 'Auto' : 'Manual'} · ${date(l.bought_at)}` : 'not sold yet'}</em></div></div>
       <h3 class="pf-dsec">Contact</h3>
-      ${facts([['Name', h(l.full_name)], ['Mobile', `<a href="tel:${h(l.phone)}">${h(l.phone)}</a>`], ['Email', `<a href="mailto:${h(l.email)}">${h(l.email)}</a>${l.suppressed ? ' <b class="pf-neg">Suppressed</b>' : ''}`], ['Quality score', l.quality],
-        ['Phone check', !l.checks?.phone ? 'Not checked' : l.checks.phone.allocated === false ? '<span class="pf-chwarn">Number doesn’t exist on any network</span>' : l.checks.phone.reachable === true ? `Live${l.checks.phone.carrier ? ` (${h(l.checks.phone.carrier)})` : ''}` : l.checks.phone.reachable === false ? 'Not reachable, applicant confirmed it' : 'No answer from network'],
-        ['Email check', !l.checks?.email ? 'Not checked' : `${h(l.checks.email.result)}${l.checks.emailConfirmed ? ', applicant confirmed it' : ''}`],
-        ['Company number', l.company?.number ? `<a href="https://find-and-update.company-information.service.gov.uk/company/${h(l.company.number)}" target="_blank" rel="noopener">${h(l.company.number)}</a>` : 'Typed in by hand'],
-        ['Listed director', !l.company ? '–' : l.company.directorListed ? `Yes, ${h(l.company.director)}${l.company.role === 'Secretary' ? ', company secretary' : ''}${l.company.directorDob ? ` (born ${monthYear(l.company.directorDob)})` : ''}` : l.company.director ? `No. Picked ${h(l.company.director)} from the list, but gave a different name` : 'No, not on the list']])}
+      ${facts([['Name', h(l.contact_name || '–')], ['Mobile', `<a href="tel:${h(l.phone)}">${h(l.phone)}</a>`], ['Email', `<a href="mailto:${h(l.email)}">${h(l.email)}</a>${l.suppressed ? ' <b class="pf-neg">Suppressed</b>' : ''}`], ['Postcode', h(l.postcode || l.postcode_district || '–')],
+        ['Phone check', !l.checks?.phone ? 'Not checked' : l.checks.phone.allocated === false ? '<span class="pf-chwarn">Number doesn’t exist on any network</span>' : l.checks.phone.reachable === true ? `Live${l.checks.phone.carrier ? ` (${h(l.checks.phone.carrier)})` : ''}` : l.checks.phone.reachable === false ? 'Not reachable, client confirmed it' : 'No answer from network'],
+        ['Email check', !l.checks?.email ? 'Not checked' : `${h(l.checks.email.result || '–')}${l.checks.emailConfirmed ? ', client confirmed it' : ''}`],
+        ...(l.audience === 'business' ? [['Business', h(l.business_name || '–')], ['Company number', l.company_number ? `<a href="https://find-and-update.company-information.service.gov.uk/company/${h(l.company_number)}" target="_blank" rel="noopener">${h(l.company_number)}</a>` : 'Not given']] : [])])}
       ${sold ? `<h3 class="pf-dsec">${h(l.brokers?.company || 'Buyer')}’s progress</h3>
-      <p><span class="pf-stage pf-st-${l.stage || 'new'}">${STAGE_NAME[l.stage || 'new']}</span>${l.stage_at ? ` <span class="pf-hint">since ${date(l.stage_at)}</span>` : ''}${l.stage === 'funded' && l.funded_amount ? ` · <b>${gbp(l.funded_amount)} funded</b>` : ''}${l.archived_at ? ` · <span class="pf-hint">archived ${date(l.archived_at)}</span>` : ''}</p>
+      <p><span class="pf-stage pf-st-${l.stage || 'new'}">${STAGE_NAME[l.stage || 'new']}</span>${l.stage_at ? ` <span class="pf-hint">since ${date(l.stage_at)}</span>` : ''}${l.stage === 'instructed' && l.instructed_value ? ` · <b>${gbp(l.instructed_value)} instructed</b>` : ''}${l.archived_at ? ` · <span class="pf-hint">archived ${date(l.archived_at)}</span>` : ''}</p>
       <ul class="pf-notes">${(d.notes || []).map((n) => `<li><p>${h(n.body)}</p><span>${date(n.created_at)}</span></li>`).join('') || '<li class="pf-notes-empty">No notes from the buyer yet.</li>'}</ul>
-      ${(d.refunds || []).map((x) => `<div class="pf-refundbox ${x.status}">${I.undo}<div><b>Refund ${x.status === 'rejected' && /^Declined automatically/.test(x.decision || '') ? 'asked, not refundable (auto-declined)' : x.status}</b><span>${h(x.reason)}${x.brokers?.company ? ` · ${h(x.brokers.company)}` : ''} · ${date(x.created_at)}</span>${x.details ? `<span>“${h(x.details)}”</span>` : ''}${x.decision && !/^Declined automatically/.test(x.decision) ? `<span>Decision: ${h(x.decision)}</span>` : ''}</div></div>`).join('')}` : ''}
-      <h3 class="pf-dsec">What they told us</h3>
-      ${facts([['Needed', h(l.timeline)], ['Business type', h(l.structure)], ['Annual revenue', h(l.turnover)], ['Trading for', h(l.trading)], ['Homeowner or tenant', h(l.property || '–')], ['Missed payments / CCJs', l.credit === 'Not sure' ? '–' : h(l.credit)],
-        ['Existing finance', h(l.debt)], ['Left to repay', h(l.debt_left || '–')], ['Monthly repayments', h(l.debt_monthly || '–')]])}
+      ${(d.refunds || []).map((x) => `<div class="pf-refundbox ${x.status}">${I.undo}<div><b>Refund ${x.status === 'rejected' && /^Declined automatically/.test(x.decision || '') ? 'asked, not refundable (auto-declined)' : x.status}</b><span>${h(x.reason)}${x.brokers?.company ? ` · ${h(x.brokers.company)}` : ''} · ${date(x.created_at)}</span>${x.details ? `<span>“${h(x.details)}”</span>` : ''}${x.decision && !/^Declined automatically/.test(x.decision) ? `<span>Decision ${h(x.decision)}</span>` : ''}</div></div>`).join('')}` : ''}
+      <h3 class="pf-dsec">Enquiry</h3>
+      ${enquiryFacts(l, [['Country', h(l.country || '–')], ['Form version', h(l.form_version || '–')]])}
+      ${tagList(l.tags)}
+      ${l.summary ? `<h3 class="pf-dsec">In the client’s words</h3><blockquote class="pf-summary">${h(l.summary)}</blockquote>` : ''}
+      <h3 class="pf-dsec">Qualifying answers</h3>${answersList(l.answers)}
+      ${chBlock(l.companies_house || null, true)}
       ${sold ? '' : `<h3 class="pf-dsec">Price</h3>
       <form class="pf-form pf-inline" data-lprice><label>List price (credits)<input name="price" type="number" min="1" max="1000" value="${l.list_price ?? l.price}" required></label><button class="pf-btn">Save price</button></form>
-      <p class="pf-hint">${l.discount_at || l.discounted ? `Unsold leads drop to half this price ${l.discounted ? 'automatically (already applied)' : `on ${date(l.discount_at)}`}.` : 'Leads from businesses with £250k+ revenue are never discounted.'}</p>
-      <h3 class="pf-dsec">Assign to a broker</h3>
-      <form class="pf-form" data-lassign><label>Broker<select name="broker" required><option value="">Choose a broker</option>${brokers.map((b) => `<option value="${b.id}">${h(b.company)} · ${h(b.contact_name || b.email)} · ${num(b.credits)} credits${b.approved ? '' : ' (not approved)'}</option>`).join('')}</select></label>
+      <p class="pf-hint">${l.discount_at || l.discounted ? `Unsold leads drop to half this price ${l.discounted ? 'automatically (already applied)' : `on ${date(l.discount_at)}`}.` : 'Prices set by hand aren’t discounted again automatically.'}</p>
+      <h3 class="pf-dsec">Assign to a firm</h3>
+      <form class="pf-form" data-lassign><label>Firm<select name="broker" required><option value="">Choose a firm</option>${brokers.map((b) => `<option value="${b.id}" ${firmOk(b) ? '' : 'disabled'}>${h(b.company)} · ${h(b.contact_name || b.email)} · ${num(b.credits)} credits${b.approved ? '' : ' (not approved)'}${firmOk(b) ? '' : ' (regulator doesn’t cover this area)'}</option>`).join('')}</select></label>
         <label class="pf-check"><input type="checkbox" name="charge" checked> Charge ${l.price} credits (untick to give it free)</label>
         <div><button class="pf-btn pf-btn-primary">Assign and send lead</button></div></form>`}
       ${relistForm(l, d, brokers)}
       ${kv(l.consent).length ? `<h3 class="pf-dsec">Consent record</h3>${facts(kv(l.consent))}` : ''}
       <h3 class="pf-dsec">Source</h3>${facts([['Came from', h(l.channel || 'Direct or unknown')], ...(l.campaign_name ? [['Campaign', h(l.campaign_name)]] : []), ...(l.adset ? [['Ad set', h(l.adset)]] : []), ...(l.ad ? [['Ad', h(l.ad)]] : []), ...kv(l.source)])}
-      <h3 class="pf-dsec">Email suppression</h3><p class="pf-hint">${l.suppressed ? `On the suppression list since ${date(l.suppressed.created_at)} (${h(l.suppressed.reason || 'Unsubscribed')}). Leaflegal and brokers’ CRMs won’t email them.` : 'Suppressing stops all emails to them from Leaflegal and brokers’ CRMs, including match emails. Texts and WhatsApp aren’t affected.'}</p>
+      <h3 class="pf-dsec">Email suppression</h3><p class="pf-hint">${l.suppressed ? `On the suppression list since ${date(l.suppressed.created_at)} (${h(l.suppressed.reason || 'Unsubscribed')}). Leaflegal and firms’ CRMs won’t email them.` : 'Suppressing stops all emails to them from Leaflegal and firms’ CRMs, including match emails. Texts and WhatsApp aren’t affected.'}</p>
       <div class="pf-mb"><button class="pf-btn" data-lsup>${l.suppressed ? 'Remove from suppression list' : 'Suppress email'}</button></div>
-      <h3 class="pf-dsec">Hide</h3><p class="pf-hint">${l.hidden_at ? `Hidden since ${date(l.hidden_at)}. It only shows under Status → Hidden${sold ? '' : ' and isn’t on Opportunities'}.` : `Takes it out of All leads${sold ? '' : ' and off Opportunities, so brokers can’t buy it'}. You can unhide it any time.`}</p>
+      <h3 class="pf-dsec">Hide</h3><p class="pf-hint">${l.hidden_at ? `Hidden since ${date(l.hidden_at)}. It only shows under Status → Hidden${sold ? '' : ' and isn’t on Opportunities'}.` : `Takes it out of All leads${sold ? '' : ' and off Opportunities, so firms can’t buy it'}. It can be unhidden any time.`}</p>
       <div class="pf-mb"><button class="pf-btn" data-lhide>${l.hidden_at ? 'Unhide lead' : 'Hide lead'}</button></div>
       <h3 class="pf-dsec">Delete</h3><p class="pf-hint">Removes the lead${sold ? ', and takes it out of the buyer’s leads. Credits aren’t returned automatically' : ''}. This can’t be undone.</p>
       <div><button class="pf-btn pf-btn-danger" data-ldel>Delete lead #${l.id}</button></div>`);
@@ -1966,18 +1976,18 @@
       rl.onsubmit = (e) => {
         e.preventDefault();
         const toB = rl.dest?.value === 'broker', b = toB && d.brokers.find((x) => x.id === rl.broker.value);
-        if (toB && !b) return toast('Choose a broker', true);
+        if (toB && !b) return toast('Choose a firm', true);
         const pr = rl.price.value === 'custom' ? +rl.custom.value : rl.price.value;
         const what = toB ? `give it to ${h(b.company)}${rl.charge.checked ? ', charging them the new price' : ' free of charge'}` : 'put it back in Opportunities';
-        confirmBox({ title: `${sold ? `Take lead #${l.id} off ${h(l.brokers?.company || 'its buyer')} and` : `Update lead #${l.id} and`} ${what}?`, text: sold ? (rl.refund.checked ? 'They get back the credits they paid for it (less anything already refunded).' : 'This doesn’t refund them. Tick the refund box if they’re owed one.') : 'The new figures and price show in Opportunities straight away.', ok: 'Confirm' })
-          .then((r) => (r === null ? adminLeadDrawer(id) : run({ op: 'relist', turnover: rl.turnover.value, trading: rl.trading.value, price: pr, refund: !!rl.refund?.checked, ...(toB ? { broker: b.id, charge: rl.charge.checked } : {}) },
-            (rl.refund.checked ? 'Refunded. ' : '') + (toB ? `Lead given to ${b.company}` : 'Lead updated and back in Opportunities'), e.submitter)));
+        confirmBox({ title: `${sold ? `Take lead #${l.id} off ${h(l.brokers?.company || 'its buyer')} and` : `Update lead #${l.id} and`} ${what}?`, text: sold ? (rl.refund?.checked ? 'They get back the credits they paid for it (less anything already refunded).' : 'This doesn’t refund them. Tick the refund box if they’re owed one.') : 'The new figures and price show in Opportunities straight away.', ok: 'Confirm' })
+          .then((r) => (r === null ? adminLeadDrawer(id) : run({ op: 'relist', grade: rl.grade.value, price: pr, refund: !!rl.refund?.checked, ...(toB ? { broker: b.id, charge: rl.charge.checked } : {}) },
+            (rl.refund?.checked ? 'Refunded. ' : '') + (toB ? `Lead given to ${b.company}` : 'Lead updated and back in Opportunities'), e.submitter)));
       };
     }
     modal.querySelector('[data-lsup]').onclick = (e) => {
       const btn = e.currentTarget, off = !!l.suppressed;
       confirmBox(off ? { title: `Email ${h(l.email)} again?`, text: 'Only do this if they’ve asked to hear from us.', ok: 'Remove from list' }
-        : { title: `Suppress ${h(l.email)}?`, text: 'Leaflegal and brokers’ CRMs won’t email them again.', ok: 'Suppress email', input: 'Reason (optional)' })
+        : { title: `Suppress ${h(l.email)}?`, text: 'Leaflegal and firms’ CRMs won’t email them again.', ok: 'Suppress email', input: 'Reason (optional)' })
         .then((r) => (r === null ? adminLeadDrawer(id) : run(off ? { op: 'unsuppress' } : { op: 'suppress', why: r || undefined }, off ? 'Removed from the suppression list' : 'Email suppressed', btn)));
     };
     modal.querySelector('[data-lhide]').onclick = (e) => run({ op: l.hidden_at ? 'unhide' : 'hide' }, l.hidden_at ? `Lead #${l.id} unhidden` : `Lead #${l.id} hidden`, e.currentTarget);
@@ -1988,41 +1998,44 @@
     };
   }
 
-  // Correct a lead's figures and price, then relist it or give it to another broker (sold leads are taken off their buyer).
+  // Correct a lead's grade and price, then relist it or give it to another firm (sold leads are taken off their buyer).
   function relistForm(l, d, brokers) {
     const sold = !!l.buyer, full = l.list_price || l.price, half = Math.max(1, Math.ceil(full / 2));
-    const sel = (name, list, cur) => `<select name="${name}">${(list.includes(cur) || !cur ? list : [cur, ...list]).map((v) => `<option ${v === cur ? 'selected' : ''}>${h(v)}</option>`).join('')}</select>`;
-    return `<h3 class="pf-dsec">${sold ? 'Relist or reassign' : 'Correct the figures'}</h3>
-      <p class="pf-hint">${sold ? `Takes the lead off ${h(l.brokers?.company || 'its buyer')}. Fix any figures that were wrong, set a price, then put it back in Opportunities or give it to someone else.` : 'If the revenue or trading time was wrong, fix it here and reprice the lead.'}</p>
+    return `<h3 class="pf-dsec">${sold ? 'Relist or reassign' : 'Correct the grade'}</h3>
+      <p class="pf-hint">${sold ? `Takes the lead off ${h(l.brokers?.company || 'its buyer')}. Correct the grade if it was wrong, set a price, then put it back in Opportunities or give it to another firm.` : 'If the grade was wrong, correct it here and reprice the lead.'}</p>
       <form class="pf-form" data-lrelist>
-        <div class="pf-two"><label>Annual revenue${sel('turnover', d.turnovers, l.turnover)}</label><label>Trading for${sel('trading', d.trading, l.trading)}</label></div>
+        <label>Grade<select name="grade">${TX.grades.map((g) => `<option ${g === l.grade ? 'selected' : ''}>${g}</option>`).join('')}</select></label>
         <label>Price<select name="price"><option value="full">Full price · ${full} credits</option><option value="half">50% off · ${half} credits</option>
-          <option value="recalc">Work it out from the figures above</option><option value="custom">Set my own price</option></select></label>
-        <label>Your price (credits)<input name="custom" type="number" min="1" max="1000" value="${full}"></label>
+          <option value="recalc">Work it out again from current pricing</option><option value="custom">Set a price by hand</option></select></label>
+        <label>Price set by hand (credits)<input name="custom" type="number" min="1" max="1000" value="${full}"></label>
         ${sold ? `<label class="pf-check"><input type="checkbox" name="refund"> Refund ${h(l.brokers?.company || 'the buyer')} the credits they paid for it</label>
-        <label>Then<select name="dest"><option value="list">Put it back in Opportunities</option><option value="broker">Give it to another broker</option></select></label>
-        <div data-to hidden><label>Broker<select name="broker"><option value="">Choose a broker</option>${brokers.filter((b) => b.id !== l.buyer).map((b) => `<option value="${b.id}">${h(b.company)} · ${h(b.contact_name || b.email)} · ${num(b.credits)} credits${b.approved ? '' : ' (not approved)'}</option>`).join('')}</select></label>
+        <label>Then<select name="dest"><option value="list">Put it back in Opportunities</option><option value="broker">Give it to another firm</option></select></label>
+        <div data-to hidden><label>Firm<select name="broker"><option value="">Choose a firm</option>${brokers.filter((b) => b.id !== l.buyer).map((b) => `<option value="${b.id}">${h(b.company)} · ${h(b.contact_name || b.email)} · ${num(b.credits)} credits${b.approved ? '' : ' (not approved)'}</option>`).join('')}</select></label>
           <label class="pf-check"><input type="checkbox" name="charge" checked> Charge them the new price (untick to give it free)</label></div>` : ''}
-        <p class="pf-hint">Leads you price by hand aren’t discounted again automatically.</p>
+        <p class="pf-hint">Leads priced by hand aren’t discounted again automatically.</p>
         <div><button class="pf-btn pf-btn-primary">${sold ? 'Save and move lead' : 'Save and update listing'}</button></div></form>`;
   }
 
-  // Read-only snapshot of everything a broker has set (Admin → client drawer), so admins never need to sign in as them.
+  // Read-only snapshot of everything a firm has set (Admin → client drawer), so admins never need to sign in as them.
   function brokerSettings(b) {
     const f = b.filters || {}, pr = b.profile || {}, show = pr.show || {};
-    const list = (v) => (Array.isArray(v) && v.length ? v.map(h).join(', ') : 'Any');
+    const list = (v, name = (x) => x) => (Array.isArray(v) && v.length ? v.map((x) => h(name(x))).join(', ') : 'Any');
     const emails = (v) => String(v).split(/[,;\s]+/).filter(Boolean).map(h).join('<br>');
     const cr = (n) => (n ? `${num(n)} credits` : 'No limit');
     const hooks = (b.webhook_urls?.length ? b.webhook_urls : b.webhook_url ? [b.webhook_url] : []);
     const row = (k, v) => `<tr><td>${k}</td><td class="pf-r"><b>${v}</b></td></tr>`;
-    const contact = ['person', 'phone', 'whatsapp', 'sms', 'email', 'website'].filter((k) => pr[k]).map((k) => `${{ person: 'Contact', phone: 'Phone', whatsapp: 'WhatsApp', sms: 'Text', email: 'Email', website: 'Website' }[k]}: ${h(pr[k])}${show[k] === false ? ' (hidden)' : ''}`);
+    const contact = ['person', 'phone', 'whatsapp', 'sms', 'email', 'website'].filter((k) => pr[k]).map((k) => `${{ person: 'Contact', phone: 'Phone', whatsapp: 'WhatsApp', sms: 'Text', email: 'Email', website: 'Website' }[k]} ${h(pr[k])}${show[k] === false ? ' (hidden)' : ''}`);
+    const areas = (f.areas || []).map((a) => `${h(areaName(a))}${f.matters?.[a]?.length ? ` (${f.matters[a].map((m) => h(matterName(a, m))).join(', ')})` : ''}`);
     return `<div class="pf-two-col pf-settings-view">
       <section><div class="pf-card-h"><h3>Buying</h3></div><table class="pf-table pf-mini"><tbody>
         ${row('Mode', b.mode === 'auto' ? 'Auto-buy on' : 'Manual')}
-        ${b.pricing === 'tier' ? (TIERS.names.length ? TIERS.names : ['Bronze', 'Silver', 'Gold', 'Platinum', 'Platinum+']).map((t) => { const p = f.tierPlan?.[t] || {}; return row(`${tierTag(t)}`, p.on === false ? 'Not wanted' : p.credits ? `${num(p.credits)} credits a month` : 'Wanted, no auto-buy budget'); }).join('') : ''}
-        ${b.pricing === 'tier' ? '' : row('Loan size', f.amountMin || f.amountMax ? `${f.amountMin ? gbp(f.amountMin) : 'Any'} to ${f.amountMax ? gbp(f.amountMax) : 'any'}` : 'Any')}
-        ${b.pricing === 'tier' ? '' : `${row('Revenue', list(f.turnovers))}${row('Time trading', list(f.trading))}${row('Purposes', list(f.purposes))}
-        ${row('Clean credit only', f.cleanCredit ? 'Yes' : 'No')}${row('Max price per lead', f.maxPrice ? `${num(f.maxPrice)} credits` : 'No limit')}`}
+        ${row('Practice areas', areas.length ? areas.join('<br>') : 'None ticked')}
+        ${row('Regions', list(f.regions))}${f.postcodeAreas?.length ? row('Postcode areas', list(f.postcodeAreas)) : ''}
+        ${row('Clients', list(f.audiences, audName))}${row('Urgency', list(f.urgencies))}${row('Grades', list(f.grades))}
+        ${row('Private pay only', f.privatePayOnly ? 'Yes' : 'No')}
+        ${f.valueMin || f.valueMax ? row('Value', `${f.valueMin ? gbp(f.valueMin) : 'Any'} to ${f.valueMax ? gbp(f.valueMax) : 'any'}`) : ''}
+        ${f.tagsAny?.length ? row('Only tags', list(f.tagsAny)) : ''}${f.tagsNone?.length ? row('Never tags', list(f.tagsNone)) : ''}
+        ${row('Max price per lead', f.maxPrice ? `${num(f.maxPrice)} credits` : 'No limit')}
         ${row('Daily limit', [f.dailyLeads ? `${num(f.dailyLeads)} leads` : '', f.dailyCredits ? `${num(f.dailyCredits)} credits` : ''].filter(Boolean).join(' · ') || 'No limit')}
         ${row('Monthly auto-buy cap', cr(b.monthly_cap))}${row('Last auto-buy', b.last_auto_at ? date(b.last_auto_at) : 'Never')}
       </tbody></table></section>
@@ -2033,19 +2046,19 @@
         ${row('CRM webhooks', b.webhook_on === false || !hooks.length ? 'Off' : hooks.map((u) => h(u.replace(/^https?:\/\//, '').slice(0, 40))).join('<br>'))}
       </tbody></table>
       <div class="pf-card-h pf-mt"><h3>Public profile</h3></div><table class="pf-table pf-mini"><tbody>
-        ${row('Shown to matched businesses', pr.show ? 'Yes' : 'Not set up')}
+        ${row('Shown to matched clients', pr.show ? 'Yes' : 'Not set up')}
         ${pr.name ? row('Name', h(pr.name)) : ''}${pr.logo ? row('Logo', `<img src="${h(pr.logo)}" alt="" style="max-height:28px;max-width:120px;vertical-align:middle">`) : ''}
         ${contact.length ? row('Contact options', contact.join('<br>')) : ''}
       </tbody></table></section></div>`;
   }
-  // What a business sees when it's matched with this broker: confirmation page, email, WhatsApp and text, from their saved profile.
+  // What a client sees when they're matched with this firm: confirmation page, email, WhatsApp and text, from the saved profile.
   async function previewMatched(b) {
     let d; try { d = await apiFetch(`profile-preview&as=${b.id}`, { ...(b.profile || {}) }); } catch (ex) { return toast(ex.message, true); }
     modal.className = 'pf-modal pf-modal-wide'; modal.onclick = (e) => { if (e.target === modal) modal.close(); }; modal.onclose = null;
-    modal.innerHTML = `<div class="pf-modal-in"><h2>What businesses see from ${h(b.company)}</h2>
+    modal.innerHTML = `<div class="pf-modal-in"><h2>What clients see from ${h(b.company)}</h2>
       <div class="pf-seg" role="tablist"><button class="on" data-pv="page">Confirmation page</button><button data-pv="email">Email</button><button data-pv="whatsapp">WhatsApp</button><button data-pv="sms">Text</button></div>
       <iframe class="pf-preview-frame" title="Preview" sandbox="allow-same-origin" style="width:100%;height:62vh;border:1px solid var(--line);border-radius:14px;background:#fff"></iframe>
-      <p class="pf-hint">Sample enquiry: Sam Taylor, Taylor Joinery Ltd, £75,000. ${b.profile?.show ? '' : 'Their public profile isn’t switched on, so businesses only see the firm name.'}</p>
+      <p class="pf-hint">Sample enquiry from Sam Taylor. ${b.profile?.show ? '' : 'Their public profile isn’t switched on, so clients only see the firm name.'}</p>
       <div class="pf-row"><button class="pf-btn" data-x>Close</button><button class="pf-btn pf-btn-primary" data-edit>Edit their profile</button></div></div>`;
     const fr = modal.querySelector('iframe'), show = (k) => { fr.srcdoc = d[k]; modal.querySelectorAll('[data-pv]').forEach((x) => x.classList.toggle('on', x.dataset.pv === k)); };
     modal.querySelectorAll('[data-pv]').forEach((x) => (x.onclick = () => show(x.dataset.pv)));
@@ -2054,13 +2067,13 @@
     if (!modal.open) modal.showModal();
     show('page');
   }
-  // Signed partner agreement PDF (admins): opens in a new tab, or downloads.
+  // Signed referral agreement PDF (admins): opens in a new tab, or downloads.
   async function openAgreement(g, company, download) {
     const w = download ? null : window.open('', '_blank');
     const r = await fetch(`/api/platform?action=admin-agreement&id=${g.id}`, { headers: { Authorization: `Bearer ${session.access}` } });
     if (!r.ok) { w?.close(); throw new Error('Could not load the agreement'); }
     const url = URL.createObjectURL(new Blob([await r.arrayBuffer()], { type: 'application/pdf' }));
-    if (download) Object.assign(document.createElement('a'), { href: url, download: `${String(company || 'partner').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').toLowerCase()}-leaflegal-partner-agreement-v${g.version}.pdf` }).click();
+    if (download) Object.assign(document.createElement('a'), { href: url, download: `${String(company || 'firm').replace(/[^\w]+/g, '-').replace(/^-|-$/g, '').toLowerCase()}-leaflegal-referral-agreement-v${g.version}.pdf` }).click();
     else if (w) w.location = url; else location.href = url;
   }
   async function clientDrawer(id) {
@@ -2070,7 +2083,7 @@
     const stages = Object.fromEntries(STAGES.map(([k]) => [k, d.bought.filter((l) => l.stage === k).length]));
     drawer(`<div class="pf-dh"><span class="pf-avatar pf-avatar-lg">${initials(b.company)}</span><div><span class="pf-eyebrow">Client since ${new Date(b.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span><h2>${h(b.company)}</h2></div></div>
       <div class="pf-kpis pf-kpis-3"><div class="pf-kpi"><span>Credits</span><b>${num(b.credits)}</b><em>${num(spent)} spent</em></div>
-        <div class="pf-kpi"><span>Leads bought</span><b>${d.bought.length}</b><em>${stages.funded} funded</em></div>
+        <div class="pf-kpi"><span>Leads bought</span><b>${d.bought.length}</b><em>${stages.instructed || 0} instructed</em></div>
         <div class="pf-kpi"><span>Plan</span><b class="pf-kpi-sm">${sub ? `${h(sub.plan)} · ${gbp(sub.pounds)}` : b.plan ? `${h(b.plan.name)}${b.plan.price ? ` · ${gbp(b.plan.price)}` : ''}` : 'None'}</b><em>${sub ? `${sub.status}${sub.cancelling ? ', cancelling' : ''}` : b.plan ? (b.plan.commission ? 'commission client' : 'invoiced') : 'no subscription'}</em></div></div>
       ${b.suspended_at ? `<div class="pf-banner pf-banner-warn">${I.clock}<div><b>Suspended ${dayOnly(b.suspended_at)}.</b> ${h(b.suspend_reason ? b.suspend_reason.replace(/[.!?]?$/, '.') : 'No reason given.')} They can sign in but can't buy, aren't auto-bought for and get no lead emails.</div></div>` : ''}
       <div class="pf-row-l">${b.approved ? '' : `<button class="pf-btn pf-btn-primary" data-a="approve">Approve</button>`}
@@ -2084,37 +2097,36 @@
 </div>
       ${b.plan && !b.plan.commission ? `<h3 class="pf-dsec">Invoiced plan</h3><p class="pf-hint"><b>${h(b.plan.name)}</b> · ${num(b.plan.credits)} credits a month${b.plan.price ? ` · ${gbp(b.plan.price)} a month ex VAT` : ''} · next credits ${dayOnly(b.plan.next_at)}. Raise the invoice yourself; credits are added automatically each month.</p>` : ''}
       ${b.plan?.commission || d.commission?.length ? commissionSection(b, d, stages) : ''}
-      ${TIERS_ADMIN ? `<h3 class="pf-dsec">Pricing system</h3>
-      <div class="pf-seg" role="group" aria-label="Pricing system"><button type="button" data-pricing-set="credit" class="${b.pricing === 'tier' ? '' : 'on'}" aria-pressed="${b.pricing !== 'tier'}">Original credit pricing</button><button type="button" data-pricing-set="tier" class="${b.pricing === 'tier' ? 'on' : ''}" aria-pressed="${b.pricing === 'tier'}">Tier pricing</button></div>
-      <p class="pf-hint">${b.pricing === 'tier' ? 'Pays a flat price per tier (Bronze to Platinum+) and picks tiers, with a monthly budget for each, instead of detailed auto-buy criteria.' : 'Pays each lead’s calculated price and sets detailed auto-buy criteria, as before tier pricing.'} Switching applies to leads bought from now on. Their saved settings for the other system are kept.</p>` : ''}
+      <h3 class="pf-dsec">Regulators</h3>
+      ${(b.regulators || []).length ? `<table class="pf-table pf-mini"><tbody>${b.regulators.map((r) => `<tr><td><b>${h(regulatorOf(r.id)?.label || r.id)}</b><span>${h(regulatorOf(r.id)?.number || 'Number')} ${h(r.number || 'not given')}</span></td><td class="pf-r"><a class="pf-btn pf-btn-sm" href="${REG_LINK[r.id] || '#'}" target="_blank" rel="noopener">Check the register${I.arrow}</a></td></tr>`).join('')}</tbody></table>
+        <p class="pf-hint">Areas the firm can buy ${allowedAreas(b.regulators).map((a) => h(areaName(a))).join(', ') || 'none'}.</p>` : '<p class="pf-hint">No regulator given yet. They add it in the Firm step of setup.</p>'}
+      <div class="pf-status ${b.regulator_checked_at ? 'ok' : ''}">${b.regulator_checked_at ? I.check : I.clock}<div><b>${b.regulator_checked_at ? `Regulator checked ${dayOnly(b.regulator_checked_at)}` : 'Regulator not checked yet'}</b><span>Look the firm up on each register above before approving it.</span></div></div>
+      <div class="pf-row-l"><button class="pf-btn ${b.regulator_checked_at ? '' : 'pf-btn-primary'}" data-a="reg-check">${I.shield}${b.regulator_checked_at ? 'Mark checked again today' : 'Mark regulator checked'}</button>${b.regulator_checked_at ? '<button class="pf-btn" data-a="reg-uncheck">Clear check</button>' : ''}</div>
       <h3 class="pf-dsec">Their settings</h3>${brokerSettings(b)}
       <h3 class="pf-dsec">Details</h3>
-      <form class="pf-form" data-edit><div class="pf-two"><label>Company name<input name="company" value="${h(b.company)}"></label><label>FCA firm ref<input name="fca_number" value="${h(b.fca_number || '')}"></label></div>
+      <form class="pf-form" data-edit><div class="pf-two"><label>Firm name<input name="company" value="${h(b.company)}"></label><label>Company number <span>(optional)</span><input name="company_number" value="${h(b.company_number || '')}"></label></div>
+        <div class="pf-two">${TX.regulators.map((r) => `<label>${h(regShort(r.id))} number <span>(blank if not regulated by ${h(regShort(r.id))})</span><input name="reg:${r.id}" value="${h((b.regulators || []).find((x) => x.id === r.id)?.number || '')}"></label>`).join('')}</div>
         <label>Registered address<input name="address" value="${h(b.address || '')}"></label>
         <div class="pf-two"><label>Full name<input name="contact_name" value="${h(b.contact_name || '')}"></label><label>Position<input name="signer_title" value="${h(b.signer_title || '')}"></label></div>
         <div class="pf-two"><label>Login email<input name="email" type="email" value="${h(b.email)}"></label><label>Phone<input name="phone" value="${h(b.phone || '')}"></label></div>
         <label class="pf-check"><input type="checkbox" name="is_admin" ${b.is_admin ? 'checked' : ''} ${b.id === me.id ? 'disabled' : ''}> Admin access</label>
         <div><button class="pf-btn pf-btn-primary">Save details</button></div></form>
       <h3 class="pf-dsec">Agreement</h3><p class="pf-hint">${d.agreement ? `Signed by ${h(d.agreement.signer_name)} (${h(d.agreement.signer_title)}) on ${date(d.agreement.created_at)} · v${h(d.agreement.version)}` : 'Not signed yet.'}</p>
-      <label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" data-waive ${d.waived ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Doesn’t need to sign the partner agreement</b><em>They can buy leads, use auto-buy and choose a plan without signing. Only admins see this.</em></span></label>
+      <label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" data-waive ${d.waived ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Doesn’t need to sign the referral agreement</b><em>They can buy leads, use auto-buy and choose a plan without signing. Only admins see this.</em></span></label>
       ${d.agreement ? `<div class="pf-row-l"><button class="pf-btn" data-a="agreement">${I.doc || ''}View agreement</button><button class="pf-btn" data-a="agreement-dl">${I.download}Download</button></div>` : ''}
       <h3 class="pf-dsec">Credit history</h3>
       <table class="pf-table pf-mini"><tbody>${d.ledger.slice(0, 30).map((e) => `<tr><td><b>${h(e.reason)}${e.lead_id ? ` #${e.lead_id}` : ''}</b><span>${date(e.created_at)}${e.invoiced ? ` · invoiced ${gbp(e.invoiced)}` : ''}</span></td><td class="pf-r ${e.delta > 0 ? 'pf-plus' : ''}"><b>${e.delta > 0 ? '+' : ''}${num(e.delta)}</b></td></tr>`).join('') || '<tr><td class="pf-hint">No activity.</td></tr>'}</tbody></table>
       ${b.id === me.id ? '' : `<h3 class="pf-dsec">Delete account</h3><p class="pf-hint">${d.bought.length ? `${h(b.company)} has bought leads, so the account can't be deleted. Suspend it instead.` : 'Removes their login, settings and credit history for good. Only possible for accounts that have never bought a lead.'}</p>
       ${d.bought.length ? '' : `<div class="pf-row-l"><button class="pf-btn pf-btn-danger" data-a="delete">Delete account</button></div>`}`}`);
     const reopen = () => { clientDrawer(id); finData = null; };
-    modal.querySelectorAll('[data-pricing-set]').forEach((btn) => (btn.onclick = async () => {
-      const to = btn.dataset.pricingSet; if (to === (b.pricing === 'tier' ? 'tier' : 'credit')) return;
-      if (await confirmBox({ title: `Move ${h(b.company)} to ${to === 'tier' ? 'tier pricing' : 'original credit pricing'}?`, text: to === 'tier' ? 'They’ll pay the flat tier price for each lead, and auto-buy will follow the tiers and monthly credits they set. Until they set credits for a tier, auto-buy won’t buy for them.' : 'They’ll pay each lead’s calculated price, and auto-buy will follow their detailed criteria again.', ok: 'Switch' }) === null) return reopen();
-      try { await api('admin-broker', { id, pricing: to }); toast(`${b.company} is now on ${to === 'tier' ? 'tier pricing' : 'original credit pricing'}`); reopen(); admin(); } catch (ex) { toast(ex.message, true); }
-    }));
     modal.querySelector('[data-waive]').onchange = async (e) => {
       try { await api('admin-agreement-waive', { broker: id, waive: e.target.checked }); toast(e.target.checked ? `${b.company} can continue without signing` : `${b.company} must sign the agreement again`); reopen(); }
       catch (ex) { e.target.checked = !e.target.checked; toast(ex.message, true); }
     };
     modal.querySelector('[data-edit]').onsubmit = async (e) => {
       e.preventDefault(); const fd = new FormData(e.target);
-      try { await api('admin-update', { broker: id, ...Object.fromEntries([...fd].filter(([k]) => k !== 'is_admin')), is_admin: !!fd.get('is_admin') }); toast('Client updated'); reopen(); } catch (ex) { toast(ex.message, true); }
+      const regulators = TX.regulators.map((r) => ({ id: r.id, number: String(fd.get(`reg:${r.id}`) || '').trim() })).filter((r) => r.number);
+      try { await api('admin-update', { broker: id, ...Object.fromEntries([...fd].filter(([k]) => k !== 'is_admin' && !k.startsWith('reg:'))), regulators, is_admin: !!fd.get('is_admin') }); toast('Client updated'); reopen(); } catch (ex) { toast(ex.message, true); }
     };
     modal.querySelectorAll('[data-a]').forEach((btn) => (btn.onclick = async () => {
       const a = btn.dataset.a;
@@ -2122,6 +2134,7 @@
         if (a === 'approve') { await api('admin-broker', { id, approved: true }); toast('Approved and emailed'); return reopen(); }
         if (a === 'edit-profile' || a === 'edit-autobuy') { acting = { ...b }; modal.close(); return nav(a === 'edit-profile' ? 'profile' : 'autobuy'); }
         if (a === 'preview') return previewMatched(b);
+        if (a === 'reg-check' || a === 'reg-uncheck') { await api('admin-regulator-check', { broker: id, checked: a === 'reg-check' }); toast(a === 'reg-check' ? 'Regulator marked as checked' : 'Check cleared'); return reopen(); }
         if (a === 'suspend') {
           const r = await confirmBox({ title: `Suspend ${h(b.company)}?`, text: 'They can still sign in, but can’t buy leads, aren’t auto-bought for and get no lead emails until you lift it.', ok: 'Suspend', input: 'Reason (for your records, optional)' });
           if (r === null) return reopen(); await api('admin-suspend', { broker: id, suspend: true, reason: r }); toast('Suspended'); return reopen();
@@ -2149,7 +2162,7 @@
   }
   function inviteModal() {
     modal.className = 'pf-modal'; modal.onclick = null;
-    modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>Invite a supplier</h2><p>We'll email them an invitation. Their name and email are filled in for them, and their account is approved as soon as they create it.</p>
+    modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>Invite a firm</h2><p>We'll email them an invitation. Their name and email are filled in for them, and their account is approved as soon as they create it.</p>
       <label>Their name<input name="fullname" autocomplete="off" required></label>
       <label>Email<input name="email" type="email" autocomplete="off" required></label>
       <label>Firm <span>(optional)</span><input name="company" autocomplete="off"></label>
@@ -2199,7 +2212,7 @@
     modal.className = 'pf-modal'; modal.onclick = null;
     modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>${b.plan ? 'Edit' : 'Set up'} plan</h2><p>For ${h(b.company)}. We add the credits each month on the start date. For an invoiced plan, you raise the invoice yourself.</p>
       <label>Plan name <span>(shown to them on Billing)</span><input name="name" value="${h(p.name || '')}" placeholder="e.g. Custom 10k" required></label>
-      <label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" name="commission" ${p.commission ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Commission client</b><em>They pay you commission on deals, not a plan price. Log payments and ad spend on their page. Only admins see this.</em></span></label>
+      <label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" name="commission" ${p.commission ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Commission client</b><em>They pay commission on instructed matters, not a plan price. Log payments and ad spend on their page. Only admins see this.</em></span></label>
       <div class="pf-two"><label>Credits a month <span data-opt ${p.commission ? '' : 'hidden'}>(optional, 0 = add credits by hand)</span><input name="credits" inputmode="numeric" value="${p.credits ? num(p.credits) : p.commission ? '0' : ''}" ${p.commission ? '' : 'required'}></label>
         <label data-price ${p.commission ? 'hidden' : ''}>Price a month <span>(£ ex VAT)</span><div class="pf-money"><i>£</i><input name="price" inputmode="decimal" value="${p.price ? num(p.price) : ''}" placeholder="0"></div></label></div>
       <label>${b.plan ? 'New start date <span>(optional, leave blank to keep the schedule)</span>' : 'Start date <span>(first credits are added on this day)</span>'}<input name="start" type="date" value="${b.plan ? '' : today}" min="${today}"></label>
@@ -2257,7 +2270,7 @@
     const V = (d.invites || []).map((v) => (unsubbed.has(v.email) ? { ...v, notInterested: true } : v)).map((v) => (acc[v.email] ? { ...v, accepted: true, accepted_at: acc[v.email].at, broker: acc[v.email].broker } : v));
     for (const a of d.accepted || []) if (a.email && !V.some((v) => v.email === a.email)) { const b = (d.brokers || []).find((x) => x.id === a.broker);
       V.push({ email: a.email, name: b?.contact_name || '', company: b?.company || '', accepted: true, accepted_at: a.at, broker: a.broker, created_at: a.at, expires_at: a.at, alerts: false, kind: 'warm' }); }
-    const status = (v) => (v.accepted ? ['funded', 'Accepted'] : v.notInterested ? ['lost', 'Not interested'] : v.paused ? ['lost', 'Paused'] : v.queued ? ['new', 'Queued'] : new Date(v.expires_at) < now ? ['lost', 'Expired'] : v.send_at && new Date(v.send_at) > now ? ['application', 'Scheduled'] : ['contacted', 'Sent']);
+    const status = (v) => (v.accepted ? ['instructed', 'Accepted'] : v.notInterested ? ['lost', 'Not interested'] : v.paused ? ['lost', 'Paused'] : v.queued ? ['new', 'Queued'] : new Date(v.expires_at) < now ? ['lost', 'Expired'] : v.send_at && new Date(v.send_at) > now ? ['application', 'Scheduled'] : ['contacted', 'Sent']);
     const leadsMode = (v) => (!v.alerts ? 'Lead emails off' : v.digest ? 'Weekly round-up' : 'Every new lead');
     const uploads = Object.values(V.filter((v) => v.batch).reduce((a, v) => { const u = (a[v.batch] ||= { batch: v.batch, n: 0, later: 0, paused: 0, joined: 0, next: null, at: v.created_at, cfg: (d.uploads || {})[v.batch] || {} }); u.n++; if (['Scheduled', 'Queued', 'Paused'].includes(status(v)[1])) { u.later++; if (!u.next || v.send_at < u.next) u.next = v.send_at; } if (v.paused) u.paused++; if (v.accepted) u.joined++; if (v.notInterested && !v.accepted) u.unsub = (u.unsub || 0) + 1; if (v.created_at < u.at) u.at = v.created_at; return a; }, {}));
     const draw = () => {
@@ -2277,7 +2290,7 @@
       const pager = pages > 1 ? `<div class="pf-pager"><button class="pf-btn pf-btn-sm" type="button" data-pg="-1" ${invPage ? '' : 'disabled'}>Previous</button>
         <span class="pf-hint">${num(invPage * INV_PER + 1)}–${num(invPage * INV_PER + shown.length)} of ${num(list.length)} · page ${invPage + 1} of ${pages}</span>
         <button class="pf-btn pf-btn-sm" type="button" data-pg="1" ${invPage < pages - 1 ? '' : 'disabled'}>Next</button></div>` : '';
-      box.innerHTML = `<div class="pf-row-l pf-mb"><button class="pf-btn pf-btn-primary" data-invite1>${I.mail}Invite a supplier</button><button class="pf-btn" data-bulk>${I.download}Upload a CSV</button></div>
+      box.innerHTML = `<div class="pf-row-l pf-mb"><button class="pf-btn pf-btn-primary" data-invite1>${I.mail}Invite a firm</button><button class="pf-btn" data-bulk>${I.download}Upload a CSV</button></div>
         ${uploads.length ? `<div class="pf-card-h"><h3>CSV uploads</h3><span>sending progress and who’s joined</span></div><div class="pf-card pf-flush pf-mb"><table class="pf-table"><tbody>
           ${uploads.map((u) => { const c = u.cfg, paused = u.paused > 0, done = !u.later;
             return `<tr><td><b>${h(u.batch.replace(/^csv-\d+-?/, '') || 'CSV upload')}</b><span>Uploaded ${dayOnly(u.at)}${c.kind ? ` · ${c.kind === 'cold' ? 'Cold' : 'Warm'}` : ''}</span></td>
@@ -2503,7 +2516,7 @@
     box.innerHTML = `<p class="pf-hint pf-mb">${E.length} emails, built from the live code with test data on ${date(mailData.built)} (rebuilt every deploy). Nothing here is sent. CRM follow-ups show the default wording; edit the live versions in the CRM.</p>
       <div class="pf-card pf-flush"><table class="pf-table"><thead><tr><th>Email</th><th>Subject</th><th class="pf-hide-s">Goes to</th></tr></thead><tbody>
       ${E.map((m, i) => `<tr class="pf-rowlink" data-mail="${i}" tabindex="0"><td><b>${h(m.label)}</b>${m.files?.length ? `<span>Attached: ${h(m.files.join(', '))}</span>` : ''}</td><td>${h(m.subject)}</td>
-        <td class="pf-hide-s"><span>${/leaflegal\.co$/.test(m.to) ? 'You (Leaflegal)' : /acmetrading/.test(m.to) ? 'The business' : 'The broker'}</span></td></tr>`).join('')}</tbody></table></div>`;
+        <td class="pf-hide-s"><span>${/leaflegal\.co$/.test(m.to) ? 'You (Leaflegal)' : /acmetrading/.test(m.to) ? 'The client' : 'The firm'}</span></td></tr>`).join('')}</tbody></table></div>`;
     box.querySelectorAll('[data-mail]').forEach((r) => { const go = () => { const m = E[+r.dataset.mail];
       drawer(`<div class="pf-dh"><div><span class="pf-eyebrow">${h(m.label)}</span><h2>${h(m.subject)}</h2></div></div><p class="pf-hint">To: ${h(m.to)} (test data)${m.files?.length ? ` · Attached: ${h(m.files.join(', '))}` : ''}</p>
         <iframe class="pf-mail-frame" title="${h(m.subject)}" sandbox></iframe>`);
@@ -2523,7 +2536,7 @@
       <div class="pf-kpis pf-kpis-3">
         <div class="pf-kpi"><span>Commission received</span><b>${money2(inc)}</b><em>${got.length} payment${got.length === 1 ? '' : 's'} · ${per(inc, n)} per lead</em></div>
         <div class="pf-kpi"><span>Ad spend</span><b>${money2(cost)}</b><em>${num(n)} lead${n === 1 ? '' : 's'} sent · ${per(cost, n)} per lead${extra ? ` · ${money2(extra)} outside Meta` : ''}</em></div>
-        <div class="pf-kpi ${p < 0 ? 'pf-kpi-loss' : 'pf-kpi-win'}"><span>Profit</span><b>${money2(p)}</b><em>${cost ? `${(inc / cost).toFixed(1)}× return on ad spend` : 'no ad spend logged yet'}${stages.funded ? ` · ${per(inc, stages.funded)} per funded deal` : ''}</em></div></div>
+        <div class="pf-kpi ${p < 0 ? 'pf-kpi-loss' : 'pf-kpi-win'}"><span>Profit</span><b>${money2(p)}</b><em>${cost ? `${(inc / cost).toFixed(1)}× return on ad spend` : 'no ad spend logged yet'}${stages.instructed ? ` · ${per(inc, stages.instructed)} per instructed matter` : ''}</em></div></div>
       <div class="pf-row-l"><button class="pf-btn pf-btn-primary" data-a="commission">${I.coins}Add commission payment</button><button class="pf-btn" data-a="spend">Add other ad spend</button></div>
       <p class="pf-hint">${d.meta !== 'ok' && n ? 'Meta isn’t connected, so Meta ad spend can’t be worked out. ' : n ? `Meta ad spend is worked out per lead: ${matched} of ${n} matched to their campaign’s spend that week ÷ its leads, the rest at that week’s average cost per lead. ` : ''}Use “Add other ad spend” only for spend outside Meta.</p>
       ${E.length ? `<table class="pf-table pf-mini"><tbody>${E.map((e) => `<tr><td><b>${e.kind === 'spend' ? 'Other ad spend' : 'Commission received'}</b><span>${dayOnly(e.date)}${e.note ? ` · ${h(e.note)}` : ''}</span></td><td class="pf-r ${e.kind === 'spend' ? 'pf-neg' : 'pf-plus'}"><b>${e.kind === 'spend' ? '−' : '+'}${money2(e.amount)}</b></td><td class="pf-r"><button class="pf-btn pf-btn-sm" type="button" data-a="entry-del" data-id="${e.id}" aria-label="Delete entry">Delete</button></td></tr>`).join('')}</tbody></table>` : '<p class="pf-hint">No payments or ad spend logged yet.</p>'}`;
@@ -2534,7 +2547,7 @@
     modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>${spend ? 'Add other ad spend' : 'Add commission payment'}</h2><p>${spend ? `Ad spend outside Meta behind ${h(b.company)}’s leads. Meta spend is worked out automatically, so don’t add it here.` : `Commission ${h(b.company)} paid you.`} Only admins see this.</p>
       <div class="pf-two"><label>Amount <span>(£${spend ? '' : ' ex VAT'})</span><div class="pf-money"><i>£</i><input name="amount" inputmode="decimal" required></div></label>
         <label>${spend ? 'Date' : 'Date paid'}<input name="date" type="date" value="${today}" max="${today}" required></label></div>
-      <label>Note <span>(optional)</span><input name="note" placeholder="${spend ? 'e.g. Google Ads, November' : 'e.g. 3 deals funded, invoice INV-0041'}"></label>
+      <label>Note <span>(optional)</span><input name="note" placeholder="${spend ? 'e.g. Google Ads, November' : 'e.g. 3 matters instructed, invoice INV-0041'}"></label>
       <div class="pf-row"><button class="pf-btn" value="cancel" formnovalidate>Cancel</button><button class="pf-btn pf-btn-primary" value="ok">Save</button></div></form>`;
     modal.onclose = async () => {
       modal.onclose = null;
@@ -2551,7 +2564,7 @@
     modal.innerHTML = `<form method="dialog" class="pf-modal-in"><h2>Adjust credits</h2><p>${h(b.company)} has <b>${num(b.credits)}</b> credits.</p>
       <label>Credits to add <span>(use a minus sign to remove)</span><input name="n" inputmode="numeric" required></label>
       <label>Reason <span>(shown in their history)</span><input name="reason" placeholder="e.g. 5,000 credit package, invoice INV-0012"></label>
-      <label>Invoiced amount <span>(optional, £ ex VAT, counted as revenue in Finance)</span><div class="pf-money"><i>£</i><input name="invoiced" inputmode="decimal" placeholder="0"></div></label>
+      <label>Invoiced amount <span>(optional, £ ex VAT, counted as revenue)</span><div class="pf-money"><i>£</i><input name="invoiced" inputmode="decimal" placeholder="0"></div></label>
       <div class="pf-row"><button class="pf-btn" value="cancel" formnovalidate>Cancel</button><button class="pf-btn pf-btn-primary" value="ok">Apply</button></div></form>`;
     modal.onclose = async () => {
       modal.onclose = null;
@@ -2573,7 +2586,7 @@
     o.line1 = p.shift() || ''; o.line2 = p.join(', ');
     return o;
   };
-  const OB_STEPS = [['company', 'Company'], ['leads', 'Leads'], ['profile', 'Profile'], ['plan', 'Plan'], ['agreement', 'Agreement'], ['pay', 'Payment']];
+  const OB_STEPS = [['firm', 'Firm'], ['leads', 'Leads'], ['profile', 'Profile'], ['plan', 'Plan'], ['agreement', 'Agreement'], ['pay', 'Payment']];
   // The stepper shows creating the account as step 1, so signup and email confirmation sit in the same frame as onboarding.
   const ALL_STEPS = [['account', 'Account'], ...OB_STEPS];
   const obAt = (k) => OB_STEPS.findIndex(([x]) => x === k), obOf = () => `Step ${ob.step + 2} of ${ALL_STEPS.length}`;
@@ -2591,62 +2604,71 @@
 
   async function onboarding() {
     const step = OB_STEPS[ob.step][0];
-    if (step === 'company') {
-      const adr = splitAddress(me.address);
-      obShell(`<form class="pf-onb-form" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Company details</h1><p class="pf-sub">These details go on your partner agreement and invoices.</p>
-        <div class="pf-two"><label>Registered company name<input name="company" value="${h(me.company)}" autocomplete="organization" required></label>
-          <label>FCA firm ref <span>(optional)</span><input name="fca_number" value="${h(me.fca_number || '')}" inputmode="numeric"></label></div>
-        <h4 class="pf-sec">Registered address</h4>
+    if (step === 'firm') {
+      const adr = splitAddress(me.address), regs = me.regulators || [], numOf = (id) => regs.find((r) => r.id === id)?.number || '';
+      obShell(`<form class="pf-onb-form" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Firm details</h1><p class="pf-sub">These details go on the referral agreement and invoices. We check every firm on its regulator’s register before leads go live.</p>
+        <div class="pf-two"><label>Firm name<input name="company" value="${h(me.company)}" autocomplete="organization" required></label>
+          <label>Company number <span>(optional)</span><input name="company_number" value="${h(me.company_number || '')}" autocapitalize="characters" placeholder="e.g. 01234567"></label></div>
+        <h4 class="pf-sec">Regulators</h4><p class="pf-hint pf-mt-0">Tick every body that regulates the firm and add its number. This decides which practice areas the firm can buy.</p>
+        <div class="pf-regs">${TX.regulators.map((r) => `<div class="pf-reg ${numOf(r.id) ? 'on' : ''}"><label class="pf-check"><input type="checkbox" name="reg" value="${r.id}" ${regs.some((x) => x.id === r.id) ? 'checked' : ''}> ${h(r.label)}</label>
+          <label class="pf-reg-n" ${regs.some((x) => x.id === r.id) ? '' : 'hidden'}>${h(r.number)}<input name="regnum_${r.id}" value="${h(numOf(r.id))}" autocomplete="off"></label></div>`).join('')}</div>
+        <h4 class="pf-sec">Firm address</h4>
         <label>Address line 1<input name="line1" value="${h(adr.line1)}" autocomplete="address-line1" required></label>
         <label>Address line 2 <span>(optional)</span><input name="line2" value="${h(adr.line2)}" autocomplete="address-line2"></label>
         <div class="pf-two"><label>Town or city<input name="town" value="${h(adr.town)}" autocomplete="address-level2" required></label>
           <label>County <span>(optional)</span><input name="county" value="${h(adr.county)}" autocomplete="address-level1"></label></div>
         <div class="pf-two"><label>Postcode<input name="postcode" value="${h(adr.postcode)}" autocomplete="postal-code" autocapitalize="characters" required></label><span></span></div>
-        <h4 class="pf-sec">Signing on behalf of the company</h4>
+        <h4 class="pf-sec">Signing for the firm</h4>
         <div class="pf-two"><label>Full name<input name="contact_name" value="${h(me.contact_name || '')}" autocomplete="name" required></label>
-          <label>Position<input name="signer_title" value="${h(me.signer_title || prefill.role || '')}" placeholder="e.g. Director" required></label></div>
+          <label>Position<input name="signer_title" value="${h(me.signer_title || prefill.role || '')}" placeholder="e.g. Partner" required></label></div>
         <label>Phone<input name="phone" value="${h(me.phone || '')}" type="tel" autocomplete="tel"></label>
         <p class="pf-err" role="alert"></p>${obNav('Continue', false)}</form>`);
-      app.querySelector('form').onsubmit = async (e) => {
-        e.preventDefault(); const v = Object.fromEntries(new FormData(e.target)), err = e.target.querySelector('.pf-err');
+      const form = app.querySelector('form');
+      form.addEventListener('change', (e) => { if (e.target.name !== 'reg') return; const box = e.target.closest('.pf-reg'), n = box.querySelector('.pf-reg-n');
+        n.hidden = !e.target.checked; box.classList.toggle('on', e.target.checked); if (e.target.checked) n.querySelector('input').focus(); });
+      form.onsubmit = async (e) => {
+        e.preventDefault(); const fd = new FormData(form), v = Object.fromEntries(fd), err = form.querySelector('.pf-err');
         v.postcode = fmtPostcode(v.postcode);
-        if (!v.company.trim() || !v.line1.trim() || !v.town.trim() || !v.contact_name.trim() || !v.signer_title.trim()) return (err.textContent = 'Please fill in the company name, address, full name and position.');
+        const regulators = fd.getAll('reg').map((id) => ({ id, number: String(fd.get(`regnum_${id}`) || '').trim() }));
+        if (!v.company.trim() || !v.line1.trim() || !v.town.trim() || !v.contact_name.trim() || !v.signer_title.trim()) return (err.textContent = 'Please fill in the firm name, address, full name and position.');
+        if (!regulators.length) return (err.textContent = 'Tick at least one regulator.');
+        const missing = regulators.find((r) => !r.number);
+        if (missing) return (err.textContent = `Please add the ${regulatorOf(missing.id)?.number || 'regulator number'}.`);
         if (!PC_RE.test(v.postcode)) return (err.textContent = 'Please enter a valid UK postcode.');
-        const { line1, line2, town, county, postcode, ...rest } = v, body = { ...rest, address: [line1, line2, town, county, postcode].map((x) => x.trim()).filter(Boolean).join(', ') };
+        const cn = v.company_number.replace(/\s/g, '').toUpperCase();
+        if (cn && !/^[A-Z0-9]{6,10}$/.test(cn)) return (err.textContent = 'Please enter a valid Companies House number, or leave it blank.');
+        const body = { company: v.company.trim(), company_number: cn, regulators, contact_name: v.contact_name.trim(), signer_title: v.signer_title.trim(), phone: v.phone.trim(),
+          address: [v.line1, v.line2, v.town, v.county, v.postcode].map((x) => x.trim()).filter(Boolean).join(', ') };
         try { await api('onboard', body); Object.assign(me, body); obGo(obAt('leads')); } catch (ex) { err.textContent = ex.message; }
       };
     }
 
     if (step === 'leads') {
-      const f = { ...(me.filters || {}) }, obAuto = me.mode === 'auto' || !Object.keys(me.filters || {}).length; // new partners start on Automatic
-      if (!f.amountMin && !f.amountMax && prefill.sizes?.length) {
-        const r = prefill.sizes.map((x) => SIZE_RANGE[x]).filter(Boolean);
-        if (r.length) { const lo = Math.min(...r.map((x) => x[0])), hi = r.some((x) => x[1] === null) ? null : Math.max(...r.map((x) => x[1])); f.amountMin = lo || null; f.amountMax = hi; }
-      }
-      obShell(`<form class="pf-onb-form" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Lead preferences</h1><p class="pf-sub">Everything is included to start with. Untick anything you don't handle. You can change this any time.</p>
+      const allowed = firmAreas(), f = { ...(me.filters || {}) }, obAuto = me.mode === 'auto' || !Object.keys(me.filters || {}).length; // new firms start on Automatic
+      if (!f.areas?.length) f.areas = [...allowed]; // everything the regulators allow, to start with
+      obShell(`<form class="pf-onb-form pf-onb-wide" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Lead preferences</h1><p class="pf-sub">Pick the practice areas and matters the firm handles and where it takes clients from. This can be changed any time.</p>
         ${modeCards(obAuto)}
-        <h4>Annual revenue</h4>${chips('turnovers', opts.turnovers, f.turnovers)}
-        <h4>Loan purpose</h4>${chips('purposes', opts.purposes, f.purposes)}
-        <h4>Time trading</h4>${chips('trading', opts.trading, f.trading)}
-        <div class="pf-two pf-mt-s"><label>Minimum loan<div class="pf-money"><i>£</i><input name="amountMin" inputmode="numeric" value="${f.amountMin ? num(f.amountMin) : ''}" placeholder="No minimum"></div></label>
-          <label>Maximum loan<div class="pf-money"><i>£</i><input name="amountMax" inputmode="numeric" value="${f.amountMax ? num(f.amountMax) : ''}" placeholder="No maximum"></div></label></div>
-        <details class="pf-autocaps" ${obAuto ? '' : 'hidden'}><summary>Set auto-buy limits <span>(optional, no limits unless you set them)</span></summary><div class="pf-two">
+        <h4>Practice areas</h4>${areaPicker(f, allowed)}
+        <h4>Regions</h4>${chips('regions', TX.regions, f.regions)}
+        <details class="pf-autocaps" ${obAuto ? '' : 'hidden'}><summary>Set auto-buy limits <span>(optional, no limits unless set)</span></summary><div class="pf-two">
           <label>Leads per day<input name="dailyLeads" inputmode="numeric" value="${f.dailyLeads || ''}" placeholder="No limit"></label>
           <label>Credits per day<input name="dailyCredits" inputmode="numeric" value="${f.dailyCredits || ''}" placeholder="No limit"></label>
           <label>Credits per month<input name="monthly_cap" inputmode="numeric" value="${me.monthly_cap || ''}" placeholder="No limit"></label>
           <label>Most credits per lead<input name="maxPrice" inputmode="numeric" value="${f.maxPrice || ''}" placeholder="No maximum"></label></div>
-          <p class="pf-hint">Leads above your per-lead limit are left for you to buy manually.</p></details>
+          <p class="pf-hint">Leads above the per-lead limit are left to buy by hand.</p></details>
         <label class="pf-mt-s">Send leads to<input name="deliver_emails" value="${h(me.deliver_emails || '')}" placeholder="${h(me.email)}"></label>
         <p class="pf-err" role="alert"></p>${obNav()}</form>`);
-      const form = app.querySelector('form'); wireBack();
+      const form = app.querySelector('form'); wireBack(); wireAreas(form);
       form.addEventListener('change', () => (form.querySelector('.pf-autocaps').hidden = new FormData(form).get('mode') !== 'auto'));
       form.onsubmit = async (e) => {
-        e.preventDefault(); const fd = new FormData(form), err = form.querySelector('.pf-err');
-        if ([...form.querySelectorAll('[data-group]')].some((g) => !g.querySelector('input:checked'))) return (err.textContent = 'Tick at least one option in each group.');
-        const d = (k) => +String(fd.get(k) || '').replace(/\D/g, '') || null, all = (k) => anyOf(fd.getAll(k), [...form.querySelectorAll(`[name=${k}]`)].map((i) => i.value));
+        e.preventDefault(); const fd = new FormData(form), err = form.querySelector('.pf-err'), { areas, matters } = readAreas(form);
+        if (!areas.length) return (err.textContent = 'Tick at least one practice area.');
+        if (areas.some((a) => !fd.getAll(`m_${a}`).length)) return (err.textContent = 'Tick at least one matter in each practice area, or untick the area.');
+        if (!fd.getAll('regions').length) return (err.textContent = 'Tick at least one region.');
+        const d = (k) => +String(fd.get(k) || '').replace(/\D/g, '') || null;
         const v = { mode: fd.get('mode'), monthly_cap: d('monthly_cap') || 0, notify: true, deliver_emails: listVals(fd.get('deliver_emails')), notify_emails: listVals(fd.get('deliver_emails')),
-          filters: { dailyLeads: d('dailyLeads'), dailyCredits: d('dailyCredits'), maxPrice: d('maxPrice'), amountMin: d('amountMin'), amountMax: d('amountMax'), turnovers: all('turnovers'), purposes: all('purposes'), trading: all('trading'), cleanCredit: false } };
-        try { const r = await api('settings', v); Object.assign(me, v, { filters: r.filters }); } catch (ex) { return (err.textContent = ex.message); }
+          filters: { ...(me.filters || {}), areas, matters, regions: anyOf(fd.getAll('regions'), TX.regions), dailyLeads: d('dailyLeads'), dailyCredits: d('dailyCredits'), maxPrice: d('maxPrice') } };
+        try { const r = await api('settings', v); Object.assign(me, v, { filters: r.filters || v.filters }); } catch (ex) { return (err.textContent = ex.message); }
         if (v.mode === 'auto') await offerBacklog();
         obGo(obAt('profile'));
       };
@@ -2655,7 +2677,7 @@
     if (step === 'profile') {
       let prof = { ...profOf() };
       obShell(`<form class="pf-onb-form pf-onb-wide" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Public profile</h1>
-        <p class="pf-sub">When a business is matched with you, this is who we tell them to expect. Paste your website and we'll fill in what we can.</p>
+        <p class="pf-sub">When a client is matched with the firm, this is who we tell them to expect. Paste the firm’s website and we’ll fill in what we can.</p>
         <div data-profbox>${profEditor(prof)}</div><p class="pf-err" role="alert"></p>${obNav()}</form>`);
       const form = app.querySelector('form'), pbox = form.querySelector('[data-profbox]'); wireBack();
       const redraw = (p) => { prof = p; pbox.innerHTML = profEditor(p); wireProfile(pbox, prof, redraw); };
@@ -2681,9 +2703,9 @@
       const card = (k, title, price, credits, sub, extra = '') => `<label class="pf-plancard ${k === 'trial' ? 'pf-plancard-trial' : ''} ${ob.plan === k ? 'on' : ''}"><input type="radio" name="plan" value="${k}" ${ob.plan === k ? 'checked' : ''}>
         ${extra}<b>${title}</b><span class="pf-pc-price">${price}<small> + VAT</small></span><span class="pf-pc-cr">${credits}</span><span class="pf-pc-sub">${sub}</span></label>`;
       obShell(`<form class="pf-onb-form pf-onb-wide" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Choose a plan</h1><p class="pf-sub">Monthly subscription, billed by card. Cancel any time. Unused credits roll over while you're subscribed.</p>
-        ${vol ? `<p class="pf-prefilled">${I.target}You told us you want about ${num(vol)} leads a month, roughly ${num(need)} credits. We've picked a plan to match.</p>` : ''}
+        ${vol ? `<p class="pf-prefilled">${I.target}About ${num(vol)} leads a month was the figure given, roughly ${num(need)} credits. We’ve picked a plan to match.</p>` : ''}
         <div class="pf-plans">
-          ${trialOk ? card('trial', 'First month offer', gbp(T.pence / 100), `${num(T.credits)} credits`, `Then ${gbp(packs[T.then].pence / 100)} + VAT a month for ${num(packs[T.then].credits)} credits. Cancel or upgrade any time.`, '<em class="pf-ribbon">New partners</em>') : ''}
+          ${trialOk ? card('trial', 'First month offer', gbp(T.pence / 100), `${num(T.credits)} credits`, `Then ${gbp(packs[T.then].pence / 100)} + VAT a month for ${num(packs[T.then].credits)} credits. Cancel or upgrade any time.`, '<em class="pf-ribbon">New firms</em>') : ''}
           ${Object.entries(packs).map(([k, p]) => card(k, p.name, gbp(p.pence / 100), `${num(p.credits)} credits`, p.bonus ? `${p.bonus}% bonus credits every month` : 'Every month')).join('')}
           <label class="pf-plancard pf-plancard-custom ${ob.plan === 'custom' ? 'on' : ''}"><input type="radio" name="plan" value="custom" ${ob.plan === 'custom' ? 'checked' : ''}>
             <b>Custom</b><span class="pf-custom-in"><span>£</span><input name="customAmount" inputmode="numeric" value="${num(ob.amount || custom.min * 2)}" aria-label="Monthly amount in pounds"><span>/month + VAT</span></span>
@@ -2727,19 +2749,19 @@
     if (step === 'agreement') {
       if (me.agreementWaived) return obGo(obAt('pay'));
       const { html: terms, version } = await api('terms');
-      obShell(`<form class="pf-onb-form pf-onb-wide" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Partner agreement</h1>
-        <p class="pf-sub">Between ${h(me.company)} and Vertical Brands Ltd (trading as Leaflegal). Please read it in full. A signed copy is emailed to you and kept in your account.</p>
-        <div class="pf-terms" tabindex="0" aria-label="Partner agreement">${terms}</div>
+      obShell(`<form class="pf-onb-form pf-onb-wide" novalidate><span class="pf-eyebrow">${obOf()}</span><h1>Referral agreement</h1>
+        <p class="pf-sub">Between ${h(me.company)} and Vertical Brands Ltd (trading as Leaflegal). Please read it in full. A signed copy is emailed and kept in the account.</p>
+        <div class="pf-terms" tabindex="0" aria-label="Referral agreement">${terms}</div>
         <div class="pf-two pf-mt-s"><label>Full name<input name="signer_name" value="${h(me.contact_name || '')}" autocomplete="name" required></label>
           <label>Position<input name="signer_title" value="${h(me.signer_title || '')}" required></label></div>
         <label class="pf-check"><input type="checkbox" name="authority"> I confirm I am authorised to accept this agreement on behalf of ${h(me.company)}.</label>
-        <label class="pf-check"><input type="checkbox" name="accept"> I have read and agree to the Leaflegal Partner Agreement (version ${h(version)}), and agree that accepting it online is legally binding.</label>
+        <label class="pf-check"><input type="checkbox" name="accept"> I have read and agree to the Leaflegal Law Firm Referral Agreement (version ${h(version)}), and agree that accepting it online is legally binding.</label>
         <p class="pf-err" role="alert"></p>${obNav('Agree and continue')}</form>`);
       const form = app.querySelector('form'); wireBack();
       form.onsubmit = async (e) => {
         e.preventDefault(); const err = form.querySelector('.pf-err'), btn = form.querySelector('[type=submit]');
         if (form.signer_name.value.trim().split(/\s+/).length < 2) return (err.textContent = 'Please type your full name (first and last name).');
-        if (!form.signer_title.value.trim()) return (err.textContent = 'Please enter your position at the company.');
+        if (!form.signer_title.value.trim()) return (err.textContent = 'Please enter the position held at the firm.');
         if (!form.authority.checked || !form.accept.checked) return (err.textContent = 'Please tick both boxes to accept the agreement.');
         btn.disabled = true; btn.classList.add('busy');
         try {
@@ -2756,7 +2778,7 @@
     if (step === 'pay') {
       if (!ob.plan) return obGo(obAt('plan'));
       if (ob.plan === 'custom' && ob.enterprise) {
-        obShell(`<div class="pf-onb-form pf-onb-wide pf-onb-done"><span class="pf-empty-ic">${I.check}</span><h1>Thanks, we'll be in touch</h1>
+        obShell(`<div class="pf-onb-form pf-onb-wide pf-onb-done"><span class="pf-empty-ic">${I.check}</span><h1>Thanks, we’ll be in touch</h1>
           <p class="pf-sub">Your agreement is signed. Because you've asked for a large custom plan (about ${gbp(ob.amount)} + VAT a month, ${num(Math.round(ob.amount * (1 + custom.bonus / 100)))} credits), a member of our team will contact you to agree the details and switch on your credits. There's nothing to pay now.</p>
           <div class="pf-row-l"><a class="pf-btn pf-btn-primary pf-btn-lg" href="${P}/dashboard">Go to your dashboard${I.arrow}</a></div></div>`);
         if (!ob.sentEnterprise) { ob.sentEnterprise = true; api('enterprise-request', { amount: ob.amount }).catch((ex) => toast(ex.message, true)); }
@@ -2780,7 +2802,7 @@
 
   // ------------------------------------------------ confirm your email
   function verifyView() {
-    obShell(`<div class="pf-onb-form"><span class="pf-eyebrow">Step 1 of ${ALL_STEPS.length}</span><h1>Check your inbox</h1>
+    obShell(`<div class="pf-onb-form"><span class="pf-eyebrow">Step 1 of ${ALL_STEPS.length}</span><h1>Check the inbox</h1>
         <p class="pf-sub">We’ve sent a confirmation link to <b>${h(me.email)}</b>. Click it to carry on setting up your account. It can take a minute to arrive, so check your spam folder too.</p>
         <p class="pf-err" role="status"></p>
         <p class="pf-onb-alt">Wrong address? <a href="#" data-out>Sign out</a> and create the account again.</p>
@@ -2803,7 +2825,7 @@
     const choice = (v, t, d) => `<label class="pf-choice"><input type="radio" name="suggest" value="${v}" ${sug === v ? 'checked' : ''}><span><b>${t}</b><em>${d}</em></span></label>`;
     view().innerHTML = `<form class="pf-auto" id="pf-notform" novalidate><div class="pf-auto-main">
       <section class="pf-card"><div class="pf-card-h"><h3>Leads that fit the criteria</h3><span>Set under <a href="${P}/autobuy">Auto-buy</a></span></div>
-        <div class="pf-opt"><label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" name="notify" ${me.notify ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Email when a matching lead arrives</b><em>${auto ? 'Auto-buy buys matching leads straight away, so this only emails when one costs more than the maximum per lead' : 'So it can be bought before another broker gets it'}</em></span></label>
+        <div class="pf-opt"><label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" name="notify" ${me.notify ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Email when a matching lead arrives</b><em>${auto ? 'Auto-buy buys matching leads straight away, so this only emails when one costs more than the maximum per lead' : 'So it can be bought before another firm gets it'}</em></span></label>
           ${listField('notify_emails', me.notify_emails, 'email', me.email, 'Add another email', 10)}
           <p class="pf-hint">These addresses get all new-lead emails. Leave blank to use ${h(me.email)}.</p></div></section>
       <section class="pf-card"><div class="pf-card-h"><h3>Leads outside the criteria</h3><span>Leads ${auto ? 'auto-buy skips' : 'that don’t match'}, suggested anyway</span></div>
@@ -2814,7 +2836,7 @@
       ${auto ? `<section class="pf-card"><div class="pf-card-h"><h3>Leads auto-buy skipped</h3></div>
         <label class="pf-switchrow pf-switchrow-top"><input type="checkbox" role="switch" name="missed" ${me.filters?.missed !== 'off' ? 'checked' : ''}><span class="pf-toggle-ui"></span><span><b>Daily email of skipped leads</b><em>Each morning: the leads from the last day that fell outside the auto-buy criteria, who bought them, and what held them back. Replaces the daily summary above.</em></span></label></section>` : ''}
       <section class="pf-card"><div class="pf-card-h"><h3>Bought leads</h3></div>
-        <p class="pf-hint pf-mt-0">${me.deliver_on === false ? 'Bought leads aren’t emailed right now.' : `Each bought lead is emailed with full contact details to ${h(me.deliver_emails || me.email)}.`} Change this, or send leads to a CRM, under <a href="${P}/autobuy">Auto-buy → Delivery</a>.</p></section>
+        <p class="pf-hint pf-mt-0">${me.deliver_on === false ? 'Bought leads aren’t emailed right now.' : `Each bought lead is emailed with full contact details to ${h(me.deliver_emails || me.email)}.`} Change this, or send leads to a CRM, under <a href="${P}/autobuy">Auto-buy, Delivery</a>.</p></section>
       <section class="pf-card"><div class="pf-card-h"><h3>Always sent</h3></div>
         <p class="pf-hint pf-mt-0">Emails about the account itself always go to ${h(me.email)}: payments and plan changes, low credit warnings, refund decisions and sign-in links.</p></section>
     </div></form>
@@ -2840,7 +2862,7 @@
   }
   const VIEWS = { dashboard, opportunities, leads, autobuy, notifications, profile, billing: credits, credits, account, admin, crm, onboarding };
   async function route() {
-    await handoffReady;
+    await Promise.all([handoffReady, configReady, taxReady]);
     let tab = currentTab();
     if (tab === 'signup') { history.replaceState(null, '', `${P}/register${location.search}`); tab = 'register'; } // old links
     if (modal.open) { modal.onclose = null; modal.close(); }
@@ -2849,7 +2871,7 @@
     if (!session) return authView(tab === 'register' ? 'up' : 'in');
     try {
       const first = !me;
-      const d = await api('me'); me = d.broker; opts = d.options; packs = d.packs; pricing = d.pricing; TIERS = d.tiers || TIERS; custom = d.custom; trial = d.trial; low = d.lowCredits || low;
+      const d = await api('me'); if (d.taxonomy?.areas?.length) useTx(d.taxonomy); me = d.broker; opts = d.options; packs = d.packs; pricing = d.pricing?.areas ? d.pricing : pricing?.areas ? { ...(d.pricing || {}), ...pricing } : d.pricing; custom = d.custom; trial = d.trial; low = d.lowCredits || low;
       if (acting && me.is_admin && ['profile', 'autobuy', 'notifications'].includes(tab)) me = acting; else acting = null;
       if (!me.email_verified_at) return verifyView();
       if (first) prefetch();

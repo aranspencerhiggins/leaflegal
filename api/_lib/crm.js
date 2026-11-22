@@ -1,7 +1,7 @@
-// Broker CRM: contacts, pipeline, timeline, email (Resend), SMS (Bird) and stage-based email flows.
-// Tables: crm_contacts, crm_activities, crm_flow_sends (see tools/platform-schema-7.sql). Admin UI: public/assets/crm.js.
+// Firm acquisition CRM (law firms we want on the platform): contacts, pipeline, timeline, email (Resend), SMS (Bird) and
+// stage-based email flows. Tables: crm_contacts, crm_activities, crm_flow_sends (see tools/platform-schema-legal.sql). Admin UI: public/assets/crm.js.
 import { createHmac } from 'node:crypto';
-import { db, esc, secretKey, PLATFORM_URL, resendSlot, suppressedSet, birdMsgKey } from './platform.js';
+import { db, esc, secretKey, resendSlot, suppressedSet, birdMsgKey } from './platform.js';
 
 export const STAGES = [
   ['new', 'New enquiry'], ['contacted', 'Contacted'], ['call_booked', 'Call booked'], ['proposal', 'Proposal sent'],
@@ -14,14 +14,16 @@ export const SOURCES = ['Website enquiry', 'Booked a call', 'Platform sign-up', 
   'Referral', 'Event', 'Invited to platform', 'Other'];
 
 const SITE = 'https://leaflegal.co';
+export const REGISTER_URL = 'https://platform.leaflegal.co/register'; // the platform lives at platform.leaflegal.co
 export const LINKS = {
-  signup_link: `${PLATFORM_URL}/register`,
-  calculator_link: `${SITE}/partners/cost-per-lead-calculator`,
+  signup_link: REGISTER_URL,
+  calculator_link: `${SITE}/partners/pricing`, // tag name kept so edited flows still work
+  pricing_link: `${SITE}/partners/pricing`,
   booking_link: `${SITE}/partners/apply`,
   partners_link: `${SITE}/partners`,
 };
 const SENDER = () => 'The Leaflegal team'; // no personal name on emails
-const REPLY_TO = () => process.env.CRM_REPLY_TO || (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(',')[0].trim();
+const REPLY_TO = () => process.env.CRM_REPLY_TO || (process.env.ENQUIRY_TO || 'hello@leaflegal.co').split(',')[0].trim();
 
 // ---------------------------------------------------------------- where did they come from
 // First-touch data from the site (nav.js: utm_*, gclid, fbclid, external referrer) → a readable source.
@@ -128,7 +130,7 @@ ${paras.map((p) => `<p style="margin:0 0 16px">${linkify(esc(p)).replace(/\n/g, 
 
 // ---------------------------------------------------------------- sending
 const sig = (id, exp) => createHmac('sha256', secretKey()).update(`crm-unsub:${id}:${exp}`).digest('hex').slice(0, 40);
-export const unsubUrl = (id) => { const exp = Date.now() + 730 * 864e5; return `${PLATFORM_URL}/api/crm?action=unsub&id=${id}&exp=${exp}&sig=${sig(id, exp)}`; };
+export const unsubUrl = (id) => { const exp = Date.now() + 730 * 864e5; return `${SITE}/api/crm?action=unsub&id=${id}&exp=${exp}&sig=${sig(id, exp)}`; };
 export const unsubOk = (id, exp, s) => Number(exp) > Date.now() && typeof s === 'string' && s === sig(id, exp);
 
 export async function sendCrmEmail(c, subject, body, { by = null, flowStep = null } = {}) {
@@ -140,7 +142,7 @@ export async function sendCrmEmail(c, subject, body, { by = null, flowStep = nul
   await resendSlot();
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST', headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(8000),
-    body: JSON.stringify({ from: `Leaflegal <${process.env.CRM_FROM || process.env.ENQUIRY_FROM || 'onboarding@resend.dev'}>`, to: [c.email], reply_to: REPLY_TO(), subject: subj, html, text,
+    body: JSON.stringify({ from: `Leaflegal <${process.env.CRM_FROM || process.env.ENQUIRY_FROM || 'hello@leaflegal.co'}>`, to: [c.email], reply_to: REPLY_TO(), subject: subj, html, text,
       headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' }, tags: [{ name: 'kind', value: flowStep ? 'crm_flow' : 'crm' }] }),
   }).catch((e) => ({ ok: false, text: async () => e.message }));
   if (!r.ok) { const t = await r.text(); console.error('crm resend', r.status, t); throw new Error('The email couldn’t be sent. Please try again.'); }
@@ -178,44 +180,44 @@ export const FLOW_DEFAULTS = [
 
 Thanks for your interest in Leaflegal.
 
-In short: UK limited companies and LLPs tell us what funding they need, and we pass each enquiry to one broker only. You see the business's revenue, time trading, loan size and credit history before you buy, and leads arrive in your inbox or CRM the moment they come in.
+In short, people and businesses across the UK tell us about a legal matter they need help with, and we pass each enquiry to one law firm only. Before you buy, you see the practice area, the matter, how urgent it is, the region and the answers they gave. Leads arrive in your inbox or CRM the moment they come in.
 
-If you'd like to look around first, you can [create an account here]({signup_link}). We approve new accounts within one working day, and then you can see live leads straight away.
+If you'd like to look around first, you can [create a firm account here]({signup_link}). We check your regulator details and approve new accounts within one working day, and then you can see live leads straight away.
 
 Or just reply to this email with any questions.` },
   { id: 'new:3', stage: 'new', day: 3, subject: 'What a Leaflegal lead costs',
     body: `Hi {first_name},
 
-A quick follow-up. Brokers usually ask what a lead will cost them, so we've put the pricing out in the open.
+A quick follow up. Firms usually ask what a lead will cost them, so we've put the pricing out in the open.
 
-Each lead is priced on how fundable it is: loan size, the business's revenue, how long it's been trading and its credit history. You can [try a few examples here]({calculator_link}).
+Each lead is priced on the practice area and matter, how urgent it is and the quality of the enquiry. You can [see how pricing works here]({calculator_link}).
 
 You see every price before you buy, and you can set a maximum so auto-buy never goes over it.
 
 Happy to talk it through if useful. Just reply with a good time.` },
 
-  { id: 'contacted:3', stage: 'contacted', day: 3, subject: 'Re: business loan leads for {company}',
+  { id: 'contacted:3', stage: 'contacted', day: 3, subject: 'New client enquiries for {company}',
     body: `Hi {first_name},
 
-Just following up on our last message. Are you taking on new commercial finance clients at the moment?
+Just following up on our last message. Is {company} taking on new clients at the moment?
 
-We send exclusive enquiries from UK limited companies and LLPs, each one to a single broker, with revenue, time trading and credit history checked before it reaches you.
+We send exclusive enquiries from people and businesses who need a solicitor, each one to a single firm, with the phone number and email checked before it reaches you.
 
 Worth a quick chat?` },
   { id: 'contacted:8', stage: 'contacted', day: 8, subject: 'What’s in a Leaflegal lead',
     body: `Hi {first_name},
 
-In case it's useful, here's what you'd get with every lead:
+In case it's useful, here's what you'd get with every lead.
 
-The amount, what it's for and how soon they need it. Annual revenue and time trading. Missed payments, defaults or CCJs in the last 6 years. Any existing finance. A verified UK mobile and email. And the exact consent wording they agreed to.
+The practice area and the matter, in the client's own words. How soon they need help and any deadline, such as a court date or visa expiry. Their region and postcode. Whether they can pay privately. A checked phone number and email. And the exact consent wording they agreed to.
 
-Prices depend on how fundable the business is. You can [see how pricing works here]({calculator_link}).` },
+You only see leads for the areas your regulator allows, and you choose the matters and regions you want. You can [see how pricing works here]({calculator_link}).` },
   { id: 'contacted:16', stage: 'contacted', day: 16, subject: 'Should we close your file?',
     body: `Hi {first_name},
 
 We haven't heard back, so we'll assume now isn't the right time and stop following up.
 
-If that changes, you can [set up an account here]({signup_link}) whenever suits you, or just reply to this email.
+If that changes, you can [set up a firm account here]({signup_link}) whenever suits you, or just reply to this email.
 
 All the best.` },
 
@@ -224,24 +226,24 @@ All the best.` },
 
 Following up on the plans we sent over. Did you have any questions?
 
-As a reminder, your first month can be £1,000 + VAT instead of £2,500, so you can see the lead quality for yourself before committing. You can cancel at any time.
+As a reminder, your first month can be £1,000 + VAT instead of £2,500, so you can see the quality of the enquiries for yourself before committing. You can cancel at any time.
 
-When you're ready, you can [set up your account here]({signup_link}).` },
-  { id: 'proposal:6', stage: 'proposal', day: 6, subject: 'Working out your cost per lead',
+When you're ready, you can [set up your firm account here]({signup_link}).` },
+  { id: 'proposal:6', stage: 'proposal', day: 6, subject: 'Working out your cost per instruction',
     body: `Hi {first_name},
 
-If it helps with the numbers, our [cost per lead calculator]({calculator_link}) shows what a lead would cost you based on loan size, revenue, time trading and credit history.
+If it helps with the numbers, our [pricing page]({calculator_link}) shows what a lead costs in each practice area, and how urgency and quality change the price.
 
 Let us know if you'd like to go through it together.` },
 
   { id: 'onboarding:1', stage: 'onboarding', day: 1, subject: 'Finishing your Leaflegal setup',
     body: `Hi {first_name},
 
-Thanks for signing up to Leaflegal Platform. There are three things to do before you can start buying leads:
+Thanks for signing up to Leaflegal. There are three things to do before you can start buying leads.
 
-1. Tell us what you fund: loan sizes, purposes and the businesses you work with.
+1. Add your regulator and number, then choose the practice areas, matters and regions you want.
 2. Choose a monthly plan. Your first month can be £1,000 + VAT.
-3. Accept the partner agreement online.
+3. Accept the referral agreement online.
 
 It takes about five minutes. [Continue setup here]({signup_link}).` },
   { id: 'onboarding:4', stage: 'onboarding', day: 4, subject: 'Need a hand getting set up?',
@@ -254,17 +256,17 @@ It usually takes 10 minutes together.` },
   { id: 'won:30', stage: 'won', day: 30, subject: 'How are the leads going?',
     body: `Hi {first_name},
 
-You've been with us for a month now, so we wanted to check in. How are you finding the leads?
+You've been with us for a month now, so we wanted to check in. How are you finding the enquiries?
 
-If there's anything we could do better, such as lead types, volumes or how they're delivered, we'd really like to hear it. Just reply to this email.` },
+If there's anything we could do better, such as the matters, volumes or how leads are delivered, we'd really like to hear it. Just reply to this email.` },
 
   { id: 'nurture:30', stage: 'nurture', day: 30, subject: 'Checking in from Leaflegal',
     body: `Hi {first_name},
 
-It's been a little while, so we thought we'd check in. We're seeing steady demand from businesses looking for funding, and there are leads live on the platform now.
+It's been a little while, so we thought we'd check in. We're seeing steady demand from people looking for legal help, and there are leads live on the platform now.
 
 If the timing's better now, you can [have a look here]({signup_link}).` },
-  { id: 'nurture:90', stage: 'nurture', day: 90, subject: 'Still looking for business loan leads?',
+  { id: 'nurture:90', stage: 'nurture', day: 90, subject: 'Still looking for new client enquiries?',
     body: `Hi {first_name},
 
 Just a quick note to say the offer of a first month for £1,000 + VAT still stands, if you'd like to try Leaflegal.

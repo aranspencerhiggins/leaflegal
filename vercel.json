@@ -6,13 +6,25 @@
   "outputDirectory": "public",
   "redirects": [
     {
-      "source": "/platform",
-      "destination": "/",
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "platform.leaflegal.co"
+        }
+      ],
+      "destination": "/dashboard",
       "permanent": false
     },
     {
       "source": "/platform/:path*",
-      "destination": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "platform.leaflegal.co"
+        }
+      ],
+      "destination": "/:path*",
       "permanent": false
     },
     {
@@ -57,7 +69,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://*.chatra.io https://js.stripe.com https://checkout.stripe.com; frame-src https://challenges.cloudflare.com https://*.chatra.io https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com https://*.stripe.com; connect-src 'self' https://challenges.cloudflare.com https://*.chatra.io wss://*.chatra.io https://tefpljuzuvdchczcfjlz.supabase.co https://api.stripe.com https://checkout.stripe.com https://*.stripe.com; img-src 'self' data: blob: https://*.fbcdn.net https://*.chatra.io https://*.stripe.com https://tefpljuzuvdchczcfjlz.supabase.co https://leaflegal.co; style-src 'self' 'unsafe-inline'; font-src 'self' https://*.chatra.io; object-src blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://checkout.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com https://*.stripe.com; connect-src 'self' https://challenges.cloudflare.com https://qrdpvsqsfifmgkxinank.supabase.co https://api.stripe.com https://checkout.stripe.com https://*.stripe.com; img-src 'self' data: blob: https://*.fbcdn.net https://*.stripe.com https://qrdpvsqsfifmgkxinank.supabase.co https://leaflegal.co; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
         },
         {
           "key": "X-Frame-Options",
@@ -81,9 +93,54 @@
           "value": "DENY"
         }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "platform.leaflegal.co"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://checkout.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com https://*.stripe.com; connect-src 'self' https://challenges.cloudflare.com https://qrdpvsqsfifmgkxinank.supabase.co https://api.stripe.com https://checkout.stripe.com https://*.stripe.com; img-src 'self' data: blob: https://*.fbcdn.net https://*.stripe.com https://qrdpvsqsfifmgkxinank.supabase.co https://leaflegal.co; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
     }
   ],
   "rewrites": [
+    {
+      "source": "/platform",
+      "destination": "/platform"
+    },
+    {
+      "source": "/platform/:path*",
+      "destination": "/platform"
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "platform.leaflegal.co"
+        }
+      ],
+      "destination": "/platform"
+    },
     {
       "source": "/api/google-callback",
       "destination": "/api/partner?action=google-callback"
@@ -100,5 +157,15 @@
     "api/platform.js": {
       "includeFiles": "api/_lib/email-previews.json"
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/platform?action=cron-plans",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/crm?action=cron",
+      "schedule": "0 8 * * *"
+    }
+  ]
 }
