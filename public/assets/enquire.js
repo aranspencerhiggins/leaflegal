@@ -82,12 +82,13 @@ function init() {
   const full = () => (fixedArea ? [] : [AREA_STEP]).concat(steps());
   const stepById = (id) => full().find((s) => s.id === id) || (id === 'area' ? AREA_STEP : null);
   function firstOpen() { const p = steps(); return (p.find((s) => a.ans[s.id] == null && s.type !== 'details') || p[p.length - 1] || { id: 'details' }).id; }
+  const DONE = '//done'; // screen ids for the end screens, never a step id (exits are 'x_<key>')
   const top = () => hist[hist.length - 1];
   const next = (id) => { const p = full(); const i = p.findIndex((s) => s.id === id); return (p[i + 1] || p[p.length - 1]).id; };
   const qOf = (s) => (s.id === 'postcode' && derive(a.area, a.ans).audience === 'business' && s.qBusiness) || s.q;
   const areaInfo = () => AREAS.find((x) => x.slug === a.area);
 
-  const stale = !hist.length || hist.includes('done') || (startArea && a.area !== startArea) || (fixedArea && hist.includes('area'));
+  const stale = !hist.length || hist.includes(DONE) || (startArea && a.area !== startArea) || (fixedArea && hist.includes('area'));
   if (stale) {
     a = { ans: {}, contact: a.contact }; hist = [];
     if (startArea) { setArea(startArea); const p = steps().map((x) => x.id), f = firstOpen(); hist = (fixedArea ? [] : ['area']).concat(p.slice(0, p.indexOf(f) + 1)); } else hist = ['area'];
@@ -442,7 +443,7 @@ function init() {
   function done(p, meta = {}) {
     if (meta.lead !== false) T('Lead', { content_name: 'Enquiry' }, { eventId: p.eventId, server: false });
     a.sent = { firstName: p.firstName, area: p.areaLabel, matter: p.matter, urgency: p.urgency, postcode: p.postcode, imm: p.area === 'immigration' };
-    hist.push('done'); save(); show(1);
+    hist.push(DONE); save(); show(1);
     try { localStorage.removeItem(KEY); } catch {}
   }
 
@@ -457,14 +458,14 @@ function init() {
     const p = a.sent || {}, who = p.imm ? 'regulated adviser' : 'law firm';
     const rows = [['Help with', p.area], ['Matter', p.matter], ['Urgency', p.urgency], ['Postcode', p.postcode]].filter(([, v]) => v);
     return `<div class="ap-step on ap-done"><div class="ap-badge">${TICK}</div>
-      <h2 class="ap-q" tabindex="-1">Thanks, ${esc(p.firstName || '')}. We’ve got your enquiry.</h2>
+      <h2 class="ap-q" tabindex="-1">Thanks${p.firstName ? ', ' + esc(p.firstName) : ''}. We’ve got your enquiry.</h2>
       <p class="ap-done-lead">We’ll introduce you to one regulated ${who} that handles this kind of matter. We’ve sent a confirmation to your email.</p>
       <dl class="ap-summary">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
       <ol class="ap-steps-next"><li>The ${who} reads your answers</li><li>They contact you, usually by phone, to see if they can help</li><li>They explain their fees before you agree to anything</li></ol></div>`;
   }
 
   function show(dir) {
-    const id = top(), isExit = id.startsWith('x_'), isDone = id === 'done';
+    const id = top(), isExit = id.startsWith('x_'), isDone = id === DONE;
     if (isExit) body.innerHTML = exitScreen(id.slice(2));
     else if (isDone) body.innerHTML = doneScreen();
     else {
