@@ -231,7 +231,7 @@ def _pool(rel):
 
 def _topup(path, body, target=5150):
     rel = os.path.relpath(path, PUB)[:-5]
-    if rel in _TOPUP_SKIP or '/platform' in path or 'deep' not in globals():
+    if rel in _TOPUP_SKIP or rel.startswith('enquire/') or '/platform' in path or 'deep' not in globals():
         return body
     need = target - _words(body)
     if need <= 0:
