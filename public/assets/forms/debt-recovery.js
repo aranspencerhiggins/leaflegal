@@ -69,7 +69,7 @@ export default {
       { v: 'proof', label: 'Delivery notes or proof the work was done' },
       { v: 'guarantee', label: 'A personal guarantee from a director', tags: ['personal-guarantee'] },
       { v: 'nothing', label: 'Nothing in writing', tags: ['no-paperwork'] }] },
-    { id: 'done', q: 'What has been done so far?', type: 'multi', options: [
+    { id: 'so_far', q: 'What has been done so far?', type: 'multi', options: [
       { v: 'reminders', label: 'Reminders, emails or calls' },
       { v: 'final', label: 'A final demand from us' },
       { v: 'agency', label: 'A debt collection agency', tags: ['agency-tried'] },
@@ -78,7 +78,7 @@ export default {
       { v: 'judgment', label: 'We have a court judgment', tags: ['judgment'] },
       { v: 'statdemand', label: 'A statutory demand has been served', tags: ['stat-demand-served'] },
       { v: 'nothing', label: 'Nothing yet' }] },
-    { id: 'hearing', when: { done: ['claim', 'statdemand'] }, q: 'Is there a court hearing or deadline coming up?', type: 'date', deadline: true, optional: true },
+    { id: 'hearing', when: { so_far: ['claim', 'statdemand'] }, q: 'Is there a court hearing or deadline coming up?', type: 'date', deadline: true, optional: true },
 
     // Enforcing a judgment
     { id: 'judgment', when: { need: ['enforce'] }, q: 'What kind of judgment or award do you have?', type: 'single', options: [
