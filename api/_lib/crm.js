@@ -14,7 +14,7 @@ export const SOURCES = ['Website enquiry', 'Booked a call', 'Platform sign-up', 
   'Referral', 'Event', 'Invited to platform', 'Other'];
 
 const SITE = 'https://leaflegal.co';
-export const REGISTER_URL = `${SITE}/platform/register`; // the platform lives at leaflegal.co/platform
+export const REGISTER_URL = 'https://platform.leaflegal.co/register'; // the platform lives at platform.leaflegal.co
 export const LINKS = {
   signup_link: REGISTER_URL,
   calculator_link: `${SITE}/partners/pricing`, // tag name kept so edited flows still work

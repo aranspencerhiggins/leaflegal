@@ -11,10 +11,11 @@ Import it on the server; the front end gets it from `GET /api/platform?action=ta
 
 ## Hosting
 
-- The SPA is served at **leaflegal.co/platform/...** (no subdomain yet). `vercel.json`: drop the `/platform` redirects and
-  rewrite `/platform` and `/platform/:path*` to `/platform/index.html`. The SPA already handles the `/platform` prefix (`P`).
-- `PLATFORM_URL` default `https://leaflegal.co/platform`. Signed links (`signedUrl`) go to `https://leaflegal.co/api/platform?...`
-  (use a `SITE_URL` const, default `https://leaflegal.co`). No `platform.leaflegal.co` or `platform.loanleaf.co` anywhere.
+- The SPA is served at **platform.leaflegal.co** (host rules in `vercel.json`: `/` redirects to `/dashboard`, every path
+  except `/api/` and `/assets/` rewrites to `/platform/index.html`, platform CSP and noindex on that host). It still works at
+  leaflegal.co/platform/... too; the SPA works out its prefix (`P`) from the path.
+- `PLATFORM_URL` default `https://platform.leaflegal.co`. Signed links (`signedUrl`) go to `https://leaflegal.co/api/platform?...`
+  (`SITE_URL`, default `https://leaflegal.co`). No `platform.loanleaf.co` anywhere.
 - Supabase is a **new, separate project** "Leaflegal" (ref `qrdpvsqsfifmgkxinank`, eu-west-1), URL
   `https://qrdpvsqsfifmgkxinank.supabase.co`, publishable key `sb_publishable_vZL7kU5KjOGWKSfcAAsnbg_9p9BBTUM` (public, fine
   as a default). Never use the LoanLeaf URL (`tefpljuzuvdchczcfjlz`) or its key anywhere, including the CSP in vercel.json.

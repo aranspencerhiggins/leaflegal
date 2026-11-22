@@ -3,7 +3,7 @@ import { sealHandoff, db, metaEvent } from './_lib/platform.js';
 import { capture, sourceFrom, describeSource, runFlows, REGISTER_URL } from './_lib/crm.js';
 
 // POST /api/partner: emails a law firm partner enquiry (/partners/apply) to the team via Resend, adds the firm to the CRM
-// and returns a sign-up link that prefills leaflegal.co/platform/register. Same env as api/enquiry.js.
+// and returns a sign-up link that prefills platform.leaflegal.co/register. Same env as api/enquiry.js.
 const FIELDS = [
   ['form', 'Type'], ['route', 'Route'], ['company', 'Firm'], ['budget', 'Monthly budget for leads'], ['areas', 'Practice areas'], ['regulator', 'Regulator'], ['coverage', 'Coverage'], ['regulatorRef', 'Regulator number'],
   ['volume', 'Plan / leads per month'], ['delivery', 'Delivery'], ['start', 'Start'],
@@ -178,7 +178,7 @@ export default async function handler(req, res) {
       if (r?.contact?.stage === 'new') await runFlows({ contactIds: [r.contact.id] });
     } catch (e) { console.error('crm capture', e.message); }
   }
-  // Encrypted hand-off so leaflegal.co/platform/register?h=… can prefill the sign-up form (api/platform.js action=handoff).
+  // Encrypted hand-off so platform.leaflegal.co/register?h=… can prefill the sign-up form (api/platform.js action=handoff).
   let handoff = null;
   try { if (!flags.length) handoff = sealHandoff({ company: b.company, contactName: `${b.firstName} ${b.lastName}`.trim(), email: b.email, phone: b.phone, volume: b.volume }); } catch {}
   return res.status(200).json({ ok: true, handoff, register: handoff ? `${REGISTER_URL}?h=${encodeURIComponent(handoff)}` : REGISTER_URL });

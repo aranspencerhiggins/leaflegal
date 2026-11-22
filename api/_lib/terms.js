@@ -11,7 +11,7 @@ export const P = 'Vertical Brands Ltd (trading as Leaflegal), a company register
 
 export const SECTIONS = [
   ['1. About this agreement', [
-    `This Law Firm Referral Agreement (the “Agreement”) is between ${P} (“Leaflegal”, “we”, “us”) and the law firm named in the signature block (the “Firm”, “you”). It sets out the terms on which Leaflegal introduces people and businesses looking for legal help to the Firm through the Leaflegal Platform at leaflegal.co/platform (the “Platform”).`,
+    `This Law Firm Referral Agreement (the “Agreement”) is between ${P} (“Leaflegal”, “we”, “us”) and the law firm named in the signature block (the “Firm”, “you”). It sets out the terms on which Leaflegal introduces people and businesses looking for legal help to the Firm through the Leaflegal Platform at platform.leaflegal.co (the “Platform”).`,
     'The Agreement starts when it is accepted electronically by a person with authority to bind the Firm and continues until ended under clause 14. By signing, the Firm confirms it is acting in the course of its business and not as a consumer.',
     'If anything in a Platform page, email or proposal conflicts with this Agreement, this Agreement wins unless we have both agreed otherwise in writing and referred to the clause being changed.',
   ]],

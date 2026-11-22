@@ -115,7 +115,7 @@
   const qBadge = (q) => `<span class="pf-q pf-q-${qClass(q)}" title="Lead quality score">${I.star}${q}</span>`;
   const initials = (s) => String(s || '?').replace(/[^\p{L}\p{N}\s]/gu, '').split(/\s+/).filter(Boolean).map((w) => w[0]).join('').slice(0, 2).toUpperCase() || '?';
 
-  // The app is served at leaflegal.co/platform/..., so every in-app link and redirect starts with P ('/platform').
+  // The app is served at platform.leaflegal.co (P = '') and also at leaflegal.co/platform/... (P = '/platform').
   // P is '' only if the app is ever served from the root of its own host.
   const P = /^\/platform(\/|$)/.test(location.pathname) ? '/platform' : '';
   const currentTab = () => location.pathname.slice(P.length).replace(/^\//, '').split('/')[0];
@@ -158,7 +158,7 @@
       try { await auth('refresh_token', { refresh_token: session.refresh }); return apiFetch(action, body, false, ep); } catch { saveSession(null); }
     }
     const d = await r.json().catch(() => null);
-    if (!d) throw Object.assign(new Error(location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'This is the local preview, which has no server. Use https://leaflegal.co/platform instead.' : "Can't reach the platform right now. Please try again in a moment."), { status: r.status });
+    if (!d) throw Object.assign(new Error(location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'This is the local preview, which has no server. Use https://platform.leaflegal.co instead.' : "Can't reach the platform right now. Please try again in a moment."), { status: r.status });
     if (r.status === 401) { saveSession(null); me = null; route(); throw new Error('Please sign in again'); }
     if (!r.ok) throw Object.assign(new Error(d.error || 'Something went wrong'), { status: r.status });
     return d;

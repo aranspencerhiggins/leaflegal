@@ -991,11 +991,11 @@ await t('sign-up hand-off token: round-trips, refuses tampering, readable only b
   const r = await api('handoff', { query: { h: tok } }); assert.equal(r.b.email, 'jo@acme.test');
   assert.deepEqual((await api('handoff', { query: { h: 'junk' } })).b, {});
 });
-await t('emails link to leaflegal.co/platform/<page> and the API at leaflegal.co/api/platform; never the old domain or project', async () => {
-  assert.equal(P.PLATFORM_URL, 'https://leaflegal.co/platform'); assert.equal(P.API_URL, 'https://leaflegal.co/api/platform');
+await t('emails link to platform.leaflegal.co/<page> and the API at leaflegal.co/api/platform; never the old domain or project', async () => {
+  assert.equal(P.PLATFORM_URL, 'https://platform.leaflegal.co'); assert.equal(P.API_URL, 'https://leaflegal.co/api/platform');
   assert.ok(P.signedUrl('approve', BROKER, 1).startsWith('https://leaflegal.co/api/platform?action=approve&'));
   const fs = await import('node:fs'), src = ['../api/platform.js', '../api/_lib/platform.js', '../api/_lib/leads.js', '../api/_lib/whats-new.js', '../api/_lib/terms.js'].map((f) => fs.readFileSync(new URL(f, import.meta.url), 'utf8')).join('');
-  assert.ok(!/platform\.leaflegal\.co|tefpljuzuvdchczcfjlz/.test(src), 'old domain or Supabase project referenced');
+  assert.ok(!/tefpljuzuvdchczcfjlz/.test(src), 'old domain or Supabase project referenced');
   assert.ok(!/\/platform\/api\/platform/.test(src), 'API under the platform path');
 });
 
@@ -1356,7 +1356,7 @@ await t('invited firms get every lead incl. matched ones, at most 3 a day each',
   assert.deepEqual(sent.map((m) => m.to[0]), ['fresh@inv.test'], 'the person at 3 today was emailed again');
   assert.match(sent[0].subject, /^Matched in seconds: Sponsor licence, London/);
   assert.ok(/matched within seconds/.test(sent[0].html) && /no longer available/.test(sent[0].html), 'matched wording missing');
-  assert.ok(sent[0].html.includes('/platform/register?invite=tk1'), 'finish-signup link');
+  assert.ok(sent[0].html.includes('platform.leaflegal.co/register?invite=tk1'), 'finish-signup link');
   const full = { id: 2, area: 'debt-recovery', matter: 'unpaid-invoices', audience: 'business', price: 60, full_name: 'Secret Person', email: 'secret@trading.test', phone: '+447700900999', checks: { phone: { reachable: true }, email: { result: 'valid' } },
     company: { number: '01234567', incorporated: '2015-01-01', profile: { title: 'SECRET TRADING LTD', locality: 'Leeds', industries: ['Construction'] } } };
   const tips = P.inviteCheckTips(full).join(' ');

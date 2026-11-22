@@ -6,6 +6,28 @@
   "outputDirectory": "public",
   "redirects": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "platform.leaflegal.co"
+        }
+      ],
+      "destination": "/dashboard",
+      "permanent": false
+    },
+    {
+      "source": "/platform/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "platform.leaflegal.co"
+        }
+      ],
+      "destination": "/:path*",
+      "permanent": false
+    },
+    {
       "source": "/index-b",
       "destination": "/",
       "permanent": false
@@ -71,6 +93,33 @@
           "value": "DENY"
         }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "platform.leaflegal.co"
+        }
+      ],
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://challenges.cloudflare.com https://js.stripe.com https://checkout.stripe.com; frame-src https://challenges.cloudflare.com https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com https://*.stripe.com; connect-src 'self' https://challenges.cloudflare.com https://qrdpvsqsfifmgkxinank.supabase.co https://api.stripe.com https://checkout.stripe.com https://*.stripe.com; img-src 'self' data: blob: https://*.fbcdn.net https://*.stripe.com https://qrdpvsqsfifmgkxinank.supabase.co https://leaflegal.co; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src blob:; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
     }
   ],
   "rewrites": [
@@ -80,6 +129,16 @@
     },
     {
       "source": "/platform/:path*",
+      "destination": "/platform/index.html"
+    },
+    {
+      "source": "/:path((?!api/|assets/).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "platform.leaflegal.co"
+        }
+      ],
       "destination": "/platform/index.html"
     },
     {

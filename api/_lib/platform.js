@@ -1,14 +1,14 @@
 import { createHmac, createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { typeLabel, chUrl } from './ch.js';
 import { AUDIENCES, areaLabel, matterLabel, allowedAreas, STAGES as TAX_STAGES } from './taxonomy.js';
-// Shared logic for the Leaflegal law firm platform (leaflegal.co/platform): database access, lead pricing,
+// Shared logic for the Leaflegal law firm platform (platform.leaflegal.co): database access, lead pricing,
 // auto-buy matching and lead delivery. Files under api/_lib are not deployed as endpoints. "brokers" is the firm table.
 // Env: SUPABASE_SECRET_KEY (required; the project's secret or service_role key), SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY,
 //      SITE_URL, PLATFORM_URL (optional), RESEND_API_KEY, ENQUIRY_FROM, ENQUIRY_TO (admin alerts).
 export const SITE_URL = (process.env.SITE_URL || 'https://leaflegal.co').replace(/\/+$/, '');
 export const SUPABASE_URL = (process.env.SUPABASE_URL || 'https://qrdpvsqsfifmgkxinank.supabase.co').replace(/\/+$/, '');
 export const PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_vZL7kU5KjOGWKSfcAAsnbg_9p9BBTUM';
-export const PLATFORM_URL = (process.env.PLATFORM_URL || `${SITE_URL}/platform`).replace(/\/+$/, '');
+export const PLATFORM_URL = (process.env.PLATFORM_URL || 'https://platform.leaflegal.co').replace(/\/+$/, '');
 export const API_URL = `${SITE_URL}/api/platform`;
 // Sign-up hand-off from the leaflegal.co partner form to the platform's register page. The details travel encrypted
 // and expire after 30 days; nothing readable goes in the URL.

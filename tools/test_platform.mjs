@@ -170,8 +170,8 @@ import { allowedAreas, AREA_SLUGS } from '../api/_lib/taxonomy.js';
 {
   const P = await import('../api/_lib/platform.js');
   if (!process.env.SUPABASE_URL) assert.equal(P.SUPABASE_URL, 'https://qrdpvsqsfifmgkxinank.supabase.co');
-  if (!process.env.PLATFORM_URL && !process.env.SITE_URL) assert.equal(P.PLATFORM_URL, 'https://leaflegal.co/platform');
-  assert.ok(!/tefplj|platform\.leaflegal/.test(`${P.SUPABASE_URL} ${P.PLATFORM_URL} ${P.API_URL}`));
+  if (!process.env.PLATFORM_URL && !process.env.SITE_URL) assert.equal(P.PLATFORM_URL, 'https://platform.leaflegal.co');
+  assert.ok(!/tefplj/.test(`${P.SUPABASE_URL} ${P.PLATFORM_URL} ${P.API_URL}`));
   const { termsHtml, TERMS_VERSION } = await import('../api/_lib/terms.js');
   assert.equal(TERMS_VERSION, '2026-11-22');
   const t = termsHtml();

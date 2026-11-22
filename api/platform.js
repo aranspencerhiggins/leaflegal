@@ -662,7 +662,7 @@ export default async function handler(req, res) {
       if (v) await db(`invites?token=eq.${encodeURIComponent(t)}`, { method: 'PATCH', body: { alerts: false } });
       if (email) { await suppress(email, req.method === 'POST' ? 'One-click unsubscribe' : 'Unsubscribe link', 'invite'); await audit(null, 'unsubscribe', email, { from: 'invite' });
         await markNotInterested(email).catch((x) => console.error('crm not interested', x.message)); }
-      return page(res, email ? 200 : 404, 'Unsubscribed', email ? '<h1>You’re unsubscribed</h1><p>We won’t email you again. If you ever decide to join Leaflegal, you’re welcome to sign up at <a href="' + PLATFORM_URL + '/register">leaflegal.co/platform</a>.</p>'
+      return page(res, email ? 200 : 404, 'Unsubscribed', email ? '<h1>You’re unsubscribed</h1><p>We won’t email you again. If you ever decide to join Leaflegal, you’re welcome to sign up at <a href="' + PLATFORM_URL + '/register">platform.leaflegal.co</a>.</p>'
         : '<h1>We couldn\'t find that invitation</h1><p>If you\'re still getting emails, reply to one and we\'ll stop them.</p>');
     }
 
