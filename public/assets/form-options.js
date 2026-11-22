@@ -27,13 +27,12 @@
 // After an area's own steps every form asks the shared steps in this order (built by the browser, checked by the server):
 //   postcode (only areas with postcode: true), urgency, pay, business (businesses without a company step), details.
 
-export const FORM_VERSION = '2026-11-22.3';
+export const FORM_VERSION = '2026-11-22.4';
 
 export const AREAS = [
   { slug: 'conveyancing', label: 'Conveyancing', form: 'Buying or selling a home', short: 'Buying, selling or remortgaging', icon: 'home', scope: 'ew', postcode: true },
   { slug: 'family-law', label: 'Family law', form: 'Family law', short: 'Divorce, finances, children', icon: 'family', scope: 'ew' },
   { slug: 'immigration', label: 'Immigration', form: 'Immigration', short: 'Visas, settlement, sponsor licences', icon: 'globe', scope: 'uk', referralOnly: true },
-  { slug: 'motoring-offences', label: 'Motoring offences', form: 'A motoring offence', short: 'Speeding, drink driving, bans', icon: 'car', scope: 'ew' },
   { slug: 'debt-recovery', label: 'Debt recovery', form: 'Recovering a business debt', short: 'For businesses owed money', icon: 'invoice', scope: 'ew', businessOnly: true },
   { slug: 'licensing', label: 'Licensing', form: 'Licensing', short: 'Premises, personal, taxi', icon: 'badge', scope: 'ew' },
   { slug: 'lease-extensions', label: 'Lease extensions', form: 'Extending a lease', short: 'Flats and freeholds', icon: 'key', scope: 'ew', postcode: true },
@@ -64,12 +63,6 @@ export const MATTERS = {
     ['british-citizenship', 'British citizenship'], ['work-visas', 'Work visas'], ['sponsor-licences', 'Sponsor licences for employers'],
     ['family-visas', 'Family visas'], ['refusals-and-appeals', 'Refusals and appeals'], ['eu-settlement-scheme', 'EU Settlement Scheme'],
     ['visitor-visas', 'Visitor visas', false], ['talent-and-founder-visas', 'Global Talent and Innovator Founder', false],
-  ],
-  'motoring-offences': [
-    ['drink-driving', 'Drink driving'], ['drug-driving', 'Drug driving'], ['speeding', 'Speeding'], ['totting-up', 'Totting up bans'],
-    ['exceptional-hardship', 'Exceptional hardship'], ['careless-driving', 'Careless driving'], ['dangerous-driving', 'Dangerous driving'],
-    ['failing-to-identify-the-driver', 'Failing to identify the driver'], ['driving-without-insurance', 'Driving without insurance'],
-    ['other-motoring', 'Another motoring offence', false],
   ],
   licensing: [
     ['premises-licence-applications', 'Premises licence applications'], ['licence-variations', 'Licence variations'],
@@ -179,14 +172,13 @@ import conveyancing from './forms/conveyancing.js';
 import immigration from './forms/immigration.js';
 import familyLaw from './forms/family-law.js';
 import debtRecovery from './forms/debt-recovery.js';
-import motoring from './forms/motoring-offences.js';
 import licensing from './forms/licensing.js';
 import leaseExtensions from './forms/lease-extensions.js';
 import trademarks from './forms/trademarks.js';
 
 export const FORMS = {
   conveyancing, immigration, 'family-law': familyLaw, 'debt-recovery': debtRecovery,
-  'motoring-offences': motoring, licensing, 'lease-extensions': leaseExtensions, trademarks,
+  licensing, 'lease-extensions': leaseExtensions, trademarks,
 };
 
 // Tags each area can carry, for the platform's filters (collected from the form options).

@@ -1,16 +1,16 @@
 # All matter pages and location data. Built by tools/build_pages.py.
 from matters_property import CONVEYANCING, LEASE
 from matters_people import FAMILY, IMMIGRATION
-from matters_business import MOTORING, LICENSING, DEBT
+from matters_business import LICENSING, DEBT
 from matters_ip import TRADEMARKS
 
 MATTERS = {'conveyancing': CONVEYANCING, 'lease-extensions': LEASE, 'family-law': FAMILY, 'immigration': IMMIGRATION,
-           'motoring-offences': MOTORING, 'licensing': LICENSING, 'debt-recovery': DEBT,
+           'licensing': LICENSING, 'debt-recovery': DEBT,
            'trademarks': TRADEMARKS}
 
 # Location pages: /solicitors/<city> hub and /<area>/<city>. England and Wales cities (trademarks are UK wide but still get city pages).
 # Immigration is deliberately left out: introductions are national and not tied to a town.
-LOCAL_AREAS = ['conveyancing', 'family-law', 'motoring-offences', 'licensing', 'debt-recovery', 'lease-extensions', 'trademarks']
+LOCAL_AREAS = ['conveyancing', 'family-law', 'licensing', 'debt-recovery', 'lease-extensions', 'trademarks']
 # (slug, name, region, nearby places)
 CITIES = [
     ('london', 'London', 'Greater London', ['Westminster', 'Camden', 'Islington', 'Croydon', 'Wandsworth', 'Hackney']),
@@ -45,7 +45,6 @@ CITIES = [
 LOCAL_ANGLE = {
     'conveyancing': ('moving home', 'Whether you are buying your first flat, selling a family home or remortgaging, a conveyancer who knows the local market and the local searches can keep things moving.'),
     'family-law': ('separating', 'If you are separating, you can speak to a family solicitor who deals with local family courts and understands what clients in your area are going through.'),
-    'motoring-offences': ('facing a motoring charge', 'If you have a court date for a motoring offence, a specialist who regularly represents drivers at local magistrates’ courts can make a real difference.'),
     'licensing': ('running a licensed business', 'Pubs, bars, restaurants, late night venues and drivers deal with the local council’s licensing team. A licensing solicitor who knows how local committees work is a real advantage.'),
     'debt-recovery': ('owed money by another business', 'If another business owes you money, a debt recovery solicitor can act quickly with a letter before action, a court claim and enforcement.'),
     'trademarks': ('protecting a brand', 'Whether you are launching a new business, protecting a product range or dealing with a copycat, a trademark specialist can search, file and enforce your rights. Trademark work is handled by phone, email and video, so your firm does not need to be round the corner.'),

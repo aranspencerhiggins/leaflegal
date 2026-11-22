@@ -8,7 +8,7 @@ M_URL = lambda a, s: f'/{a}/{s}'
 CITY_URL = lambda c: f'/solicitors/{c}'
 LOC_URL = lambda c, a: f'/solicitors/{c}/{a}'
 CITY = {c[0]: c for c in MC.CITIES}
-LOCAL_NAME = {'conveyancing': 'Conveyancing solicitors', 'family-law': 'Family solicitors', 'motoring-offences': 'Motoring offence solicitors',
+LOCAL_NAME = {'conveyancing': 'Conveyancing solicitors', 'family-law': 'Family solicitors',
               'licensing': 'Licensing solicitors', 'debt-recovery': 'Debt recovery solicitors', 'lease-extensions': 'Lease extension solicitors',
               'trademarks': 'Trademark solicitors'}
 TOP_CITIES = [c[0] for c in MC.CITIES[:8]]
@@ -44,7 +44,6 @@ property_dd = area_mega('Property', ['conveyancing', 'lease-extensions'],
                         _card('keys', 'Moving home?', 'One short form and a regulated conveyancer contacts you with a quote.', AREA_URL('conveyancing'), 'Conveyancing'))
 family_dd = area_mega('Family', ['family-law'], _card('family-law', 'Going through a separation?', 'Speak to a family solicitor who handles your kind of matter.', AREA_URL('family-law'), 'Family law'))
 immig_dd = area_mega('Immigration', ['immigration'], _card('passport', 'Introductions only', 'We introduce you to a regulated immigration adviser. We never give immigration advice.', AREA_URL('immigration'), 'How it works'))
-motoring_dd = area_mega('Motoring', ['motoring-offences'], _card('motoring-offences', 'Got a court date?', 'Specialist representation for drivers facing points or a ban.', AREA_URL('motoring-offences'), 'Motoring offences'))
 business_dd = area_mega('Business', ['debt-recovery', 'licensing', 'trademarks'], _card('licensing', 'For businesses', 'Recover what you are owed, protect your brand or get your licence sorted.', AREA_URL('debt-recovery'), 'Debt recovery'))
 near_dd = mega('Near you', [(CITY_URL(c[0]), c[1], c[0]) for c in MC.CITIES],
                {c[0]: {'head': (CITY_URL(c[0]), f'Solicitors in {c[1]}'), 'groups': [(f'In {c[1]}', [(LOC_URL(c[0], a), LOCAL_NAME[a]) for a in MC.LOCAL_AREAS])]} for c in MC.CITIES},
@@ -55,7 +54,7 @@ about_dd = mega('About', [('/about', 'About us', 'a'), ('/how-it-works', 'How it
                  'g': ('Popular guides', [(f'/guides/{g["slug"]}', g['h1']) for g in CG.GUIDES[:6]]),
                  'c': ('Get in touch', [(f'mailto:{EMAIL}', EMAIL), ('/contact', 'Contact form'), ('/accessibility', 'Accessibility')])},
                 _card('desk-warm', 'An introducer, not a law firm', 'We introduce people and businesses to regulated firms. We never give legal advice.', '/how-we-make-money', 'How we make money'), foot=('/apply', 'Get matched'))
-CLIENT_MENU = property_dd + family_dd + immig_dd + motoring_dd + business_dd + near_dd + about_dd
+CLIENT_MENU = property_dd + family_dd + immig_dd + business_dd + near_dd + about_dd
 
 # ---------------------------------------------------------------- law firm side
 PPAGES = {d['slug']: d for d in PS.PILLARS + PS.INFO + PS.GUIDES}

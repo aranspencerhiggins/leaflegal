@@ -4,7 +4,7 @@
 # housing disrepair and financial mis-selling / car finance claims (FCA-regulated claims management).
 
 TITLE = 'Legal Leads for Solicitors & Law Firms | Pay Per Lead | Leaflegal'
-DESC = ('Exclusive, pre-screened client enquiries for solicitors and law firms in conveyancing, family law, debt recovery, motoring offences, '
+DESC = ('Exclusive, pre-screened client enquiries for solicitors and law firms in conveyancing, family law, debt recovery, '
         'licensing, lease extensions, trademarks and immigration. Pay per lead, sent to you while the enquiry is fresh.')
 
 HERO_H1 = 'Client enquiries for solicitors and law firms'
@@ -39,9 +39,6 @@ AREAS = [
     ('cash', 'Debt recovery', 'Unpaid invoices and commercial debts owed to businesses.',
      'Business owners chasing unpaid invoices want a firm that acts quickly and charges clearly. Every debt recovery enquiry is business to business. We don’t send consumer debts. You get the rough amount owed, how old the debt is and whether it is disputed.',
      ['Letters before action', 'County Court and High Court claims', 'Statutory demands', 'Winding up petitions', 'Enforcement']),
-    ('car', 'Motoring offences', 'Drink driving, speeding, totting up and driving bans.',
-     'People facing a driving ban are highly motivated. Their job or business often depends on keeping their licence, they have a court date and they are prepared to pay privately for representation. These enquiries tend to convert quickly because the deadline is fixed.',
-     ['Drink and drug driving', 'Speeding and totting up', 'Exceptional hardship arguments', 'Careless and dangerous driving', 'Failing to identify the driver']),
     ('key', 'Licensing', 'Premises licences, reviews, personal and taxi licences.',
      'Licensing enquiries come from pubs, bars, restaurants, late night venues and drivers, often with a hearing or opening date fixed. Businesses facing a review know what is at stake and want representation they can rely on.',
      ['New premises licences', 'Variations and transfers', 'Reviews and hearings', 'Personal licences', 'Taxi and private hire licences']),
@@ -104,18 +101,17 @@ COMPLIANCE = [
     ('Referral arrangements', 'Leaflegal is an introducer. Under the SRA Code of Conduct, you must make sure clients are told about any financial arrangement you have with an introducer, and that the arrangement doesn’t affect your independence or your advice. Our consent wording explains to every client that we are paid by the firms we introduce them to, and we send you that wording with each lead so your client care letter can match it.'),
     ('No prohibited referral fees', 'We only work in areas where paying for introductions is permitted. We don’t generate personal injury or clinical negligence enquiries, where referral fees are banned under LASPO, and we don’t handle financial mis-selling claims, which are regulated claims management.'),
     ('Clear consent from every client', 'Before an enquiry can be submitted, the person must tick two separate boxes. The first confirms they have read our terms and privacy policy and understand that Leaflegal is an introduction service, not a law firm. The second gives consent for their details to be shared with a firm we match them with, and for that firm to contact them by phone, email or text about their matter. We record the exact wording and the time.'),
-    ('Data protection', 'Leaflegal is a trading name of Vertical Brands Ltd, which acts as the data controller for the information collected through our enquiry forms. Once a lead is delivered, you become the controller of your copy and are responsible for handling it in line with UK data protection law and your own privacy notice. Some enquiries, such as family, immigration or motoring matters, can include special category or criminal offence data, so we only collect what you need to make first contact, and never share matter details with advertising platforms.'),
+    ('Data protection', 'Leaflegal is a trading name of Vertical Brands Ltd, which acts as the data controller for the information collected through our enquiry forms. Once a lead is delivered, you become the controller of your copy and are responsible for handling it in line with UK data protection law and your own privacy notice. Some enquiries, such as family or immigration matters, can include special category data, so we only collect what you need to make first contact, and never share matter details with advertising platforms.'),
     ('Your regulatory responsibilities', 'Leaflegal is not a law firm, is not regulated by the Solicitors Regulation Authority and does not give legal advice. You are responsible for being authorised for the work you take on, including immigration advice and reserved activities such as conveyancing, and for your own conflict checks, client care and fees.'),
 ]
 
 FIRMS_H2 = 'Who partners with Leaflegal'
 FIRMS = [
-    ('user', 'High street firms', 'Multi-practice firms looking for a steady flow of private client work across property, family and motoring.'),
+    ('user', 'High street firms', 'Multi-practice firms looking for a steady flow of private client work across property, family and licensing.'),
     ('property', 'Conveyancing practices', 'SRA and CLC regulated firms handling residential purchases, sales and remortgages.'),
     ('globe', 'Specialist immigration firms', 'Solicitors and advisers registered with the Immigration Advice Authority handling visas, settlement, citizenship and appeals.'),
     ('heart', 'Family law practices', 'Firms focused on divorce, finances and children, from fixed-fee services to complex financial remedy work.'),
     ('briefcase', 'Commercial and licensing teams', 'Firms recovering business debts and representing licensed premises at hearings.'),
-    ('car', 'Motoring specialists', 'Firms and solicitor advocates who represent private-paying clients facing driving bans and motoring charges.'),
 ]
 
 GUIDE_H2 = 'Getting the most from your legal leads'
@@ -133,7 +129,7 @@ FAQ_H2 = 'Legal lead FAQs'
 FAQ_GROUPS = [
     ('Getting started', [
         ('What is Leaflegal?', 'Leaflegal is an introduction service run by Vertical Brands Ltd. We run marketing campaigns for people and businesses who need legal help, ask them a short set of questions about their matter and, with their consent, introduce each one to a single partner firm that handles that type of work.'),
-        ('Which practice areas do you cover?', 'Conveyancing, family law, debt recovery for businesses, motoring offences, licensing, lease extensions, trademarks and immigration. You choose which of these you want to receive.'),
+        ('Which practice areas do you cover?', 'Conveyancing, family law, debt recovery for businesses, licensing, lease extensions, trademarks and immigration. You choose which of these you want to receive.'),
         ('Who can become a partner firm?', 'SRA-regulated solicitors’ firms, CILEx-regulated practices, CLC-regulated conveyancers and, for immigration, advisers registered with the Immigration Advice Authority (formerly the OISC). You must be authorised for the work you take on.'),
         ('How do I apply?', 'Complete the partner application. It takes a couple of minutes and asks about your practice areas, how you are regulated, the areas you cover and how many leads you want each month. We will then call you to agree your criteria, delivery and pricing.'),
         ('How quickly can I start?', 'Once your criteria, pricing and delivery are agreed and your partner agreement is in place, leads start as soon as matching enquiries come in. Volumes depend on your practice areas and locations.'),

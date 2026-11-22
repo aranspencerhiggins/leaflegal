@@ -15,7 +15,6 @@ P = {
     'immigration': '1532968899863-5b52ef155913',       # sunlit airport
     'passport': '1655722725332-9925c96dd627',          # passport with stamps
     'family-law': '1783995343999-9247e0b5a14e',        # woman and child in a park
-    'motoring-offences': '1775657325246-14cafacc0821', # woman driving in the sun
     'licensing': '1558210598-89ba75b1724e',            # people at a bar
     'debt-recovery': '1499914485622-a88fac536970',     # woman at a laptop
     'desk-warm': '1768471126072-ef7efb2d4939',         # woman at desk, plants
@@ -29,7 +28,7 @@ P = {
 AREA = {
     'conveyancing': ('conveyancing', 'keys'), 'lease-extensions': ('lease-extensions', 'street'),
     'immigration': ('immigration', 'passport'), 'family-law': ('family-law', 'desk-warm'),
-    'motoring-offences': ('motoring-offences', 'golden-street'), 'licensing': ('licensing', 'golden-street'),
+    'licensing': ('licensing', 'golden-street'),
     'debt-recovery': ('debt-recovery', 'desk-warm'), 'trademarks': ('trademarks', 'storefront'),
 }
 PARTNER = ['partner-call', 'partner-sunlit', 'lawyer-desk', 'desk-warm']

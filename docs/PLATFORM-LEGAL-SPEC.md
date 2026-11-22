@@ -141,9 +141,9 @@ IAA `https://www.gov.uk/find-an-immigration-adviser`.
 
 ```
 DEFAULT_PRICING = { min: 15, max: 400,
-  areas: { conveyancing: 35, immigration: 60, 'family-law': 55, 'debt-recovery': 45, 'motoring-offences': 50, licensing: 55, 'lease-extensions': 60 },
-  matters: { 'immigration/sponsor-licences': 120, 'family-law/financial-settlements': 75, 'motoring-offences/drink-driving': 70,
-             'motoring-offences/dangerous-driving': 80, 'licensing/premises-licence-applications': 70, 'lease-extensions/collective-enfranchisement': 110 },
+  areas: { conveyancing: 35, immigration: 60, 'family-law': 55, 'debt-recovery': 45, licensing: 55, 'lease-extensions': 60 },
+  matters: { 'immigration/sponsor-licences': 120, 'family-law/financial-settlements': 75, 'licensing/licence-reviews': 80,
+             'licensing/premises-licence-applications': 70, 'lease-extensions/collective-enfranchisement': 110 },
   grade: { A: 1.3, B: 1, C: 0.7 }, urgent: 1.15, business: 1.1,
   value: [[1000000, 1.4], [500000, 1.25], [250000, 1.1]] }   // value_min at or above → multiplier, first match
 price = clamp(round5(base × grade × (urgency 'Urgently' ? urgent : 1) × (business ? business : 1) × valueMult), min, max)

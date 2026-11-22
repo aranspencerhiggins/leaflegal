@@ -47,7 +47,7 @@ for a_slug, matters in MAT.items():
         url = M_URL(a_slug, mt['slug'])
         q = ENQ_URL(a_slug, mt['slug'])
         h1 = short_name(mt['name'])
-        if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not h1.endswith('s') and len(h1) < 20:
+        if a_slug in ('family-law', 'debt-recovery', 'licensing') and not h1.endswith('s') and len(h1) < 20:
             h1 += ' solicitors'
         h1 = seo_h1(url, h1)
         ticks = ['No obligation to proceed', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
@@ -162,14 +162,14 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
     # city hub
     hub = ''.join([
         hero_split(f'Solicitors in {c_name}', f'Introductions to regulated law firms covering {c_name}, {nearby[0]}, {nearby[1]} and the rest of {region}.',
-                   ['No obligation to proceed', 'One regulated firm, not a list', 'Eight areas of law'],
+                   ['No obligation to proceed', 'One regulated firm, not a list', 'Seven areas of law'],
                    '<a href="/apply" class="button"><div>Get matched</div></a>', PH.photo('golden-street' if ci % 2 else 'street')),
         TRUST_STRIP,
         cs_intro(f'Legal help in {c_name}', [
-            f'Whether you are moving home in {c_name}, going through a separation, facing a motoring charge, chasing an unpaid invoice or sorting out a licence, {BRAND} can introduce you to a regulated law firm that handles your kind of matter.',
+            f'Whether you are moving home in {c_name}, going through a separation, chasing an unpaid invoice or sorting out a licence, {BRAND} can introduce you to a regulated law firm that handles your kind of matter.',
             f'We cover {c_name}, {", ".join(nearby[:-1])}, {nearby[-1]} and the rest of {region}. Many of the firms we work with have offices in the area, and most can also work with you by phone, email or video, so you don’t need to travel.',
             'You answer a few quick questions once, instead of ringing round. We pass your enquiry to one firm, never a list, and the firm contacts you to talk through your matter and explain their fees. There is no obligation to proceed.'],
-            [('Covering', f'{c_name} and {region}'), ('Areas of law', 'Eight, including conveyancing, family law and motoring offences'), ('Who contacts you', 'One regulated law firm'), ('Your commitment', 'None, you choose whether to go ahead')]),
+            [('Covering', f'{c_name} and {region}'), ('Areas of law', 'Seven, including conveyancing, family law and licensing'), ('Who contacts you', 'One regulated law firm'), ('Your commitment', 'None, you choose whether to go ahead')]),
         section(f'<h2 class="cs-h2 cs-center">Pick the help you need</h2>'
                 + cards([(AREA[x]['icon'], LOCAL_NAME[x], AREA[x]['short'], LOC_URL(c_slug, x)) for x in MC.LOCAL_AREAS]
                         + [('globe', 'Immigration advisers', 'Introductions to regulated immigration advisers, wherever you are in the UK.', AREA_URL('immigration'))], 'three', more_label='Learn more'), cls='section cs-sec'),
@@ -177,7 +177,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         section(f'<h2 class="cs-h2 cs-center">Legal help in {c_name}, area by area</h2><div class="cs-things">'
                 + ''.join(f'<div class="cs-thing"><h3><a href="{LOC_URL(c_slug, x)}">{LOCAL_NAME[x]}</a></h3><p>{AREA[x]["short"]} For {AREA_EXTRA[x]["who"][0].lower() + AREA_EXTRA[x]["who"][1:]}.</p></div>' for x in MC.LOCAL_AREAS) + '</div>', cls='section cs-sec'),
         cs_intro(f'Choosing a solicitor in {c_name}', [
-            f'The right firm for you depends on the kind of matter you have, not just on being close by. A conveyancing firm on the high street in {c_name} may not handle a contested licence review, and a family law specialist will not usually deal with a speeding charge. That is why we ask what your matter is about before we introduce anyone.',
+            f'The right firm for you depends on the kind of matter you have, not just on being close by. A conveyancing firm on the high street in {c_name} may not handle a contested licence review, and a family law specialist will not usually chase a business debt. That is why we ask what your matter is about before we introduce anyone.',
             'It is worth asking any firm how it charges before work starts. Many matters are handled for a fixed fee, while others are charged by the hour. A good firm will explain the likely total, what could make it change and what is included, and confirm it in writing.',
             f'You can check that a solicitor is regulated on the Solicitors Regulation Authority register, and that a licensed conveyancer is regulated by the Council for Licensed Conveyancers. Every firm we introduce in {c_name} and {region} is regulated, and you are free to decide whether to instruct them.'],
             [('Check regulation', 'SRA or CLC register'), ('Ask about fees', 'Before any work starts'), ('Meetings', 'In person, phone or video'), ('Obligation', 'None')]),
@@ -186,7 +186,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
         cta(f'Find a solicitor in {c_name}', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched'),
     ])
     page(f'{PUB}/solicitors/{c_slug}.html', f'Solicitors in {c_name} | {BRAND}',
-         f'Find a solicitor in {c_name} for conveyancing, family law, motoring offences, licensing, debt recovery, lease extensions and trademarks. Introductions to regulated firms.',
+         f'Find a solicitor in {c_name} for conveyancing, family law, licensing, debt recovery, lease extensions and trademarks. Introductions to regulated firms.',
          compact(hub), f'<link rel="canonical" href="{SITE}{CITY_URL(c_slug)}"/>' + ld(crumb_ld(('Solicitors near you', '/solicitors'), (c_name, CITY_URL(c_slug)))), backup=False)
     _count['hub'] += 1
 
@@ -221,7 +221,7 @@ for gd in CG.GUIDES:
     _count['guide'] += 1
 _gcards = ''.join(f'<a class="ll-pcard" href="/guides/{gd["slug"]}"><img src="{area_img(gd["area"], i)}" alt="" loading="lazy"/><div><span class="ll-gcat">{AREA[gd["area"]]["name"]}</span><b>{gd["h1"]}</b><p>{gd["lead"]}</p></div></a>' for i, gd in enumerate(CG.GUIDES))
 page(f'{PUB}/guides.html', f'Legal Guides for Property, Family, Immigration and More | {BRAND}',
-     'Plain English guides to conveyancing, leasehold, divorce, choosing an immigration adviser and motoring hearings. General information, not legal advice.',
+     'Plain English guides to conveyancing, leasehold, divorce and choosing an immigration adviser. General information, not legal advice.',
      page_head('Guides', 'Plain English guides to common legal questions. General information, not legal advice.') + f'<section class="ll-docsec"><div class="ll-guides"><div class="ll-ggrid">{_gcards}</div></div></section>'
      + cta('Need help with your matter?', 'Answer a few quick questions and we will introduce you to a specialist.', '/apply', 'Get matched'), backup=False)
 
@@ -307,7 +307,7 @@ for d in PS.GUIDES:
     partner_page(f'/partners/{d["slug"]}', d, 'Guides', [(f'/partners/{s}', PPAGES[s]['nav']) for s in P_GUIDES], [('Guides', '/partners/guides')])
 
 # practice area lead pages and matter lead pages
-LC_AREA = {s: x for s, x in zip(['conveyancing', 'immigration', 'family-law', 'debt-recovery', 'motoring-offences', 'licensing', 'lease-extensions', 'trademarks'], LC.AREAS)}
+LC_AREA = {s: x for s, x in zip(['conveyancing', 'immigration', 'family-law', 'debt-recovery', 'licensing', 'lease-extensions', 'trademarks'], LC.AREAS)}
 _lead_faq = [qa for _, qas in LC.FAQ_GROUPS for qa in qas]
 for a in AC.AREAS:
     s = a['slug']

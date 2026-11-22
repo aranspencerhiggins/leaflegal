@@ -31,7 +31,7 @@ PRIVACY = f'''
 <p>We do not collect information from anyone under 18.</p>
 
 <h2>3. Sensitive information</h2>
-<p>Some legal matters can reveal sensitive information. A family law enquiry may reveal details about your relationships, health or children. An immigration enquiry may reveal your nationality or ethnic origin. A motoring offence enquiry relates to an alleged criminal offence. UK data protection law gives this information extra protection, as "special category" data (Article 9 UK GDPR) and "criminal offence" data (Article 10 UK GDPR).</p>
+<p>Some legal matters can reveal sensitive information. A family law enquiry may reveal details about your relationships, health or children. An immigration enquiry may reveal your nationality or ethnic origin. UK data protection law gives this information extra protection, as "special category" data (Article 9 UK GDPR) and "criminal offence" data (Article 10 UK GDPR).</p>
 <ul>
 <li>We only use this information with your <strong>explicit consent</strong>, which you give when you send our form after reading the statement next to the button, agreeing that we share your enquiry with one law firm. For criminal offence data we also rely on the condition in Schedule 1 of the Data Protection Act 2018 for processing with consent, and, where relevant, for the purpose of obtaining legal advice.</li>
 <li>We ask only for what a firm needs to decide whether it can help. Please keep any summary short and do not include anything you would not want a law firm to read.</li>
@@ -126,7 +126,7 @@ TERMS = f'''
 <ul>
 <li>You are at least 18 years old.</li>
 <li>The enquiry is about your own matter, or you are authorised to make it on behalf of the business or person concerned.</li>
-<li>For conveyancing, family law, motoring offences, licensing and lease extensions, the matter is governed by the law of England and Wales.</li>
+<li>For conveyancing, family law, licensing and lease extensions, the matter is governed by the law of England and Wales.</li>
 <li>For trademarks and related intellectual property, the matter concerns rights in the United Kingdom.</li>
 </ul>
 <p>Debt recovery enquiries are for businesses recovering money owed by other businesses only. Trademark enquiries are introduced to solicitors regulated by the Solicitors Regulation Authority or chartered trade mark attorneys regulated by IPReg. We do not deal with personal injury, clinical negligence, housing disrepair or financial mis-selling claims, or with matters where you are looking only for legal aid.</p>

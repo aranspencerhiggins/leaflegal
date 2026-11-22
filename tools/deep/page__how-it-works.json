@@ -8,7 +8,7 @@
     {
      "h3": "1. You tell us what is going on"
     },
-    "The form starts by asking which area of law your matter falls under. It then asks a handful of questions that are specific to that area. For a house purchase it might ask whether the property is freehold or leasehold. For a driving matter it might ask whether you have a court date. For a business debt it might ask roughly how much is owed and how old the invoice is. These questions are the same ones a firm's intake team would ask on a first call.",
+    "The form starts by asking which area of law your matter falls under. It then asks a handful of questions that are specific to that area. For a house purchase it might ask whether the property is freehold or leasehold. For a licensing matter it might ask whether a hearing date has been set. For a business debt it might ask roughly how much is owed and how old the invoice is. These questions are the same ones a firm's intake team would ask on a first call.",
     "At the end you give your name, a mobile number and an email address. You can also add a short note. This is a good place to mention a deadline, a language preference or the best time to call.",
     {
      "h3": "2. We check it and introduce one firm"
@@ -162,7 +162,7 @@
   [
    "Who it is for",
    [
-    "Leaflegal is for people and businesses who are looking for paid help from a regulated lawyer in one of the eight areas we cover. Six of those areas are for matters in England and Wales. Trademark and immigration introductions are available across the UK.",
+    "Leaflegal is for people and businesses who are looking for paid help from a regulated lawyer in one of the seven areas we cover. Five of those areas are for matters in England and Wales. Trademark and immigration introductions are available across the UK.",
     {
      "h3": "We can help"
     },
@@ -171,7 +171,6 @@
       "Home buyers, sellers and people remortgaging in England and Wales",
       "Leaseholders thinking about extending a lease or buying the freehold",
       "People going through a divorce, separation or dispute about children",
-      "Drivers facing points, a ban or a court date",
       "Pubs, restaurants, shops and venues that need a premises licence",
       "Businesses owed money by other businesses",
       "Individuals, families and employers looking for a regulated immigration adviser"

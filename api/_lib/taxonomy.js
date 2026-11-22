@@ -26,11 +26,6 @@ export const AREAS = [
     ['enforcement', 'Enforcing a judgment'], ['statutory-demands', 'Statutory demand'], ['winding-up-petitions', 'Winding up petition'],
     ['late-payment-interest', 'Late payment interest'], ['other', 'Something else'],
   ] },
-  { slug: 'motoring-offences', label: 'Motoring offences', ew: true, matters: [
-    ['speeding', 'Speeding'], ['drink-driving', 'Drink driving'], ['drug-driving', 'Drug driving'], ['careless-driving', 'Careless driving'],
-    ['dangerous-driving', 'Dangerous driving'], ['driving-without-insurance', 'Driving without insurance'], ['mobile-phone', 'Using a phone while driving'],
-    ['failing-to-identify-the-driver', 'Failing to identify the driver'], ['totting-up', 'Totting up ban'], ['exceptional-hardship', 'Exceptional hardship'], ['other-motoring', 'Another motoring offence'], ['other', 'Something else'],
-  ] },
   { slug: 'licensing', label: 'Licensing', ew: true, matters: [
     ['premises-licence-applications', 'New premises licence'], ['licence-variations', 'Licence variation'], ['transfers-and-dps', 'Transfer or DPS change'],
     ['personal-licences', 'Personal licence'], ['licence-reviews', 'Licence review or hearing'], ['taxi-and-private-hire-licences', 'Taxi or private hire licence'], ['other-licensing', 'Another licence'], ['other', 'Something else'],
@@ -54,7 +49,7 @@ export const matterLabel = (area, slug) => areaOf(area)?.matters.find(([s]) => s
 // Old form labels (before the forms used slugs) mapped to area slugs.
 export const AREA_ALIASES = {
   'Buying or selling a home': 'conveyancing', Immigration: 'immigration', 'Family law': 'family-law', 'Recovering a business debt': 'debt-recovery',
-  'A motoring offence': 'motoring-offences', Licensing: 'licensing', 'Extending a lease': 'lease-extensions', 'Trademarks and IP': 'trademarks', Trademarks: 'trademarks', 'Not sure yet': 'not-sure',
+  Licensing: 'licensing', 'Extending a lease': 'lease-extensions', 'Trademarks and IP': 'trademarks', Trademarks: 'trademarks', 'Not sure yet': 'not-sure',
 };
 export const toAreaSlug = (v) => (AREA_SLUGS.includes(v) || v === 'not-sure' ? v : AREA_ALIASES[v] || null);
 

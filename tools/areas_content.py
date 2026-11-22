@@ -1,5 +1,5 @@
 # Practice areas for Leaflegal. Edit the copy here, then run: python3 tools/build_pages.py
-# Only these eight areas (trademarks and related IP added 2026-11-22) (owner's decision, 2026-11-21). Never add personal injury, clinical negligence (LASPO s56 referral fee ban),
+# Only these seven areas (motoring offences removed 2026-11-22, SRA Code 5.1(d)) (trademarks and related IP added 2026-11-22) (owner's decision, 2026-11-21). Never add personal injury, clinical negligence (LASPO s56 referral fee ban),
 # housing disrepair, financial mis-selling or other claims management work (FCA-regulated).
 # Immigration is referral only: Leaflegal must never give immigration advice or services (Immigration and Asylum Act 1999, s84).
 # Keep the immigration copy to what the firms do and how the introduction works. No eligibility rules, routes or requirements.
@@ -121,35 +121,6 @@ AREAS = [
             ('How much does debt recovery cost?', 'Many firms charge a fixed fee for a letter before action and agreed fees for court stages. They will explain their charges before you instruct them.'),
             ('Do I need to be a limited company?', 'No. Sole traders, partnerships and companies can all recover business debts.'),
             ('Does it cost anything to use Leaflegal?', 'No. Our introduction is free for your business.'),
-        ],
-    },
-    {
-        'slug': 'motoring-offences', 'name': 'Motoring offences', 'icon': 'car', 'form': 'A motoring offence',
-        'short': 'Speeding, drink driving, totting up and driving bans.',
-        'title': 'Motoring Offence Solicitors | Driving Ban, Speeding, Drink Driving | Leaflegal',
-        'desc': 'Facing a driving ban or a motoring charge? We introduce you to a motoring offence solicitor. No obligation to proceed.',
-        'h1': 'Find a motoring offence solicitor',
-        'lead': 'Facing points, a ban or a court date? Tell us what has happened and we will introduce you to a firm that specialises in motoring law.',
-        'intro': [
-            'Motoring offences range from speeding and using a phone at the wheel to drink driving and dangerous driving. The outcome can affect your licence, your job and your insurance, so many people want specialist advice before a court date.',
-            'You answer a few questions about the offence and any dates you know. We pass your enquiry to one motoring law firm, and they contact you to talk it through and explain their fees.',
-        ],
-        'matters': ['Speeding', 'Drink and drug driving', 'Totting up and exceptional hardship', 'Using a mobile phone while driving', 'Careless and dangerous driving', 'Failing to identify the driver'],
-        'how': [
-            ('Tell us what has happened', 'The type of offence, whether you have a court date and how many points you already have.'),
-            ('We introduce one firm', 'We pass your enquiry to a firm that specialises in motoring offences.'),
-            ('They contact you', 'The solicitor explains your options and their fees, so you can decide what to do before your deadline.'),
-        ],
-        'considerations': [
-            ('Deadlines matter', 'Notices and court dates have strict deadlines. Contact a solicitor as soon as you can, and tell them any dates on your paperwork.'),
-            ('Exceptional hardship', 'If a ban would cause exceptional hardship to you or others, a court may decide not to ban you under the totting up rules. A solicitor can tell you whether that argument could apply.'),
-            ('Fees', 'Many motoring firms offer fixed fees for each stage. Ask what is included, such as attending court.'),
-        ],
-        'faqs': [
-            ('Which areas do you cover?', 'Motoring offences dealt with in the courts of England and Wales.'),
-            ('Is there legal aid for motoring offences?', 'Usually not, unless you are at risk of prison. We only introduce people looking for paid legal help.'),
-            ('How quickly will someone contact me?', 'The firm aims to contact you quickly, especially if you have a court date coming up. Please give a mobile number you can answer.'),
-            ('Does it cost anything?', 'Our introduction is free. The firm will explain its own fees before you agree to anything.'),
         ],
     },
     {

@@ -33,7 +33,7 @@
 [
 "Practice areas",
 [
-"We generate enquiries in eight practice areas where paying an introducer is permitted. Within each area, you choose the matter types you want and the locations you cover. Each area has its own page with more detail.",
+"We generate enquiries in seven practice areas where paying an introducer is permitted. Within each area, you choose the matter types you want and the locations you cover. Each area has its own page with more detail.",
 "If you take more than one area, each is set up separately with its own matter types, locations and price, so different teams in your firm can receive the enquiries that suit them.",
 {
 "h3": "Conveyancing"
@@ -52,10 +52,6 @@
 },
 "Unpaid invoices and commercial debts owed by one business to another. Leads show the rough amount owed, the age of the debt and whether it is disputed. Consumer debts are not included.",
 {
-"h3": "Motoring offences"
-},
-"Drink and drug driving, speeding and totting up, careless and dangerous driving and related matters. Leads show the type of offence, any court date and current points.",
-{
 "h3": "Licensing"
 },
 "New premises licences, variations and transfers, reviews and hearings, personal licences and taxi and private hire licences. Leads show the licence type, the application or review involved and the council area.",
@@ -63,7 +59,7 @@
 "h3": "Lease extensions"
 },
 "Statutory and informal lease extensions, collective enfranchisement and related leasehold matters. Leads show roughly how many years are left on the lease.",
-"Matters in six areas are in England and Wales. Trademark and immigration enquiries can come from anywhere in the UK."
+"Matters in five areas are in England and Wales. Trademark and immigration enquiries can come from anywhere in the UK."
 ]
 ],
 [
@@ -170,7 +166,7 @@
 {
 "h3": "Prohibited and restricted areas"
 },
-"We do not generate personal injury or clinical negligence enquiries, where referral fees are banned under section 56 of the Legal Aid, Sentencing and Punishment of Offenders Act 2012, or claims management work. The SRA Code also restricts payments to introducers in respect of clients in criminal proceedings or with public funding, which firms taking motoring work should consider with their compliance officer.",
+"We do not generate personal injury or clinical negligence enquiries, where referral fees are banned under section 56 of the Legal Aid, Sentencing and Punishment of Offenders Act 2012, or claims management work. We also do not generate criminal matters, because the SRA Code restricts payments to introducers in respect of clients in criminal proceedings.",
 {
 "h3": "Consent"
 },
@@ -204,11 +200,11 @@
 ],
 [
 "Which practice areas do you cover?",
-"Conveyancing, family law, immigration, debt recovery for businesses, motoring offences, licensing and lease extensions. You choose which areas you want, and the matter types and locations within each. We do not cover personal injury, clinical negligence or claims management work. Each area has its own page with more detail. Choose any combination."
+"Conveyancing, family law, immigration, debt recovery for businesses, licensing, lease extensions and trademarks. You choose which areas you want, and the matter types and locations within each. We do not cover personal injury, clinical negligence or claims management work. Each area has its own page with more detail. Choose any combination."
 ],
 [
 "Do you cover Scotland and Northern Ireland?",
-"Not at the moment. Leads in six areas are for matters in England and Wales. Trademark and immigration introductions can come from anywhere in the UK, because one UK trademark register and one set of immigration rules apply across the UK. If you are a firm outside England and Wales, mention it when you apply and we will tell you honestly whether the service fits."
+"Not at the moment. Leads in five areas are for matters in England and Wales. Trademark and immigration introductions can come from anywhere in the UK, because one UK trademark register and one set of immigration rules apply across the UK. If you are a firm outside England and Wales, mention it when you apply and we will tell you honestly whether the service fits."
 ],
 [
 "Is there an online platform?",

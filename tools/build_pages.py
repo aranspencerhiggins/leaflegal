@@ -620,7 +620,7 @@ HOME_FAQ = [
     (f'Is {BRAND} a law firm?', f'No. {BRAND} is an introduction service. We pass your enquiry to one independent, regulated law firm, and their lawyers give you the advice. We don&#39;t give legal advice ourselves.'),
     ('Does it cost anything?', 'Our service is free to use. We are paid by the law firm we introduce you to. The firm will explain its own fees before you agree to anything, and must tell you about the fee it pays us.'),
     ('Who will contact me?', 'One law firm that handles your type of matter, usually by phone. We don&#39;t pass your details to a list of firms.'),
-    ('Which areas do you cover?', 'Conveyancing, family law, motoring offences, licensing, lease extensions and business debt recovery in England and Wales, plus trademarks and related IP and introductions to regulated immigration lawyers across the UK.'),
+    ('Which areas do you cover?', 'Conveyancing, family law, licensing, lease extensions and business debt recovery in England and Wales, plus trademarks and related IP and introductions to regulated immigration lawyers across the UK.'),
     ('Can you help with legal aid?', 'We introduce people looking for paid legal help. If you think you may qualify for legal aid, GOV.UK has a checker and can point you to a legal aid adviser.'),
     ('What happens to my information?', 'We only share your details with the firm we introduce you to, and only if you agree. We never share the details of your matter with advertisers. Read our <a href="/privacy-policy">Privacy Policy</a> for the full details.'),
 ]
@@ -695,7 +695,7 @@ org_ld = {'@context': 'https://schema.org', '@type': 'Organization', '@id': f'{S
           'identifier': {'@type': 'PropertyValue', 'propertyID': 'Companies House company number', 'value': '14254961'},
           'address': {'@type': 'PostalAddress', 'streetAddress': '20-22 Wenlock Road', 'addressLocality': 'London', 'postalCode': 'N1 7GU', 'addressCountry': 'GB'}}
 page(f'{PUB}/index.html', f'Find a Solicitor in England and Wales | {BRAND}',
-     'Get matched with a specialist, regulated law firm for conveyancing, family law, motoring offences, licensing, lease extensions, debt recovery, trademarks or immigration. No obligation to proceed.',
+     'Get matched with a specialist, regulated law firm for conveyancing, family law, licensing, lease extensions, debt recovery, trademarks or immigration. No obligation to proceed.',
      home, ld(org_ld, faq_ld(HOME_FAQ)))
 
 # ---------------------------------------------------------------- /apply: form-only page
@@ -719,10 +719,10 @@ page(f'{PUB}/apply.html', f'Get Matched With a Solicitor | {BRAND}',
 # ---------------------------------------------------------------- practice area pages + /legal-services hub
 os.makedirs(f'{PUB}/legal-services', exist_ok=True)
 AREA_IMG = {'conveyancing': 'stock-home', 'immigration': 'stock-legal-call', 'family-law': 'stock-about', 'debt-recovery': 'stock-invoice',
-            'motoring-offences': 'stock-need-buying-vehicles', 'licensing': 'stock-ind-restaurants-and-hospitality', 'lease-extensions': 'stock-legal-meet', 'trademarks': 'stock-legal-meet'}
+            'licensing': 'stock-ind-restaurants-and-hospitality', 'lease-extensions': 'stock-legal-meet', 'trademarks': 'stock-legal-meet'}
 ENQ_H1 = {'conveyancing': 'Get matched with a trusted conveyancer', 'immigration': 'Get matched with an immigration expert',
           'family-law': 'Speak to a family law specialist', 'debt-recovery': 'Get the money your business is owed',
-          'motoring-offences': 'Get expert help with your driving charge', 'licensing': 'Get expert help with your licence',
+          'licensing': 'Get expert help with your licence',
           'lease-extensions': 'Extend your lease with a specialist', 'trademarks': 'Protect your brand with a specialist'}
 for a in AC.AREAS:
     q = ENQ_URL(a['slug'])
@@ -770,7 +770,7 @@ hub = (page_head('Legal services', 'The areas of law we introduce people and bus
        + section(title_block('Not sure which you need?', 'You don’t have to know. Tell us what is happening and we will introduce you to a firm that can help.')
                  + '<div class="ll-actions" style="justify-content:center"><a href="/apply" class="button"><div>Get matched</div></a><a href="/how-it-works" class="button bg-base-50"><div>How it works</div></a></div>'))
 page(f'{PUB}/legal-services.html', f'Legal Services from Specialist Solicitors | {BRAND}',
-     'Conveyancing, family law, debt recovery, motoring offences, licensing, lease extensions, trademarks and introductions to regulated immigration lawyers.', hub, backup=False)
+     'Conveyancing, family law, debt recovery, licensing, lease extensions, trademarks and introductions to regulated immigration lawyers.', hub, backup=False)
 
 # ---------------------------------------------------------------- how it works
 HIW_STEPS = [
@@ -873,15 +873,15 @@ about = f'''
 
 {cs_intro('Why we started Leaflegal', [
   'Legal problems tend to arrive at stressful moments. A house sale, a separation, a court letter or an unpaid invoice all come with deadlines, and the last thing anyone wants is to spend days working out which firm to call.',
-  'We built Leaflegal to make that first step simple. We focus on eight areas of law where people often need a specialist, and we work with regulated firms that handle that work every day.',
+  'We built Leaflegal to make that first step simple. We focus on seven areas of law where people often need a specialist, and we work with regulated firms that handle that work every day.',
   'We are open about how we are paid. The firm pays us a fee for each introduction, it never changes what you pay them, and they will tell you about it in writing.'],
-  [('Who we are', 'Vertical Brands Ltd'), ('What we do', 'Introductions'), ('Areas of law', 'Eight'), ('Where', 'England and Wales'), ('Paid by', 'The law firm, not you')])}
+  [('Who we are', 'Vertical Brands Ltd'), ('What we do', 'Introductions'), ('Areas of law', 'Seven'), ('Where', 'England and Wales'), ('Paid by', 'The law firm, not you')])}
 
 {section(f"""<div class="ll-section-title"><h2 class="heading-two">How we work</h2></div>
 {cards([
   ('clock', 'Simple', 'One short form, in plain English, that takes about two minutes.', None),
   ('eye', 'Honest', 'We are clear about who we are, what we do and how we are paid.', None),
-  ('target', 'Focused', 'We only work in eight areas of law, so the firms we introduce can really help.', None),
+  ('target', 'Focused', 'We only work in seven areas of law, so the firms we introduce can really help.', None),
 ], 'three')}""")}
 
 {section(split(PH.photo('desk-warm'), f"""<h2 class="heading-two">What we are, and what we aren't</h2>
