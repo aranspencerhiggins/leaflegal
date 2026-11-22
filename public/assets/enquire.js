@@ -477,7 +477,7 @@ function init() {
     body.querySelector('[data-change]')?.addEventListener('click', back);
     const p = full(), i = p.findIndex((s) => s.id === id);
     bar.innerHTML = `<i class="ap-fill" style="width:${isDone ? 100 : isExit ? 0 : Math.round(((Math.max(i, 0) + 1) / Math.max(p.length, 1)) * 100)}%"></i>`;
-    count.textContent = isDone ? 'Complete' : isExit || i < 0 || !a.area ? '' : `Step ${i + 1} of ${p.length}`;
+    count.textContent = '';
     backBtn.classList.toggle('on', hist.length > 1 && !isDone && !isExit);
     root.closest('.ap-lp')?.classList.toggle('ap-going', hist.length > 1);
     if (dir) { body.querySelector('.ap-q')?.focus({ preventScroll: true }); if (root.getBoundingClientRect().top < 0) root.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
