@@ -39,6 +39,12 @@ export const AREAS = [
     ['statutory-lease-extension', 'Statutory lease extension'], ['informal-lease-extension', 'Informal lease extension'], ['short-lease', 'Flat with a short lease'],
     ['collective-enfranchisement', 'Buying the freehold'], ['selling-a-leasehold-flat', 'Selling a leasehold flat'], ['lease-variations', 'Lease variation'], ['other', 'Something else'],
   ] },
+  // Trademarks and related IP: UK wide (one register at the UK IPO), so ew is false.
+  { slug: 'trademarks', label: 'Trademarks and IP', ew: false, matters: [
+    ['trademark-registration', 'Trademark registration'], ['trademark-searches', 'Trademark search'], ['objections-and-oppositions', 'Objection or opposition'],
+    ['trademark-infringement', 'Trademark infringement'], ['cease-and-desist-letters', 'Cease and desist letter'], ['trademark-renewals', 'Renewal or ownership change'],
+    ['copyright', 'Copyright'], ['design-rights', 'Design rights'], ['other-ip', 'Another brand or IP matter'], ['other', 'Something else'],
+  ] },
 ];
 export const AREA_SLUGS = AREAS.map((a) => a.slug);
 export const areaOf = (slug) => AREAS.find((a) => a.slug === slug) || null;
@@ -48,18 +54,19 @@ export const matterLabel = (area, slug) => areaOf(area)?.matters.find(([s]) => s
 // Old form labels (before the forms used slugs) mapped to area slugs.
 export const AREA_ALIASES = {
   'Buying or selling a home': 'conveyancing', Immigration: 'immigration', 'Family law': 'family-law', 'Recovering a business debt': 'debt-recovery',
-  'A motoring offence': 'motoring-offences', Licensing: 'licensing', 'Extending a lease': 'lease-extensions', 'Not sure yet': 'not-sure',
+  'A motoring offence': 'motoring-offences', Licensing: 'licensing', 'Extending a lease': 'lease-extensions', 'Trademarks and IP': 'trademarks', Trademarks: 'trademarks', 'Not sure yet': 'not-sure',
 };
 export const toAreaSlug = (v) => (AREA_SLUGS.includes(v) || v === 'not-sure' ? v : AREA_ALIASES[v] || null);
 
 // Regulators a firm can be authorised by, and the areas each one lets a firm take on.
 // Immigration advice is only for SRA, CILEx or IAA (formerly OISC) regulated advisers (Immigration and Asylum Act 1999 s84).
-// CLC licensed conveyancers: conveyancing and lease work only.
+// CLC licensed conveyancers: conveyancing and lease work only. IPReg chartered trade mark attorneys: trademarks and related IP only.
 export const REGULATORS = [
   { id: 'SRA', label: 'Solicitors Regulation Authority (SRA)', number: 'SRA number', areas: AREA_SLUGS },
   { id: 'CILEX', label: 'CILEx Regulation', number: 'CILEx Regulation number', areas: AREA_SLUGS },
   { id: 'CLC', label: 'Council for Licensed Conveyancers (CLC)', number: 'CLC licence number', areas: ['conveyancing', 'lease-extensions'] },
   { id: 'IAA', label: 'Immigration Advice Authority (IAA)', number: 'IAA reference', areas: ['immigration'] },
+  { id: 'IPREG', label: 'Intellectual Property Regulation Board (IPReg)', number: 'IPReg registration number', areas: ['trademarks'] },
 ];
 export const regulatorOf = (id) => REGULATORS.find((r) => r.id === id) || null;
 export const allowedAreas = (regIds = []) => [...new Set(regIds.flatMap((id) => regulatorOf(id)?.areas || []))];

@@ -35,6 +35,7 @@ function init() {
     shield: I('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>'),
     gavel: I('<path d="M14 4l6 6M11 7l6 6M8 10l3-3 6 6-3 3zM9 15l-6 6"/>'),
     child: I('<circle cx="12" cy="6" r="3"/><path d="M8 21v-5l-2-3 6-3 6 3-2 3v5"/>'),
+    tag: I('<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>'),
     ring: I('<circle cx="12" cy="14" r="6"/><path d="M9 4h6l-3 4z"/>'),
   };
   const TICK = I('<path d="M5 12l5 5 9-10" stroke-width="3"/>');

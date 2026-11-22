@@ -5,13 +5,13 @@
 
 TITLE = 'Legal Leads for Solicitors & Law Firms | Pay Per Lead | Leaflegal'
 DESC = ('Exclusive, pre-screened client enquiries for solicitors and law firms in conveyancing, family law, debt recovery, motoring offences, '
-        'licensing, lease extensions and immigration. Pay per lead, sent to you while the enquiry is fresh.')
+        'licensing, lease extensions, trademarks and immigration. Pay per lead, sent to you while the enquiry is fresh.')
 
 HERO_H1 = 'Client enquiries for solicitors and law firms'
 HERO_LEAD = 'Exclusive, pre-screened leads from people and businesses looking for paid legal help. Pay per lead, sent to you while the enquiry is fresh.'
 HERO_TICKS = [
     'Exclusive, with each enquiry sent to one firm',
-    'Seven practice areas, matched to what you do',
+    'Eight practice areas, matched to what you do',
     'Verified UK mobile number and email address',
     'Recorded consent to be contacted by your firm',
 ]
@@ -48,6 +48,9 @@ AREAS = [
     ('doc', 'Lease extensions', 'Statutory and informal lease extensions and collective enfranchisement.',
      'Flat owners with a shortening lease, often prompted by a sale or remortgage, want to know the cost and the process. We tell you roughly how many years are left on the lease, so you can prioritise those closest to 80 years.',
      ['Statutory lease extensions', 'Informal lease extensions', 'Collective enfranchisement', 'Lease variations', 'Freeholder disputes']),
+    ('tag', 'Trademarks', 'Trademark filings, searches, oppositions, infringement, copyright and designs.',
+     'Trademark enquiries come from founders, growing brands and product businesses who want to protect a name or logo, or who have a deadline from the UK IPO or a letter from a competitor. We tell you what they want to protect, whether they have filed already and whether there is a dispute. Enquiries can come from anywhere in the UK, and go to SRA regulated solicitors or IPReg regulated chartered trade mark attorneys.',
+     ['Trademark registration and searches', 'Objections and oppositions', 'Infringement and cease and desist letters', 'Renewals and portfolio work', 'Copyright and design rights']),
 ]
 
 LEAD_CONTENTS_TEXT = ('Each lead is the complete record of what the client told us, in the order they told us. There is no scraped data and no '
@@ -130,7 +133,7 @@ FAQ_H2 = 'Legal lead FAQs'
 FAQ_GROUPS = [
     ('Getting started', [
         ('What is Leaflegal?', 'Leaflegal is an introduction service run by Vertical Brands Ltd. We run marketing campaigns for people and businesses who need legal help, ask them a short set of questions about their matter and, with their consent, introduce each one to a single partner firm that handles that type of work.'),
-        ('Which practice areas do you cover?', 'Conveyancing, family law, debt recovery for businesses, motoring offences, licensing, lease extensions and immigration. You choose which of these you want to receive.'),
+        ('Which practice areas do you cover?', 'Conveyancing, family law, debt recovery for businesses, motoring offences, licensing, lease extensions, trademarks and immigration. You choose which of these you want to receive.'),
         ('Who can become a partner firm?', 'SRA-regulated solicitors’ firms, CILEx-regulated practices, CLC-regulated conveyancers and, for immigration, advisers registered with the Immigration Advice Authority (formerly the OISC). You must be authorised for the work you take on.'),
         ('How do I apply?', 'Complete the partner application. It takes a couple of minutes and asks about your practice areas, how you are regulated, the areas you cover and how many leads you want each month. We will then call you to agree your criteria, delivery and pricing.'),
         ('How quickly can I start?', 'Once your criteria, pricing and delivery are agreed and your partner agreement is in place, leads start as soon as matching enquiries come in. Volumes depend on your practice areas and locations.'),

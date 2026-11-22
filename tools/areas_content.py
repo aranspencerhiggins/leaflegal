@@ -1,5 +1,5 @@
 # Practice areas for Leaflegal. Edit the copy here, then run: python3 tools/build_pages.py
-# Only these seven areas (owner's decision, 2026-11-21). Never add personal injury, clinical negligence (LASPO s56 referral fee ban),
+# Only these eight areas (trademarks and related IP added 2026-11-22) (owner's decision, 2026-11-21). Never add personal injury, clinical negligence (LASPO s56 referral fee ban),
 # housing disrepair, financial mis-selling or other claims management work (FCA-regulated).
 # Immigration is referral only: Leaflegal must never give immigration advice or services (Immigration and Asylum Act 1999, s84).
 # Keep the immigration copy to what the firms do and how the introduction works. No eligibility rules, routes or requirements.
@@ -205,6 +205,34 @@ AREAS = [
         'faqs': [
             ('Which areas do you cover?', 'Leasehold flats in England and Wales.'),
             ('Can I extend my lease myself?', 'You can, but the process has strict notices and deadlines. Most owners use a solicitor and a valuer.'),
+            ('Does it cost anything to use Leaflegal?', 'No. Our introduction is free. The firm will explain its own fees before you agree to anything.'),
+        ],
+    },
+    {
+        'slug': 'trademarks', 'name': 'Trademarks', 'icon': 'tag', 'form': 'Trademarks and IP', 'uk_wide': True,
+        'short': 'Registering, protecting and enforcing trademarks, copyright and designs.',
+        'title': 'Trademark Solicitors and Attorneys | Register and Protect Your Brand | Leaflegal',
+        'desc': 'Registering a trademark, facing an opposition or dealing with copying? We introduce you to a trademark solicitor or attorney. Free to use, no obligation.',
+        'h1': 'Find a trademark solicitor',
+        'lead': 'Protecting a name, logo or product? Tell us what you need and we will introduce you to a regulated trademark and IP specialist.',
+        'intro': [
+            'A trademark protects the name, logo or slogan customers know you by. Registering it at the UK Intellectual Property Office gives you the exclusive right to use it for the goods and services it covers, across the whole of the UK. Related rights, such as copyright and design rights, protect creative work and the look of your products.',
+            'You answer a few questions about your brand and what you need. We pass your enquiry to one firm, either solicitors regulated by the Solicitors Regulation Authority or chartered trade mark attorneys regulated by IPReg, and they contact you with their advice on next steps and their fees.',
+        ],
+        'matters': ['Trademark registration', 'Clearance searches', 'Objections and oppositions', 'Infringement and passing off', 'Cease and desist letters', 'Renewals, copyright and design rights'],
+        'how': [
+            ('Tell us about your brand', 'What you want to protect, what you sell and whether there is a deadline or a dispute.'),
+            ('We introduce one firm', 'We pass your enquiry to a trademark solicitor or chartered trade mark attorney.'),
+            ('They contact you', 'The firm explains your options, the official fees and their own fees before you decide anything.'),
+        ],
+        'considerations': [
+            ('Search before you invest', 'Checking that a name is free to use before you spend money on branding can save a costly rebrand later.'),
+            ('Deadlines are fixed', 'Oppositions, examiner reports and renewals all run to UK IPO deadlines. Tell the firm about any date on your paperwork.'),
+            ('Fees', 'Many trademark firms quote fixed fees for searches and filings. Official UK IPO fees are paid on top and depend on how many classes you need.'),
+        ],
+        'faqs': [
+            ('Which areas do you cover?', 'Trademarks and related IP across the whole of the UK, because there is one UK trademark register.'),
+            ('Is a trademark attorney the same as a solicitor?', 'Not quite. Both can handle trademark work. Chartered trade mark attorneys are regulated by IPReg and specialise in trademarks, while solicitors are regulated by the SRA and can also take disputes to court.'),
             ('Does it cost anything to use Leaflegal?', 'No. Our introduction is free. The firm will explain its own fees before you agree to anything.'),
         ],
     },

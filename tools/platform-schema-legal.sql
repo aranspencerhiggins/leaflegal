@@ -12,7 +12,7 @@ create table if not exists public.brokers (
   company text not null,                                   -- firm name
   contact_name text,
   phone text,
-  regulators jsonb not null default '[]'::jsonb,           -- [{ id: 'SRA'|'CILEX'|'CLC'|'IAA', number }]
+  regulators jsonb not null default '[]'::jsonb,           -- [{ id: 'SRA'|'CILEX'|'CLC'|'IAA'|'IPREG', number }]
   regulator_checked_at timestamptz,                        -- admin ticked it after checking the register
   company_number text,
   address text,

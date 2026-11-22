@@ -57,6 +57,7 @@ import { allowedAreas, AREA_SLUGS } from '../api/_lib/taxonomy.js';
 // Regulators: immigration only for SRA, CILEx or IAA firms. CLC firms only get conveyancing and lease extensions.
 {
   assert.deepEqual(allowedAreas(['IAA']), ['immigration']);
+  assert.deepEqual(allowedAreas(['IPREG']), ['trademarks']);
   assert.ok(!allowedAreas(['CLC']).includes('immigration') && allowedAreas(['CLC']).includes('conveyancing'));
   assert.deepEqual([...allowedAreas(['SRA'])].sort(), [...AREA_SLUGS].sort());
   const imm = { area: 'immigration', matter: 'spouse-visas' };
