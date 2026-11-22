@@ -15,12 +15,12 @@
   if (flag) { url0.searchParams.delete('demo'); history.replaceState(history.state, '', url0.pathname + url0.search + url0.hash); }
   const demoToken = (t) => /^demo-(firm|admin)$/.test(String(t || ''));
   if (role !== 'firm' && role !== 'admin') {
-    // Demo is off: drop a sign-in left over from a demo so the real sign-in page shows.
-    try { const s = JSON.parse(localStorage.getItem(TK) || 'null'); if (demoToken(s?.access)) localStorage.removeItem(TK); } catch {}
+    // Demo is off: swap a demo sign-in back to the real one saved on the way in (if any), else show the sign-in page.
+    try { const s = JSON.parse(localStorage.getItem(TK) || 'null'); if (demoToken(s?.access)) { const real = sessionStorage.getItem('llp-real-session'); if (real) localStorage.setItem(TK, real); else localStorage.removeItem(TK); } sessionStorage.removeItem('llp-real-session'); } catch {}
     return;
   }
   // Landing with ?demo=firm or ?demo=admin signs straight in as that role.
-  try { const s = JSON.parse(localStorage.getItem(TK) || 'null'); if (flag || (s && !demoToken(s.access))) localStorage.setItem(TK, JSON.stringify({ access: `demo-${role}`, refresh: `demo-${role}` })); } catch {}
+  try { const s = JSON.parse(localStorage.getItem(TK) || 'null'); if (s && !demoToken(s.access)) sessionStorage.setItem('llp-real-session', JSON.stringify(s)); if (flag || (s && !demoToken(s.access))) localStorage.setItem(TK, JSON.stringify({ access: `demo-${role}`, refresh: `demo-${role}` })); } catch {}
 
   // ------------------------------------------------ banner
   const BH = 34;
