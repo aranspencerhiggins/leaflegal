@@ -4,6 +4,7 @@
 // Answers we can't help with end on a "sorry" screen with useful links, and nothing is sent.
 // Matter details are special category or criminal offence data. They go only to /api/enquiry, never to ad platforms.
 import { AREAS, FORMS, NOTES, SHARED_STEPS, FORM_VERSION, POSTCODE_RE, NOT_EW, areaOf, matterOf, pathOf, derive, exitOf, shows } from './form-options.js';
+import { LISTS } from './lists.js';
 
 const root = document.getElementById('ap');
 if (root) init();
@@ -39,7 +40,7 @@ function init() {
   const TICK = I('<path d="M5 12l5 5 9-10" stroke-width="3"/>');
   const ARROW = I('<path d="M5 12h14M13 6l6 6-6 6"/>');
   const CROSS = I('<path d="M18 6L6 18M6 6l12 12" stroke-width="3"/>');
-  const NAT = ['Afghan', 'Albanian', 'Algerian', 'American', 'Argentinian', 'Australian', 'Bangladeshi', 'Brazilian', 'British', 'Bulgarian', 'Canadian', 'Chinese', 'Colombian', 'Egyptian', 'Emirati', 'Filipino', 'French', 'Gambian', 'German', 'Ghanaian', 'Greek', 'Hong Kong (BN(O))', 'Indian', 'Indonesian', 'Iranian', 'Iraqi', 'Irish', 'Italian', 'Jamaican', 'Japanese', 'Jordanian', 'Kenyan', 'Lebanese', 'Malaysian', 'Mexican', 'Moroccan', 'Nepalese', 'New Zealander', 'Nigerian', 'Pakistani', 'Polish', 'Portuguese', 'Romanian', 'Russian', 'Saudi', 'Singaporean', 'South African', 'South Korean', 'Spanish', 'Sri Lankan', 'Sudanese', 'Syrian', 'Thai', 'Turkish', 'Ugandan', 'Ukrainian', 'Vietnamese', 'Zimbabwean'];
+  const listOf = (s) => LISTS[s.list] || null;
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   // "Not sure" has no qualifying questions of its own: they tell us in a sentence or two.
@@ -47,7 +48,7 @@ function init() {
   const AREA_STEP = { id: 'area', q: 'What do you need help with?', type: 'single', grid: true, icons: true,
     options: AREAS.map((x) => ({ v: x.slug, label: x.label === 'Conveyancing' ? 'Buying or selling a home' : x.label, sub: x.short, ico: x.icon }))
       .concat({ v: UNSURE, label: 'Not sure', sub: 'Tell us what is happening', ico: 'other' }) };
-  const UNSURE_STEPS = [{ ...SHARED_STEPS.summary, q: 'What do you need help with?', optional: false }, SHARED_STEPS.postcode, SHARED_STEPS.urgency,
+  const UNSURE_STEPS = [{ ...SHARED_STEPS.summary, q: 'What do you need help with?', optional: false }, SHARED_STEPS.urgency,
     { ...SHARED_STEPS.pay, note: 'fees' }, SHARED_STEPS.details];
 
   // ---------- state: answers live in `a`, saved so a refresh keeps progress ----------
@@ -108,11 +109,9 @@ function init() {
   const optBtn = (o, on, multi) => `<button type="button" class="ap-opt${on ? ' sel' : ''}${o.wide ? ' wide' : ''}" role="${multi ? 'checkbox' : 'radio'}" aria-checked="${on}" data-v="${esc(o.v)}">${o.ico && ICON[o.ico] ? `<span class="ap-ico">${ICON[o.ico]}</span>` : ''}<span><b>${esc(o.label)}</b>${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span><span class="ap-tick">${TICK}</span></button>`;
   const nextBtn = (label = 'Continue', type = 'button') => `<div class="ap-actions"><button type="${type}" class="button ap-next" data-next>${label} ${ARROW}</button></div>`;
   const noteHTML = (k) => (k && NOTES[k] ? `<div class="im-note">${NOTES[k]}</div>` : '');
-  const CONSENT_VERSION = '2026-11-21';
-  const CONSENTS = [
-    ['consentTerms', 'I agree to the Leaflegal <a href="/terms-conditions" target="_blank">Terms</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a>.'],
-    ['consentShare', 'I agree to Leaflegal sharing my details and enquiry with one regulated law firm, who may contact me by phone, email or text about it.'],
-  ];
+  const CONSENT_VERSION = '2026-11-22';
+  // No tick boxes. Sending the form is the request to be introduced, and this notice sits right under the button.
+  const NOTICE = 'By sending this enquiry you agree to our <a href="/terms-conditions" target="_blank">Terms</a> and <a href="/privacy-policy" target="_blank">Privacy Policy</a>, and to us passing your details and answers to one regulated law firm who may contact you by phone, email or text about it. Free to use, with no obligation. Leaflegal is not a law firm and does not give legal advice.';
   const plain = (s) => s.replace(/<[^>]+>/g, '');
   const today = () => { const t = new Date(); t.setHours(0, 0, 0, 0); return t; };
   const iso = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
@@ -134,7 +133,7 @@ function init() {
         <span class="ap-err" id="ap-co-err"></span><div class="ap-opts one ap-co-list" role="radiogroup" aria-label="Matching companies" aria-live="polite"></div>
         <p class="ap-note"><button type="button" class="ap-link" data-manual>Can’t find it, or not a limited company? Enter the name yourself</button></p></div>${a.companyNumber ? nextBtn() : ''}`;
     } else if (s.type === 'text' || s.type === 'company') {
-      h += `<form novalidate><div class="ap-field ap-text-step"><label class="ap-sr" for="ap-in">${esc(q)}</label><input id="ap-in" type="text" ${s.list ? 'list="ap-list"' : ''} autocomplete="${s.type === 'company' || s.id === 'business' ? 'organization' : 'off'}" placeholder="${esc(s.placeholder || '')}" value="${esc(v || '')}"><span class="ap-err" id="ap-in-err"></span>${s.hint ? `<p class="ap-note">${esc(s.hint)}</p>` : ''}</div>${s.list === 'nationality' ? `<datalist id="ap-list">${NAT.map((n) => `<option value="${n}">`).join('')}</datalist>` : ''}${nextBtn('Continue', 'submit')}</form>`;
+      h += `<form novalidate><div class="ap-field ap-text-step"><label class="ap-sr" for="ap-in">${esc(q)}</label><input id="ap-in" type="text" ${listOf(s) ? 'role="combobox" aria-autocomplete="list" aria-controls="ap-sugg" aria-expanded="false"' : ''} autocomplete="${s.type === 'company' || s.id === 'business' ? 'organization' : 'off'}" placeholder="${esc(s.placeholder || '')}" value="${esc(v || '')}"><span class="ap-err" id="ap-in-err"></span>${listOf(s) ? '<div class="ap-opts one ap-co-list ap-sugg" id="ap-sugg" role="listbox" aria-label="Suggestions"></div>' : ''}${s.hint ? `<p class="ap-note">${esc(s.hint)}</p>` : ''}</div>${nextBtn(s.optional && !v ? 'Skip' : 'Continue', 'submit')}</form>`;
     } else if (s.type === 'date') {
       const max = new Date(); max.setFullYear(max.getFullYear() + 5);
       h += `<form novalidate><div class="ap-field ap-text-step"><label class="ap-sr" for="ap-in">${esc(q)}</label><input id="ap-in" type="date" value="${v && v !== 'none' ? esc(v) : ''}" max="${iso(max)}"><span class="ap-err" id="ap-in-err"></span></div>
@@ -152,11 +151,10 @@ function init() {
       const f = (n, l, type, ac, full, extra = '') => `<div class="ap-field${full ? ' full' : ''}"><label for="ap-${n}">${l}</label><input id="ap-${n}" name="${n}" type="${type}" autocomplete="${ac}" value="${esc(c[n] || '')}" ${extra}><span class="ap-err" id="ap-${n}-err"></span></div>`;
       h += `<form novalidate><div class="ap-grid">${f('fullName', 'Full name', 'text', 'name', true)}${f('email', 'Email address', 'email', 'email', false, 'inputmode="email"')}${f('phone', 'Mobile number', 'tel', 'tel', false, 'inputmode="tel" placeholder="07700 900123"')}</div>
         <p class="ap-note im-mobile">The firm will usually call you, so please give a mobile number.</p>
-        <div class="ap-consents">${CONSENTS.map(([n, t]) => `<label class="ap-check"><input type="checkbox" name="${n}"><span>${t}</span></label><span class="ap-err" id="ap-${n}-err"></span>`).join('')}</div>
         <div class="ap-hp" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
         <div class="ap-ts" id="ap-ts"></div>
         <div class="ap-actions ap-send"><button type="submit" class="button ap-next">Get matched ${ARROW}</button></div>
-        <p class="ap-agree">Free to use, with no obligation. Leaflegal is not a law firm and does not give legal advice.</p>
+        <p class="ap-agree">${NOTICE}</p>
         <div class="ap-formerr" role="alert"></div></form>`;
     }
     return h;
@@ -190,9 +188,30 @@ function init() {
     } else if (s.type === 'text' || s.type === 'company') {
       const f = step.querySelector('form'), inp = f.querySelector('input');
       f.addEventListener('submit', (e) => { e.preventDefault(); const v = inp.value.trim().replace(/\s+/g, ' ');
+        if (!v && s.optional) { set(''); save(); return go(next(s.id)); }
         const m = !v ? 'Please fill this in' : s.validate === 'nationality' && !/^[\p{L}][\p{L} .'()\-]{2,40}$/u.test(v) ? 'Please enter a nationality, for example Indian or Nigerian' : v.length < 2 ? 'Please check this' : '';
         if (err(m)) { set(v); if (s.type === 'company') a.companyNumber = ''; save(); go(next(s.id)); } });
       inp.addEventListener('input', () => err(''));
+      const list = listOf(s), box = f.querySelector('#ap-sugg');
+      if (list && box) {
+        // Type-ahead: names that start with what was typed come first, then names containing it. Free text is still allowed.
+        const show = () => {
+          const t = inp.value.trim().toLowerCase();
+          const hits = !t ? [] : list.filter((x) => x.toLowerCase().startsWith(t)).concat(list.filter((x) => !x.toLowerCase().startsWith(t) && x.toLowerCase().includes(t))).slice(0, 6);
+          const exact = hits.length === 1 && hits[0].toLowerCase() === t;
+          box.innerHTML = exact ? '' : hits.map((x) => `<button type="button" class="ap-opt" role="option" data-v="${esc(x)}"><span><b>${esc(x)}</b></span></button>`).join('');
+          inp.setAttribute('aria-expanded', String(!!box.children.length));
+        };
+        inp.addEventListener('input', show);
+        inp.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown' && box.firstElementChild) { e.preventDefault(); box.firstElementChild.focus(); } });
+        box.addEventListener('keydown', (e) => {
+          const b = e.target.closest('button'); if (!b) return;
+          if (e.key === 'ArrowDown') { e.preventDefault(); (b.nextElementSibling || b).focus(); }
+          if (e.key === 'ArrowUp') { e.preventDefault(); (b.previousElementSibling || inp).focus(); }
+        });
+        box.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; inp.value = b.dataset.v; set(b.dataset.v); save(); go(next(s.id)); });
+      }
+      if (s.optional) inp.addEventListener('input', () => { const nb = f.querySelector('[data-next]'); if (nb) nb.firstChild.nodeValue = inp.value.trim() ? 'Continue ' : 'Skip '; });
       setTimeout(() => inp.focus({ preventScroll: true }), 50);
     } else if (s.type === 'date') {
       const f = step.querySelector('form'), inp = f.querySelector('input');
@@ -215,6 +234,26 @@ function init() {
         go(next(s.id)); });
       f.querySelector('[data-outside]')?.addEventListener('click', () => { set('outside'); go(next(s.id)); });
       inp.addEventListener('input', () => err(''));
+      const list = listOf(s), box = f.querySelector('#ap-sugg');
+      if (list && box) {
+        // Type-ahead: names that start with what was typed come first, then names containing it. Free text is still allowed.
+        const show = () => {
+          const t = inp.value.trim().toLowerCase();
+          const hits = !t ? [] : list.filter((x) => x.toLowerCase().startsWith(t)).concat(list.filter((x) => !x.toLowerCase().startsWith(t) && x.toLowerCase().includes(t))).slice(0, 6);
+          const exact = hits.length === 1 && hits[0].toLowerCase() === t;
+          box.innerHTML = exact ? '' : hits.map((x) => `<button type="button" class="ap-opt" role="option" data-v="${esc(x)}"><span><b>${esc(x)}</b></span></button>`).join('');
+          inp.setAttribute('aria-expanded', String(!!box.children.length));
+        };
+        inp.addEventListener('input', show);
+        inp.addEventListener('keydown', (e) => { if (e.key === 'ArrowDown' && box.firstElementChild) { e.preventDefault(); box.firstElementChild.focus(); } });
+        box.addEventListener('keydown', (e) => {
+          const b = e.target.closest('button'); if (!b) return;
+          if (e.key === 'ArrowDown') { e.preventDefault(); (b.nextElementSibling || b).focus(); }
+          if (e.key === 'ArrowUp') { e.preventDefault(); (b.previousElementSibling || inp).focus(); }
+        });
+        box.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; inp.value = b.dataset.v; set(b.dataset.v); save(); go(next(s.id)); });
+      }
+      if (s.optional) inp.addEventListener('input', () => { const nb = f.querySelector('[data-next]'); if (nb) nb.firstChild.nodeValue = inp.value.trim() ? 'Continue ' : 'Skip '; });
       setTimeout(() => inp.focus({ preventScroll: true }), 50);
     } else if (s.type === 'summary') {
       const inp = step.querySelector('textarea'), btn = step.querySelector('[data-next]');
@@ -283,12 +322,11 @@ function init() {
       : DISPOSABLE.includes(v.trim().toLowerCase().split('@')[1]) ? 'Please use an email address you check regularly, not a temporary one' : '',
     phone: (v) => { const d = String(v).replace(/[^\d]/g, ''); if (/^0?[123]\d{8,9}$/.test(d)) return 'That looks like a landline. Please give a mobile so the firm can reach you'; return mobile(v) ? '' : 'Please enter a UK mobile number, for example 07700 900123'; },
   };
-  const CONSENT_ERR = { consentTerms: 'Please agree to the Terms and Privacy Policy', consentShare: 'Please agree so we can pass your enquiry to a law firm' };
 
   function wireDetails(step) {
     const form = step.querySelector('form');
     const keep = () => { a.contact = { fullName: form.elements.fullName.value, email: form.elements.email.value, phone: form.elements.phone.value }; save(); };
-    form.addEventListener('input', (e) => { const el = e.target; if (el.type === 'checkbox') { form.querySelector(`#ap-${el.name}-err`).textContent = ''; return; } if (el.name !== 'website') keep(); el.removeAttribute('aria-invalid'); form.querySelector('.ap-formerr').classList.remove('on'); });
+    form.addEventListener('input', (e) => { const el = e.target; if (el.name !== 'website') keep(); el.removeAttribute('aria-invalid'); form.querySelector('.ap-formerr').classList.remove('on'); });
     form.addEventListener('focusout', (e) => {
       const el = e.target, rule = RULES[el.name];
       if (!rule || !el.value.trim()) return;
@@ -347,11 +385,6 @@ function init() {
       form.querySelector(`#ap-${n}-err`).innerHTML = msg; el.toggleAttribute('aria-invalid', !!msg);
       if (msg && !first) first = el;
     }
-    for (const [n] of CONSENTS) {
-      const el = form.elements[n], msg = el.checked ? '' : CONSENT_ERR[n];
-      form.querySelector(`#ap-${n}-err`).textContent = msg;
-      if (msg && !first) first = el;
-    }
     const sg = !first && suggest(form.elements.email.value);
     if (sg && nudged !== form.elements.email.value) { nudged = form.elements.email.value; form.querySelector('#ap-email-err').innerHTML = fixHTML(sg); first = form.elements.email; }
     if (first) return first.focus();
@@ -372,8 +405,8 @@ function init() {
       fullName: name, firstName: name.split(' ')[0], lastName: name.split(' ').slice(1).join(' '),
       email: form.elements.email.value.trim(), phone: mobile(form.elements.phone.value),
       phoneConfirmed: !!confirmed.phone && confirmed.phone === mobile(form.elements.phone.value), emailConfirmed: !!confirmed.email && confirmed.email === form.elements.email.value.trim(),
-      consentTerms: form.elements.consentTerms.checked, consentShare: form.elements.consentShare.checked,
-      consentVersion: CONSENT_VERSION, consentAt: new Date().toISOString(), consentText: CONSENTS.map(([, t]) => plain(t)).join(' | '),
+      consentTerms: true, consentShare: true,
+      consentVersion: CONSENT_VERSION, consentAt: new Date().toISOString(), consentText: plain(NOTICE),
       marketing: !!window.leaflegalCookies?.get()?.marketing, fbc: getFbc(), fbp: getFbp(),
       eventId: (crypto.randomUUID && crypto.randomUUID()) || String(Date.now()),
       website: form.elements.website.value, _ms: Date.now() - t0,

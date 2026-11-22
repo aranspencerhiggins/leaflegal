@@ -116,13 +116,14 @@ export default async function handler(req, res) {
   const raw = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
 
   const utm = raw.utm && typeof raw.utm === 'object' ? Object.fromEntries(Object.entries(raw.utm).slice(0, 20).map(([k, v]) => [t(k, 40), t(v, 200)])) : {};
-  const built = buildLead(raw, { utm });
+  const hdr = (k) => { try { return decodeURIComponent(String(req.headers[k] || '')); } catch { return ''; } };
+  const built = buildLead(raw, { utm, geo: { country: hdr('x-vercel-ip-country'), postal: hdr('x-vercel-ip-postal-code') } });
   if (built.error) return res.status(400).json(built);
   const lead = built.lead, c = lead.contact;
   // Fields the email and Meta helpers use.
   const b = {
     ...c, area: lead.area, areaLabel: lead.areaLabel, matterLabel: lead.matterLabel, audience: lead.audience, urgency: lead.urgency, deadline: lead.deadline,
-    postcode: lead.postcode || 'Outside the UK', region: lead.region, privatePay: lead.privatePay, summary: lead.summary, answers: lead.answers,
+    postcode: lead.postcode || (lead.locationSource === 'ip' ? 'Not asked' : 'Outside the UK'), region: lead.region, privatePay: lead.privatePay, summary: lead.summary, answers: lead.answers,
     valueText: lead.value ? `${lead.valueLabel}: ${lead.value.band}` : '', businessText: lead.business ? [lead.business.name, lead.business.number].filter(Boolean).join(', ') : '',
     tagsText: lead.tags.join(', '), consentAt: lead.consent.at, consentVersion: lead.consent.version, consentText: lead.consent.text, consentTerms: lead.consent.terms, consentShare: lead.consent.share,
     phoneConfirmed: !!raw.phoneConfirmed, emailConfirmed: !!raw.emailConfirmed, marketing: lead.consent.marketing,
@@ -131,7 +132,7 @@ export default async function handler(req, res) {
   };
 
   if (!c.firstName || !c.lastName) return res.status(400).json({ field: 'fullName', error: 'Please enter your first and last name' });
-  if (!b.consentTerms || !b.consentShare) return res.status(400).json({ error: 'Please tick both boxes so we can pass your enquiry to a law firm.' });
+  if (!b.consentTerms || !b.consentShare) return res.status(400).json({ error: 'Please refresh the page and try again.' });
   if (!/^\+447\d{9}$/.test(c.phone)) return res.status(400).json({ field: 'phone', error: 'Please enter a UK mobile number, for example 07700 900123' });
   if (!/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(c.email)) return res.status(400).json({ field: 'email', error: 'Please enter a valid email address' });
   if (!(await canReceiveMail(c.email.split('@')[1]))) return res.status(400).json({ field: 'email', error: "That email domain doesn't seem to accept mail. Please check it." });

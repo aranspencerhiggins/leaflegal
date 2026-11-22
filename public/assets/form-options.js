@@ -25,18 +25,18 @@
 // Exit = { reason, links: [[href, text]] }
 //
 // After an area's own steps every form asks the shared steps in this order (built by the browser, checked by the server):
-//   postcode, urgency, pay, business (businesses without a company step), summary, details.
+//   postcode (only areas with postcode: true), urgency, pay, business (businesses without a company step), details.
 
-export const FORM_VERSION = '2026-11-22.1';
+export const FORM_VERSION = '2026-11-22.2';
 
 export const AREAS = [
-  { slug: 'conveyancing', label: 'Conveyancing', form: 'Buying or selling a home', short: 'Buying, selling or remortgaging', icon: 'home', scope: 'ew' },
+  { slug: 'conveyancing', label: 'Conveyancing', form: 'Buying or selling a home', short: 'Buying, selling or remortgaging', icon: 'home', scope: 'ew', postcode: true },
   { slug: 'family-law', label: 'Family law', form: 'Family law', short: 'Divorce, finances, children', icon: 'family', scope: 'ew' },
   { slug: 'immigration', label: 'Immigration', form: 'Immigration', short: 'Visas, settlement, sponsor licences', icon: 'globe', scope: 'uk', referralOnly: true },
   { slug: 'motoring-offences', label: 'Motoring offences', form: 'A motoring offence', short: 'Speeding, drink driving, bans', icon: 'car', scope: 'ew' },
   { slug: 'debt-recovery', label: 'Debt recovery', form: 'Recovering a business debt', short: 'For businesses owed money', icon: 'invoice', scope: 'ew', businessOnly: true },
   { slug: 'licensing', label: 'Licensing', form: 'Licensing', short: 'Premises, personal, taxi', icon: 'badge', scope: 'ew' },
-  { slug: 'lease-extensions', label: 'Lease extensions', form: 'Extending a lease', short: 'Flats and freeholds', icon: 'key', scope: 'ew' },
+  { slug: 'lease-extensions', label: 'Lease extensions', form: 'Extending a lease', short: 'Flats and freeholds', icon: 'key', scope: 'ew', postcode: true },
 ];
 export const AREA_SLUGS = AREAS.map((a) => a.slug);
 export const areaOf = (s) => AREAS.find((a) => a.slug === s || a.form === s || a.label === s) || null;
@@ -150,8 +150,8 @@ export const SHARED_EXITS = {
 
 // Shared steps, asked after an area's own steps. {AREA} and {WHO} are filled in by the browser.
 export const SHARED_STEPS = {
-  postcode: { id: 'postcode', q: 'What’s your postcode?', qBusiness: 'What’s the business postcode?', type: 'postcode', placeholder: 'For example SW1A 1AA',
-    hint: 'So we can find a firm that covers your area' },
+  postcode: { id: 'postcode', q: 'What’s the property postcode?', type: 'postcode', placeholder: 'For example SW1A 1AA',
+    hint: 'If you haven’t found a property yet, use your own postcode' },
   urgency: { id: 'urgency', q: 'How soon do you need help?', type: 'single', icons: true, options: [
     { v: 'Urgently', label: 'Urgently', sub: 'I have a deadline, court date or hearing in the next two weeks', ico: 'bolt', tags: ['urgent'] },
     { v: 'Within a month', label: 'Within a month', ico: 'month' },
@@ -163,7 +163,7 @@ export const SHARED_STEPS = {
     { v: 'free', label: 'No, I was hoping for free advice or legal aid', exit: 'free' }] },
   business: { id: 'business', q: 'What’s the name of the business?', type: 'text', placeholder: 'For example Acme Trading Ltd', validate: 'text' },
   summary: { id: 'summary', q: 'Anything else the firm should know?', type: 'summary', optional: true },
-  details: { id: 'details', q: 'Where should the firm contact you?', type: 'details' },
+  details: { id: 'details', q: 'Your contact details', type: 'details' },
 };
 
 // ---------------------------------------------------------------- the forms, one per area (assets/forms/*.js)
@@ -227,10 +227,11 @@ export function pathOf(area, a) {
   const d = derive(area, a), out = [];
   for (const s of f.steps) if (shows(s, a, d)) out.push(s);
   const biz = d.audience === 'business';
-  out.push(SHARED_STEPS.postcode, f.urgency ? { ...SHARED_STEPS.urgency, ...f.urgency } : SHARED_STEPS.urgency);
+  if (AREAS.find((x) => x.slug === area)?.postcode) out.push(SHARED_STEPS.postcode);
+  out.push(f.urgency ? { ...SHARED_STEPS.urgency, ...f.urgency } : SHARED_STEPS.urgency);
   out.push({ ...SHARED_STEPS.pay, note: f.payNote || (biz ? 'bizFees' : 'fees'), ...(f.pay || {}) });
   if (biz && !f.steps.some((s) => s.type === 'company' && shows(s, a, d))) out.push(SHARED_STEPS.business);
-  out.push(SHARED_STEPS.summary, SHARED_STEPS.details);
+  out.push(SHARED_STEPS.details);
   return out;
 }
 export const exitOf = (area, key) => (FORMS[area]?.exits || {})[key] || SHARED_EXITS[key] || SHARED_EXITS.other;

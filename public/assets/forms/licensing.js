@@ -149,7 +149,7 @@ export default {
       { v: 'no', label: 'No, it took effect straight away', tags: ['immediate-suspension', 'urgent'] },
       { v: 'unsure', label: 'I’m not sure' }] },
     { id: 'tx_letter', when: { tx_issue: ['refused', 'suspended'] }, q: 'What date is on the council’s decision letter?', type: 'date', deadline: true, optional: true, past: true },
-    { id: 'tx_council', when: { need: ['taxi'] }, q: 'Which council issued or is considering the licence?', type: 'text', placeholder: 'For example Leeds City Council', validate: 'text', optional: true },
+    { id: 'tx_council', when: { need: ['taxi'] }, q: 'Which council issued or is considering the licence?', type: 'text', list: 'council', placeholder: 'Start typing the council name', validate: 'text', optional: true },
 
     // Objectors
     { id: 'obj_what', when: { need: ['object'] }, q: 'What are you objecting to?', type: 'single', options: [

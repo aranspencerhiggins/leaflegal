@@ -5,7 +5,8 @@
 // Lead shape handed to storeLead(lead) in api/_lib/leads.js (the lawyer platform):
 // {
 //   area, areaLabel, matter, matterLabel, matterPage (true if /<area>/<matter> exists), audience: 'individual'|'business',
-//   urgency (one of URGENCY), deadline 'YYYY-MM-DD'|null, postcode ('' when outside the UK), postcodeArea, region, country,
+//   urgency (one of URGENCY), deadline 'YYYY-MM-DD'|null, postcode ('' unless the area asks for it), postcodeArea, region, country,
+//   locationSource ('postcode' from the form, or 'ip' from the connection, rough and possibly empty),
 //   value { band, min, max }|null, valueLabel, privatePay (one of PRIVATE_PAY), business { name, number }|null,
 //   answers [{ id, q, a }] (every qualifying question and answer, in order), tags [string], quality { score, grade },
 //   summary, contact { fullName, firstName, lastName, email, phone, phoneVerified, emailVerified },
@@ -81,10 +82,22 @@ export function buildLead(raw, extra = {}) {
   if (!urgencyOpt || urgencyOpt.exit) return { error: 'Please go back and tell us how soon you need help.' };
   if (!PRIVATE_PAY.includes(privatePay)) return { error: 'The firms we work with charge privately for their work.' };
 
-  const outside = raw.outsideUK === true && info?.scope === 'uk';
-  const postcode = outside ? '' : t(raw.postcode, 10).toUpperCase().replace(/\s+/g, '').replace(/(\d[A-Z]{2})$/, ' $1');
-  if (!outside && !POSTCODE_RE.test(postcode)) return { error: 'Please go back and enter a full UK postcode.' };
-  if (info?.scope === 'ew' && NOT_EW.test(postcode)) return { error: 'For this area of law we can only help with matters in England and Wales.' };
+  // Only property areas ask for a postcode. Everyone else is located roughly from their connection (Vercel geo headers),
+  // which is never used to refuse an enquiry, only to fill the region and tag likely out of area leads for the firm.
+  const askPc = !!info?.postcode, geo = extra.geo || {};
+  let outside = raw.outsideUK === true && info?.scope === 'uk', postcode = '', pcArea = '', region = '', country = '', locationSource = 'postcode';
+  if (askPc) {
+    postcode = outside ? '' : t(raw.postcode, 10).toUpperCase().replace(/\s+/g, '').replace(/(\d[A-Z]{2})$/, ' $1');
+    if (!outside && !POSTCODE_RE.test(postcode)) return { error: 'Please go back and enter a full UK postcode.' };
+    if (info?.scope === 'ew' && NOT_EW.test(postcode)) return { error: 'For this area of law we can only help with matters in England and Wales.' };
+    pcArea = postcodeArea(postcode); region = outside ? 'Outside the UK' : regionOf(postcode); country = outside ? 'outside' : countryOf(postcode);
+  } else {
+    locationSource = 'ip';
+    const gc = t(geo.country, 2).toUpperCase(), gp = t(geo.postal, 10).toUpperCase();
+    if (gc && gc !== 'GB') { outside = true; region = 'Outside the UK'; country = 'outside'; }
+    else if (/^[A-Z]{1,2}\d/.test(gp)) { pcArea = postcodeArea(gp); region = regionOf(gp); country = countryOf(gp); }
+  }
+  const outsideEW = !askPc && info?.scope === 'ew' && (outside || ['scotland', 'ni', 'crown'].includes(country));
   if (info?.businessOnly && d.audience !== 'business') return { error: 'We can only help businesses recover money owed by other businesses.' };
 
   const summary = t(raw.summary, 500);
@@ -97,10 +110,10 @@ export function buildLead(raw, extra = {}) {
   const lead = {
     area: ar, areaLabel: info?.label || 'Not sure yet', matter: m?.slug || null, matterLabel: m?.label || null, matterPage: !!m?.page,
     audience: d.audience, urgency, deadline: d.deadline || null,
-    postcode, postcodeArea: postcodeArea(postcode), region: outside ? 'Outside the UK' : regionOf(postcode), country: outside ? 'outside' : countryOf(postcode),
+    postcode, postcodeArea: pcArea, region, country, locationSource,
     value: d.value || null, valueLabel: d.valueLabel || null, privatePay,
     business: d.audience === 'business' ? { name: businessName, number: t(raw.companyNumber, 12).toUpperCase() || null } : null,
-    answers: chk.answers, tags: [...new Set([...(d.tags || []), ...(urgencyOpt.tags || []), ...(privatePay === 'Yes' ? ['ready'] : []), ...(outside ? ['outside-uk'] : [])])],
+    answers: chk.answers, tags: [...new Set([...(d.tags || []), ...(urgencyOpt.tags || []), ...(privatePay === 'Yes' ? ['ready'] : []), ...(outside ? ['outside-uk'] : []), ...(outsideEW ? ['outside-ew'] : [])])],
     summary,
     contact: { fullName, firstName: t(raw.firstName, 60) || fullName.split(' ')[0], lastName: t(raw.lastName, 80) || fullName.split(' ').slice(1).join(' '),
       email: t(raw.email, 200).toLowerCase(), phone: t(raw.phone, 20), phoneVerified: false, emailVerified: false },
