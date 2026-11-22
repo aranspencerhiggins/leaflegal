@@ -16,3 +16,11 @@
 @media (max-width:767px){.ap-lp .ap-lp-head ul{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px}
   .ap-lp .ap-lp-head li{white-space:normal;font-size:13px;gap:7px;padding:6px 12px 6px 7px}
   .ap-lp .ap-lp-head .ap-lp-tick{width:18px;height:18px}.ap-lp .ap-lp-head .ap-lp-tick svg{width:10px;height:10px}}
+/* Enquiry page hero photo, a topic photo behind the head, shaded into the green so text and form stay crisp */
+.ap-lp.ap-has-photo{position:relative;overflow:hidden}
+.ap-lp-photo{position:absolute;inset:0;z-index:0;pointer-events:none}
+.ap-lp-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ap-lp-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(24,48,42,.62) 0%,rgba(24,48,42,.78) 45%,rgba(24,48,42,.9) 100%)}
+.ap-lp.ap-has-photo .ap-wrap{position:relative;z-index:1}
+@media (max-width:767px){.ap-lp-photo{bottom:auto;height:420px}
+  .ap-lp-photo::after{background:linear-gradient(180deg,rgba(24,48,42,.5) 0%,rgba(24,48,42,.72) 55%,#18302a 100%)}}
