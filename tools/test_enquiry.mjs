@@ -24,10 +24,10 @@ const base = {
   email: 'jane@example.com', phone: '+447700900123', consentTerms: true, consentShare: true, consentVersion: 'x', consentAt: 'now', consentText: 'x',
   marketing: true, eventId: 'e1', _ms: 60000, page: 'https://leaflegal.co/family-law?x=1', utm: {}, turnstile: '',
 };
-const run = async (over) => {
+const run = async (over, hdrs = {}) => {
   sent.length = 0; let code = 200, out;
   const res = { status(c) { code = c; return this; }, json(o) { out = o; return this; } };
-  await enquiry({ method: 'POST', body: { ...base, ...over }, headers: { 'x-forwarded-for': '1.2.3.4', 'user-agent': 'test' } }, res);
+  await enquiry({ method: 'POST', body: { ...base, ...over }, headers: { 'x-forwarded-for': '1.2.3.4', 'user-agent': 'test', ...hdrs } }, res);
   return { code, out };
 };
 
@@ -45,8 +45,8 @@ r = await run({ marketing: false });
 assert.equal(r.code, 200); assert.ok(!sent.some((s) => s.url.includes('graph.facebook.com')), 'no Meta without consent');
 
 for (const [name, over] of [
-  ['consent box unticked', { consentShare: false }],
-  ['Scottish postcode for family law', { postcode: 'EH1 1AA' }],
+  ['Scottish postcode for conveyancing', { area: 'conveyancing', ans: answers('conveyancing'), postcode: 'EH1 1AA' }],
+  ['no postcode for conveyancing', { area: 'conveyancing', ans: answers('conveyancing'), postcode: '' }],
   ['legal aid only', { privatePay: 'free' }],
   ['just researching', { urgency: 'Just looking into it' }],
   ['consumer debt', { area: 'debt-recovery', ans: answers('debt-recovery', { debtor: 'consumer' }), business: 'Acme Ltd' }],
@@ -62,4 +62,17 @@ r = await run({ area: 'debt-recovery', ans: answers('debt-recovery'), business: 
 assert.equal(r.code, 200, 'B2B debt ok: ' + JSON.stringify(r.out));
 assert.match(sent.find((s) => s.url.includes('resend')).body.html, /Who is owed the money/, 'team email lists the questions and answers');
 assert.equal(metaLeadBody({ ...base, page: 'https://x/apply?area=Family' }, { headers: {} }).data[0].event_source_url, 'https://x/apply');
+
+// Only property areas ask for a postcode. Others are located from the connection and never refused for it.
+import { buildLead } from '../api/_lib/lead-schema.js';
+let L = buildLead({ ...base, postcode: '' }, { geo: { country: 'GB', postal: 'M1' } }).lead;
+assert.equal(L.postcode, ''); assert.equal(L.region, 'North West'); assert.equal(L.locationSource, 'ip');
+L = buildLead({ ...base, postcode: '' }, { geo: { country: 'GB', postal: 'EH1' } }).lead;
+assert.ok(L.tags.includes('outside-ew'), 'Scottish connection tagged for an England and Wales area');
+L = buildLead({ ...base, postcode: '' }, {}).lead;
+assert.equal(L.region, ''); assert.ok(!L.tags.includes('outside-ew'));
+L = buildLead({ ...base, area: 'conveyancing', ans: answers('conveyancing'), postcode: 'm11ae' }).lead;
+assert.equal(L.postcode, 'M1 1AE'); assert.equal(L.locationSource, 'postcode');
+r = await run({ postcode: '' }, { 'x-vercel-ip-country': 'GB', 'x-vercel-ip-postal-code': 'EH1' });
+assert.equal(r.code, 200, 'family law with no postcode, Scottish connection, still accepted');
 console.log('enquiry tests passed');

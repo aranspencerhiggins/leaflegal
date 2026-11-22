@@ -4,7 +4,7 @@
 def hero_split(h1, lead, ticks, btns, img, crumbs='', alt='', form=None):
     li = ''.join(f'<li>{TICK}{t}</li>' for t in ticks)
     return (f'<section class="ll-pagehead ll-hero-split"><div class="ll-hero-grid"><div>{crumbs}'
-            f'<h1>{h1}</h1><p class="ll-lead">{lead}</p><ul class="ll-hero-ticks">{li}</ul><div class="ll-head-btns">{btns}</div></div>'
+            f'<h1>{h1}</h1><p class="ll-lead">{lead}</p><ul class="ll-hero-ticks">{li}</ul>' + (f'<div class="ll-head-btns">{btns}</div>' if btns else '') + '</div>'
             + (f'<div class="ll-hero-form" id="quote">{form}</div></div></section>' if form else
                f'<div class="ll-hero-media"><img src="{img}" alt="{alt}" loading="eager" fetchpriority="high"/></div></div></section>'))
 
@@ -51,7 +51,7 @@ for a_slug, matters in MAT.items():
         ticks = ['Free to use, no obligation', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
                  'For businesses in England and Wales' if a.get('business_only') else 'Across the UK' if imm else 'For matters in England and Wales']
         head = hero_split(h1, mt['short'] + ' ' + ('Tell us a little about it and we will introduce you to a regulated adviser.' if imm else 'Tell us a little about it and we will introduce you to a specialist firm.'),
-                          ticks, '<a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, i + 1), alt='',
+                          ticks, '', area_img(a_slug, i + 1), alt='',
                           form=form_card(a_slug, mt['slug']))
         related = [x for x in matters if x['slug'] != mt['slug']]
         DM = deep(f'{a_slug}__{mt["slug"]}')
@@ -140,7 +140,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
                   ('Cost to use Leaflegal', 'Free, with no obligation')]
         body = ''.join([
             hero_split(h1, lead, ['Free to use, no obligation', 'One regulated firm, not a list', f'Covering {c_name} and {region}'],
-                       '<a href="#how" class="ll-ghost-light">How it works</a>', area_img(a_slug, ci + ai), form=form_card(a_slug)),
+                       '', area_img(a_slug, ci + ai), form=form_card(a_slug)),
             TRUST_STRIP,
             cs_intro(f'{a["name"]} in {c_name}', intro + [AREA_EXTRA[a_slug]['more']], glance),
             cs_deep(f'{a["name"]} explained', deep(a_slug), lead=f'General information for people and businesses in {c_name}. Pick a topic to read more.'),

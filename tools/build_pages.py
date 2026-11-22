@@ -505,7 +505,7 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
 APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=1" rel="stylesheet"/>'
-APPLY_JS = '<script type="module" src="/assets/enquire.js?v=1"></script>'
+APPLY_JS = '<script type="module" src="/assets/enquire.js?v=2"></script>'
 
 
 def form_card(area=None, matter=None):
@@ -621,7 +621,7 @@ for a in AC.AREAS:
     head = (f'<section class="ll-pagehead ll-hero-split"><div class="ll-hero-grid"><div><nav class="ll-crumbs" aria-label="Breadcrumb"><a href="/legal-services">Legal services</a><span>/</span><span>{a["name"]}</span></nav>'
             f'<h1>{a["h1"]}</h1><p class="ll-lead">{a["lead"]}</p>'
             f'<ul class="ll-hero-ticks"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}{where}</li></ul>'
-            f'<div class="ll-head-btns"><a href="#how" class="ll-ghost-light">How it works</a></div></div>'
+            f'</div>'
             f'<div class="ll-hero-form" id="quote">{form_card(a["slug"])}</div></div></section>')
     crumb_ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': 'Legal services', 'item': f'{SITE}/legal-services'},

@@ -56,6 +56,9 @@ for (const [area, f] of Object.entries(FORMS)) {
     }
     if (exited) { st.exits++; assert.ok(exitOf(area, exited).reason, `${area}: exit ${exited}`); continue; }
     st.maxSteps = Math.max(st.maxSteps, pathOf(area, ans).length);
+    const ids = pathOf(area, ans).map((x) => x.id);
+    assert.equal(ids.includes('postcode'), !!info.postcode, `${area}: postcode only where needed`);
+    assert.ok(!ids.includes('summary'), `${area}: no notes step`);
     const r = buildLead({ area, ans, urgency: 'Within a month', privatePay: 'Yes', postcode: PC[info.scope], business: 'Acme Trading Ltd',
       fullName: 'Jane Smith', email: 'jane@example.com', phone: '+447700900123', consentTerms: true, consentShare: true, summary: '' });
     assert.ok(!r.error, `${area}: ${r.error} ${JSON.stringify(ans)}`);

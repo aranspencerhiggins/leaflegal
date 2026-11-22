@@ -58,7 +58,7 @@ export default {
       { v: 'removal', label: 'I’ve been told I must leave the UK', tags: ['removal'] },
       { v: 'other', label: 'Something else' }] },
     { id: 'i_refusal_date', when: { i_service: ['refused'] }, q: 'What date is on the refusal letter or hearing notice?', type: 'date', deadline: true, optional: true, past: true },
-    { id: 'i_nationality', when: { who: ['individual'] }, q: 'What is your nationality?', type: 'text', list: 'nationality', placeholder: 'For example Indian', validate: 'nationality' },
+    { id: 'i_nationality', when: { who: ['individual'] }, q: 'What is your nationality?', type: 'text', list: 'nationality', placeholder: 'Start typing, for example Indian', validate: 'nationality' },
     { id: 'i_status', when: { who: ['individual'] }, q: 'What is your current immigration status?', type: 'single', options: [
       { v: 'visa', label: 'In the UK on a visa', tags: ['in-uk'] },
       { v: 'settled', label: 'In the UK with settled or pre-settled status', tags: ['in-uk'] },
