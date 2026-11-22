@@ -10,16 +10,16 @@ export default {
   steps: [
     { id: 'offence', q: 'What are you accused of?', type: 'single', icons: true, options: [
       { v: 'speed', label: 'Speeding', ico: 'car', matter: 'speeding', tags: ['speeding'] },
-      { v: 'drink', label: 'Drink driving', sub: 'Including being in charge of a vehicle or failing to give a sample', ico: 'gavel', matter: 'drink-driving', tags: ['drink-driving'] },
-      { v: 'drug', label: 'Drug driving', sub: 'Including prescribed medicines', ico: 'gavel', matter: 'drug-driving', tags: ['drug-driving'] },
-      { v: 'totting', label: 'Reaching 12 points', sub: 'A totting up ban', ico: 'badge', matter: 'totting-up', tags: ['totting-up', 'ban-risk'] },
-      { v: 'careless', label: 'Careless driving', sub: 'Driving without due care and attention', ico: 'car', matter: 'careless-driving', tags: ['careless-driving'] },
+      { v: 'drink', label: 'Drink driving or refusing a breath test', ico: 'gavel', matter: 'drink-driving', tags: ['drink-driving'] },
+      { v: 'drug', label: 'Drug driving', ico: 'gavel', matter: 'drug-driving', tags: ['drug-driving'] },
+      { v: 'totting', label: 'Reaching 12 points (totting up)', ico: 'badge', matter: 'totting-up', tags: ['totting-up', 'ban-risk'] },
+      { v: 'careless', label: 'Careless driving', ico: 'car', matter: 'careless-driving', tags: ['careless-driving'] },
       { v: 'dangerous', label: 'Dangerous driving', ico: 'shield', matter: 'dangerous-driving', tags: ['dangerous-driving', 'serious-offence'] },
-      { v: 'fail', label: 'Failing to name the driver', sub: 'Not replying to a notice asking who was driving', ico: 'person', matter: 'failing-to-identify-the-driver', tags: ['failing-to-identify'] },
+      { v: 'fail', label: 'Failing to name the driver', ico: 'person', matter: 'failing-to-identify-the-driver', tags: ['failing-to-identify'] },
       { v: 'insurance', label: 'Driving without insurance', ico: 'doc', matter: 'driving-without-insurance', tags: ['no-insurance'] },
-      { v: 'other', label: 'Another driving offence', sub: 'For example using a phone or failing to stop', ico: 'other', matter: 'other-motoring' },
-      { v: 'parking', label: 'A parking ticket or PCN', sub: 'Including bus lane, congestion and clean air charges', ico: 'invoice', exit: 'civil' },
-      { v: 'general', label: 'I haven’t been accused of anything', sub: 'Just a general question', ico: 'look', exit: 'nooffence' }] },
+      { v: 'other', label: 'Another driving offence', ico: 'other', matter: 'other-motoring' },
+      { v: 'parking', label: 'A parking, bus lane or congestion charge fine', ico: 'invoice', exit: 'civil' },
+      { v: 'general', label: 'I haven’t been accused of anything', ico: 'look', exit: 'nooffence' }] },
 
     { id: 'o_kind', when: { offence: ['other'] }, q: 'Which offence is it?', type: 'single', options: [
       { v: 'phone', label: 'Using a mobile phone while driving', tags: ['mobile-phone'] },
@@ -41,7 +41,7 @@ export default {
       { v: 'else', label: 'Something else' }] },
 
     // Where things are up to
-    { id: 'stage', q: 'Where are things up to?', type: 'single', options: [
+    { id: 'stage', q: 'What has happened so far?', type: 'single', options: [
       { v: 'stopped', label: 'I was stopped or caught on camera, nothing has arrived yet', tags: ['pre-nip'] },
       { v: 'nip', label: 'I’ve had a Notice of Intended Prosecution', tags: ['nip'] },
       { v: 'interview', label: 'The police want to interview me', tags: ['police-interview'] },
@@ -125,19 +125,19 @@ export default {
       { v: 'unsure', label: 'I’m not sure' }] },
     { id: 'hardship_tu', when: { offence: ['totting'] }, q: 'Would losing your licence cause serious problems for you or others?', type: 'single', options: [
       { v: 'job', label: 'Yes, I’d lose my job or business', matter: 'exceptional-hardship', tags: ['needs-licence', 'exceptional-hardship'] },
-      { v: 'pro', label: 'Yes, I drive for a living', sub: 'For example HGV, taxi, delivery or sales', matter: 'exceptional-hardship', tags: ['needs-licence', 'professional-driver', 'exceptional-hardship'] },
-      { v: 'care', label: 'Yes, people rely on me to drive them', sub: 'For example caring or school runs', matter: 'exceptional-hardship', tags: ['needs-licence', 'exceptional-hardship'] },
+      { v: 'pro', label: 'Yes, I drive for a living', matter: 'exceptional-hardship', tags: ['needs-licence', 'professional-driver', 'exceptional-hardship'] },
+      { v: 'care', label: 'Yes, people rely on me to drive them', matter: 'exceptional-hardship', tags: ['needs-licence', 'exceptional-hardship'] },
       { v: 'manage', label: 'It would be hard but I’d manage' },
       { v: 'no', label: 'No' }] },
     { id: 'hardship', when: { '!offence': ['totting'], '!stage': ['banned'] }, q: 'Do you need to keep driving?', type: 'single', options: [
       { v: 'job', label: 'Yes, my job or business depends on it', tags: ['needs-licence'] },
-      { v: 'pro', label: 'Yes, I drive for a living', sub: 'For example HGV, taxi, delivery or sales', tags: ['needs-licence', 'professional-driver'] },
+      { v: 'pro', label: 'Yes, I drive for a living', tags: ['needs-licence', 'professional-driver'] },
       { v: 'care', label: 'Yes, people rely on me to drive them', tags: ['needs-licence'] },
       { v: 'manage', label: 'It would be hard but I’d manage' },
       { v: 'no', label: 'No' }] },
 
     // Plea
-    { id: 'plea', when: { '!stage': ['convicted', 'banned'] }, q: 'How are you thinking of pleading?', type: 'single', options: [
+    { id: 'plea', when: { '!stage': ['convicted', 'banned'] }, q: 'Do you plan to plead guilty or not guilty?', type: 'single', options: [
       { v: 'guilty', label: 'Guilty, I want help with the penalty', tags: ['guilty-plea'] },
       { v: 'not', label: 'Not guilty, I want to defend it', tags: ['not-guilty'] },
       { v: 'unsure', label: 'I’m not sure yet', tags: ['plea-undecided'] }] },

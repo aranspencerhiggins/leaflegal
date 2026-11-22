@@ -23,14 +23,14 @@ export default {
   defaultMatter: 'statutory-lease-extension',
   steps: [
     { id: 'role', q: 'What do you need help with?', type: 'single', icons: true, options: [
-      { v: 'leaseholder', label: 'Extending my lease', sub: 'You own a leasehold flat or house', ico: 'key', tags: ['leaseholder'] },
-      { v: 'group', label: 'Buying the freehold with other flat owners', sub: 'Collective enfranchisement', ico: 'building', matter: 'collective-enfranchisement', tags: ['collective', 'freehold-purchase'] },
-      { v: 'landlord', label: 'I’m the freeholder or landlord', sub: 'You’ve received a notice or a request to extend', ico: 'doc', tags: ['landlord'] },
+      { v: 'leaseholder', label: 'Extending my lease', ico: 'key', tags: ['leaseholder'] },
+      { v: 'group', label: 'Buying the freehold with other flat owners', ico: 'building', matter: 'collective-enfranchisement', tags: ['collective', 'freehold-purchase'] },
+      { v: 'landlord', label: 'I’m the freeholder or landlord', ico: 'doc', tags: ['landlord'] },
       { v: 'selling', label: 'Selling a flat with a short lease', ico: 'pound', matter: 'selling-a-leasehold-flat', tags: ['selling', 'leaseholder'] },
-      { v: 'variation', label: 'Changing the terms of a lease', sub: 'For example fixing errors or updating clauses', ico: 'gavel', matter: 'lease-variations', tags: ['lease-variation'] },
+      { v: 'variation', label: 'Changing the terms of a lease', ico: 'gavel', matter: 'lease-variations', tags: ['lease-variation'] },
       { v: 'commercial', label: 'A shop, office or business lease', ico: 'office', exit: 'commercial' },
       { v: 'dispute', label: 'A dispute about service charges, repairs or management', ico: 'other', exit: 'dispute' },
-      { v: 'renting', label: 'I rent my home from a landlord', sub: 'You pay rent and don’t own a lease', ico: 'person', exit: 'renting' }] },
+      { v: 'renting', label: 'I rent my home and don’t own it', ico: 'person', exit: 'renting' }] },
 
     { id: 'ptype', when: { '!role': ['group'] }, q: 'Is it a flat or a house?', type: 'single', options: [
       { v: 'flat', label: 'A flat or maisonette', tags: ['flat'] },
@@ -82,18 +82,18 @@ export default {
       { v: 'yes', label: 'Yes' },
       { v: 'no', label: 'No, less than two years', tags: ['under-two-years'] },
       { v: 'unsure', label: 'I’m not sure' }] },
-    { id: 'landlord', when: { role: ['leaseholder', 'selling', 'variation'] }, q: 'Who is your landlord?', type: 'single', options: [
-      { v: 'private', label: 'A private freeholder or investment company' },
+    { id: 'landlord', when: { role: ['leaseholder', 'selling', 'variation'] }, q: 'Who owns the freehold of your property?', type: 'single', options: [
+      { v: 'private', label: 'A private owner or investment company' },
       { v: 'council', label: 'A council or housing association', tags: ['social-landlord'] },
       { v: 'rmc', label: 'A company owned by the residents', tags: ['resident-freeholder'] },
-      { v: 'missing', label: 'I can’t trace the landlord', tags: ['missing-landlord'] },
+      { v: 'missing', label: 'I can’t find or contact them', tags: ['missing-landlord'] },
       { v: 'unsure', label: 'I’m not sure' }] },
 
     // Where it is up to
-    { id: 'notice', when: { role: ['leaseholder', 'selling'] }, q: 'Has a notice been sent to the landlord yet?', type: 'single', options: [
+    { id: 'notice', when: { role: ['leaseholder', 'selling'] }, q: 'Has a formal notice been sent to the freeholder yet?', type: 'single', options: [
       { v: 'no', label: 'No, not yet' },
       { v: 'served', label: 'Yes, a notice has been served', tags: ['notice-served'] },
-      { v: 'counter', label: 'Yes, and the landlord has replied with a counter notice', tags: ['notice-served', 'counter-notice'] },
+      { v: 'counter', label: 'Yes, and the freeholder has replied with a counter notice', tags: ['notice-served', 'counter-notice'] },
       { v: 'tribunal', label: 'It’s gone to the tribunal', tags: ['notice-served', 'tribunal'] }] },
     { id: 'g_stage', when: { role: ['group'] }, q: 'Where are you up to?', type: 'single', options: [
       { v: 'early', label: 'We’re just getting started' },
@@ -113,7 +113,7 @@ export default {
       { v: 'alterations', label: 'Alterations, pets or subletting rules' },
       { v: 'rent', label: 'The ground rent', tags: ['ground-rent-change'] },
       { v: 'other', label: 'Something else' }] },
-    { id: 'v_agreed', when: { role: ['variation'] }, q: 'Does the landlord agree to the change?', type: 'single', options: [
+    { id: 'v_agreed', when: { role: ['variation'] }, q: 'Does the freeholder agree to the change?', type: 'single', options: [
       { v: 'yes', label: 'Yes, they’ve agreed in principle', tags: ['agreed'] },
       { v: 'talking', label: 'We’re still discussing it' },
       { v: 'no', label: 'No, they don’t agree', tags: ['contested'] },
@@ -148,9 +148,9 @@ export default {
       { v: 'fallen', label: 'A sale fell through because of the lease', tags: ['sale-fallen-through'] },
       { v: 'market', label: 'It’s on the market', tags: ['on-market'] },
       { v: 'soon', label: 'It’s not on the market yet' }] },
-    { id: 's_assign', when: { role: ['selling'] }, q: 'Would you like the lease extended before you sell, or passed to the buyer?', type: 'single', options: [
+    { id: 's_assign', when: { role: ['selling'] }, q: 'Do you want to extend the lease before you sell, or let the buyer do it?', type: 'single', options: [
       { v: 'before', label: 'Extended before the sale completes' },
-      { v: 'assign', label: 'Start it and pass the claim to the buyer', tags: ['assign-notice'] },
+      { v: 'assign', label: 'Start it now and pass it to the buyer', tags: ['assign-notice'] },
       { v: 'unsure', label: 'I’d like to talk it through' }] },
   ],
   urgency: { q: 'How soon do you need help with the lease?' },

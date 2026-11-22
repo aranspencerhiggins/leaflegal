@@ -11,7 +11,7 @@ if (root) init();
 
 function init() {
   const body = root.querySelector('.ap-body'), bar = root.querySelector('.ap-bar'), count = root.querySelector('.ap-count'), backBtn = root.querySelector('.ap-back');
-  const KEY = 'll-enquire-v3:' + (root.dataset.area || 'all') + ':' + (root.dataset.matter || '');
+  const KEY = 'll-enquire-v3:' + (root.dataset.area || 'all') + ':' + (root.dataset.matter || new URLSearchParams(location.search).get('matter') || '');
   const I = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const ICON = {
     home: I('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),

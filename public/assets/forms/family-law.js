@@ -14,21 +14,21 @@ const ENDING = ['divorce', 'dissolution', 'finances', 'consent', 'separation'];
 export default {
   steps: [
     { id: 'need', q: 'What do you need help with?', type: 'single', icons: true, options: [
-      { v: 'divorce', label: 'Getting divorced', sub: 'Applying for a divorce or responding to one', ico: 'ring', matter: 'divorce', tags: ['divorce'] },
-      { v: 'dissolution', label: 'Ending a civil partnership', sub: 'Dissolution and the money side of it', ico: 'ring', matter: 'civil-partnership-dissolution', tags: ['dissolution'] },
-      { v: 'finances', label: 'Sorting out money and property', sub: 'The home, savings, pensions and maintenance after a split', ico: 'pound', matter: 'financial-settlements', tags: ['finances'] },
-      { v: 'consent', label: 'Making a financial agreement binding', sub: 'A consent order for something you’ve already agreed', ico: 'doc', matter: 'consent-orders', tags: ['consent-order'] },
-      { v: 'children', label: 'Arrangements for children', sub: 'Where children live and time with each parent', ico: 'child', matter: 'child-arrangements', tags: ['children'] },
-      { v: 'separation', label: 'A separation agreement', sub: 'Separating without divorcing yet', ico: 'doc', matter: 'separation-agreements', tags: ['separation'] },
-      { v: 'cohab', label: 'Splitting up after living together', sub: 'You weren’t married or in a civil partnership', ico: 'home', matter: 'cohabitation-disputes', tags: ['cohabitation'] },
-      { v: 'prenup', label: 'A prenup or postnup', sub: 'An agreement before or during a marriage or civil partnership', ico: 'heart', matter: 'prenuptial-agreements', tags: ['prenup'] },
-      { v: 'protection', label: 'Protection from abuse', sub: 'For example a non molestation or occupation order', ico: 'shield', exit: 'protection' },
+      { v: 'divorce', label: 'Getting divorced', ico: 'ring', matter: 'divorce', tags: ['divorce'] },
+      { v: 'dissolution', label: 'Ending a civil partnership', ico: 'ring', matter: 'civil-partnership-dissolution', tags: ['dissolution'] },
+      { v: 'finances', label: 'Sorting out money and property after a split', ico: 'pound', matter: 'financial-settlements', tags: ['finances'] },
+      { v: 'consent', label: 'Making an agreed money settlement legally binding', ico: 'doc', matter: 'consent-orders', tags: ['consent-order'] },
+      { v: 'children', label: 'Arrangements for children', ico: 'child', matter: 'child-arrangements', tags: ['children'] },
+      { v: 'separation', label: 'A separation agreement, without divorcing yet', ico: 'doc', matter: 'separation-agreements', tags: ['separation'] },
+      { v: 'cohab', label: 'Splitting up after living together without marrying', ico: 'home', matter: 'cohabitation-disputes', tags: ['cohabitation'] },
+      { v: 'prenup', label: 'A prenup or postnup', ico: 'heart', matter: 'prenuptial-agreements', tags: ['prenup'] },
+      { v: 'protection', label: 'Protection from abuse', ico: 'shield', exit: 'protection' },
       { v: 'other', label: 'Something else', ico: 'other' }] },
 
     { id: 'other_kind', when: { need: ['other'] }, q: 'Which of these is closest?', type: 'single', options: [
       { v: 'grandparent', label: 'Seeing my grandchildren or a relative’s children', matter: 'child-arrangements', tags: ['children', 'grandparent'] },
       { v: 'cms', label: 'Child maintenance only', exit: 'cms' },
-      { v: 'care', label: 'Social services are involved with my children', sub: 'Child protection or care proceedings', exit: 'care' },
+      { v: 'care', label: 'Social services are involved with my children', exit: 'care' },
       { v: 'adoption', label: 'Adoption or a special guardianship order', exit: 'adoption' },
       { v: 'surrogacy', label: 'Surrogacy or a parental order', exit: 'surrogacy' },
       { v: 'wills', label: 'A will, probate or an inheritance dispute', exit: 'wills' },
@@ -39,7 +39,7 @@ export default {
       { v: 'married', label: 'Married', tags: ['married'] },
       { v: 'cp', label: 'In a civil partnership', tags: ['civil-partnership'] },
       { v: 'cohab', label: 'Neither, we lived together', matter: 'cohabitation-disputes', tags: ['cohabitation'] }] },
-    { id: 'stage', when: { need: ['divorce', 'dissolution', 'finances', 'consent'], '!status': ['cohab'] }, q: 'Where are things up to with the divorce or dissolution?', type: 'single', options: [
+    { id: 'stage', when: { need: ['divorce', 'dissolution', 'finances', 'consent'], '!status': ['cohab'] }, q: 'How far along is the divorce or dissolution?', type: 'single', options: [
       { v: 'none', label: 'Nobody has applied yet', tags: ['not-started'] },
       { v: 'joint', label: 'We plan to apply together', tags: ['not-started', 'joint-application'] },
       { v: 'applied', label: 'I’ve applied and it’s under way', tags: ['in-progress'] },
@@ -67,7 +67,7 @@ export default {
       { v: 'married', label: 'Married or in a civil partnership', tags: ['married'] },
       { v: 'cohab', label: 'Lived together but not married', tags: ['cohabitation'] },
       { v: 'apart', label: 'Never lived together' },
-      { v: 'together', label: 'Still together', sub: 'Usually a relative or carer asking' }] },
+      { v: 'together', label: 'They’re still together' }] },
     { id: 'c_issue', when: { need: ['children'] }, q: 'What needs sorting out?', type: 'multi', options: [
       { v: 'live', label: 'Where the children live', tags: ['residence'] },
       { v: 'time', label: 'Time the children spend with each parent', tags: ['contact'] },
@@ -89,7 +89,7 @@ export default {
     { id: 'h_home', when: { $matter: ['cohabitation-disputes'], '!need': ['children', 'prenup'] }, q: 'Whose name is the home in?', type: 'single', options: [
       { v: 'joint', label: 'Both our names', tags: ['joint-names', 'property'] },
       { v: 'mine', label: 'Just my name', tags: ['sole-name', 'property'] },
-      { v: 'theirs', label: 'Just their name', tags: ['sole-name', 'property'] },
+      { v: 'theirs', label: 'Just my ex’s name', tags: ['sole-name', 'property'] },
       { v: 'rented', label: 'We rented', tags: ['rented'] },
       { v: 'unsure', label: 'I’m not sure' }] },
 
@@ -97,7 +97,7 @@ export default {
     { id: 'p_type', when: { need: ['prenup'] }, q: 'What kind of agreement is it?', type: 'single', options: [
       { v: 'prenup', label: 'Before a wedding or civil partnership', tags: ['prenup'] },
       { v: 'postnup', label: 'After we’ve married or formed a civil partnership', tags: ['postnup'] },
-      { v: 'living', label: 'A living together agreement', sub: 'For couples who aren’t marrying', matter: 'cohabitation-disputes', tags: ['cohabitation-agreement'] }] },
+      { v: 'living', label: 'A living together agreement, without marrying', matter: 'cohabitation-disputes', tags: ['cohabitation-agreement'] }] },
     { id: 'p_date', when: { p_type: ['prenup'] }, q: 'When is the wedding or ceremony?', type: 'date', deadline: true, optional: true },
     { id: 'p_reason', when: { need: ['prenup'] }, q: 'What do you want the agreement to protect?', type: 'multi', options: [
       { v: 'property', label: 'Property one of us already owns', tags: ['property'] },
@@ -106,7 +106,7 @@ export default {
       { v: 'kids', label: 'Children from an earlier relationship', tags: ['children'] },
       { v: 'abroad', label: 'Money or property abroad', tags: ['international'] },
       { v: 'general', label: 'Just peace of mind' }] },
-    { id: 'p_partner', when: { need: ['prenup'] }, q: 'Where is your partner up to?', type: 'single', options: [
+    { id: 'p_partner', when: { need: ['prenup'] }, q: 'How does your partner feel about it?', type: 'single', options: [
       { v: 'agreed', label: 'They’re on board and will get their own solicitor', tags: ['amicable'] },
       { v: 'talking', label: 'We’re still talking it through', tags: ['partly-agreed'] },
       { v: 'notyet', label: 'I haven’t raised it with them yet' },
@@ -130,7 +130,7 @@ export default {
       { v: 'savings', label: 'Savings, shares or investments', tags: ['investments'] },
       { v: 'inherit', label: 'Inheritance or family money', tags: ['inheritance'] },
       { v: 'debts', label: 'Significant debts', tags: ['debts'] },
-      { v: 'maint', label: 'Maintenance payments for me', tags: ['spousal-maintenance'] }] },
+      { v: 'maint', label: 'Ongoing maintenance for one of us', tags: ['spousal-maintenance'] }] },
     { id: 'c_agreed', when: { need: ['consent'] }, q: 'How was the agreement reached?', type: 'single', options: [
       { v: 'between', label: 'Between ourselves', tags: ['amicable'] },
       { v: 'mediation', label: 'Through mediation', tags: ['amicable', 'mediation-done'] },
@@ -138,7 +138,7 @@ export default {
       { v: 'partly', label: 'Most of it is agreed but a few points are open', tags: ['partly-agreed'] }] },
 
     // Whether things are agreed
-    { id: 'agree', when: { need: ['divorce', 'dissolution', 'finances', 'separation', 'cohab', 'children'] }, q: 'Do you and the other person agree on what should happen?', type: 'single', options: [
+    { id: 'agree', when: { need: ['divorce', 'dissolution', 'finances', 'separation', 'cohab', 'children'] }, q: 'Do you and your ex, or the other parent, agree on what should happen?', type: 'single', options: [
       { v: 'yes', label: 'Yes, mostly', tags: ['amicable'] },
       { v: 'partly', label: 'On some things but not others', tags: ['partly-agreed'] },
       { v: 'no', label: 'No, we don’t agree', tags: ['contested'] },

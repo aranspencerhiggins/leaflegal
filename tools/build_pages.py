@@ -504,8 +504,20 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
-APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=1" rel="stylesheet"/>'
-APPLY_JS = '<script type="module" src="/assets/enquire.js?v=3"></script>'
+APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=2" rel="stylesheet"/>'
+APPLY_JS = '<script type="module" src="/assets/enquire.js?v=4"></script>'
+
+
+def ENQ_URL(area, matter=None):
+    """The separate enquiry form page for an area, started on a matter when given."""
+    return f'/enquire/{area}' + (f'?matter={matter}' if matter else '')
+
+
+ENQ_LABEL = 'Make an Enquiry'
+
+
+def enq_btn(area, matter=None):
+    return f'<a href="{ENQ_URL(area, matter)}" class="button"><div>{ENQ_LABEL}</div></a>'
 
 
 def form_card(area=None, matter=None):
@@ -599,11 +611,11 @@ LP_TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-wid
 LP_TICKS = ('Free to use, no obligation', 'One regulated firm, not a call centre', 'Your details are kept private')
 
 
-def lp_body(h1='Find the right solicitor for your matter', ticks=LP_TICKS):
+def lp_body(h1='Find the right solicitor for your matter', ticks=LP_TICKS, form=None):
     return ('<section class="ap-section ap-solo ap-lp" id="quote"><div class="ap-wrap"><div class="ap-lp-grid">'
             f'<div class="ap-lp-head"><h1>{h1}</h1>'
             '<ul>' + ''.join(f'<li><span class="ap-lp-tick">{LP_TICK}</span><span>{t}</span></li>' for t in ticks) + '</ul></div>'
-            + FORM + '</div></div></section>')
+            + (form or FORM) + '</div></div></section>')
 
 
 LP_HEADER = f'<header class="llb-head llb-lp"><div class="llb-main"><div class="llb-in"><a href="/" class="llb-logo" aria-label="{BRAND} home"><img src="{LOGO_LIGHT}" width="150" alt="{BRAND}"/></a></div></div></header>'
@@ -616,13 +628,13 @@ os.makedirs(f'{PUB}/legal-services', exist_ok=True)
 AREA_IMG = {'conveyancing': 'stock-home', 'immigration': 'stock-legal-call', 'family-law': 'stock-about', 'debt-recovery': 'stock-invoice',
             'motoring-offences': 'stock-need-buying-vehicles', 'licensing': 'stock-ind-restaurants-and-hospitality', 'lease-extensions': 'stock-legal-meet'}
 for a in AC.AREAS:
-    q = '#quote'  # the form is in the hero
+    q = ENQ_URL(a['slug'])
     where = 'Introductions to regulated immigration advisers across the UK' if a.get('referral_only') else ('For businesses in England and Wales' if a.get('business_only') else 'For matters in England and Wales')
     head = (f'<section class="ll-pagehead ll-hero-split"><div class="ll-hero-grid"><div><nav class="ll-crumbs" aria-label="Breadcrumb"><a href="/legal-services">Legal services</a><span>/</span><span>{a["name"]}</span></nav>'
             f'<h1>{a["h1"]}</h1><p class="ll-lead">{a["lead"]}</p>'
             f'<ul class="ll-hero-ticks"><li>{TICK}Free to use, no obligation</li><li>{TICK}One regulated firm, not a list</li><li>{TICK}{where}</li></ul>'
-            f'</div>'
-            f'<div class="ll-hero-form" id="quote">{form_card(a["slug"])}</div></div></section>')
+            f'<div class="ll-head-btns">{enq_btn(a["slug"])}</div></div>'
+            f'<div class="ll-hero-media"><img src="{PH.photo(PH.AREA[a["slug"]][0])}" alt="" loading="eager" fetchpriority="high"/></div></div></section>')
     crumb_ld = {'@context': 'https://schema.org', '@type': 'BreadcrumbList', 'itemListElement': [
         {'@type': 'ListItem', 'position': 1, 'name': 'Legal services', 'item': f'{SITE}/legal-services'},
         {'@type': 'ListItem', 'position': 2, 'name': a['name'], 'item': f'{SITE}{AREA_URL(a["slug"])}'}]}
@@ -641,11 +653,17 @@ for a in AC.AREAS:
         cs_steps('How it works', a['how'], q, lead='Three simple steps, and nothing to pay us.'),
         cs_fees(a['slug'], a['name']),
         cs_things(a['considerations']),
-        cs_faqs(f'{a["name"]} questions and answers', faq_groups(a['faqs'], deep(a['slug'])), 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched'),
+        cs_faqs(f'{a["name"]} questions and answers', faq_groups(a['faqs'], deep(a['slug'])), 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, ENQ_LABEL),
         cs_guides(a['slug'], AREA_GUIDES.get(a['slug'], [])),
         cs_links(f'{LOCAL_NAME[a["slug"]]} near you', [(LOC_URL(c[0], a['slug']), c[1]) for c in MC.CITIES]) if a['slug'] in MC.LOCAL_AREAS else '',
         section('<h2 class="cs-h2 cs-center">Other legal services</h2>' + area_cards(others), cls='section cs-sec'),
     ])
+    # The separate enquiry page for this area (like /apply, with the area fixed). Matter pages link here with ?matter=.
+    os.makedirs(f'{PUB}/enquire', exist_ok=True)
+    page(f'{PUB}/enquire/{a["slug"]}.html', f'{a["name"]} Enquiry | {BRAND}',
+         f'Answer a few quick questions about your {a["name"].lower()} matter and we will introduce you to one regulated firm. Free, with no obligation.',
+         lp_body(f'{a["name"]} enquiry', ('Free to use, no obligation', 'One regulated firm, not a list', where), form_card(a['slug'])),
+         APPLY_HEAD + '<meta name="robots" content="noindex"/>', APPLY_JS, header=LP_HEADER, backup=False)
     page(f'{PUB}/{a["slug"]}.html', a['title'], a['desc'], compact(body), APPLY_HEAD + ld(faq_ld([qa for _, g in faq_groups(a['faqs'], deep(a['slug'])) for qa in g]), crumb_ld), '<script src="/assets/tabs.js?v=2"></script>' + APPLY_JS, backup=False)
 
 hub = (page_head('Legal services', 'The areas of law we introduce people and businesses to. Pick one to find out more, or answer a few quick questions and we will do the matching.')

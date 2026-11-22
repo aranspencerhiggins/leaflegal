@@ -125,8 +125,8 @@ export const countryOf = (pc) => {
 
 // Notes shown under a question.
 export const NOTES = {
-  fees: '<b>Legal help is a paid service.</b> The firm will explain its fees and confirm them in writing before any work starts. Using Leaflegal is free.',
-  immFees: '<b>Immigration advice is a paid service.</b> The regulated adviser will explain their fees and confirm them in writing before any work starts. Using Leaflegal is free.',
+  fees: '<b>Legal help is a paid service.</b> The firm will confirm its fees in writing before any work starts. Using Leaflegal is free.',
+  immFees: '<b>Immigration advice is a paid service.</b> The regulated adviser will confirm their fees in writing before any work starts. Using Leaflegal is free.',
   bizFees: '<b>The firm charges for its work.</b> Many offer fixed fees for letters and claims, and some of the cost of chasing a late payment can often be added to the debt.',
   noAdvice: 'Leaflegal does not give legal or immigration advice. We just pass your answers to the firm so the first call is quicker.',
 };
@@ -153,10 +153,10 @@ export const SHARED_STEPS = {
   postcode: { id: 'postcode', q: 'What’s the property postcode?', type: 'postcode', placeholder: 'For example SW1A 1AA',
     hint: 'If you haven’t found a property yet, use your own postcode' },
   urgency: { id: 'urgency', q: 'How soon do you need help?', type: 'single', icons: true, options: [
-    { v: 'Urgently', label: 'Urgently', sub: 'I have a deadline, court date or hearing in the next two weeks', ico: 'bolt', tags: ['urgent'] },
+    { v: 'Urgently', label: 'Urgently, I have a deadline in the next two weeks', ico: 'bolt', tags: ['urgent'] },
     { v: 'Within a month', label: 'Within a month', ico: 'month' },
     { v: 'In the next few months', label: 'In the next few months', ico: 'clock' },
-    { v: 'Just looking into it', label: 'I’m just researching for now', sub: 'No plans to speak to anyone yet', ico: 'look', exit: 'research' }] },
+    { v: 'Just looking into it', label: 'I’m just researching for now', ico: 'look', exit: 'research' }] },
   pay: { id: 'pay', q: 'If the firm can help, are you ready to go ahead?', type: 'single', note: 'fees', options: [
     { v: 'Yes', label: 'Yes, I’m ready to instruct a firm', tags: ['ready'] },
     { v: 'Yes, if the cost is right', label: 'Yes, once I know what it will cost' },

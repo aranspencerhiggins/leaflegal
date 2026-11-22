@@ -34,13 +34,13 @@ export default {
   defaultMatter: null,
   steps: [
     { id: 'what', q: 'What do you need help with?', type: 'single', icons: true, options: [
-      { v: 'buy', label: 'Buying a home', sub: 'A house, flat or bungalow', ico: 'home', matter: 'buying-a-home', tags: ['purchase'] },
+      { v: 'buy', label: 'Buying a home', ico: 'home', matter: 'buying-a-home', tags: ['purchase'] },
       { v: 'sell', label: 'Selling a home', ico: 'key', matter: 'selling-a-home', tags: ['sale'] },
-      { v: 'both', label: 'Selling and buying at the same time', sub: 'Moving home with a sale and a purchase', ico: 'building', matter: 'buying-and-selling', tags: ['purchase', 'sale', 'dual-transaction'] },
-      { v: 'remortgage', label: 'Remortgaging', sub: 'Moving to a new lender or borrowing more', ico: 'pound', matter: 'remortgaging', tags: ['remortgage'] },
-      { v: 'toe', label: 'Adding or removing an owner', sub: 'A transfer of equity, for example after marriage or separation', ico: 'family', matter: 'transfer-of-equity', tags: ['transfer-of-equity'] },
-      { v: 'commercial', label: 'Commercial property', sub: 'Shops, offices, industrial units or business leases', ico: 'office', exit: 'commercial' },
-      { v: 'other', label: 'Something else', sub: 'For example a dispute with a neighbour, buyer or seller', ico: 'other', exit: 'other' }] },
+      { v: 'both', label: 'Selling and buying at the same time', ico: 'building', matter: 'buying-and-selling', tags: ['purchase', 'sale', 'dual-transaction'] },
+      { v: 'remortgage', label: 'Remortgaging', ico: 'pound', matter: 'remortgaging', tags: ['remortgage'] },
+      { v: 'toe', label: 'Adding or removing an owner', ico: 'family', matter: 'transfer-of-equity', tags: ['transfer-of-equity'] },
+      { v: 'commercial', label: 'Commercial property, such as a shop or office', ico: 'office', exit: 'commercial' },
+      { v: 'other', label: 'Something else', ico: 'other', exit: 'other' }] },
 
     { id: 'where', q: 'Where is the property?', type: 'single', options: [
       { v: 'england', label: 'England' },
@@ -58,22 +58,22 @@ export default {
       { v: 'mixed', label: 'Shop or business with a flat above', wide: true, exit: 'commercial' }] },
 
     // Buying
-    { id: 'buyer', when: { what: ['buy'] }, q: 'Which best describes you as a buyer?', type: 'single', options: [
-      { v: 'ftb', label: 'First time buyer', sub: 'You’ve never owned a home before', matter: 'first-time-buyers', tags: ['first-time-buyer'] },
-      { v: 'mover', label: 'Moving home', sub: 'You own or have owned a home before', tags: ['home-mover'] },
+    { id: 'buyer', when: { what: ['buy'] }, q: 'Which best describes you?', type: 'single', options: [
+      { v: 'ftb', label: 'First time buyer', matter: 'first-time-buyers', tags: ['first-time-buyer'] },
+      { v: 'mover', label: 'Moving home', tags: ['home-mover'] },
       { v: 'btl', label: 'Buying to let in my own name', matter: 'buy-to-let', tags: ['buy-to-let', 'additional-property'] },
-      { v: 'company', label: 'Buying through a limited company', sub: 'Usually to let it out', matter: 'buy-to-let', audience: 'business', tags: ['buy-to-let', 'company-purchase', 'additional-property'] },
+      { v: 'company', label: 'Buying through a limited company', matter: 'buy-to-let', audience: 'business', tags: ['buy-to-let', 'company-purchase', 'additional-property'] },
       { v: 'second', label: 'Buying a second home or holiday home', tags: ['second-home', 'additional-property'] }] },
     { id: 'b_company', when: { buyer: ['company'] }, q: 'Which company is buying the property?', type: 'company', placeholder: 'Company name' },
-    { id: 'b_people', when: { buyer: ['ftb', 'mover', 'second', 'btl'] }, q: 'Who is buying?', type: 'single', options: [
+    { id: 'b_people', when: { buyer: ['ftb', 'mover', 'second', 'btl'] }, q: 'Are you buying on your own or with someone else?', type: 'single', options: [
       { v: 'one', label: 'Just me' },
       { v: 'two', label: 'Me and a partner or spouse', tags: ['joint-buyers'] },
       { v: 'friends', label: 'Me with a friend or family member', tags: ['joint-buyers', 'tenants-in-common'] },
       { v: 'three', label: 'Three or more of us', tags: ['joint-buyers', 'tenants-in-common'] }] },
 
     // Tenure. A leasehold flat purchase is its own matter.
-    { id: 'tenure_flat', when: { what: ['buy'], ptype: ['flat'] }, q: 'Is the flat you’re buying leasehold or share of freehold?', type: 'single', options: FLAT_TENURE },
-    { id: 'tenure_flat_both', when: { what: ['both'], ptype: ['flat'] }, q: 'Is the flat you’re buying leasehold or share of freehold?', type: 'single', options: NO_MATTER(FLAT_TENURE) },
+    { id: 'tenure_flat', when: { what: ['buy'], ptype: ['flat'] }, q: 'Is the flat leasehold or freehold?', type: 'single', options: FLAT_TENURE },
+    { id: 'tenure_flat_both', when: { what: ['both'], ptype: ['flat'] }, q: 'Is the flat you’re buying leasehold or freehold?', type: 'single', options: NO_MATTER(FLAT_TENURE) },
     { id: 'tenure', when: { '!tenure_flat': ['leasehold', 'sof', 'freehold', 'unsure'], '!tenure_flat_both': ['leasehold', 'sof', 'freehold', 'unsure'], '!ptype': ['land'] }, q: 'Is the property freehold or leasehold?', type: 'single', options: [
       { v: 'freehold', label: 'Freehold', tags: ['freehold'] },
       { v: 'leasehold', label: 'Leasehold', tags: ['leasehold'] },
@@ -102,7 +102,7 @@ export default {
     { id: 'b_offer', when: { what: ['buy', 'both'] }, q: 'Has your offer been accepted?', type: 'single', options: [
       { v: 'yes', label: 'Yes, my offer has been accepted', tags: ['offer-accepted'] },
       { v: 'made', label: 'I’ve made an offer and I’m waiting to hear', tags: ['offer-made'] },
-      { v: 'looking', label: 'Not yet, I’m still looking', sub: 'Many people line up a conveyancer early', tags: ['pre-offer'] }] },
+      { v: 'looking', label: 'Not yet, I’m still looking', tags: ['pre-offer'] }] },
 
     // Selling
     { id: 's_offer', when: { what: ['sell', 'both'] }, q: 'Where are you up to with the sale?', type: 'single', options: [
@@ -124,7 +124,7 @@ export default {
       { v: 'raise', label: 'Borrowing more against the property', tags: ['capital-raising'] },
       { v: 'toe', label: 'Remortgaging and adding or removing an owner', matter: 'transfer-of-equity', tags: ['transfer-of-equity'] },
       { v: 'btl', label: 'Remortgaging a buy to let', tags: ['buy-to-let'] }] },
-    { id: 'r_offer', when: { what: ['remortgage'] }, q: 'Has the new lender issued a mortgage offer?', type: 'single', options: [
+    { id: 'r_offer', when: { what: ['remortgage'] }, q: 'Do you have a mortgage offer from the new lender?', type: 'single', options: [
       { v: 'yes', label: 'Yes, I have the offer', tags: ['mortgage-offer'] },
       { v: 'applied', label: 'I’ve applied and I’m waiting' },
       { v: 'no', label: 'Not yet' }] },
@@ -132,7 +132,7 @@ export default {
 
     // Transfer of equity
     { id: 't_change', when: { what: ['toe'] }, q: 'What’s changing?', type: 'single', options: [
-      { v: 'add', label: 'Adding someone to the ownership', sub: 'For example a new partner or spouse', tags: ['adding-owner'] },
+      { v: 'add', label: 'Adding someone to the ownership', tags: ['adding-owner'] },
       { v: 'remove', label: 'Removing someone from the ownership', tags: ['removing-owner'] },
       { v: 'separation', label: 'Transferring it after a separation or divorce', tags: ['removing-owner', 'separation'] },
       { v: 'family', label: 'Giving it or part of it to a family member', tags: ['gift'] }] },
@@ -146,12 +146,12 @@ export default {
       { v: 'no', label: 'Not yet', tags: ['not-agreed'] }] },
 
     // The key money figure
-    { id: 'price', valueLabel: 'Property price', q: 'Roughly what’s the price or value of the property?', type: 'single', grid: true, options: PRICE },
+    { id: 'price', valueLabel: 'Property price', q: 'Roughly what’s the property worth or selling for?', type: 'single', grid: true, options: PRICE },
     { id: 'sale_price', when: { what: ['both'] }, q: 'And roughly what price is the home you’re selling?', type: 'single', grid: true,
       options: PRICE.map(({ v, label }) => ({ v, label })) },
 
-    { id: 'chain', when: { what: ['buy', 'sell', 'both'] }, q: 'Is there a chain?', type: 'single', options: [
-      { v: 'none', label: 'No chain', sub: 'For example a first time buyer, a cash buyer or an empty property', tags: ['chain-free'] },
+    { id: 'chain', when: { what: ['buy', 'sell', 'both'] }, q: 'Are other sales or purchases linked to yours in a chain?', type: 'single', options: [
+      { v: 'none', label: 'No, there’s no chain', tags: ['chain-free'] },
       { v: 'short', label: 'Yes, a short chain' },
       { v: 'long', label: 'Yes, a long chain', tags: ['long-chain'] },
       { v: 'unsure', label: 'I’m not sure yet' }] },

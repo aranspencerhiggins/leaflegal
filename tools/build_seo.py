@@ -44,15 +44,14 @@ for a_slug, matters in MAT.items():
     imm = a_slug == 'immigration'
     for i, mt in enumerate(matters):
         url = M_URL(a_slug, mt['slug'])
-        q = '#quote'  # the form is in the hero
+        q = ENQ_URL(a_slug, mt['slug'])
         h1 = short_name(mt['name'])
         if a_slug in ('family-law', 'motoring-offences', 'debt-recovery', 'licensing') and not h1.endswith('s') and len(h1) < 20:
             h1 += ' solicitors'
         ticks = ['Free to use, no obligation', 'Introductions to regulated advisers only' if imm else 'One regulated firm, not a list',
                  'For businesses in England and Wales' if a.get('business_only') else 'Across the UK' if imm else 'For matters in England and Wales']
         head = hero_split(h1, mt['short'] + ' ' + ('Tell us a little about it and we will introduce you to a regulated adviser.' if imm else 'Tell us a little about it and we will introduce you to a specialist firm.'),
-                          ticks, '', area_img(a_slug, i + 1), alt='',
-                          form=form_card(a_slug, mt['slug']))
+                          ticks, enq_btn(a_slug, mt['slug']), area_img(a_slug, i + 1), alt='')
         related = [x for x in matters if x['slug'] != mt['slug']]
         DM = deep(f'{a_slug}__{mt["slug"]}')
         if DM:
@@ -73,7 +72,7 @@ for a_slug, matters in MAT.items():
             cs_steps('How it works', a['how'], q, lead='Three simple steps, and nothing to pay us.'),
             cs_fees(a_slug, a['name']),
             cs_things(a['considerations']),
-            cs_faqs(f'{short_name(mt["name"])} questions and answers', faq_groups(faqs, DM), 'Ready to get started?', 'One short form. One specialist contacts you.', q, 'Get matched'),
+            cs_faqs(f'{short_name(mt["name"])} questions and answers', faq_groups(faqs, DM), 'Ready to get started?', 'One short form. One specialist contacts you.', q, ENQ_LABEL),
             section(f'<h2 class="cs-h2 cs-center">More {a["name"].lower()} help</h2>' + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in related[:6]], 'three', more_label='Learn more'), cls='section cs-sec'),
             cs_guides(a_slug, AREA_GUIDES.get(a_slug, [])),
             cs_links(f'{LOCAL_NAME[a_slug]} near you', [(LOC_URL(c[0], a_slug), c[1]) for c in MC.CITIES]) if a_slug in MC.LOCAL_AREAS else '',
@@ -124,7 +123,7 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
     for ai, a_slug in enumerate(MC.LOCAL_AREAS):
         a = AREA[a_slug]
         url = LOC_URL(c_slug, a_slug)
-        q = '#quote'  # the form is in the hero
+        q = ENQ_URL(a_slug)
         need, angle = MC.LOCAL_ANGLE[a_slug]
         h1 = f'{LOCAL_NAME[a_slug]} in {c_name}'
         lead = f'If you are {need} in {c_name} or nearby, answer a few quick questions and we will introduce you to one regulated firm that handles your kind of matter.'
@@ -140,14 +139,14 @@ for ci, (c_slug, c_name, region, nearby) in enumerate(MC.CITIES):
                   ('Cost to use Leaflegal', 'Free, with no obligation')]
         body = ''.join([
             hero_split(h1, lead, ['Free to use, no obligation', 'One regulated firm, not a list', f'Covering {c_name} and {region}'],
-                       '', area_img(a_slug, ci + ai), form=form_card(a_slug)),
+                       enq_btn(a_slug), area_img(a_slug, ci + ai)),
             TRUST_STRIP,
             cs_intro(f'{a["name"]} in {c_name}', intro + [AREA_EXTRA[a_slug]['more']], glance),
             cs_deep(f'{a["name"]} explained', deep(a_slug), lead=f'General information for people and businesses in {c_name}. Pick a topic to read more.'),
             section(f'<h2 class="cs-h2 cs-center">What the firms help with</h2>' + cards([(a['icon'], x['name'], x['short'], M_URL(a_slug, x['slug'])) for x in MAT[a_slug]], 'three', more_label='Learn more'), cls='section cs-sec'),
             cs_steps('How it works', a['how'], q, lead=f'Three simple steps, wherever you are in {c_name}.'),
             cs_fees(a_slug, a['name']),
-            cs_faqs(f'{a["name"]} in {c_name}, questions and answers', LGROUPS, 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, 'Get matched'),
+            cs_faqs(f'{a["name"]} in {c_name}, questions and answers', LGROUPS, 'Ready to get started?', 'One short form. One specialist firm contacts you.', q, ENQ_LABEL),
             cs_links(f'{LOCAL_NAME[a_slug]} in other places', [(LOC_URL(c[0], a_slug), c[1]) for c in others]),
             cs_links(f'Other legal help in {c_name}', [(LOC_URL(c_slug, x), LOCAL_NAME[x]) for x in MC.LOCAL_AREAS if x != a_slug] + [(AREA_URL('immigration'), 'Immigration advisers (UK wide)')]),
         ])
@@ -199,14 +198,14 @@ os.makedirs(f'{PUB}/guides', exist_ok=True)
 for gd in CG.GUIDES:
     a = AREA[gd['area']]
     aside = (f'<aside class="ll-doc-aside"><div class="ll-gside ll-gside-cta"><h2>Need {a["name"].lower()} help?</h2><p>Answer a few quick questions and we will introduce you to {"a regulated adviser" if gd["area"] == "immigration" else "a specialist firm"}.</p>'
-             f'<a href="/apply?area={quote(a["form"])}" class="button">Get matched</a></div>'
+             f'<a href="{ENQ_URL(gd["area"])}" class="button">{ENQ_LABEL}</a></div>'
              f'<div class="ll-gside"><h2>{a["name"]}</h2><ul>' + ''.join(f'<li><a href="{M_URL(gd["area"], m["slug"])}">{m["name"]}</a></li>' for m in MAT[gd['area']][:6]) + '</ul></div></aside>')
     ex = CG.EXTRA[gd['slug']]
     blocks = gd['blocks'] + ex['more'] + ([('p', IMM_NOTE[19:-4])] if gd['area'] == 'immigration' else []) + [('p', 'This guide is general information, not legal advice. A solicitor can advise on your situation.')]
     key = '<div class="cs-key"><p class="cs-glance-h">Key points</p><ul>' + ''.join(f'<li><span class="cs-tick">{_CHECK}</span>{k}</li>' for k in ex['key']) + '</ul></div>'
-    gq = f'/apply?area={quote(a["form"])}'
+    gq = ENQ_URL(gd['area'])
     ghead = hero_split(gd['h1'], gd['lead'], ['Plain English', 'General information, not advice', f'About {a["name"].lower()}'],
-                       f'<a href="{gq}" class="button"><div>Get matched</div></a><a href="/guides" class="ll-ghost-light">All guides</a>', area_img(gd['area'], CG.GUIDES.index(gd)),
+                       f'<a href="{gq}" class="button"><div>{ENQ_LABEL}</div></a><a href="/guides" class="ll-ghost-light">All guides</a>', area_img(gd['area'], CG.GUIDES.index(gd)),
                        crumbs='<nav class="ll-crumbs" aria-label="Breadcrumb"><a href="/guides">Guides</a><span>/</span><span>' + a['name'] + '</span></nav>')
     more_g = [x for x in CG.GUIDES if x['slug'] != gd['slug']][:3]
     page(f'{PUB}/guides/{gd["slug"]}.html', gd['title'], gd['desc'],

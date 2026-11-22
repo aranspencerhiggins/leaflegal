@@ -2,7 +2,6 @@
 .ll-hero-form{display:flex;align-items:center;justify-content:center;padding:48px max(24px,calc((100vw - 1280px)/2 + 24px)) 48px 24px;scroll-margin-top:90px}
 .ll-hero-form .ap-card{width:100%;max-width:560px}
 @media (max-width:991px){.ll-hero-form{padding:0 16px 48px}.ll-hero-split .ll-hero-grid>div:first-child{padding-bottom:28px}}
-@media (max-width:767px){.ll-hero-split .ll-hero-ticks{display:none}}
 
 .im-note{margin:-8px 0 22px;padding:14px 18px;border-radius:14px;background:var(--base-25,#e3f1ed);color:var(--base-100,#244237);font-size:15px;line-height:1.5;text-align:center}
 .im-links{list-style:none;padding:0;margin:20px auto 0;max-width:440px;display:grid;gap:8px}
