@@ -12,3 +12,7 @@
 .im-mobile{text-align:left;margin-top:8px}
 .ap-quick{text-align:center;margin-top:14px;font-size:14px;opacity:.75}
 .ap-exempt{display:block;margin:10px auto 0;background:none;border:0;color:var(--base-100,#244237);text-decoration:underline;font:inherit;font-size:15px;cursor:pointer}
+/* Enquiry page head on mobile, short pills in one tidy wrapping row */
+@media (max-width:767px){.ap-lp .ap-lp-head ul{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px}
+  .ap-lp .ap-lp-head li{white-space:normal;font-size:13px;gap:7px;padding:6px 12px 6px 7px}
+  .ap-lp .ap-lp-head .ap-lp-tick{width:18px;height:18px}.ap-lp .ap-lp-head .ap-lp-tick svg{width:10px;height:10px}}
