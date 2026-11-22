@@ -1,0 +1,327 @@
+{
+"about": [
+[
+"Overview",
+[
+"Every Leaflegal lead contains personal data. Some leads also contain sensitive information, because people looking for help with a separation, an immigration matter or a driving offence often tell us something about their personal life or about an alleged offence. Handling that information properly protects the client, protects your firm and protects Leaflegal.",
+"This page explains, in general terms, how Leaflegal approaches data protection and consent for legal leads, and what firms are usually responsible for once a lead is delivered. It is general information, not legal advice. Your firm's own data protection lead, or a data protection specialist, is the right person to advise on your firm's position under UK data protection law.",
+{
+"h3": "Our approach in brief"
+},
+{
+"list": [
+"We collect only what a firm needs to make first contact about the client's matter",
+"Every client gives consent by ticking two separate boxes, and we record the wording and the time",
+"Each lead goes to one firm only and is never resold",
+"We never share matter details with advertising platforms",
+"We do not sell or rent personal data to anyone",
+"Once a lead is delivered, your firm is the controller of its copy"
+]
+},
+{
+"h3": "The law in outline"
+},
+"In the UK, personal data is governed mainly by the UK GDPR and the Data Protection Act 2018. Electronic marketing, such as marketing emails and texts, is also governed by the Privacy and Electronic Communications Regulations, usually called PECR. The Information Commissioner's Office, the ICO, regulates all three and publishes detailed guidance. The rules change from time to time, so it is worth checking the ICO's current guidance rather than relying on older summaries.",
+{
+"h3": "Why it matters for law firms"
+},
+"Law firms already handle sensitive information every day and usually have good data protection practices. Leads add a slightly different situation, because the data comes to you from a third party rather than directly from the client. That affects what the client needs to be told and when, and it is worth making sure your procedures cover it.",
+{
+"h3": "Data minimisation in practice"
+},
+"One of the principles of UK data protection law is that organisations should collect only the data they need for their purpose. For Leaflegal, the purpose is introducing a client to a firm that can help with their matter. That is why our forms are short and why we do not ask for documents, dates of birth, financial details or other information at the enquiry stage. Your firm collects what it needs for its own purposes once the client has chosen to speak to you."
+]
+],
+[
+"Controllers",
+[
+"Understanding who is responsible for the data at each stage makes everything else simpler.",
+{
+"h3": "Leaflegal as controller"
+},
+"Vertical Brands Ltd, trading as Leaflegal, is the controller for the information collected through our enquiry forms. That means we decide what information is collected, why it is collected and how it is used up to the point of introduction. Our privacy policy explains this to clients, and they confirm they have read it before submitting an enquiry.",
+{
+"h3": "Your firm as controller"
+},
+"Once a lead is delivered to your firm, your firm becomes the controller of its copy. From that point, you decide how the information is used, stored and protected, and you are responsible for handling it in line with UK data protection law and your own privacy notice. In practice, this is the same position you are in with any other new enquiry.",
+{
+"h3": "Not a processor arrangement"
+},
+"Leaflegal does not process data on your firm's behalf, and your firm does not process data on Leaflegal's behalf. Each of us handles the data for our own purposes. Your firm's data protection lead may want to confirm how your firm records this relationship.",
+{
+"h3": "One copy per firm"
+},
+"Each lead is delivered to one firm only. The copy your firm receives is the only copy any law firm receives from Leaflegal for that enquiry. We do not resell leads or pass the same details to another firm later.",
+{
+"h3": "Working together"
+},
+"Because both Leaflegal and your firm hold information about the same enquiry, there are times when we need to work together. A client may ask either of us how their data was used, a lead may be raised as invalid or a client may ask to stop being contacted. Telling each other promptly in these situations makes it much easier for both of us to deal with the client properly.",
+{
+"h3": "What Leaflegal keeps"
+},
+"Leaflegal keeps its own record of each enquiry, including the consent record, for the purposes explained in our privacy policy, such as dealing with queries, handling invalid lead reports and meeting our own legal obligations. We do not use matter details for advertising."
+]
+],
+[
+"Consent",
+[
+"Consent is central to how Leaflegal introduces clients to firms. Every client makes an active, recorded choice to be contacted by a firm about their matter.",
+{
+"h3": "Two separate boxes"
+},
+"Every enquiry form ends with two consent boxes, neither of them ticked in advance. In the first, the client confirms they have read our terms and privacy policy and understand that Leaflegal is an introduction service rather than a law firm. In the second, they agree that their details can be passed to a firm we match them with, and that the firm may phone, email or text them about their matter. The enquiry cannot be submitted until both are ticked.",
+{
+"h3": "Recorded and sent with each lead"
+},
+"We record the exact wording the client agreed to and the time they agreed to it. That record is sent with every lead. If a client later asks how your firm got their details, or does not remember enquiring, you can explain what they agreed to and when.",
+{
+"h3": "What the consent covers"
+},
+"The consent covers contact from your firm about the client's enquiry. It does not cover adding the client to a newsletter, sending general marketing or passing their details to anyone else. If you want to send a client marketing, you need a separate basis for doing so, which for electronic marketing usually means their separate consent.",
+{
+"h3": "Your own lawful basis"
+},
+"Once a lead is with your firm, you are responsible for identifying your own lawful basis for each use you make of the client's data. If the client instructs you, much of what you do will relate to the retainer. Your data protection lead can advise on how your firm documents this.",
+{
+"h3": "Withdrawing consent"
+},
+"Clients can change their minds. If a client asks you to stop contacting them, stop, and let us know so that we have a record too. Handling this politely protects your firm's reputation as well as meeting your obligations."
+]
+],
+[
+"Sensitive data",
+[
+"Some legal matters naturally involve sensitive information. UK data protection law gives extra protection to special category data, such as information about health, sexual life, religious beliefs or ethnic origin, and to criminal offence data, such as information about alleged offences.",
+{
+"h3": "Where it can arise"
+},
+"Family enquiries can touch on relationships, health or the welfare of children. Immigration enquiries can involve nationality and, sometimes, information that reveals ethnic origin or religious belief. Motoring enquiries involve alleged offences, which count as criminal offence data. Clients may also mention health issues in any area when they describe their situation.",
+{
+"h3": "Keeping questions to a minimum"
+},
+"Because of this, our forms ask only what a firm needs to make first contact. We ask about the type of matter, urgency, location and whether the client wants paid help, plus a short description in their own words. We do not ask probing questions about health, relationships or offences beyond what is needed to match the enquiry to the right kind of firm.",
+{
+"h3": "What clients choose to tell us"
+},
+"Clients sometimes include sensitive details in their free text description. We pass that description to your firm as the client wrote it, because it helps you understand the matter. Treat it with the care you would give any sensitive information received from a new client.",
+{
+"h3": "Never shared with advertising platforms"
+},
+"We never pass matter details to advertising platforms. Where we use advertising tools to measure our own campaigns, they do not receive information about the client's legal matter.",
+{
+"h3": "Handling it inside your firm"
+},
+"Consider who in your firm needs to see a lead. In a family or immigration team, it may be sensible for leads to go to a restricted team inbox rather than a general firm address. The fewer people who see sensitive details unnecessarily, the lower the risk.",
+{
+"h3": "Immigration"
+},
+"Our immigration forms collect only the type of matter, urgency and contact details. Leaflegal does not ask questions that would amount to assessing a person's immigration position and never gives immigration advice."
+]
+],
+[
+"Your duties",
+[
+"Once a lead reaches your firm, your normal data protection duties apply. The points below are general reminders, not a complete list and not legal advice.",
+"Most of these duties will already be covered by your firm's existing procedures for new enquiries. The main point is to make sure those procedures also apply to leads, so that nobody treats a lead as somehow outside the normal rules because it arrived from an introducer.",
+{
+"h3": "Telling the client"
+},
+"When personal data is obtained from someone other than the person it is about, UK data protection law generally expects that person to be given privacy information. Where the data is used to contact them, this is usually expected at the latest when you first contact them. Many firms send a link to their privacy notice in the first email after a call.",
+{
+"h3": "Using the lead for its purpose"
+},
+"Use the lead to contact the client about their enquiry. Do not use it for unrelated purposes, add it to marketing lists without separate consent or share it outside your firm except as needed to deal with the client's matter.",
+{
+"h3": "Keeping it secure"
+},
+"Store leads in your usual secure systems, such as your case management system, CRM or a secure inbox. Avoid forwarding leads to personal email accounts or saving them on unsecured devices. Limit access to the people who need it.",
+{
+"h3": "Retention"
+},
+"Decide how long you keep leads that do not become instructions, and set this out in your retention policy. Many firms keep unconverted enquiries for a shorter period than client files. Leads that become instructions fall under your normal file retention arrangements.",
+{
+"h3": "Requests from clients"
+},
+"Clients have rights over their data, such as the right to access it and, in some circumstances, to have it erased. Handle requests about your copy of a lead under your own procedures. If a request also concerns Leaflegal's records, let us know.",
+{
+"h3": "Breaches"
+},
+"If a lead is lost, sent to the wrong person or accessed without authority, follow your firm's breach procedure. If the breach involves Leaflegal's systems or delivery, tell us straight away."
+]
+],
+[
+"Marketing",
+[
+"Marketing is where most data protection mistakes with leads happen. The rule of thumb is simple. The consent a client gives through Leaflegal covers contact about their enquiry, not marketing.",
+{
+"h3": "Following up is not marketing"
+},
+"Calling, emailing and texting a client about the enquiry they made is what they agreed to. A reasonable follow up sequence, such as a call, a voicemail, an email and a text on the first day and another call the next day, falls within that.",
+{
+"h3": "Newsletters and promotions"
+},
+"Adding a client to a newsletter, sending promotional emails about other services or texting them about offers is marketing. Under PECR, electronic marketing to individuals usually needs their consent, subject to some limited exceptions. Ask for marketing consent separately, record it and give the client an easy way to opt out.",
+{
+"h3": "Clients who instruct you"
+},
+"Once a client instructs your firm, your relationship with them is governed by your own terms and privacy notice. Whether you can send them marketing depends on what they have agreed to and the rules that apply. Your data protection lead can advise.",
+{
+"h3": "Clients who do not instruct"
+},
+"If a client decides not to instruct you, stop contacting them about the enquiry after a reasonable follow up. Do not add them to marketing lists or keep contacting them about other services unless they have separately agreed.",
+{
+"h3": "Our own marketing"
+},
+"Leaflegal does not use matter details for advertising, does not sell or rent personal data and does not pass leads to other lead sellers.",
+"Leaflegal does not charge clients anything. To see our consent wording and a sample lead, <a href=\"/partners/apply\">apply to become a partner firm</a> and book a call."
+]
+]
+],
+"faqs": [
+[
+"Roles and responsibility",
+[
+[
+"Who is the controller of a lead?",
+"Vertical Brands Ltd, trading as Leaflegal, is the controller for the information collected through our enquiry forms. Once a lead is delivered to your firm, your firm becomes the controller of its copy and is responsible for handling it under UK data protection law and your own privacy notice. It is the same position as any new enquiry."
+],
+[
+"Is Leaflegal our data processor?",
+"No. Leaflegal does not process data on your firm's behalf. We collect enquiries for our own purpose of making introductions, and once a lead is delivered your firm handles its copy for its own purposes. Your data protection lead may want to confirm how your firm records the relationship. Each of us is accountable for its own part."
+],
+[
+"Is this page legal advice?",
+"No. It is general information about how Leaflegal approaches data protection and what firms are usually responsible for. It is not advice on your firm's position. Check the ICO's current guidance and speak to your data protection lead or a specialist about your own obligations. The ICO's website is a good starting point."
+],
+[
+"Do you share leads with anyone else?",
+"No. Each lead is delivered to one firm only and never resold. We do not sell or rent personal data, and we never pass matter details to advertising platforms or to other lead sellers. Once a lead is delivered to your firm, the copy you receive is the only copy any law firm has from Leaflegal. How your firm then shares it, within the firm or with others, is your responsibility under UK data protection law."
+],
+[
+"What records does Leaflegal keep?",
+"We keep our own record of each enquiry, including the consent record, for the purposes explained in our privacy policy, such as handling queries and invalid lead reports and meeting our legal obligations. Clients confirm they have read our privacy policy before submitting an enquiry. We do not use matter details for advertising."
+],
+[
+"Do we need our own privacy notice for leads?",
+"Your firm's privacy notice should cover how you handle personal data from enquiries, including those that come from introducers. Many firms already cover this. Your data protection lead can check whether your notice needs updating to reflect leads from Leaflegal. Remember that clients from Leaflegal did not give their data to your firm directly, so your notice should explain how you received it and what you will do with it."
+],
+[
+"Do we need to sign a data sharing agreement?",
+"Your partner agreement sets out how leads are delivered and handled. Whether your firm wants any further documentation about the data relationship is a question for your data protection lead. We are happy to answer questions about what we collect, why and how it reaches you, so that your firm can record the arrangement properly."
+]
+]
+],
+[
+"Consent",
+[
+[
+"Do clients agree to be contacted?",
+"Yes. Every client ticks a separate box agreeing that their details can be shared with a firm we match them with, and that the firm can contact them by phone, email or text about their matter. We record the wording and the time and send it with every lead. Neither box is ticked in advance."
+],
+[
+"Why are there two consent boxes?",
+"Keeping them separate means a client makes one active choice about Leaflegal's terms and privacy policy, and a second active choice about being contacted by a firm. It makes the introduction and the consent to contact clear and distinct, rather than bundled together. Each choice is recorded separately, along with the wording the client saw and the time, and sent with every lead you receive."
+],
+[
+"Can I contact the client by text?",
+"Yes, about their enquiry. The consent covers contact by phone, email or text from the matched firm about their matter. A text is often a useful way to reach someone who is at work. It does not cover marketing texts. Keep texts short and about the enquiry, such as letting the client know you tried to call and when you will try again, or confirming an appointment."
+],
+[
+"What if a client says they did not agree?",
+"Each lead comes with the exact wording they agreed to and the time. Explain politely when they enquired and what they agreed to. If they ask you to stop contacting them, stop and let us know. If you think a lead is not genuine, raise it within the review period in your partner agreement."
+],
+[
+"What if a client withdraws consent?",
+"Stop contacting them about the enquiry and let us know so that we have a record. Handle any request about your copy of their data under your own procedures. Respecting a client's change of mind protects your firm's reputation and meets your obligations. Make sure your team knows to note the request on the lead record, so nobody contacts the client again by mistake."
+],
+[
+"Does the consent cover a call from any of our fee earners?",
+"The consent covers contact from the matched firm about the client's matter. Within your firm, whoever is handling the enquiry can contact the client. Avoid passing the lead to anyone outside your firm, such as another firm or a third party, unless it is needed to deal with the client's matter and the client knows about it."
+]
+]
+],
+[
+"Sensitive data",
+[
+[
+"Do leads contain special category data?",
+"Some can. Family, immigration and motoring enquiries may include information about relationships, health, nationality or alleged offences, especially in the client's own description. We keep questions to the minimum needed to make first contact, but treat every lead as potentially sensitive. Store and share leads with that in mind, limiting access to the people who need to see them to deal with the enquiry."
+],
+[
+"Is motoring offence information criminal offence data?",
+"Information about alleged offences is generally treated as criminal offence data under UK data protection law, which has its own conditions for processing. Firms that handle motoring work usually already have procedures for this. Your data protection lead can confirm how your firm applies them to leads. Keep motoring leads secure."
+],
+[
+"Do you send matter details to Facebook or Google?",
+"No. We never pass matter details to advertising platforms. Where we use advertising tools to measure our own campaigns, they do not receive information about the client's legal matter. Our campaigns run on social media and search, but the details of a client's legal matter stay between the client, Leaflegal and the firm we introduce them to. We do not sell or rent personal data to anyone."
+],
+[
+"Why do you include the client's own description?",
+"Because it helps your firm understand the matter before the first call and gives you a natural way to open the conversation. We pass it on as the client wrote it. Treat it with the same care you would give any sensitive information from a new client. Limit access to those who need it."
+],
+[
+"Do immigration leads include nationality details?",
+"Our immigration forms collect only the type of matter, urgency and contact details. Clients may mention other details in their own description. Leaflegal does not ask questions that would amount to assessing someone's immigration position and never gives immigration advice. Treat any personal details in the description with care, and limit access to the people at your firm who need them to deal with the enquiry."
+],
+[
+"Should we treat a lead differently from a website enquiry?",
+"Not in terms of security. A lead contains the same kind of information as an enquiry through your own website and deserves the same care. The main difference is that the data came from a third party, which affects what privacy information the client should be given and when. Your data protection lead can advise."
+]
+]
+],
+[
+"Your obligations",
+[
+[
+"Do we need to send the client our privacy notice?",
+"When data is obtained from someone other than the person it is about, UK data protection law generally expects them to be given privacy information, and where the data is used to contact them, usually at the latest at first contact. Many firms send a privacy notice link in their first email. Check with your data protection lead."
+],
+[
+"How long can we keep leads?",
+"That is for your firm to decide in its retention policy, in line with UK data protection law. Many firms keep enquiries that do not become instructions for a shorter period than client files. Leads that become instructions fall under your normal file retention. Whatever period you choose, apply it consistently and make sure your privacy notice reflects it."
+],
+[
+"How should we store leads?",
+"In your usual secure systems, such as your case management system, CRM or a secure shared inbox. Avoid forwarding leads to personal email accounts or saving them on unsecured devices, and limit access to the people who need it to handle the enquiry. Delete or archive leads in line with your retention policy once they are no longer needed."
+],
+[
+"What if a client asks for their data?",
+"Handle requests about your copy of a lead under your own procedures, in the time the law allows. If the request also concerns information Leaflegal holds, let us know so we can deal with our part. Keep a record of the request and how you dealt with it. Your data protection lead can advise on any exceptions or time limits that apply in a particular case."
+],
+[
+"What if there is a data breach?",
+"Follow your firm's breach procedure for your copy of the lead, including deciding whether the breach needs reporting. If the breach involves Leaflegal's systems or the delivery of a lead, tell us straight away so we can investigate our side. Some breaches must be reported to the ICO within a set time, so act quickly and follow your firm's procedure and the ICO's current guidance."
+],
+[
+"Can we keep a lead if the client asks us to delete it?",
+"Requests for erasure are subject to conditions and exceptions under UK data protection law. Handle them under your own procedures. If you need to keep some information, for example to meet a legal obligation, your data protection lead can advise. Let us know about the request if it also concerns Leaflegal's records."
+]
+]
+],
+[
+"Marketing",
+[
+[
+"Can I add leads to my newsletter?",
+"Only if the client separately agrees. The consent given through Leaflegal covers contact about their enquiry, not general marketing. Ask for marketing consent separately, record it and make it easy to opt out. Under PECR, electronic marketing to individuals usually needs their consent, subject to some limited exceptions. Asking at the right moment, such as after a helpful first conversation, tends to work best."
+],
+[
+"Is a follow up call marketing?",
+"Following up the client's own enquiry is what they agreed to. A reasonable sequence of calls, emails and texts about their matter falls within that consent. Sending them offers or information about unrelated services would be marketing. Keep follow ups focused on the client's enquiry and stop once it is clear they do not want to go ahead, so that contact stays within what they agreed to."
+],
+[
+"Can I contact clients who did not instruct about other services?",
+"Not on the basis of the Leaflegal consent, which covers contact about their enquiry. Once a client has decided not to instruct, stop contacting them after a reasonable follow up unless they have separately agreed to hear from you. If a client does want to hear from you in future, record their consent and how it was given."
+],
+[
+"Does Leaflegal use client data for marketing?",
+"Leaflegal does not use matter details for advertising and does not sell or rent personal data. How we use client data is explained in our privacy policy, which clients confirm they have read before submitting an enquiry. Where we use advertising tools to measure our own campaigns, they do not receive information about the client's legal matter. We never pass leads to other lead sellers."
+],
+[
+"Can we ask the client for marketing consent on the first call?",
+"You can ask, as long as it is a genuine choice and does not feel like a condition of helping them. Many firms find it more natural to ask once the client has instructed or at the end of a helpful conversation. Record any consent you obtain, including how and when it was given."
+]
+]
+]
+]
+}

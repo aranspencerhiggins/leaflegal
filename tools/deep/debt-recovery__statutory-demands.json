@@ -1,0 +1,311 @@
+{
+ "about": [
+  [
+   "Overview",
+   [
+    "A statutory demand is a formal written demand for payment of a debt, made under insolvency law rather than through an ordinary court claim. It is a creditor's way of saying, in a form the law recognises, that the debtor must pay, or reach terms with the creditor, within a fixed period. If it does not, the creditor may be able to start insolvency proceedings.",
+    "For a company, those proceedings mean a winding up petition, which asks the court to put the company into compulsory liquidation. For a sole trader, the equivalent is a bankruptcy petition. The prospect of either outcome is serious for the debtor, and that is why statutory demands can be effective. Many debtors pay, or propose a plan, when they receive one.",
+    "A statutory demand is not issued by a court and does not need a judgment first. It is prepared by the creditor or its solicitor in a set form and served on the debtor. That makes it quicker and cheaper to start than a court claim in some cases. However, it is a tool for a particular kind of debt. It is meant for debts that are clearly due and not genuinely disputed.",
+    "Used in the wrong case, a statutory demand can backfire. If a company has a real dispute about the debt and the creditor presses on, the court can stop any petition and order the creditor to pay the company's costs, sometimes on a generous basis. This is why most creditors take advice before serving one.",
+    "Statutory demands sit at the sharper end of debt recovery. They are not a routine first letter, and they are not suitable for every unpaid invoice. In the right case, though, they can bring a long running debt to a head quickly, because the debtor knows the creditor has a clear path to insolvency proceedings if nothing is done.",
+    "This page covers statutory demands served by a business on another business that owes it money, in England and Wales. Leaflegal does not introduce firms for consumer debt collection.",
+    {
+     "h3": "When creditors tend to consider one"
+    },
+    {
+     "list": [
+      "The debt is for a fixed sum that is clearly due",
+      "The debtor has not raised any genuine complaint about the goods or work",
+      "The debtor has admitted the debt in writing but still not paid",
+      "A court judgment has been obtained but not paid",
+      "The creditor wants to apply pressure without starting a full claim"
+     ]
+    },
+    "Leaflegal does not advise on whether a statutory demand is right for your debt. We introduce your business to one regulated law firm that handles commercial debt recovery and insolvency, and the solicitor will look at your own situation."
+   ]
+  ],
+  [
+   "How it works",
+   [
+    "The steps below give a general picture of how a statutory demand usually works. The detail differs between companies and individuals, and your solicitor will explain what applies to your debtor.",
+    {
+     "h3": "1. Checking the debt"
+    },
+    "The solicitor first checks that the debt is suitable. It must be a liquidated sum, meaning a fixed amount of money rather than a claim for damages that still needs to be valued. It must be due now, and it must not be the subject of a genuine dispute. The solicitor also checks that it is over the minimum amount needed for the relevant insolvency petition.",
+    {
+     "h3": "2. Preparing the demand"
+    },
+    "Statutory demands must follow a prescribed form and contain certain information. That includes details of the creditor and debtor, the amount owed and how it arose, any interest or other charges included and how they were worked out, and an explanation of what the debtor can do in response. Errors can give the debtor grounds to challenge the demand.",
+    {
+     "h3": "3. Serving the demand"
+    },
+    "The demand must be served properly. For a company, that usually means leaving it at the registered office. For an individual, personal service is usually expected where possible, and the court rules set out what to do if that is not practical. Good evidence of service is needed if a petition follows.",
+    {
+     "h3": "4. The 21 day period"
+    },
+    "After service, the debtor has 21 days to pay the debt, or to secure or compound it to the creditor's reasonable satisfaction. Compounding means reaching an agreed arrangement, such as a reduced sum or a payment plan the creditor accepts.",
+    {
+     "h3": "5. Next steps"
+    },
+    "If the debt is not paid or dealt with in that time, the creditor may be able to present a winding up petition against a company or a bankruptcy petition against an individual, if the debt meets the threshold. Many creditors use the end of the period as a point to negotiate. Your solicitor will discuss whether to petition, negotiate or take another route.",
+    {
+     "h3": "Keeping records"
+    },
+    "Throughout the process, it helps to keep a careful note of any contact with the debtor, any payments received and any complaint raised. If the debtor pays part of the debt during the 21 days, or raises a dispute for the first time, your solicitor will need to know straight away, as it may affect whether a petition can be presented."
+   ]
+  ],
+  [
+   "Companies",
+   [
+    "Most statutory demands in business debt recovery are served on limited companies. The rules for companies have some important features.",
+    {
+     "h3": "The threshold"
+    },
+    "A creditor can rely on an unpaid statutory demand to show that a company is unable to pay its debts if the company owes more than £750 and has not paid or dealt with the demand within 21 days. Several creditors can join together to reach the threshold.",
+    {
+     "h3": "Service at the registered office"
+    },
+    "A demand on a company is usually served by leaving it at the company's registered office. Your solicitor will check the current registered office on the public register and keep a record of how and when the demand was delivered.",
+    {
+     "h3": "No application to set aside"
+    },
+    "Unlike an individual, a company cannot apply to the court to set aside a statutory demand. Instead, if a company says the debt is genuinely disputed, it can apply to the court for an order stopping the creditor from presenting a winding up petition. If the court agrees that there is a substantial dispute, the creditor is likely to be ordered to pay the company's costs.",
+    {
+     "h3": "Not the only route"
+    },
+    "A creditor does not always need a statutory demand before petitioning to wind up a company. A company can also be shown to be unable to pay its debts in other ways, for example if a court judgment against it has not been satisfied. Your solicitor will explain which route suits your debt.",
+    {
+     "h3": "The effect on the company"
+    },
+    "Receiving a statutory demand often prompts directors to look closely at the company's finances. Some will pay. Others will seek advice from an insolvency practitioner. In some cases, the company may enter an insolvency process of its own, which can change the position for all creditors."
+   ]
+  ],
+  [
+   "Sole traders",
+   [
+    "When the debtor is a sole trader, the debt is owed by an individual, even if it arose from their business. Statutory demands still work, but the rules are different and lead to bankruptcy rather than winding up.",
+    {
+     "h3": "A higher threshold"
+    },
+    "A bankruptcy petition based on a statutory demand can only be presented if the debt meets the minimum set by law for bankruptcy, which is much higher than the figure for companies. This minimum has changed in the past and could change again, so your solicitor will confirm the current figure.",
+    {
+     "h3": "Personal service"
+    },
+    "A demand on an individual should usually be handed to them personally where possible. If that cannot be done after reasonable efforts, there are other accepted methods, but the creditor must be able to show the court what was done.",
+    {
+     "h3": "Applying to set aside"
+    },
+    "An individual who receives a statutory demand can apply to the court to have it set aside, usually within 18 days of service. Grounds include a genuine dispute about the debt, a counterclaim or set off that equals or exceeds the debt, or the creditor holding security that covers the debt. If an application is made, the time for complying with the demand is paused while the court decides.",
+    {
+     "h3": "Bankruptcy is a serious step"
+    },
+    "Bankruptcy has far reaching effects for an individual, including on their home and their ability to carry on in business. Courts look carefully at bankruptcy petitions. A solicitor will explain whether this route is proportionate for your debt and what a realistic outcome might be.",
+    {
+     "h3": "Partnerships"
+    },
+    "Debts owed by partnerships can involve the partners personally, and there are special rules for insolvency of partnerships. If your debtor is a partnership, tell your solicitor at the outset."
+   ]
+  ],
+  [
+   "Risks",
+   [
+    "A statutory demand is a strong tool, but it carries real risks for a creditor who uses it in the wrong case. Understanding these helps explain why advice matters.",
+    {
+     "h3": "Disputed debts"
+    },
+    "The biggest risk is using a statutory demand for a debt the debtor genuinely disputes. Insolvency proceedings are not meant to resolve disputes about whether money is owed. If the dispute is substantial, the court is likely to stop any petition and order the creditor to pay costs.",
+    {
+     "h3": "Cross claims"
+    },
+    "Even where the debt itself is accepted, a debtor might have a genuine claim against the creditor, for example for breach of contract, that is equal to or greater than the debt. This can also be a reason for a court to stop a petition.",
+    {
+     "h3": "Mistakes in the demand"
+    },
+    "A demand that overstates the debt, includes sums that are not due or leaves out required information can be challenged. Minor errors do not always invalidate a demand, but they can cause delay and cost.",
+    {
+     "h3": "What you might actually recover"
+    },
+    "If a company does go into liquidation, the creditor who petitioned does not get paid first. Unsecured creditors usually share what is left after costs and preferred debts, and that may be little or nothing. The real value of a statutory demand often lies in prompting payment before that point.",
+    {
+     "h3": "Commercial impact"
+    },
+    "Serving a statutory demand on a customer is likely to end the trading relationship. For some creditors that does not matter. For others it is a reason to try other routes first.",
+    {
+     "h3": "Pressure must be proper"
+    },
+    "Insolvency proceedings exist to deal with debtors who cannot pay, not to force payment of debts that are in genuine dispute. Courts take a dim view of creditors who use the threat of winding up or bankruptcy as leverage in a contested argument. A solicitor will help make sure any demand is used for its proper purpose."
+   ]
+  ],
+  [
+   "Costs",
+   [
+    "Statutory demands are often less expensive to prepare than a full court claim. There is no court fee to serve a demand, and many firms offer a fixed fee for preparing and serving one.",
+    "Because the costs of a statutory demand are often modest compared with a court claim, it can look like an easy option. The savings disappear quickly if the demand is challenged, so the cost of a careful review at the start is usually money well spent.",
+    {
+     "h3": "What the fee usually covers"
+    },
+    "A fixed fee typically includes checking that the debt is suitable, preparing the demand in the prescribed form and arranging service, often through a process server. Ask the firm what is included and whether process server fees are extra.",
+    {
+     "h3": "If a petition follows"
+    },
+    "A winding up or bankruptcy petition is a larger piece of work. There are court fees and a deposit payable to the Official Receiver, as well as the solicitor's fees. These fees are set by the government and change from time to time, so check GOV.UK or ask the firm for current figures.",
+    {
+     "h3": "Costs risks"
+    },
+    "If the debtor successfully challenges the demand or stops a petition because the debt is disputed, the creditor may have to pay the debtor's legal costs as well as its own. A careful review at the outset is the best way to reduce this risk.",
+    {
+     "h3": "Adding interest"
+    },
+    "A statutory demand can include interest and other charges that are properly due, but they must be shown separately and explained. Your solicitor will work out what can be included.",
+    "Leaflegal is free for businesses to use. The firm pays us for the introduction, and that never changes what you pay them."
+   ]
+  ]
+ ],
+ "faqs": [
+  [
+   "The basics",
+   [
+    [
+     "What is a statutory demand?",
+     "It is a formal written demand for payment of a debt, made in a form set by insolvency law. It gives the debtor 21 days to pay, or to secure or reach an agreed arrangement for the debt. If the debtor does not, the creditor may be able to present a winding up petition against a company or a bankruptcy petition against an individual."
+    ],
+    [
+     "Do I need a court judgment first?",
+     "No. A statutory demand can be served without first obtaining a judgment, which is one reason some creditors use it. However, it is only suitable for debts that are clearly due and not genuinely disputed. If there is any real dispute, a court claim is usually the safer route."
+    ],
+    [
+     "What is the minimum debt for a statutory demand?",
+     "For a winding up petition against a company, the debt must be more than £750. For a bankruptcy petition against an individual, including a sole trader, the minimum is much higher and is set by law. That figure has changed before, so your solicitor will confirm the current amount."
+    ],
+    [
+     "Is a statutory demand issued by the court?",
+     "No. It is prepared by the creditor or its solicitor and served directly on the debtor. The court only becomes involved if the debtor applies to set it aside, applies to stop a petition, or if the creditor goes on to present a petition. This is why there is no court fee for serving a demand."
+    ],
+    [
+     "Can I use a statutory demand for a claim for damages?",
+     "Usually not. A statutory demand must be for a liquidated sum, meaning a fixed amount that is due, such as an unpaid invoice. A claim for damages that still needs to be valued by the court is not suitable. Your solicitor will check whether your debt fits."
+    ],
+    [
+     "Is a statutory demand the same as a letter before action?",
+     "No. A letter before action is a step before an ordinary court claim and gives the debtor a chance to respond. A statutory demand is an insolvency tool that can lead to winding up or bankruptcy. Some creditors send a letter before action first, and then consider a statutory demand if the debt is undisputed and remains unpaid."
+    ],
+    [
+     "Can a statutory demand be used on a debt owed by a sole trader?",
+     "Yes. A sole trader is an individual, so a statutory demand served on them can lead to a bankruptcy petition if the debt meets the bankruptcy threshold and is not paid. Different rules on service and challenges apply to individuals. Your solicitor will explain how this works and whether it is proportionate."
+    ]
+   ]
+  ],
+  [
+   "Serving it",
+   [
+    [
+     "How is a statutory demand served on a company?",
+     "It is usually served by leaving it at the company's registered office, as shown on the public register. Your solicitor will check the address, arrange delivery, often through a process server, and keep evidence of when and how it was served. That evidence is needed if a petition follows."
+    ],
+    [
+     "How is a statutory demand served on a sole trader?",
+     "For an individual, the demand should usually be handed to them personally where possible. If that cannot be done after reasonable attempts, the rules allow other methods, but the creditor must be able to show the court what efforts were made. Your solicitor will arrange this carefully."
+    ],
+    [
+     "Can I email a statutory demand?",
+     "Email alone is not usually enough. The rules on service are strict, and a petition based on a demand that was not properly served can fail. Your solicitor will use a method of service that the court accepts and will keep a clear record of it."
+    ],
+    [
+     "What must the demand say?",
+     "It must follow a prescribed form and include details of the creditor and debtor, the amount owed and how it arose, any interest or charges and how they were calculated, and information about how the debtor can respond. Your solicitor will prepare the demand so that it meets these requirements."
+    ],
+    [
+     "Can I include interest in the demand?",
+     "Yes, if the interest is properly due, for example under your contract or under late payment law for debts between businesses. It must be shown separately with an explanation of how it was calculated. Including sums that are not due can give the debtor grounds to challenge the demand."
+    ],
+    [
+     "What if the registered office is out of date?",
+     "A company is responsible for keeping its registered office up to date, and service there is usually valid even if the company no longer uses that address. However, a creditor should not ignore information it knows about. Your solicitor may also send a copy to the trading address to make sure the demand comes to the directors' attention."
+    ]
+   ]
+  ],
+  [
+   "After 21 days",
+   [
+    [
+     "What happens if the company does not pay?",
+     "If a company owing more than £750 does not pay or deal with the demand within 21 days, it can be treated as unable to pay its debts. The creditor may then be able to present a winding up petition. Many creditors use this point to negotiate before deciding whether to petition."
+    ],
+    [
+     "Do I have to petition after 21 days?",
+     "No. The demand gives you the option, not an obligation. Some creditors use the demand to prompt payment or a payment plan and never petition. Others decide that a petition is the right step. Your solicitor will discuss the costs and likely outcome of each option with you."
+    ],
+    [
+     "Can the debtor pay in instalments instead?",
+     "The demand can be dealt with by securing or compounding the debt to the creditor's reasonable satisfaction, which can include an agreed payment plan. Whether to accept a plan is the creditor's decision. Your solicitor can help set out the terms in writing."
+    ],
+    [
+     "How long is a statutory demand valid for?",
+     "There is no simple expiry date, but a demand that is relied on long after it was served may be looked at critically, especially if circumstances have changed. If you intend to petition, it is usually sensible to do so within a reasonable time after the 21 days end. Your solicitor will advise on timing."
+    ],
+    [
+     "What if the company goes into administration?",
+     "If a company enters administration or another insolvency process, there are often restrictions on creditors taking action, including presenting a winding up petition. You would usually need to deal with the insolvency practitioner instead. Your solicitor will explain how this affects your debt."
+    ],
+    [
+     "Will I get paid first if I petition?",
+     "Not necessarily. In a liquidation, unsecured creditors usually share what is left after costs and certain preferred debts, regardless of who brought the petition. The petitioning creditor can usually recover its petition costs from the company's assets. The real leverage often comes before the hearing."
+    ],
+    [
+     "What if the debtor pays part of the debt?",
+     "A part payment reduces the debt but may not deal with the demand. If the balance owed by a company is still more than £750, a petition may still be possible. If it falls below the threshold, it may not. Your solicitor will look at what has been paid and explain the options for the remaining balance."
+    ]
+   ]
+  ],
+  [
+   "Disputes",
+   [
+    [
+     "What if the debtor disputes the debt?",
+     "If the dispute is genuine and substantial, a statutory demand is usually not appropriate. A company can ask the court to stop a petition, and the creditor may be ordered to pay its costs. An individual can apply to set the demand aside. A court claim is usually the better way to resolve a real dispute."
+    ],
+    [
+     "Can a company set aside a statutory demand?",
+     "Not in the way an individual can. Instead, a company that disputes the debt can apply to the court for an order preventing the creditor from presenting a winding up petition. If the court finds a substantial dispute, the creditor is likely to face a costs order."
+    ],
+    [
+     "How does a sole trader challenge a demand?",
+     "An individual can apply to the court to set aside the demand, usually within 18 days of service. Grounds include a genuine dispute, a counterclaim or set off that equals or exceeds the debt, or the creditor holding enough security. The time for compliance is paused while the application is decided."
+    ],
+    [
+     "What counts as a genuine dispute?",
+     "It is not enough for a debtor simply to say it disputes the debt. The dispute must have some real substance, supported by evidence. Courts look at the facts of each case. Your solicitor will review the history of the debt and any complaints made to judge whether a statutory demand is safe to use."
+    ],
+    [
+     "What if the debtor has a counterclaim?",
+     "If the debtor has a genuine claim against you that is equal to or more than the debt, that can be a reason for the court to stop a petition or set aside a demand. A small or weak counterclaim may not be. Your solicitor will consider any counterclaim before advising."
+    ],
+    [
+     "Can the debtor raise a dispute for the first time after the demand?",
+     "It can try, but courts look at the history. A dispute that appears only after a statutory demand, with no earlier complaint, may carry less weight than one raised at the time. However, it still needs to be considered on its merits. Your solicitor will review any new dispute before you decide whether to petition."
+    ]
+   ]
+  ],
+  [
+   "Costs",
+   [
+    [
+     "How much does a statutory demand cost?",
+     "There is no court fee to serve one, and many firms offer a fixed fee for preparing and serving a demand. Process server charges may be extra. If a petition follows, there are court fees, a deposit and further legal fees. Ask the firm for a written quote."
+    ],
+    [
+     "Can I recover the cost of the demand?",
+     "Some costs may be recoverable in certain circumstances, for example as part of a petition or under late payment law for debts between businesses. It is not guaranteed. Your solicitor will explain what may be recoverable and what you should expect to bear yourself."
+    ],
+    [
+     "What is the risk of paying the debtor's costs?",
+     "If a demand is used for a disputed debt and the debtor successfully challenges it or stops a petition, the creditor may be ordered to pay the debtor's legal costs. This can be significant. A careful review before serving the demand is the best way to reduce this risk."
+    ],
+    [
+     "Does Leaflegal charge me anything?",
+     "No. Leaflegal is free for businesses to use. The firm we introduce you to pays us a fee for the introduction, which does not change what you pay them."
+    ]
+   ]
+  ]
+ ]
+}

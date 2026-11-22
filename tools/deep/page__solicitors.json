@@ -1,0 +1,378 @@
+{
+ "about": [
+  [
+   "Overview",
+   [
+    "Many people start their search for a lawyer by looking for a solicitor near them. That makes sense. A local firm can feel more approachable, it may know the local courts and council, and you can meet in person if you want to. These pages help you find a solicitor in your town or city in England and Wales through Leaflegal, and explain when being local matters and when it does not.",
+    "Leaflegal is a free introduction service. You tell us about your matter and where you are, and we introduce you to one regulated firm that handles that kind of work and covers your area. The firm then contacts you to talk it through. We are not a law firm and we do not give legal advice.",
+    {
+     "h3": "Areas covered locally"
+    },
+    "Our local pages cover six areas of law for matters in England and Wales.",
+    {
+     "list": [
+      "Conveyancing solicitors",
+      "Lease extension solicitors",
+      "Family law solicitors",
+      "Motoring offence solicitors",
+      "Licensing solicitors",
+      "Debt recovery solicitors for businesses"
+     ]
+    },
+    "We also introduce people to regulated immigration advisers. Because immigration law is the same across the UK and advisers often work remotely, immigration introductions are not tied to a particular town and are available anywhere in the UK.",
+    {
+     "h3": "How location is used"
+    },
+    "When you make an enquiry, we ask where you are, or where the property, court or premises is. We use that to introduce a firm that covers your area. For some matters that means a firm close to you. For others it means a firm that works across England and Wales and is used to handling matters wherever the client lives.",
+    {
+     "h3": "Using the local pages"
+    },
+    "Each town and city page gives a short overview of the areas we cover there, and links to pages for each type of solicitor. Those pages explain in general terms how things usually work for that kind of matter and what to have ready. When you are ready, the form takes about two minutes."
+   ]
+  ],
+  [
+   "Local or remote",
+   [
+    "It is natural to want a solicitor who is close by. For some kinds of matter that is useful. For others, the location of the firm makes very little difference to the service you receive.",
+    {
+     "h3": "When local knowledge can help"
+    },
+    "Some matters involve a particular court, council or local authority. A motoring offence is usually heard at a magistrates' court in the area where the offence happened. A premises licence is applied for to the local council where the premises is, and the council's licensing policy and the views of local police and residents can matter. A family dispute may be heard at the local family court. In these cases a firm that knows the local procedures and people can be an advantage, and attending a hearing is easier if the firm is not far away.",
+    {
+     "h3": "When location matters less"
+    },
+    "Conveyancing, lease extensions and business debt recovery are now mostly handled by phone, email, post and online portals. Property searches and Land Registry applications are done electronically, county court claims for money are often issued online, and documents can be signed and returned without visiting an office. Many people use a firm in a different town and never meet in person, and are perfectly happy with the service.",
+    {
+     "h3": "Meeting in person"
+    },
+    "If meeting face to face matters to you, say so when you make your enquiry. Some people find it easier to discuss personal matters, such as a separation, in person. Others are more comfortable with video calls. Many firms offer both, and you can ask what the firm usually does on the first call.",
+    {
+     "h3": "Getting the balance right"
+    },
+    "In the end, experience in your type of matter, clear communication and fair fees usually matter more than the distance to the office. A nearby firm that rarely handles your kind of matter may not be the best choice, while a firm a few towns away that does it every day may suit you well. The firm we introduce handles your type of work and covers your area.",
+    {
+     "h3": "Area by area"
+    },
+    "Conveyancing firms routinely act for buyers and sellers all over England and Wales. What matters more is that the firm is on your lender's panel and responds quickly. Local knowledge can help with things like unusual local searches or properties affected by mining or flood risk, but a good conveyancer will know how to deal with those wherever the property is.",
+    "Lease extension work is mostly paperwork and negotiation with the freeholder's solicitor, supported by a valuation from a surveyor. The surveyor usually needs to know the local property market, but the solicitor can be based anywhere. If the matter goes to the First-tier Tribunal (Property Chamber), hearings are often held remotely or at a regional venue.",
+    "Family solicitors often deal with the family court that covers the area where you or your children live. Many hearings now take place by video, but some are in person. Some people prefer a firm they can visit, especially during a difficult separation.",
+    "Motoring and licensing cases are the most local. Magistrates' courts, council licensing committees and local police all have their own ways of working. A firm that regularly appears before them can be a real help, and it may be able to attend a hearing at short notice.",
+    "Business debt recovery is usually handled through letters, negotiation and, if needed, the county court. Many money claims are issued and managed online, so the firm's location matters less than its experience with commercial debts."
+   ]
+  ],
+  [
+   "Where we cover",
+   [
+    "Leaflegal covers matters across England and Wales. Our local pages focus on major towns and cities and the surrounding areas, but we can introduce firms for enquiries from smaller towns and rural areas too. If your town is not listed, use the main form and tell us where you are.",
+    {
+     "h3": "Towns and cities with local pages"
+    },
+    {
+     "list": [
+      "London",
+      "Birmingham",
+      "Manchester",
+      "Leeds",
+      "Liverpool",
+      "Sheffield",
+      "Bristol",
+      "Newcastle",
+      "Nottingham",
+      "Leicester",
+      "Cardiff",
+      "Swansea",
+      "Southampton",
+      "Portsmouth",
+      "Brighton",
+      "Reading",
+      "Oxford",
+      "Cambridge",
+      "Milton Keynes",
+      "Norwich",
+      "Coventry",
+      "Stoke-on-Trent",
+      "Hull",
+      "Plymouth",
+      "Exeter",
+      "York"
+     ]
+    },
+    {
+     "h3": "Wales"
+    },
+    "England and Wales share one legal system, so firms in England can usually act for clients in Wales and the other way round. Some differences do apply in Wales, such as Land Transaction Tax instead of Stamp Duty Land Tax on property purchases, and some housing and planning rules. If you would like to deal with a firm in Welsh, mention it in the notes and the firm will tell you whether it can help.",
+    {
+     "h3": "Scotland and Northern Ireland"
+    },
+    "Scotland and Northern Ireland have their own legal systems, so we do not cover matters there for conveyancing, family law, motoring offences, licensing, lease extensions or debt recovery. Immigration introductions are available across the whole of the UK.",
+    {
+     "h3": "If the property or court is somewhere else"
+    },
+    "Sometimes the place that matters is not where you live. You may be buying a property in another part of the country, facing a court hearing in a town you were driving through or running premises in a different council area. Tell us where the property, court or premises is, as well as where you live, so we can introduce a firm that covers the right place.",
+    {
+     "h3": "Surrounding areas"
+    },
+    "Each local page also covers the towns and districts around the main city. For example, a firm covering London may act for clients across Greater London, and a firm covering Manchester may act for clients in Salford, Stockport or Trafford. If you are not sure which page fits, choose the nearest city or just use the main form."
+   ]
+  ],
+  [
+   "Checking a solicitor",
+   [
+    "Whether a firm is round the corner or at the other end of the country, it is worth checking it before you instruct it. This is easy to do and takes a few minutes.",
+    {
+     "h3": "Check the register"
+    },
+    "Solicitors and law firms in England and Wales are regulated by the Solicitors Regulation Authority, and you can search for them on the SRA register. Licensed conveyancers are regulated by the Council for Licensed Conveyancers, which has its own register. Regulated immigration advisers can be checked with their regulator, such as the SRA or the Immigration Advice Authority.",
+    {
+     "h3": "Look for the regulatory information"
+    },
+    "Regulated law firms must show certain information on their websites, including who regulates them and their registration number. Many firms display the SRA's digital badge, which links to the firm's entry on the register. If a firm's website does not say who regulates it, ask.",
+    {
+     "h3": "Check the people, not just the firm"
+    },
+    "Ask who will handle your matter day to day. That might be a solicitor, a chartered legal executive, a licensed conveyancer or a paralegal working under supervision. All of these can be appropriate. It is reasonable to ask about their experience and who supervises them.",
+    {
+     "h3": "Read the paperwork"
+    },
+    "Before any work starts, the firm should send a client care letter and terms of business. These set out the fees, who will do the work, how complaints are handled and, if you were introduced by Leaflegal, the fee the firm pays for the introduction. Read them carefully and ask about anything you do not understand.",
+    {
+     "h3": "Every firm we introduce is regulated"
+    },
+    "Leaflegal only introduces firms that are regulated for the work they do. Checking for yourself is still a good habit, and a good firm will be happy for you to do so.",
+    {
+     "h3": "Warning signs"
+    },
+    "Be cautious if anyone offering legal help will not say who regulates them, asks you to pay large sums before explaining their fees in writing, promises a particular result or pressures you to decide on the spot. Be especially careful with emails asking you to send money for a property purchase to new bank details. Always check bank details by phone using a number you already know before sending money to a firm."
+   ]
+  ],
+  [
+   "What to ask",
+   [
+    "The first call with a firm is your chance to find out whether it is right for you. These questions can help, whether the firm is local or not.",
+    {
+     "h3": "About experience"
+    },
+    {
+     "list": [
+      "How often do you handle matters like mine",
+      "Do you deal with the local court, council or authority involved",
+      "Who will handle my matter, and what is their role",
+      "Who supervises their work"
+     ]
+    },
+    {
+     "h3": "About the process"
+    },
+    {
+     "list": [
+      "What are the main steps, and roughly how long might each take",
+      "What do you need from me, and when",
+      "Is there anything urgent I need to deal with now",
+      "Would I need to attend a court or hearing, and would you come with me"
+     ]
+    },
+    {
+     "h3": "About communication"
+    },
+    {
+     "list": [
+      "How will you keep me updated",
+      "How quickly do you usually reply to emails and calls",
+      "Can we meet in person, by video or both",
+      "Who do I contact if my usual contact is away"
+     ]
+    },
+    {
+     "h3": "About fees"
+    },
+    {
+     "list": [
+      "Is the fee fixed or charged by the hour",
+      "What does it include and leave out",
+      "What disbursements are likely",
+      "Is VAT included in the figures",
+      "Do you charge for travel to a local court or hearing"
+     ]
+    },
+    "It is fine to take notes and to ask the firm to put anything important in writing. You do not need to decide on the call."
+   ]
+  ],
+  [
+   "Costs",
+   [
+    "Leaflegal is free to use. You do not pay us anything for the introduction. The firm we introduce you to pays us a fee, and that fee does not change what the firm charges you. Solicitors must tell you about it in writing.",
+    {
+     "h3": "Does a local firm cost more or less"
+    },
+    "Legal fees vary between firms, and location is only one factor. Firms in some large cities may have higher overheads, but that does not always mean higher prices for a particular piece of work. Fixed fee work, such as many house purchases, can be priced similarly across the country. The best way to understand the cost is to ask the firm for a written estimate or quote.",
+    {
+     "h3": "Travel and attendance"
+    },
+    "Where a solicitor needs to attend a court or hearing, the cost of travel and waiting time may be included in a fixed fee or charged separately. A local firm may charge less for travel to a local court. Ask how attendance is charged so you can compare like for like.",
+    {
+     "h3": "Disbursements"
+    },
+    "On top of the firm's own fees there may be disbursements, such as court fees, search fees, Land Registry fees, licensing application fees set by the council, or a barrister's fee. Official fees change from time to time, and GOV.UK lists many of them. The firm will tell you which apply.",
+    {
+     "h3": "Comparing quotes"
+    },
+    "If you speak to more than one firm, check that each quote covers the same work and includes the same items. A lower headline fee may leave out things that another firm includes. Ask each firm to confirm what is and is not included."
+   ]
+  ]
+ ],
+ "faqs": [
+  [
+   "Finding a local solicitor",
+   [
+    [
+     "How do I find a solicitor near me?",
+     "Choose your area of law and tell us where you are on the form. We introduce you to one regulated firm that handles that kind of matter and covers your area. You can also use the Law Society's Find a Solicitor service or search the SRA register for firms near you."
+    ],
+    [
+     "Is my town covered?",
+     "Leaflegal covers matters across England and Wales, not just the towns and cities with local pages. If your town is not listed, use the main form and tell us where you are. We will introduce a firm that covers your area if we can."
+    ],
+    [
+     "Will the firm be in my town?",
+     "Sometimes. For matters where local knowledge helps, such as a hearing at your local court or a licence application to your council, we take location into account. For matters usually handled remotely, such as conveyancing, the firm may be elsewhere in England and Wales and work with you by phone and email."
+    ],
+    [
+     "Can I ask for a firm in a particular town?",
+     "You can tell us in the notes if you would prefer a firm in a particular place, for example near where you work. We will take that into account where we can. If you already know which firm you want, it is usually quickest to contact them directly."
+    ],
+    [
+     "What if the property is in a different area from where I live?",
+     "Tell us both. For conveyancing and lease extensions, what usually matters is where the property is and which lender is involved. For a court case, it is where the court is. Giving us the right location helps us introduce a firm that covers it."
+    ],
+    [
+     "Do you cover rural areas?",
+     "Yes. We cover matters across England and Wales, including smaller towns and rural areas. Many firms work across a wide region or the whole of England and Wales, so being outside a big city does not usually limit your options."
+    ],
+    [
+     "What is the Law Society's Find a Solicitor service?",
+     "It is a free online directory run by the Law Society, the professional body for solicitors in England and Wales. You can search by area of law and location. It lists firms but does not introduce you to them, so you contact the firms yourself."
+    ]
+   ]
+  ],
+  [
+   "Working with a firm",
+   [
+    [
+     "Will I need to visit the office?",
+     "Often not. Many firms handle matters by phone, email, video and post, and identity checks and signatures can often be done online. If you would like to meet in person, ask the firm whether that is possible. Some people prefer face to face meetings for personal matters."
+    ],
+    [
+     "Can a solicitor in England act for me in Wales?",
+     "Usually yes. England and Wales share one legal system, so solicitors in either country can generally act for clients in both. Some rules differ in Wales, such as Land Transaction Tax on property purchases, and the firm will tell you if anything specific to Wales applies."
+    ],
+    [
+     "Will my solicitor come to court with me?",
+     "That depends on the matter and the arrangement you agree. For motoring and licensing hearings, many firms attend in person or instruct a barrister. Some hearings now take place by video. Ask the firm on the first call who would attend and how that is charged."
+    ],
+    [
+     "Can I deal with the firm in Welsh?",
+     "Some firms can work in Welsh. Mention it in the notes when you make your enquiry and the firm will tell you whether it can help in Welsh. Courts and many public bodies in Wales also offer services in Welsh."
+    ],
+    [
+     "What if I move during my matter?",
+     "Most matters can carry on with the same firm even if you move, because so much work is done remotely. Tell the firm your new contact details straight away. If a local hearing is involved, it will usually stay in the original court area."
+    ],
+    [
+     "Do hearings still happen in person?",
+     "Many do, especially in magistrates' courts and some family hearings. Others are now held by video or phone, particularly shorter hearings. The court decides how each hearing takes place. Your solicitor will tell you whether you need to attend in person and what to expect on the day."
+    ],
+    [
+     "What documents will a local firm need?",
+     "That depends on the matter. Most firms ask for photo identification and proof of address, plus documents about the matter itself, such as a court summons, a lease, invoices or letters from the council. Many firms let you upload documents securely or check your identity online."
+    ]
+   ]
+  ],
+  [
+   "Checking and choosing",
+   [
+    [
+     "How can I check a solicitor is regulated?",
+     "Search for the solicitor or firm on the SRA register. Licensed conveyancers can be checked with the Council for Licensed Conveyancers. Regulated firms must show who regulates them on their website, and many display the SRA digital badge, which links to their register entry."
+    ],
+    [
+     "Is a local firm always the best choice?",
+     "Not always. Experience in your type of matter, clear communication and fair fees often matter more than distance. For some matters, local knowledge of a court or council is a real advantage. The firm we introduce handles your type of work and covers your area."
+    ],
+    [
+     "What if I don't get on with the firm?",
+     "You are under no obligation to instruct the firm we introduce. If you have already instructed it and are unhappy, raise it with the firm, because every regulated firm has a complaints procedure. You are generally free to move your matter to another firm, though there may be costs to settle."
+    ],
+    [
+     "Can I get a second opinion?",
+     "Yes. You are always free to speak to other firms, whether before or after you instruct one. Leaflegal introduces one firm, but there is no exclusivity on your side. If you are thinking about changing firms part way through, ask about any costs involved."
+    ],
+    [
+     "Are reviews a good guide?",
+     "Online reviews can give a sense of how a firm communicates, but they rarely tell you much about legal quality and can be unrepresentative. Combine them with checking the register, asking about experience and seeing how clearly the firm explains its fees on the first call."
+    ],
+    [
+     "What is the difference between a solicitor and a licensed conveyancer?",
+     "Solicitors are qualified lawyers regulated by the SRA who can handle many areas of law. Licensed conveyancers are specialists in property transactions, regulated by the Council for Licensed Conveyancers. Both can handle conveyancing, and both must meet professional standards and hold insurance."
+    ],
+    [
+     "How can I avoid fraud when paying a solicitor?",
+     "Criminals sometimes send fake emails pretending to be from a law firm, asking for money to be sent to new bank details. Before sending any money, call the firm on a number you already know to confirm the details. A genuine firm will not mind you checking and will warn you about this risk."
+    ]
+   ]
+  ],
+  [
+   "Costs",
+   [
+    [
+     "Is Leaflegal free if I want a local solicitor?",
+     "Yes. Leaflegal is free to use wherever you are. The firm we introduce pays us for the introduction, and that does not change what it charges you. The firm will explain its own fees and confirm them in writing before any work starts."
+    ],
+    [
+     "Are city solicitors more expensive?",
+     "Fees vary between firms for many reasons, including the type of work, the experience of the person doing it and the firm's overheads. Location is only one factor. The best way to know is to ask the firm for a written estimate or quote and compare what it includes."
+    ],
+    [
+     "Will I pay for the solicitor's travel?",
+     "It depends on the firm and the matter. Some include attendance at a local court in a fixed fee, while others charge travel and waiting time separately. Ask how attendance is charged so there are no surprises, and so you can compare quotes fairly."
+    ],
+    [
+     "How do I compare quotes from different firms?",
+     "Check that each quote covers the same work and lists the same disbursements, and whether VAT is included. Ask what could make the cost go up. A quote that looks cheaper may leave things out, so a like for like comparison is more useful than the headline figure."
+    ],
+    [
+     "Can I get legal aid from a local solicitor?",
+     "Leaflegal introduces people looking for paid legal help. Legal aid is only available for some matters and depends on your circumstances, and only firms with a legal aid contract can provide it. The legal aid checker on GOV.UK can help you find a local provider if you might qualify."
+    ]
+   ]
+  ],
+  [
+   "Using Leaflegal",
+   [
+    [
+     "Does Leaflegal have offices in these towns?",
+     "No. Leaflegal is an online introduction service. We do not have local offices and we are not a law firm. Our local pages help you find a regulated firm that covers your area, and the firm we introduce has its own offices and arrangements for meeting clients."
+    ],
+    [
+     "How quickly will a local firm contact me?",
+     "Usually the same working day. Enquiries made in the evening, at the weekend or on a bank holiday are usually picked up on the next working day. If your matter is urgent, such as a hearing this week, say so clearly in the form."
+    ],
+    [
+     "Will more than one local firm call me?",
+     "No. Each enquiry is introduced to one firm only. We do not pass your details to a list of local firms. If you want to compare, you are free to contact other firms yourself at any time."
+    ],
+    [
+     "Do you give legal advice on these pages?",
+     "No. Leaflegal does not give legal advice or immigration advice. Our local pages give general information about finding and working with a solicitor. The firm we introduce will look at your own situation and explain your options."
+    ],
+    [
+     "Can I find an immigration adviser near me?",
+     "We introduce people anywhere in the UK to a regulated immigration adviser. Immigration introductions are not tied to a particular town, because many advisers work remotely. If you would prefer to meet in person, mention it in the notes. Leaflegal does not give immigration advice."
+    ],
+    [
+     "What should I put for my location?",
+     "Put the town or postcode that matters for your matter. For a property, that is usually where the property is. For a court case, it is where the court is or where the offence was alleged to have happened. For a licence, it is where the premises is. Add your home location in the notes if different."
+    ]
+   ]
+  ]
+ ]
+}

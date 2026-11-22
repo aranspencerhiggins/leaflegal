@@ -1,0 +1,320 @@
+{
+ "about": [
+  [
+   "About these leads",
+   [
+    "Leaflegal sends immigration enquiries from people and businesses who want paid help from a regulated immigration adviser. Each enquiry goes to one firm or adviser only. It is never sent to a list of firms at the same time and it is never resold after it has been delivered.",
+    "Immigration enquiries only go to firms and advisers who are allowed to give immigration advice. That means solicitors' firms regulated by the SRA, practices regulated by CILEx Regulation, or advisers registered with the Immigration Advice Authority, formerly the OISC, at the right level for the work. We check how you are regulated when you apply.",
+    "Leaflegal never gives immigration advice. Our form does not ask people about their eligibility, their history or which route might suit them, and we do not comment on their chances. We ask only the type of matter, how urgent it is, a few practical details and how to contact them. Everything about the law and the client's options comes from you.",
+    {
+     "h3": "Why immigration enquiries are different"
+    },
+    "People looking for immigration help are often under real pressure. A visa may be running out, a letter may have arrived from the Home Office, or a family is trying to plan a life together across borders. Many of them have already read conflicting information online and want to speak to someone qualified who can look at their own situation.",
+    "Most of these clients pay privately, and they are choosing someone they will trust with something that matters a great deal to them. Clear fees, a calm first conversation and a fast response tend to be what they remember.",
+    {
+     "h3": "Where the enquiries come from"
+    },
+    "Our campaigns run on social media, search and helpful content aimed at the moments people look for immigration help. Each person answers a short set of practical questions and confirms they want paid help from a regulated adviser. When an enquiry fits your criteria, we check it and send it to you straight away by email or into your CRM.",
+    "Because every enquiry is matched to one adviser, the client hears from you rather than from a queue of firms. That gives you room to have a proper first conversation, and it gives the client a clear next step at a stressful time."
+   ]
+  ],
+  [
+   "Who enquires",
+   [
+    "Immigration enquiries come from individuals, families and employers. You choose the matter types you want, so a firm focused on family work does not receive business immigration enquiries unless it asks for them.",
+    {
+     "h3": "Matter types you can choose"
+    },
+    {
+     "list": [
+      "Family and partner visas",
+      "Settlement and indefinite leave to remain",
+      "British citizenship and naturalisation",
+      "Work visas and business immigration",
+      "Sponsor licences for employers",
+      "Refusals, appeals and reconsiderations",
+      "EU Settlement Scheme matters"
+     ]
+    },
+    {
+     "h3": "Individuals and families"
+    },
+    "Many enquiries come from people who are already in the UK and want help with their next application, from people outside the UK planning to join family, and from people who have received a decision they do not understand. Some have handled earlier applications themselves and now want a professional because the stakes feel higher.",
+    {
+     "h3": "Employers"
+    },
+    "Business enquiries usually come from owners and HR managers who want to recruit from overseas, keep an existing worker or understand their duties as a sponsor. They often want a fixed price and a clear plan, and they may have more than one worker to discuss.",
+    {
+     "h3": "Urgency"
+    },
+    "Each lead says how soon the client needs help and whether they know of any deadline or decision date. Some enquiries are planning ahead by several months. Others have a date approaching quickly. That lets you send the most urgent leads to a senior adviser first.",
+    "Clients in the UK and clients abroad have different needs from a first call. Someone in the UK may want a face to face meeting, while someone overseas usually expects a video call at a time that suits their time zone. Knowing this from the lead helps you plan the first contact properly.",
+    {
+     "h3": "Funding"
+    },
+    "We focus on privately funded matters. Every client confirms they are looking for paid help rather than legal aid or free advice. If you also do legal aid work, talk to us about what you want to receive."
+   ]
+  ],
+  [
+   "Lead details",
+   [
+    "Immigration leads are deliberately short. Because Leaflegal does not give immigration advice, we do not collect the kind of detail that an adviser would need to assess a case. We collect enough for you to make a well prepared first call, and you take it from there.",
+    {
+     "h3": "What each immigration lead includes"
+    },
+    {
+     "list": [
+      "The client's name, a verified UK mobile number and a verified email address",
+      "The type of immigration matter",
+      "How urgent it is and any deadline or decision date they know about",
+      "Whether the client is in the UK",
+      "Languages spoken",
+      "A short description in the client's own words",
+      "The best time to call",
+      "The source, a timestamp and the consent record"
+     ]
+    },
+    {
+     "h3": "What we do not ask"
+    },
+    "We do not ask about a client's immigration history, their eligibility for any route, their finances, their relationships in detail or anything else that would amount to assessing their case. We do not tell them whether they are likely to succeed. That keeps Leaflegal on the right side of the rules on immigration advice and keeps the advice where it belongs, with you.",
+    {
+     "h3": "Languages"
+    },
+    "Many immigration clients feel more comfortable in their first language, especially when the subject is stressful. Each lead says which languages the client speaks. If your team speaks particular languages, tell us. It helps us match clients to firms where they will feel understood.",
+    {
+     "h3": "Pre-screening and consent"
+    },
+    "Every client confirms they want paid help, and their mobile number and email address are checked. Each one ticks a box to confirm they understand Leaflegal is an introduction service that does not give advice, and a separate box to agree to one firm contacting them by phone, email or text. We record the wording and the time, and send that record with the lead.",
+    {
+     "h3": "Delivery"
+    },
+    "Leads are sent as soon as they are checked, by email, to a shared inbox or into your CRM or case management system using a lead email address or a webhook. There is no portal or login."
+   ]
+  ],
+  [
+   "Working the lead",
+   [
+    "Immigration clients often contact more than one adviser, and those with a deadline will usually instruct whoever helps them first. A well run first call matters more here than in most practice areas.",
+    {
+     "h3": "Respond quickly"
+    },
+    "Aim to call soon after a lead arrives, especially where the client has flagged a deadline. Set up alerts so the right adviser knows straight away. If a lead comes in out of hours, a short holding email that tells the client when you will call can make a real difference.",
+    {
+     "h3": "Open with what they told us"
+    },
+    "The lead tells you the type of matter, the urgency and whether the client is in the UK. Opening with that shows you have read their enquiry and lets them talk about their situation rather than repeating basic details.",
+    {
+     "h3": "Be clear about the first step"
+    },
+    "Many firms offer a paid initial consultation, either fixed fee or deducted from later work. Explaining clearly what the client gets from the first meeting, what it costs and what they should bring helps people say yes. Clients who are unsure often want to know how fees are structured for the whole matter, including any government fees that are separate from yours.",
+    "It also helps to be clear about what the client should have ready for the first meeting, in general terms. People often worry about bringing the wrong thing, and a short list sent by email after the call takes that worry away.",
+    {
+     "h3": "Explain the introduction"
+    },
+    "The client agreed to be contacted after making an enquiry through Leaflegal. Mention that when you call, and set out any referral arrangement in your client care letter as your regulator requires.",
+    {
+     "h3": "Follow up with care"
+    },
+    "Some clients need time to gather documents or talk to family before they instruct. A short follow up email and a second call a few days later is often welcome, as long as the tone is helpful rather than pushy.",
+    {
+     "h3": "Tell us what works"
+    },
+    "Let us know which leads instruct and which do not. If appeals convert well for you but settlement enquiries do not, we can change your matching to send you more of the work you want."
+   ]
+  ],
+  [
+   "Compliance",
+   [
+    "Immigration advice is one of the most tightly controlled areas of legal services. It is a criminal offence for an unqualified person to provide immigration advice or services in the UK in the course of a business. Leaflegal is set up around that rule.",
+    {
+     "h3": "Who can receive immigration leads"
+    },
+    "Immigration enquiries only go to SRA regulated firms, CILEx regulated practices, or advisers registered with the Immigration Advice Authority at a level that covers the work. You are responsible for staying within your authorisation, including the level and categories of work your registration allows. We ask for your regulatory details when you apply and you must tell us if anything changes.",
+    "If your authorisation changes, for example because a registration lapses or the level changes, tell us straight away. We will pause or adjust your matching so that no enquiry reaches you that you are not permitted to handle. Keeping this up to date protects your clients, your practice and us.",
+    {
+     "h3": "Leaflegal never advises"
+    },
+    "Our form, our campaigns and our team do not give immigration advice. We do not comment on eligibility, routes, requirements or a client's prospects. We tell every client this before they submit an enquiry, and we keep that line on every page we publish about immigration.",
+    {
+     "h3": "Referral disclosure"
+    },
+    "Leaflegal is an introducer. SRA regulated firms must make sure clients are told in writing about any financial arrangement with an introducer, and that it does not affect their independence or advice. CILEx Regulation and the Immigration Advice Authority have their own requirements on referrals and fees. Our consent wording tells every client we are paid by the firms we introduce them to, and we send that wording with each lead.",
+    {
+     "h3": "Sensitive data"
+    },
+    "Immigration enquiries can involve special category data, such as information that reveals someone's nationality or ethnic origin. We keep our questions to the minimum needed for first contact and never pass matter details to advertising platforms. Leaflegal, a trading name of Vertical Brands Ltd, is the controller for data collected through our forms. Once a lead is delivered, you become controller of your copy.",
+    "Read more about <a href=\"/partners/sra-referral-rules\">referral rules and introducers</a>."
+   ]
+  ],
+  [
+   "Pricing",
+   [
+    "You pay for each immigration lead we deliver, at a price agreed with you before you start. There are no shared or recycled enquiries and no retainer for advertising, so you can measure each lead against the instructions it produces.",
+    {
+     "h3": "How the price is set"
+    },
+    "Price depends on the matter types and locations you choose. Business immigration and appeals are often worth more to a firm than a single straightforward application, and national coverage produces more matches than a narrow area. We discuss your mix on a call and put a proposal together.",
+    {
+     "h3": "Volume and control"
+    },
+    "The minimum is 10 leads a month. Above that, you tell us how many your team can handle and we match to that number. You can set a monthly cap, change it and pause at any time, for example if a senior adviser is away or your caseload is full.",
+    {
+     "h3": "Your partner agreement"
+    },
+    "Before your first lead, we agree a written partner agreement covering pricing, billing, volumes, delivery and the rules on invalid leads. If a lead has wrong contact details or falls outside your criteria, tell us within the review period in your agreement and we will deal with it as the agreement says.",
+    {
+     "h3": "Getting started"
+    },
+    "Onboarding starts with a 30 minute call with our team. We go through the immigration work you handle, how you are regulated, the languages your team speaks and the volume you want, and we show you a sample lead. You can <a href=\"/partners/apply\">apply to become a partner</a> to book the call."
+   ]
+  ]
+ ],
+ "faqs": [
+  [
+   "The leads",
+   [
+    [
+     "What is an immigration lead from Leaflegal?",
+     "It is an enquiry from a person or business who wants paid help with an immigration matter from a regulated adviser. They have told us the type of matter, how urgent it is, whether they are in the UK and which languages they speak, confirmed their contact details and agreed to be contacted by one firm. We send that enquiry to you alone as soon as it is checked."
+    ],
+    [
+     "Are the leads exclusive?",
+     "Yes. Each enquiry is matched to one firm or adviser only and is never resold. We do not send the same enquiry to several advisers at once. Clients can of course speak to other advisers on their own, which is why a quick, clear first call matters, but you are the only one who receives their details from us."
+    ],
+    [
+     "Why are the leads so short?",
+     "Leaflegal does not give immigration advice, so we deliberately avoid collecting the kind of detail needed to assess a case. We ask about the type of matter, urgency, location, languages and contact details. That is enough for a well prepared first call, and it keeps every question about eligibility and options with you as the regulated adviser."
+    ],
+    [
+     "Which immigration matters can I receive?",
+     "You can choose from family and partner visas, settlement and indefinite leave to remain, British citizenship, work visas and business immigration, sponsor licences, refusals and appeals, and EU Settlement Scheme matters. You can take all of them or only the areas your team specialises in, and you can change your choice later as your practice changes."
+    ],
+    [
+     "Do the clients pay privately?",
+     "Yes. Every client confirms they want paid help from a regulated adviser, not legal aid or free advice. We focus on privately funded matters. If your firm also holds a legal aid contract and you want to discuss what you receive, talk to us on your onboarding call so we can set your matching sensibly."
+    ],
+    [
+     "Do you send asylum enquiries?",
+     "Our focus is on privately funded immigration matters, and asylum work is often funded differently. If asylum or protection work is part of your practice and you want to discuss it, raise it on your call and we will talk honestly about what we can and cannot send. We would rather be clear at the start than send you work that does not fit how you are funded."
+    ],
+    [
+     "Will I know how urgent each enquiry is?",
+     "Yes. Each lead says how soon the client needs help and whether they know of any deadline or decision date. Some are planning months ahead, while others have a date coming up soon. That helps you route the most urgent enquiries to a senior adviser first and plan the rest around your diary."
+    ],
+    [
+     "Do you send employer and sponsor licence enquiries?",
+     "Yes, if you want them. Business immigration enquiries come from owners and HR managers who want to recruit from overseas, keep an existing worker or understand what holding a sponsor licence involves. The lead tells you it is a business matter, how urgent it is and gives a short description in the client's words. You can choose to receive business enquiries, individual enquiries or both."
+    ]
+   ]
+  ],
+  [
+   "Volume and areas",
+   [
+    [
+     "How many leads will I receive?",
+     "That depends on the matter types, languages and locations you choose and the enquiries our campaigns are generating at the time. The minimum is 10 leads a month. Above that, you set the number your team can handle and we match to it. We will give you an honest view of what is realistic on your call, but we cannot promise a fixed volume."
+    ],
+    [
+     "Can I receive enquiries from clients outside the UK?",
+     "Yes, if you want them. Each lead says whether the client is in the UK. Some firms are happy to work with clients abroad, for example family members planning to join someone here, while others prefer clients already in the UK. Tell us your preference and we set your matching to suit it."
+    ],
+    [
+     "Can I choose by location?",
+     "Yes. Many immigration firms work with clients across the UK by phone and video, so national coverage is common. If you prefer clients near your offices for face to face meetings, we can limit matching to particular towns, cities or regions. Narrower areas usually mean fewer matches. We will talk through the trade off on your call."
+    ],
+    [
+     "Can I get leads in particular languages?",
+     "Each lead tells you the languages the client speaks. If your team speaks particular languages, tell us and we take that into account when matching. Clients dealing with something stressful often prefer to talk it through in their first language, and it can help them feel understood from the first call."
+    ],
+    [
+     "Can I set a monthly cap or pause?",
+     "Yes. You set a monthly cap of at least 10 leads, and you can change it whenever your capacity changes. If your caseload is full or a key adviser is away, tell us and we will pause matching until you are ready. Pausing does not end your partner agreement. Matching restarts when you tell us you are ready."
+    ],
+    [
+     "Can leads go to different advisers?",
+     "Yes. We can route by matter type or location, so business immigration goes to your corporate team and family matters go to another adviser. We can also send everything to a shared intake inbox or your CRM, where you assign leads to the right person, taking account of each adviser's authorisation."
+    ]
+   ]
+  ],
+  [
+   "Compliance",
+   [
+    [
+     "Who can receive immigration leads?",
+     "Only SRA regulated firms, CILEx regulated practices, or advisers registered with the Immigration Advice Authority, formerly the OISC, at a level that covers the work. We ask for your regulatory details when you apply. You must tell us straight away if your registration or authorisation changes, so we can update or pause your matching."
+    ],
+    [
+     "Does Leaflegal give immigration advice?",
+     "No. Leaflegal never gives immigration advice or services. Our form does not ask about eligibility or history, and we do not comment on routes, requirements or a client's chances. We tell every client this before they submit. All advice comes from you as the regulated adviser. If a client asks us a question about their case, we tell them that a regulated adviser will answer it."
+    ],
+    [
+     "Do I need to disclose the referral arrangement?",
+     "Yes. SRA regulated firms must make sure clients are told in writing about any financial arrangement with an introducer. CILEx Regulation and the Immigration Advice Authority have their own rules on referrals and fees that you need to follow. Our consent wording tells clients we are paid by the firms we introduce them to, and we send it with every lead."
+    ],
+    [
+     "How do you handle sensitive personal data?",
+     "Immigration enquiries can reveal special category data, such as nationality or ethnic origin. We keep questions to the minimum needed for first contact and never share matter details with advertising platforms. Leaflegal, a trading name of Vertical Brands Ltd, is the controller for data collected on our forms. Once a lead is delivered, you are controller of your copy."
+    ],
+    [
+     "How is consent recorded?",
+     "Each client ticks two boxes. The first confirms they have read our terms and privacy policy and understand Leaflegal is an introduction service that does not give advice. The second agrees to their details being shared with one firm, which may contact them by phone, email or text about their matter. We record the exact wording and the time, and send it with the lead."
+    ],
+    [
+     "Can I add clients to my newsletter?",
+     "Only with their separate consent. The consent given through Leaflegal covers contact about the client's enquiry. If you want to send marketing later, you need to ask for that permission yourself and follow your own privacy notice and UK data protection law. Many firms simply ask at the end of the first call or in their client care letter whether the client would like to hear from them in future."
+    ],
+    [
+     "What if a client needs work above my level of authorisation?",
+     "You must stay within your authorisation, so if an IAA registered adviser receives an enquiry that needs a higher level or a category they do not cover, they should not take it on. Tell us, and we will treat the lead as your partner agreement sets out. It also helps to tell us your level and categories at the start, so we can avoid matching that kind of enquiry to you."
+    ]
+   ]
+  ],
+  [
+   "Pricing and terms",
+   [
+    [
+     "How much does each lead cost?",
+     "There is no published price. You pay per lead at a price agreed with you before you start, based on the matter types and locations you choose and the volume you want. We put a proposal together after your onboarding call, so you know what each lead costs before the first one is delivered."
+    ],
+    [
+     "Is there a written agreement?",
+     "Yes. Your partner agreement covers pricing, billing, volumes, delivery and the rules on invalid leads, and it is signed before your first lead. That means both sides know exactly how things work, what is charged and how any problem with a lead is handled, from the very start. We are happy to answer questions about any part of it before you sign."
+    ],
+    [
+     "What if a lead is invalid?",
+     "Your partner agreement sets out what counts as an invalid lead, such as wrong contact details or an enquiry outside your agreed criteria. Tell us within the review period in your agreement and we will deal with it as the agreement says. A client deciding not to instruct does not on its own make a lead invalid."
+    ],
+    [
+     "Do I have to commit to a long term?",
+     "The terms are set out in your partner agreement, which we go through with you before you start. You keep control of volume throughout, with a monthly cap you set and the option to pause matching whenever you need to. We will explain the terms clearly on your call so you can decide whether it suits your practice."
+    ]
+   ]
+  ],
+  [
+   "Getting started",
+   [
+    [
+     "How do I become a partner?",
+     "Apply to become a partner and book a 30 minute call with our team. We go through the immigration work you handle, your regulation and level of authorisation, the languages your team speaks and the volume you want. Then we agree your criteria and price, show you a sample lead and put your partner agreement in place."
+    ],
+    [
+     "Can I see a sample lead?",
+     "Yes. On your call we show you a sample immigration lead, with every field, the format it arrives in and the consent record. You will see exactly how short and practical the lead is, and how it fits with Leaflegal's rule that we never give immigration advice, before you commit to anything."
+    ],
+    [
+     "Is there a platform to log into?",
+     "No. There is no portal or login. Leads arrive by email, to a shared intake inbox, or straight into your CRM or case management system using a lead email address or a webhook. Your team works them in the systems they already use, which keeps things simple and means nothing gets lost in another tool."
+    ],
+    [
+     "What should we prepare before the first lead?",
+     "Decide who calls new leads and how quickly, especially urgent ones. Set up a shared inbox or CRM route, prepare a clear summary of your consultation fee and how you charge for the main matter types, and check that your client care letter covers the referral arrangement as your regulator requires."
+    ],
+    [
+     "Can I change what I receive later?",
+     "Yes. Your matching can change as your practice changes. If you add a new adviser, register at a higher level, start offering appointments in another language or want to stop a particular matter type, tell us and we update your criteria. Feedback on which leads instruct and which do not also helps us shape the work you receive over time."
+    ]
+   ]
+  ]
+ ]
+}

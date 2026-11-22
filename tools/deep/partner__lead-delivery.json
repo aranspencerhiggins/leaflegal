@@ -1,0 +1,329 @@
+{
+"about": [
+[
+"Overview",
+[
+"A legal lead is worth most in the first few minutes after it arrives. The client has just described their matter, is expecting a call and is still focused on finding help. That is why Leaflegal sends each lead to your firm as soon as the enquiry has been checked, straight to wherever your intake team already works.",
+"Delivery is deliberately simple. There is no portal to log into, no dashboard to refresh and no app to install. Leads arrive by email, to a shared intake inbox, or directly into your CRM or case management system. You choose the route when you set up with us, and you can change it whenever your firm's way of working changes.",
+"Fast delivery only helps if someone acts on it. The rest of this page explains the delivery options in more detail, how firms route leads to the right people and how to handle leads that arrive outside office hours. Getting these details right before your first lead is one of the simplest ways to win more of the enquiries you pay for.",
+{
+"h3": "The delivery options"
+},
+{
+"list": [
+"Email to one person or to several addresses",
+"A shared intake inbox that your whole team can see",
+"Your CRM or case management system, using a lead email address",
+"Your CRM or case management system, using a webhook",
+"Different routes for different practice areas or locations"
+]
+},
+{
+"h3": "No batching"
+},
+"We do not hold leads back and send them in a daily or weekly file. Each lead is sent on its own, as soon as it passes our checks. A lead that arrives at ten past two is in your inbox or CRM at ten past two, not the next morning.",
+{
+"h3": "One firm, one copy"
+},
+"Each lead is delivered to one firm only. The copy your firm receives is the only copy any law firm receives from Leaflegal, and it is never resold. Once it is delivered, your firm becomes the controller of that copy and is responsible for handling it securely under UK data protection law and your own privacy notice.",
+{
+"h3": "Setting it up"
+},
+"We agree your delivery route on your onboarding call, alongside your practice areas, matter types, locations and volume. If you want to test it first, we can talk about how to check that leads are reaching the right place before your first real enquiry arrives."
+]
+],
+[
+"Email delivery",
+[
+"Email is the simplest way to receive leads and works with any intake process. Most firms start with email, even if they later move leads into a CRM.",
+"Email also has the advantage that it needs no setup on your side beyond choosing an address. If your firm is trying Leaflegal for the first time, starting with email lets you see how leads fit your intake before deciding whether to connect them to your CRM.",
+{
+"h3": "One address or several"
+},
+"Leads can go to a single address or to several at once. A small firm might send them to the partner who handles new business and to a practice manager. A larger firm might send them to a team inbox and copy a supervising partner.",
+{
+"h3": "A shared intake inbox"
+},
+"Many firms set up a dedicated address for new enquiries, which several people can see. This is usually better than sending leads to one fee earner's personal inbox. If that person is in court, on leave or simply busy, a lead sent only to them can sit unread. A shared inbox means someone is always able to pick it up.",
+{
+"h3": "Notifications"
+},
+"Leads are only as fast as the person who sees them. Make sure whoever handles new leads has notifications switched on, on their phone as well as their desktop. Some firms set up a rule that flags Leaflegal leads so they stand out from general email.",
+{
+"h3": "Readable on a phone"
+},
+"Each lead email is formatted to be easy to read on a phone. The most important information, such as the client's name, number, matter type and urgency, is near the top, so the person calling can see what they need at a glance.",
+{
+"h3": "Keeping a record"
+},
+"If leads arrive by email, decide where you will record what happened to each one. A simple spreadsheet or a note in your case management system is enough. Without a record, it is hard to tell later which leads were called, which instructed and which need following up.",
+{
+"h3": "Avoiding spam filters"
+},
+"Make sure your email system treats lead emails as legitimate. When your delivery is set up, check that the first lead reaches the inbox rather than a junk or quarantine folder. If your firm uses strict filtering, your IT provider may need to allow our sending address."
+]
+],
+[
+"CRM and webhooks",
+[
+"If your firm uses a CRM or case management system to manage new enquiries, leads can be sent straight into it. This saves your team copying details from an email and means every lead is recorded in the same place as your other enquiries.",
+"Delivery into a CRM also makes it easier to measure results, because the lead, every call and the eventual outcome sit together in one record. That makes it far simpler to see which practice areas and matter types bring in the most work from your leads.",
+{
+"h3": "Using a lead email address"
+},
+"Many CRMs and case management systems give each firm a special email address that turns incoming emails into new enquiries or records. If your system has one, we can send leads to it. The lead appears in your system just as an enquiry from your own website would.",
+{
+"h3": "Using a webhook"
+},
+"Some systems accept new records through a webhook, which is a way of sending information directly from one system to another over the web. If your system accepts webhooks, we can send each lead to it as structured data, so that fields such as name, phone, email and matter type land in the right places.",
+{
+"h3": "Which to choose"
+},
+"If you are not sure which your system supports, tell us what you use and ask your supplier or IT provider. A lead email address is often the quickest to set up. A webhook can give a neater result where the system supports it. Either way, the content of the lead is the same.",
+{
+"h3": "Email and CRM together"
+},
+"Some firms send leads into their CRM and also to an email address, so that the intake team gets an instant alert while the record is created in the background. Tell us if you would like this.",
+{
+"h3": "If something breaks"
+},
+"Systems change. A supplier updates its software, a firm changes CRM or an email address is retired. If leads stop arriving where you expect, tell us straight away. It is also worth keeping an email route in place as a backup when you rely on a CRM."
+]
+],
+[
+"Routing",
+[
+"Not every lead needs to go to the same place. Firms with several teams or offices often route leads so they reach the right people first time.",
+{
+"h3": "By practice area"
+},
+"If you take leads in more than one area, each area can go to a different address or team. Family leads can go to your family team, conveyancing leads to your property team and debt recovery leads to your commercial team.",
+{
+"h3": "By location"
+},
+"If you have more than one office, leads can be routed by the client's location so that each office receives the enquiries closest to it. This can help when clients want to meet in person.",
+{
+"h3": "Into your CRM for assignment"
+},
+"Some firms prefer to send every lead into one place and assign them internally. A CRM is well suited to this, because it can show who has picked up each lead and when.",
+{
+"h3": "Avoiding double calls"
+},
+"If more than one person can see a lead, agree how you will mark it as taken. Two people calling the same client within minutes can be confusing. A simple reply to the team, a flag in the inbox or an assignment in your CRM is enough.",
+{
+"h3": "Cover for absences"
+},
+"Routing to a named person works well until that person is away. If you route leads to individuals, make sure someone else can see them during holidays and sickness, or switch the route temporarily. Tell us if you need to change it.",
+{
+"h3": "Keeping it simple"
+},
+"Routing can become complicated if every practice area, office and fee earner has its own rule. The more rules there are, the more likely it is that a lead goes somewhere nobody is watching when people change roles or go on leave. Many firms find the best approach is one shared inbox or one CRM route for all leads, with internal assignment from there. Start simple and add routing only where it clearly helps."
+]
+],
+[
+"What arrives",
+[
+"Each lead is the complete record of what the client told us, in the order they told us. Nothing is added from other sources.",
+{
+"list": [
+"The client's name, verified UK mobile number and email address",
+"The practice area and type of matter",
+"A short description of the matter in the client's own words",
+"How urgent it is, including any deadline, hearing or court date they know about",
+"Their location",
+"Confirmation that they want paid legal help",
+"The best time to call, where they gave one",
+"The source of the enquiry and a timestamp",
+"The exact consent wording they agreed to and the time they agreed to it"
+]
+},
+{
+"h3": "Extra fields by practice area"
+},
+"Some areas include extra information. Conveyancing leads show the transaction type, rough property value, tenure and whether there is a mortgage. Lease extension leads show roughly how many years are left. Motoring leads show the type of offence, any court date and current points. Licensing leads show the licence type, the application or review involved and the council area. Debt recovery leads show the rough amount owed, the age of the debt and whether it is disputed.",
+{
+"h3": "What does not arrive"
+},
+"Leads do not include anything the client did not tell us. We do not add data from other sources, and we do not include any assessment of the merits of the matter, because Leaflegal does not give legal advice.",
+{
+"h3": "Reading a lead quickly"
+},
+"Most people who handle leads read them in a particular order. First the urgency and any deadline, to decide whether to call immediately. Then the matter type, to check it is something they handle. Then the client's own description, which gives them a natural way to open the call. The consent record is there if the client does not remember enquiring or asks how you got their details. With practice, this takes less than a minute."
+]
+],
+[
+"Out of hours",
+[
+"People fill in enquiry forms when they have time, which is often in the evening, late at night or at the weekend. Leads arrive whenever enquiries are checked, so it helps to have a plan for those that come in outside office hours.",
+{
+"h3": "First thing in the morning"
+},
+"Many firms ask one person to check the intake inbox first thing each working day and call overnight leads before the day gets busy. A client who enquired at eleven at night and hears from you at nine the next morning is usually pleased with the response.",
+{
+"h3": "Evening cover for urgent areas"
+},
+"Some areas are more time sensitive than others. Motoring clients may have a court date within days, and immigration clients may be working to a deadline. Some firms arrange evening cover for these areas, or ask a fee earner to send a short text or email to acknowledge the enquiry and promise a call in the morning.",
+{
+"h3": "Weekends"
+},
+"Weekend leads can wait until Monday morning, but a short acknowledgement by text or email on Saturday or Sunday can stop the client looking elsewhere in the meantime. Decide what suits your firm and stick to it.",
+{
+"h3": "Holidays"
+},
+"Over bank holidays and the Christmas period, leads can build up. If your firm closes, consider pausing leads or lowering your cap so that you do not return to a backlog of enquiries that have gone cold.",
+{
+"h3": "A short acknowledgement"
+},
+"A brief text or email that says you have received the enquiry, gives your name and promises a call at a particular time can be sent in seconds from a phone. It reassures the client that a real person has seen their enquiry and makes them less likely to keep searching for another firm overnight.",
+"Leaflegal does not charge clients anything, and every client is told we are paid by the firms we introduce. To set up delivery for your firm, <a href=\"/partners/apply\">apply to become a partner firm</a>."
+]
+]
+],
+"faqs": [
+[
+"Delivery basics",
+[
+[
+"How are leads delivered?",
+"By email to one or more addresses, to a shared intake inbox, or straight into your CRM or case management system using a lead email address or a webhook. We set up whichever suits your intake team on your onboarding call, and you can change it later. Different routes can be used for different practice areas."
+],
+[
+"How quickly are leads delivered?",
+"As soon as each enquiry has been checked. There is no batching and no daily file. Each lead is sent on its own, so you can call while the client is still focused on their matter and expecting to hear from a solicitor. Switch on notifications for whoever handles new leads so they see each one the moment it lands."
+],
+[
+"Is there a portal or app?",
+"No. There is no online platform, portal or login. Leads arrive where your team already works. If you want to change your delivery route, criteria or volume, or pause, contact our team and we will make the change. Many firms like this, because there is nothing new for their team to learn and no extra system to check during a busy day."
+],
+[
+"Can leads go to more than one person?",
+"Yes. We can send each lead to several email addresses, to a shared intake inbox your team can all see, or into your CRM where you can assign it. Many firms use a shared inbox so nothing is missed when someone is out. If several people can see a lead, agree how one of them marks it as taken so the client is not called twice."
+],
+[
+"Can I test delivery before my first lead?",
+"Ask on your call. We can talk about how to check that leads will reach the right inbox or system and are not caught by spam filters. Checking your first real lead carefully also catches most problems early. If your firm uses strict email filtering, ask your IT provider to check that our sending address is allowed. Tell us straight away if the first lead does not arrive where you expect."
+],
+[
+"Will leads be sent to anyone else?",
+"No. Each lead is delivered to one firm only and never resold. Your firm receives the only copy any law firm gets from Leaflegal for that enquiry. We do not share matter details with advertising platforms or sell personal data to anyone. Your firm is the controller of its copy once delivered."
+],
+[
+"Does every lead include the consent record?",
+"Yes. Every lead includes the exact consent wording the client agreed to and the time they agreed to it, whichever delivery route you use. This lets you show when and how the client asked to be contacted, and helps your client care information match what they were told about the referral arrangement."
+]
+]
+],
+[
+"Email",
+[
+[
+"Should leads go to a personal or shared inbox?",
+"A shared inbox is usually better. If leads go to one person's inbox and that person is in court, on leave or busy, a lead can sit unread. A shared inbox, with notifications on for everyone who handles leads, means someone can always pick it up quickly. It also helps when staff change."
+],
+[
+"What if leads go to spam?",
+"Check your junk and quarantine folders when your first lead is due. If your firm uses strict email filtering, your IT provider may need to allow our sending address. Tell us if you think leads are not arriving, and we will help you work out where they are going. Check filters again after any email system change."
+],
+[
+"Are lead emails easy to read on a phone?",
+"Yes. Each lead is formatted for a phone screen, with the most important information near the top. The person calling can see the client's name, number, matter type and urgency at a glance, then scroll for the full description and consent record. This matters because many intake staff and fee earners pick up leads on their phones between meetings or on the way back from court."
+],
+[
+"Can I change the email address later?",
+"Yes. Tell our team the new address and we will update your delivery. If staff leave or you set up a new shared inbox, let us know before the old address stops working so no leads are lost. Changes can be made whenever you need them. Give us as much notice as you can so the switch happens cleanly and nothing goes to an inbox nobody is watching."
+],
+[
+"Can I forward leads to colleagues?",
+"Yes, within your firm, as part of handling the client's enquiry. Once a lead is delivered, your firm is the controller of its copy and is responsible for handling it securely and in line with your own privacy notice. Avoid forwarding leads to personal email accounts. Keep access to those who need it."
+],
+[
+"Is email delivery secure enough for sensitive matters?",
+"Leads contain only what a firm needs to make first contact, and we never share matter details with advertising platforms. Once a lead reaches your firm, you are responsible for keeping it secure under UK data protection law. Some firms prefer CRM delivery for this reason. Your IT provider can advise on the right setup for your firm."
+]
+]
+],
+[
+"CRM and systems",
+[
+[
+"Do you integrate with my case management system?",
+"If it accepts new enquiries by email or by webhook, yes. Tell us what you use. Many systems give each firm a lead email address that turns incoming emails into records. Others accept webhooks, which send the lead as structured data. Your system supplier can usually tell you which it supports. If neither is available, leads can simply arrive by email."
+],
+[
+"What is a webhook?",
+"It is a way for one system to send information directly to another over the web, as soon as something happens. If your CRM accepts webhooks, we can send each lead to it as structured data, so that fields such as name, phone, email and matter type land in the right places."
+],
+[
+"Which is better, a lead email address or a webhook?",
+"It depends on your system. A lead email address is often quicker to set up and works with many systems. A webhook can map each field more neatly where your system supports it. The content of the lead is the same either way. Your system supplier or IT provider can advise which works best with your setup."
+],
+[
+"Can leads go to both email and my CRM?",
+"Yes. Some firms send leads into their CRM and to an email address at the same time, so the intake team gets an instant alert while the record is created. Tell us if you would like this. It also gives you a backup route if your CRM is ever unavailable, so leads are not missed while it is being fixed."
+],
+[
+"What if we change CRM?",
+"Tell us before you switch. We will set up delivery to the new system, or fall back to email while it is being configured. Keeping an email route as a backup is sensible whenever you rely on a CRM. Give us the new delivery details before the old system is switched off, and check the first lead after the change to make sure it arrived as expected."
+],
+[
+"Do you need access to our systems?",
+"No. We only need the delivery address or webhook details for your system. We do not log into your CRM or case management system, and we never see what happens to a lead after it is delivered unless you tell us. Your systems and the client records in them stay entirely under your firm's control. We only send leads in, and nothing comes back to us automatically."
+],
+[
+"Will the lead look the same in my CRM?",
+"The information is the same whichever route you use. How it appears depends on your system. With a lead email address, the lead usually appears as an email attached to a new record. With a webhook, the fields can land in separate places. Your system supplier can tell you what to expect."
+]
+]
+],
+[
+"Routing",
+[
+[
+"Can leads go to different fee earners?",
+"Yes, by practice area or location, or into your CRM for assignment. Family leads can go to your family team and conveyancing leads to your property team, for example. Tell us how your firm is organised and we will set up routing to match. Changes to routing can be made whenever your team changes."
+],
+[
+"Can different offices receive their own leads?",
+"Yes. Leads can be routed by the client's location so each office receives the enquiries closest to it. This can help when clients want to meet face to face. Tell us which towns, counties or regions each office covers and where its leads should go. If an office closes or moves, let us know and we will update the routing."
+],
+[
+"How do we avoid two people calling the same client?",
+"Agree a simple way of marking a lead as taken, such as a reply to the team, a flag in the shared inbox or an assignment in your CRM. Two calls within minutes from the same firm can confuse a client. It also helps you see who owns each lead later."
+],
+[
+"What if a named fee earner is away?",
+"Either make sure someone else can see their leads or ask us to change the route while they are away. You can also lower your cap or pause if the whole team is short staffed. Giving us a little notice before planned leave makes this easy. For unplanned absences, a shared inbox or CRM route avoids the problem altogether, because someone else can pick up the lead."
+],
+[
+"Can we change routing at short notice?",
+"Yes. Tell our team what you want to change, such as sending a practice area to a different address while a fee earner is away, and we will update it. It helps to give us as much notice as you can, so no leads go to an address nobody is watching."
+]
+]
+],
+[
+"Timing",
+[
+[
+"Do leads arrive at night and weekends?",
+"Yes. Leads are sent whenever enquiries are checked, and many people fill in forms in the evening or at weekends. Plan how your firm will handle them, such as checking first thing each morning and acknowledging weekend leads by text or email. Overnight leads called first thing the next morning usually get a good response."
+],
+[
+"Can I stop leads arriving outside office hours?",
+"Leads are sent as soon as they are checked, so they can arrive at any time. If out of hours leads are a problem, talk to us about your options. Many firms simply call overnight leads first thing in the morning, which clients generally find acceptable. A short acknowledgement by text or email also helps."
+],
+[
+"What about bank holidays?",
+"If your firm closes, consider pausing leads or lowering your cap for that period. Otherwise you may return to several leads that have waited days for a call. Let us know in advance and we will adjust your matching. Leads that wait several days tend to go cold, so a short pause is often better value than letting them build up while your office is closed."
+],
+[
+"How quickly should we call after delivery?",
+"Within minutes if you can during working hours, and first thing the next working day for leads that arrive overnight. The firms that do best call within minutes. A short text or email to acknowledge the enquiry helps if you cannot call straight away. Agree in advance who covers which hours."
+],
+[
+"What should we say when we call an overnight lead?",
+"Introduce yourself and your firm, mention that they made an enquiry through Leaflegal last night and asked to speak to a solicitor, and refer to their matter. Clients who enquired late are usually glad of a prompt morning call. Explain the next step and your fees, then confirm it by email."
+]
+]
+]
+]
+}
