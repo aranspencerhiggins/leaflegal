@@ -204,12 +204,15 @@ COOKIES = f'''
 <li><strong>ll-fbc</strong> if you arrive from one of our Facebook or Instagram adverts, remembers the advert click ID for your visit so your enquiry can be linked to that advert. Cleared when you close your browser.</li>
 </ul>
 <p><strong>Analytics (only with your consent).</strong> These help us understand how people use the site, such as which pages they visit, so we can improve it.</p>
+<ul>
+<li><strong>Google Analytics (_ga, _ga_ZQZQBYTJXF)</strong> set by Google when you accept analytics cookies, on leaflegal.co and platform.leaflegal.co. Lets us count visits, see which pages are used and how many enquiries are sent for each type of legal help. We don't send your name, email, phone number or the details of your enquiry to Google. Kept for up to 2 years.</li>
+</ul>
 <p><strong>Marketing (only with your consent).</strong> These help us measure how well our adverts work and show you relevant adverts on other websites.</p>
 <ul>
 <li><strong>Meta Pixel (_fbp, _fbc)</strong> set by Meta when you accept marketing cookies. Lets Meta measure visits and enquiries from our Facebook and Instagram adverts and show you relevant adverts. Kept for up to 90 days.</li>
 <li><strong>LinkedIn Insight Tag (li_fat_id, li_sugr, bcookie, lidc, UserMatchHistory, AnalyticsSyncHistory)</strong> set by LinkedIn when you accept marketing cookies. Lets LinkedIn measure visits and enquiries from our LinkedIn adverts and show you relevant adverts. Kept for up to 2 years.</li>
 </ul>
-<p>We don't currently use any analytics cookies. See our <a href="/privacy-policy">Privacy Policy</a> for how we use your information.</p>
+<p>See our <a href="/privacy-policy">Privacy Policy</a> for how we use your information.</p>
 
 <h2>4. Changes to this policy</h2>
 <p>We may update this policy from time to time. The latest version will always be on this page.</p>
