@@ -33,7 +33,7 @@
     el.className = 'llc'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-labelledby', 'llc-t'); el.setAttribute('aria-live', 'polite');
     const opt = (k, t, d) => `<label class="llc-opt"><input type="checkbox" name="${k}" ${c?.[k] ? 'checked' : ''}><span><b>${t}</b><small>${d}</small></span></label>`;
     el.innerHTML = `<h2 id="llc-t">Cookies on Leaflegal</h2>
-      <p>We use essential cookies to make this site work. With your permission we'd also like to use analytics and marketing cookies. <a href="/cookie-policy">Cookie Policy</a></p>
+      <p>We use essential cookies to make this site work. With your permission we'd also like to use analytics and marketing cookies. <a href="https://leaflegal.co/cookie-policy">Cookie Policy</a></p>
       ${manage ? `<div class="llc-opts">
         <label class="llc-opt"><input type="checkbox" checked disabled><span><b>Essential</b><small>Needed for the site and form to work. Always on.</small></span></label>
         ${opt('analytics', 'Analytics', 'Help us understand how the site is used so we can improve it.')}

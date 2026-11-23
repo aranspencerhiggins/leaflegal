@@ -441,7 +441,7 @@ function init() {
   }
 
   function done(p, meta = {}) {
-    if (meta.lead !== false) T('Lead', { content_name: 'Enquiry' }, { eventId: p.eventId, server: false });
+    if (meta.lead !== false) T('Lead', { content_name: 'Enquiry' }, { eventId: p.eventId, server: false, ga: { form: 'legal', practice_area: p.area || 'not_sure', matter: p.matterKey || undefined, urgency: p.urgency || undefined } });
     a.sent = { firstName: p.firstName, area: p.areaLabel, matter: p.matter, urgency: p.urgency, postcode: p.postcode, imm: p.area === 'immigration' };
     hist.push(DONE); save(); show(1);
     try { localStorage.removeItem(KEY); } catch {}
