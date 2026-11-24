@@ -7,8 +7,8 @@
 # - On your behalf. Leaflegal runs the campaign and passes enquiries to one named firm. That is an introduction, so SRA Code 5.1 applies
 #   (tell clients about the arrangement in writing, no payment for criminal clients, clients not acquired in a way that would breach SRA rules).
 # - Fees are flat or monthly for genuine marketing work, never per referral or tied to referral numbers (SRA LASPO s56-60 guidance red flags).
-# - Out of scope. Personal injury and clinical negligence (LASPO ban), FCA claims management sectors (PI, financial products, housing
-#   disrepair, employment, criminal injuries, benefits), consumer debt collection, criminal defence, and any immigration advice (IAA 1999 s84).
+# - Brand only (24 Nov). PI, clin neg, FCA claims sectors and criminal or motoring work are offered under the firm's brand only (see BRAND_ONLY).
+#   Never Leaflegal branded, never lead handling, never per lead. Still never any immigration advice (IAA 1999 s84).
 # - Channels. No cold calls, door knocking, or unsolicited texts and emails to the public (SRA 8.9, PECR regs 21 and 22). B2B email only
 #   to corporate subscribers with an opt out. Ads follow the CAP Code.
 
@@ -80,10 +80,23 @@ COMPLIANCE = [
 ]
 
 YES = ['Conveyancing and lease extensions', 'Family law, divorce and child arrangements', 'Immigration, through SRA, CILEx or IAA regulated firms',
-       'Business to business debt recovery', 'Licensing for pubs, bars and venues', 'Trademarks and other intellectual property',
+       'Debt recovery, including debts owed by consumers to your business clients', 'Licensing for pubs, bars and venues', 'Trademarks and other intellectual property',
        'Other work by agreement, where no referral or claims rules stand in the way']
-NO = ['Personal injury and clinical negligence', 'Claims that need FCA claims management authorisation', 'Housing disrepair and financial mis-selling claims',
-      'Criminal defence and motoring offences', 'Collecting debts from consumers', 'Anything that relies on cold calling or unsolicited messages']
+# Areas offered ONLY under the firm's own brand (Aran, 24 Nov 2026). Never under the Leaflegal brand: Leaflegal-branded lead generation for claims
+# needs FCA authorisation (RAO art 89G), and introducing criminal clients for a fee is banned (SRA 5.1(d)). Each campaign needs a compliance review.
+BRAND_ONLY_LEAD = ('Some areas of law can only be marketed by the firm itself. For these we work purely as your marketing supplier, under your brand, '
+                   'and every campaign goes through a compliance review before it is agreed.')
+BRAND_ONLY = [
+    ('Personal injury and clinical negligence', 'Referral fees are banned in this work, so we never refer or sell enquiries. You pay a flat fee for genuine marketing work, set out in writing.'),
+    ('Claims management sectors', 'Housing disrepair, financial mis-selling, employment and criminal injury claims. Ads promote your firm only and enquiries never pass through us.'),
+    ('Criminal defence and motoring offences', 'Your firm advertises its own criminal work. Nobody is introduced to you by a third party, so the SRA ban on paying introducers is not engaged.'),
+]
+BRAND_ONLY_RULES = ['Your firm’s name, regulator details and pricing on every ad and page', 'Ads run in your own ad accounts and you sign off every one',
+                    'Enquiries go straight into your own systems and never pass through us', 'A flat fee agreed up front, never per lead, per claim or per instruction',
+                    'No cold calls, door knocking, texts or emails to people who have not asked to hear from you', 'Subject to a compliance review of the campaign, and your own regulatory sign off']
+
+NO = ['Leaflegal branded campaigns for personal injury, clinical negligence or any claims management sector',
+      'Introducing clients facing criminal proceedings', 'Buying, selling or passing on claims leads', 'Anything that relies on cold calling or unsolicited messages']
 
 PRICING = [
     'Every campaign is quoted in writing before it starts. There is a one off setup fee for planning, copy, pages and tracking, then a fixed monthly fee for running it.',
@@ -102,8 +115,12 @@ FAQS = [
      'No. Bespoke campaigns have a setup fee and a fixed monthly fee, plus ad spend at cost. The fee does not depend on how many enquiries or instructions you receive. '
      'If you would rather pay per lead, our standard <a href="/partners/pricing">exclusive leads</a> do that.'),
     ('Can you run campaigns for personal injury or claims work?',
-     'No. Paying for personal injury and clinical negligence referrals is banned by the Legal Aid, Sentencing and Punishment of Offenders Act 2012, and generating '
-     'leads for claims such as housing disrepair or mis-sold finance needs FCA claims management authorisation. We do not work in those areas.'),
+     'Yes, but only under your own brand. Paying for personal injury and clinical negligence referrals is banned by the Legal Aid, Sentencing and Punishment of Offenders Act 2012, '
+     'and generating claims leads in our own name would need FCA claims management authorisation. So we act purely as your marketing supplier, in your ad accounts, '
+     'for a flat fee, and enquiries go straight to you. Each campaign is reviewed for compliance before we agree it.'),
+    ('Can you market criminal defence or motoring offence work?',
+     'Yes, under your brand only. The SRA bans paying anyone to introduce clients facing criminal proceedings, so we never introduce them. Your firm advertises its own '
+     'services and we run the campaign as your marketing supplier for a flat fee.'),
     ('Will you give advice to potential clients?',
      'Never. Our ads, pages and intake questions explain what your firm does and gather the facts. All legal and immigration advice comes from your firm.'),
     ('Who owns the ad accounts and the data?',
@@ -119,6 +136,6 @@ FAQS = [
 
 # Form options
 FORM_MODELS = ['Under our brand', 'On our behalf', 'Not sure yet']
-FORM_AREAS = ['Conveyancing', 'Family law', 'Immigration', 'Debt recovery', 'Licensing', 'Lease extensions', 'Trademarks and IP', 'Something else']
+FORM_AREAS = ['Conveyancing', 'Family law', 'Immigration', 'Debt recovery', 'Licensing', 'Lease extensions', 'Trademarks and IP', 'Personal injury or claims', 'Criminal or motoring', 'Something else']
 FORM_BUDGETS = ['Under £2,000 a month', '£2,000 to £5,000 a month', '£5,000 to £10,000 a month', 'Over £10,000 a month', 'Not sure yet']
 FORM_REGULATORS = ['SRA', 'CILEx Regulation', 'CLC', 'IPReg', 'IAA', 'Other']

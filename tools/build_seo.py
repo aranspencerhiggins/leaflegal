@@ -379,9 +379,12 @@ def _bc_page():
     comp = sec(head('Built around the rules for regulated legal services', 'Marketing for law firms comes with rules that most agencies never think about. We plan around them from day one.')
                + '<div class="bc-comp">' + ''.join(f'<div><b>{t}</b><p>{d}</p></div>' for t, d in BC.COMPLIANCE) + '</div>', 'bc-comp-sec')
     x = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
-    scope = sec(head('Work we can and can’t promote', 'Some areas of law cannot be marketed this way at all, so we stay out of them.')
-                + f'<div class="cfb-split"><div class="cfb-col in"><h3>We can run campaigns for</h3><ul>{"".join(f"<li>{ok}{v}</li>" for v in BC.YES)}</ul></div>'
-                + f'<div class="cfb-col out"><h3>We don’t take on</h3><ul>{"".join(f"<li><i class=cfb-no>{x}</i>{v}</li>" for v in BC.NO)}</ul></div></div>')
+    scope = sec(head('Work we can promote', 'Most practice areas work with either model. A few can only be marketed under your own brand, and some things we never do.')
+                + f'<div class="cfb-split"><div class="cfb-col in"><h3>Either model</h3><ul>{"".join(f"<li>{ok}{v}</li>" for v in BC.YES)}</ul></div>'
+                + f'<div class="cfb-col out"><h3>We never do</h3><ul>{"".join(f"<li><i class=cfb-no>{x}</i>{v}</li>" for v in BC.NO)}</ul></div></div>')
+    brand = sec(head('Under your brand only', BC.BRAND_ONLY_LEAD)
+                + '<div class="bc-chans bc-brand">' + ''.join(f'<div class="bc-chan"><b>{t}</b><p>{d}</p></div>' for t, d in BC.BRAND_ONLY) + '</div>'
+                + f'<div class="cfb-split bc-brand-rules"><div class="cfb-col in"><h3>How these campaigns are run</h3><ul>{"".join(f"<li>{ok}{v}</li>" for v in BC.BRAND_ONLY_RULES)}</ul></div></div>', 'bc-brand-sec')
     price = sec(split(PH.photo('campaign-desk'), '<h2 class="heading-two">How pricing works</h2>' + ''.join(f'<p class="ll-split-p-text">{p}</p>' for p in BC.PRICING)
                       + '<a href="#enquire" class="button" style="margin-top:24px"><div>Ask for a quote</div></a>', alt='A person sketching a marketing plan on paper'), 'bc-price-sec')
     opts = lambda xs: ''.join(f'<option>{v}</option>' for v in xs)
@@ -409,11 +412,11 @@ def _bc_page():
 </form>'''
     enquire = f'<div id="enquire"></div>' + sec(head('Plan a campaign with us', 'Tell us a little about your firm and what you want to grow. We reply within one working day with next steps.')
                                                + f'<div class="bc-form-wrap">{form}</div>', 'bc-enq-sec')
-    body = (hero + CFB['factbar'] + intro + models + chans + how + comp + scope + price + enquire
-            + cs_faqs('Questions about bespoke campaigns', [('How it works', [BC.FAQS[i] for i in (1, 4, 5, 6)]), ('Rules and compliance', [BC.FAQS[i] for i in (0, 3, 8)]), ('Fees and terms', [BC.FAQS[i] for i in (2, 7)])], 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
+    body = (hero + CFB['factbar'] + intro + models + chans + how + comp + scope + brand + price + enquire
+            + cs_faqs('Questions about bespoke campaigns', [('How it works', [BC.FAQS[i] for i in (1, 5, 6, 7)]), ('Rules and compliance', [BC.FAQS[i] for i in (0, 3, 4, 9)]), ('Fees and terms', [BC.FAQS[i] for i in (2, 8)])], 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
             + '<section class="cfb-sec"><div class="cfb-wrap">' + P_DISC + '</div></section>')
     page(f'{PUB}{BC.URL}.html', BC.TITLE, BC.DESC, body,
-         '<link href="/assets/cfb.css?v=18" rel="stylesheet"/><link href="/assets/campaigns.css?v=2" rel="stylesheet"/>' + f'<link rel="canonical" href="{SITE}{BC.URL}"/>'
+         '<link href="/assets/cfb.css?v=18" rel="stylesheet"/><link href="/assets/campaigns.css?v=3" rel="stylesheet"/>' + f'<link rel="canonical" href="{SITE}{BC.URL}"/>'
          + ld(org_ld, svc_ld(BC.H1, BC.URL, BC.DESC), faq_ld(BC.FAQS), crumb_ld(('Law firms', '/partners'), (BC.NAV, BC.URL))),
          '<script src="/assets/tabs.js?v=2"></script><script src="/assets/campaign-enquiry.js?v=1"></script>', header='PARTNERS_HEADER', backup=False)
     _count['partner'] += 1
