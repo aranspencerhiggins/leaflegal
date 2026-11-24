@@ -2,6 +2,7 @@
 // stage-based email flows. Tables: crm_contacts, crm_activities, crm_flow_sends (see tools/platform-schema-legal.sql). Admin UI: public/assets/crm.js.
 import { createHmac } from 'node:crypto';
 import { db, esc, secretKey, resendSlot, suppressedSet, birdMsgKey } from './platform.js';
+import { shell, para, button, numbered, C as LC } from './email-layout.js';
 
 export const STAGES = [
   ['new', 'New enquiry'], ['contacted', 'Contacted'], ['call_booked', 'Call booked'], ['proposal', 'Proposal sent'],
@@ -115,15 +116,25 @@ export function merge(text, c) {
   return String(text || '').replace(/\{(\w+)\}/g, (m, k) => (k in vars ? vars[k] : m));
 }
 const linkify = (escaped) => escaped.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (m, label, url) => `<a href="${url}" style="color:#244237;font-weight:bold">${label}</a>`);
+// Branded like every other Leaflegal email (shared shell), but written as a letter: no big heading.
+// A paragraph of numbered lines ("1. ...") becomes numbered steps. A link on its own, or as the last
+// sentence of a paragraph ("It takes five minutes. [Continue setup here](url)."), becomes a button.
 export function renderEmail(body, c, unsubUrl) {
   const text = merge(body, c);
   const paras = text.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
-  const F = 'font-family:Arial,Helvetica,sans-serif;';
-  const html = `<!doctype html><html><body style="margin:0;padding:0;background:#ffffff"><div style="${F}max-width:560px;padding:24px 20px;font-size:15px;line-height:1.6;color:#1f3029">
-${paras.map((p) => `<p style="margin:0 0 16px">${linkify(esc(p)).replace(/\n/g, '<br>')}</p>`).join('\n')}
-<p style="margin:24px 0 0">${esc(SENDER())}<br><span style="color:#62786f">Leaflegal · <a href="${SITE}/partners" style="color:#62786f">leaflegal.co/partners</a></span></p>
-<p style="margin:32px 0 0;padding-top:14px;border-top:1px solid #e3eae6;font-size:12px;line-height:1.5;color:#86998f">Leaflegal is a trading name of Vertical Brands Ltd, company number 14254961, 20-22 Wenlock Road, London N1 7GU.${unsubUrl ? ` Don't want these emails? <a href="${unsubUrl}" style="color:#86998f">Unsubscribe</a>.` : ''}</p>
-</div></body></html>`;
+  const LINK = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/;
+  const block = (p) => {
+    const lines = p.split('\n');
+    if (lines.length > 1 && lines.every((l) => /^\d+[.)]\s+\S/.test(l))) return numbered(lines.map((l) => linkify(esc(l.replace(/^\d+[.)]\s+/, '')))));
+    const m = p.match(new RegExp(`^(?:([\\s\\S]*?[.!?])\\s+)?${LINK.source}\\.?$`));
+    if (m && !LINK.test(m[1] || '')) return `${m[1] ? para(linkify(esc(m[1])).replace(/\n/g, '<br>')) : ''}${button({ label: m[2], url: m[3] })}`;
+    return para(linkify(esc(p)).replace(/\n/g, '<br>'));
+  };
+  const html = shell({
+    title: 'Leaflegal', preheader: paras.find((p) => !/^hi\b/i.test(p))?.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').slice(0, 140) || '',
+    body: `${paras.map(block).join('\n')}${para(`${esc(SENDER())}<br><a href="${SITE}/partners" style="color:${LC.SAGE};text-decoration:none">leaflegal.co/partners</a>`, `margin:26px 0 0;font-weight:bold;color:${LC.INK}`)}`,
+    footer: unsubUrl ? `Don't want these emails? <a href="${unsubUrl}" style="color:${LC.FAINT}">Unsubscribe</a>.` : '',
+  });
   const plain = `${text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1 ($2)')}\n\n${SENDER()}\nLeaflegal · leaflegal.co/partners${unsubUrl ? `\n\nUnsubscribe: ${unsubUrl}` : ''}`;
   return { html, text: plain };
 }

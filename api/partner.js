@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { sealHandoff, db, metaEvent } from './_lib/platform.js';
+import { teamNotice } from './_lib/email-layout.js';
 import { capture, sourceFrom, describeSource, runFlows, REGISTER_URL } from './_lib/crm.js';
 
 // POST /api/partner: emails a law firm partner enquiry (/partners/apply) to the team via Resend, adds the firm to the CRM
@@ -11,6 +12,10 @@ const FIELDS = [
   ['consentText', 'Consent wording'], ['page', 'Page'], ['referrer', 'Referrer'],
 ];
 const esc = (s) => String(Array.isArray(s) ? s.join(', ') : s ?? '').slice(0, 2000).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// Team notification for the partner form, in the shared email shell. Bot checks show as a red note.
+export const partnerEmailHtml = (b, kind, flags = []) => teamNotice({ heading: `New ${kind.toLowerCase()}`, preheader: `${b.company || ''}${b.volume ? `, ${b.volume} leads a month` : ''}`,
+  rows: FIELDS.filter(([k]) => b[k] && (!Array.isArray(b[k]) || b[k].length)).map(([k, l]) => [l, (Array.isArray(b[k]) ? b[k].join(', ') : String(b[k])).slice(0, 2000)]),
+  note: flags.length ? `<b style="color:#c0392b">Check</b> ${esc(flags.join(', '))}` : '' });
 
 // ---------------------------------------------------------------- call booking (Google Calendar)
 // Env: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN (from /api/google-auth), GOOGLE_CALENDAR_ID (default primary).
@@ -140,8 +145,6 @@ export default async function handler(req, res) {
   const key = process.env.RESEND_API_KEY;
   if (!key) return res.status(503).json({ error: 'Email not configured' });
 
-  const rows = FIELDS.filter(([k]) => b[k] && (!Array.isArray(b[k]) || b[k].length)).map(([k, l]) => `<tr><td style="padding:6px 12px;color:#579e84;vertical-align:top">${l}</td><td style="padding:6px 12px;font-weight:700;color:#244237;white-space:pre-wrap">${esc(b[k]) || '–'}</td></tr>`).join('')
-    + (flags.length ? `<tr><td style="padding:6px 12px;color:#c0392b">Check</td><td style="padding:6px 12px;color:#c0392b">${flags.join(', ')}</td></tr>` : '');
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
@@ -150,7 +153,7 @@ export default async function handler(req, res) {
       to: (process.env.ENQUIRY_TO || 'hello@leaflegal.co').split(','),
       reply_to: b.email,
       subject: `${flags.length ? '[Check] ' : ''}Law firm enquiry from ${b.company}${b.volume ? ` (${b.volume} leads a month)` : ''}`.slice(0, 200),
-      html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">New ${kind.toLowerCase()}</h2><table style="border-collapse:collapse">${rows}</table></div>`,
+      html: partnerEmailHtml(b, kind, flags),
     }),
   });
   if (!r.ok) { console.error('resend', r.status, await r.text()); return res.status(502).json({ error: 'Send failed' }); }

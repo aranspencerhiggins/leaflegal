@@ -115,6 +115,16 @@ await run('Resent confirmation link', async () => { const v = broker.email_verif
 { const C = await import('../api/_lib/crm.js'), c = { id: 1, name: 'Sam Lee', email: 'sam@newfirm.co.uk', company: 'New Firm Ltd' };
   for (const f of C.FLOW_DEFAULTS) mails.push({ label: `CRM follow-up: ${C.stageName(f.stage)}, day ${f.day}`, to: c.email, subject: C.merge(f.subject, c), html: C.renderEmail(f.body, c, 'https://platform.leaflegal.co/unsubscribe').html, files: [] }); }
 
+// Website forms: the public's enquiry confirmation and the team's notifications (sent from hello@ by api/enquiry.js, contact.js, partner.js).
+{ const E = await import('../api/enquiry.js'), Ct = await import('../api/contact.js'), Pt = await import('../api/partner.js');
+  const b = { firstName: 'Priya', fullName: 'Priya Shah', email: 'priya@example.com', phone: '07700 900321', areaLabel: 'Conveyancing', matterLabel: 'Buying a home', audience: 'Personal', urgency: 'Within a month',
+    postcode: 'LS6 2AB', region: 'Yorkshire and the Humber', valueText: '£250,000 to £500,000', privatePay: 'Yes', summary: 'Buying a first home with a mortgage, offer accepted last week.', grade: 'A', page: 'https://leaflegal.co/conveyancing',
+    utm: { utm_source: 'google', utm_campaign: 'conveyancing' }, answers: [{ q: 'Are you buying with a mortgage?', a: 'Yes' }] };
+  for (const [label, m] of [['Enquiry confirmation (to the public)', E.confirmEmail(b)], ['New enquiry (to the team)', E.teamEmail(b, 'Phone reachable (EE), email valid')]])
+    mails.push({ label, to: m.to.join(', '), subject: m.subject, html: m.html, files: [] });
+  mails.push({ label: 'Contact form (to the team)', to: 'you@leaflegal.co', subject: 'Contact form: General from Priya Shah', html: Ct.contactEmailHtml([['Name', 'Priya Shah'], ['Email', 'priya@example.com'], ['Phone', '07700 900321'], ['Topic', 'General'], ['Message', 'Hello, can you tell me more about how the introductions work?'], ['Page', 'https://leaflegal.co/contact']]), files: [] });
+  mails.push({ label: 'Partner enquiry (to the team)', to: 'you@leaflegal.co', subject: 'Law firm enquiry from Shah & Co Solicitors (10 to 25 leads a month)', html: Pt.partnerEmailHtml({ form: 'legal', company: 'Shah & Co Solicitors', areas: ['Conveyancing', 'Family law'], regulator: 'SRA', regulatorRef: '612345', volume: '10 to 25', firstName: 'Priya', lastName: 'Shah', role: 'Partner', email: 'priya@shahco.co.uk', phone: '0113 496 0000', site: 'https://shahco.co.uk', page: 'https://leaflegal.co/partners/apply' }, 'Law firm partner enquiry'), files: [] }); }
+
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const page = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Leaflegal email previews</title>
 <style>body{margin:0;font:15px/1.5 Arial,sans-serif;background:#e8ecea;color:#14271f}header{padding:28px 24px 8px;max-width:760px;margin:auto}h1{margin:0 0 6px;font-size:24px}

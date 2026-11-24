@@ -1,5 +1,6 @@
 import { createHmac, createHash, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 import { typeLabel, chUrl } from './ch.js';
+import { shell } from './email-layout.js';
 import { AUDIENCES, areaLabel, matterLabel, allowedAreas, STAGES as TAX_STAGES } from './taxonomy.js';
 // Shared logic for the Leaflegal law firm platform (platform.leaflegal.co): database access, lead pricing,
 // auto-buy matching and lead delivery. Files under api/_lib are not deployed as endpoints. "brokers" is the firm table.
@@ -401,7 +402,7 @@ export async function sendEmail(to, subject, html, replyTo, attachments, unsub, 
 // Branded email. Every field but title is optional:
 // preheader (inbox preview), greeting, intro, highlight {value, label}, rows [[k, v]], rowsTitle,
 // steps [[title, text]], stepsTitle, tips [text], tipsTitle, cta {label, url}, link {label, url}, note, signoff.
-// Look: logo above a plain bordered card, square corners throughout. highlight + rows form one summary panel,
+// Look: the shared shell in email-layout.js (deep green logo header, white card). highlight + rows form one summary panel,
 // and when there is a panel the button sits inside it (like a listing card); otherwise it follows the content.
 export function emailHtml({ title, preheader = '', greeting = '', intro = '', html = '', highlight, rows = [], rowsTitle = '', steps = [], stepsTitle = '', tips = [], tipsTitle = '', ticks = false, cta, cta2, after = '', link, note = '', signoff = true, footer = '', nav: showNav = true }) {
   // nav: false = first-contact emails (invites, invite alerts): only the button(s) and the unsubscribe link, no account, mailto or policy links.
@@ -410,44 +411,30 @@ export function emailHtml({ title, preheader = '', greeting = '', intro = '', ht
   const p = (html, extra = '') => `<p style="${F}margin:0 0 18px;font-size:15px;line-height:1.65;color:${TEXT};${extra}">${html}</p>`;
   const h2 = (t) => `<p style="${F}margin:30px 0 14px;font-size:16px;line-height:1.3;font-weight:bold;color:${INK}">${esc(t)}</p>`;
   // cta2: an optional second, outlined button beside the main one.
-  const button = (c, center) => `<table role="presentation" class="${cta2 ? 'll-btns' : ''}" cellpadding="0" cellspacing="0" ${center ? 'align="center" ' : ''}style="margin:${center ? '4px auto 0' : '6px 0 22px'}"><tr><td style="background:${G}"><a href="${esc(c.url)}" style="${F}display:inline-block;padding:15px 30px;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;letter-spacing:.2px;white-space:nowrap">${esc(c.label)}</a></td>${cta2 ? `<td class="ll-gap" style="width:10px"></td><td style="border:2px solid ${G}"><a href="${esc(cta2.url)}" style="${F}display:inline-block;padding:13px 26px;color:${G};text-decoration:none;font-weight:bold;font-size:15px;letter-spacing:.2px;white-space:nowrap">${esc(cta2.label)}</a></td>` : ''}</tr></table>`;
+  const button = (c, center) => `<table role="presentation" class="${cta2 ? 'll-btns' : ''}" cellpadding="0" cellspacing="0" ${center ? 'align="center" ' : ''}style="margin:${center ? '4px auto 0' : '6px 0 22px'}"><tr><td bgcolor="${G}" style="background:${G};border-radius:8px"><a href="${esc(c.url)}" style="${F}display:inline-block;padding:15px 30px;border-radius:8px;color:#ffffff;text-decoration:none;font-weight:bold;font-size:15px;letter-spacing:.2px;white-space:nowrap">${esc(c.label)}</a></td>${cta2 ? `<td class="ll-gap" style="width:10px"></td><td style="border:2px solid ${G};border-radius:8px"><a href="${esc(cta2.url)}" style="${F}display:inline-block;padding:13px 26px;border-radius:8px;color:${G};text-decoration:none;font-weight:bold;font-size:15px;letter-spacing:.2px;white-space:nowrap">${esc(cta2.label)}</a></td>` : ''}</tr></table>`;
   const panel = highlight || rows.length;
-  const rowHtml = rows.map(([k, v]) => `<tr><td style="${F}padding:13px 24px;border-top:1px solid #edf1ef;font-size:14px;color:${MUTED};width:42%;vertical-align:top">${esc(k)}</td><td style="${F}padding:13px 24px;border-top:1px solid #edf1ef;font-size:14px;font-weight:bold;color:${INK};vertical-align:top">${esc(v ?? '–')}</td></tr>`).join('');
-  const panelHtml = !panel ? '' : `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 26px;border:1px solid ${LINE};border-collapse:collapse">
+  const rowHtml = rows.map(([k, v], i) => `<tr><td style="${F}padding:13px 24px;${i || highlight || rowsTitle ? 'border-top:1px solid #edf1ef;' : ''}font-size:14px;color:${MUTED};width:42%;vertical-align:top">${esc(k)}</td><td style="${F}padding:13px 24px;${i || highlight || rowsTitle ? 'border-top:1px solid #edf1ef;' : ''}font-size:14px;font-weight:bold;color:${INK};vertical-align:top">${esc(v ?? '–')}</td></tr>`).join('');
+  const panelHtml = !panel ? '' : `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:8px 0 26px;border:1px solid ${LINE};border-radius:10px;border-collapse:separate;border-spacing:0">
 ${highlight ? `<tr><td colspan="2" style="${F}padding:22px 24px 20px"><div style="font-size:28px;line-height:1.15;font-weight:bold;color:${G}">${esc(highlight.value)}</div><div style="margin-top:6px;font-size:14px;line-height:1.5;color:${MUTED}">${esc(highlight.label)}</div></td></tr>` : ''}
 ${rowsTitle ? `<tr><td colspan="2" style="${F}padding:14px 24px 10px;${highlight ? `border-top:1px solid ${LINE};` : ''}font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;color:${MUTED}">${esc(rowsTitle)}</td></tr>` : ''}
 ${rowHtml}
 ${cta ? `<tr><td colspan="2" style="padding:22px 24px 24px;border-top:1px solid ${LINE};text-align:center">${button(cta, true)}</td></tr>` : ''}</table>`;
-  const step = ([t, d], i) => `<tr><td style="padding:0 16px 18px 0;vertical-align:top;width:28px"><div style="${F}width:28px;height:28px;line-height:28px;background:${G};color:#ffffff;font-weight:bold;font-size:13px;text-align:center">${i + 1}</div></td><td style="${F}padding:4px 0 18px;vertical-align:top"><div style="font-weight:bold;font-size:15px;color:${INK};margin:0 0 4px">${esc(t)}</div>${d ? `<div style="font-size:14px;line-height:1.6;color:${MUTED}">${d}</div>` : ''}</td></tr>`;
+  const step = ([t, d], i) => `<tr><td style="padding:0 16px 18px 0;vertical-align:top;width:28px"><div style="${F}width:28px;height:28px;line-height:28px;border-radius:14px;background:${G};color:#ffffff;font-weight:bold;font-size:13px;text-align:center">${i + 1}</div></td><td style="${F}padding:4px 0 18px;vertical-align:top"><div style="font-weight:bold;font-size:15px;color:${INK};margin:0 0 4px">${esc(t)}</div>${d ? `<div style="font-size:14px;line-height:1.6;color:${MUTED}">${d}</div>` : ''}</td></tr>`;
   // ticks: a green tick instead of the square bullet (text tick, so it shows in every email client)
   const tip = (t) => `<tr>${ticks ? `<td style="${F}padding:0 10px 9px 0;vertical-align:top;width:16px;font-size:16px;line-height:1.5;font-weight:bold;color:#1f8f4e">&#10003;</td>` : `<td style="padding:7px 12px 9px 0;vertical-align:top;width:7px"><div style="width:7px;height:7px;background:${G}"></div></td>`}<td style="${F}padding:0 0 9px;font-size:14px;line-height:1.6;color:${TEXT}">${t}</td></tr>`;
   const nav = [['Dashboard', 'dashboard'], ['Opportunities', 'opportunities'], ['My leads', 'leads'], ['Billing', 'billing']].map(([l, u]) => `<a href="${PLATFORM_URL}/${u}" style="color:${MUTED};text-decoration:underline">${l}</a>`).join(' &nbsp;&middot;&nbsp; ');
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${esc(title)}</title>
-<style>@media only screen and (max-width:520px){.ll-body{padding:30px 20px 26px!important}.ll-btns,.ll-btns tbody,.ll-btns tr{display:block!important;width:100%!important}.ll-btns td{display:block!important;width:100%!important;box-sizing:border-box;text-align:center!important}.ll-btns .ll-gap{height:10px!important;width:auto!important}.ll-btns a{display:block!important}.ll-cards{margin:0!important}.ll-card{display:block!important;max-width:none!important;width:auto!important;margin:0 0 10px!important}.ll-purpose{height:auto!important}}</style></head>
-<body style="margin:0;padding:0;background:#f3f5f4">
-${preheader ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${esc(preheader)}${'&#8203;&nbsp;'.repeat(40)}</div>` : ''}
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f5f4"><tr><td align="center" style="padding:36px 12px 40px">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px">
-<tr><td align="center" style="padding:0 0 28px">${showNav ? `<a href="${PLATFORM_URL}/dashboard"><img src="https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green_email.png" width="140" height="31" alt="Leaflegal" style="display:block;border:0;width:140px;height:31px"></a>` : `<img src="https://leaflegal.co/assets/Leaflegal_Logo_Deep_Green_email.png" width="140" height="31" alt="Leaflegal" style="display:block;border:0;width:140px;height:31px">`}</td></tr>
-<tr><td class="ll-body" style="background:#ffffff;border:1px solid ${LINE};padding:44px 40px 34px">
-<h1 style="${F}margin:0 0 22px;font-size:26px;line-height:1.25;font-weight:bold;color:${INK}">${esc(title)}</h1>
-${greeting ? p(greeting) : ''}${intro ? p(intro) : ''}${html}
+  const body = `${greeting ? p(greeting) : ''}${intro ? p(intro) : ''}${html}
 ${panelHtml}
 ${steps.length ? `${h2(stepsTitle || 'What happens next')}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px">${steps.map(step).join('')}</table>` : ''}
 ${tips.length ? `${tipsTitle ? h2(tipsTitle) : ''}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px">${tips.map(tip).join('')}</table>` : ''}
 ${cta && !panel ? button(cta, false) : ''}${after}
 ${link ? p(`<a href="${esc(link.url)}" style="color:${G};font-weight:bold">${esc(link.label)}</a>`, 'margin:-4px 0 24px;font-size:14px') : ''}
-${note ? `<p style="${F}margin:0 0 24px;padding:15px 18px;background:${SOFT};border:1px solid ${LINE};font-size:13px;line-height:1.6;color:${MUTED}">${note}</p>` : ''}
+${note ? `<p style="${F}margin:0 0 24px;padding:15px 18px;background:${SOFT};border:1px solid ${LINE};border-radius:8px;font-size:13px;line-height:1.6;color:${MUTED}">${note}</p>` : ''}
 ${signoff ? p(`${signoff === true ? 'Best regards,' : signoff}<br><b style="color:${INK}">The Leaflegal team</b>`, 'margin:8px 0 0') : ''}
-<div style="border-top:1px solid ${LINE};margin:30px 0 0;padding:20px 0 0;${F}font-size:14px;line-height:1.6;color:${MUTED}"><b style="color:${INK}">Need a hand?</b> Reply to this email${showNav ? ` or write to <a href="mailto:hello@leaflegal.co" style="color:${G}">hello@leaflegal.co</a>` : ''} and the team will get back to you.</div>
-</td></tr>
-${showNav ? `<tr><td align="center" style="${F}padding:26px 24px 6px;font-size:13px;color:${MUTED}">${nav}</td></tr>` : '<tr><td style="padding:16px 0 0"></td></tr>'}
-<tr><td align="center" style="padding:14px 24px 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:460px"><tr><td align="center" style="${F}font-size:12px;line-height:1.6;color:#86998f">
-<p style="margin:0 0 12px">${footer || `You're receiving this because your firm has a Leaflegal Platform account. Change which emails you get under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.`}</p>
-<p style="margin:0 0 12px">Leaflegal is a trading name of Vertical Brands Ltd, company number 14254961<br>20-22 Wenlock Road, London N1 7GU</p>
-${showNav ? `<p style="margin:0"><a href="https://leaflegal.co/privacy-policy" style="color:${G};text-decoration:none;font-weight:bold">Privacy Policy</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://leaflegal.co/terms-conditions" style="color:${G};text-decoration:none;font-weight:bold">Terms of Service</a></p>` : ''}
-</td></tr></table></td></tr>
-</table></td></tr></table></body></html>`;
+<div style="border-top:1px solid ${LINE};margin:30px 0 0;padding:20px 0 0;${F}font-size:14px;line-height:1.6;color:${MUTED}"><b style="color:${INK}">Need a hand?</b> Reply to this email${showNav ? ` or write to <a href="mailto:hello@leaflegal.co" style="color:${G}">hello@leaflegal.co</a>` : ''} and the team will get back to you.</div>`;
+  return shell({ title, heading: title, preheader, body, logoHref: showNav ? `${PLATFORM_URL}/dashboard` : null, links: showNav,
+    above: showNav ? `<tr><td align="center" style="${F}padding:22px 24px 0;font-size:13px;line-height:1.8;color:${MUTED}">${nav}</td></tr>` : '',
+    footer: footer || `You're receiving this because your firm has a Leaflegal Platform account. Change which emails you get under <a href="${PLATFORM_URL}/notifications" style="color:#86998f">Notifications</a>.` });
 }
 // Many different emails in as few Resend calls as possible (batch API: up to 100 per call, no scheduling or attachments).
 // items: [{ to, subject, opts }]. Returns how many Resend accepted. Used for invite alerts and round-ups, which can run to thousands.

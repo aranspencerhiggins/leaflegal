@@ -1,6 +1,7 @@
 import { promises as dns } from 'node:dns';
 import { createHash } from 'node:crypto';
 import { configured as platformOn, allow, resendSlot } from './_lib/platform.js';
+import { shell, para, teamNotice, C } from './_lib/email-layout.js';
 import { checkPhone, checkEmail, problem } from './_lib/verify.js';
 import { human } from './_lib/turnstile.js';
 import { buildLead, finishLead } from './_lib/lead-schema.js';
@@ -86,28 +87,27 @@ async function send(msg) {
 }
 
 export function teamEmail(b, checkLine) {
-  const utm = Object.entries(b.utm || {}).map(([k, v]) => `${esc(k)}=${esc(v)}`).join(', ');
-  const rows = FIELDS.filter(([k]) => b[k]).map(([k, l]) => `<tr><td style="padding:6px 12px;color:#579e83;vertical-align:top">${l}</td><td style="padding:6px 12px;font-weight:700;color:#244237;white-space:pre-wrap">${esc(b[k])}</td></tr>`).join('')
-    + (utm ? `<tr><td style="padding:6px 12px;color:#579e83">UTM</td><td style="padding:6px 12px">${utm}</td></tr>` : '')
-    + `<tr><td style="padding:6px 12px;color:#579e83">Checks</td><td style="padding:6px 12px">${esc(checkLine)}</td></tr>`
-    + (b.answers || []).map((x) => `<tr><td style="padding:6px 12px;color:#579e83;vertical-align:top">${esc(x.q)}</td><td style="padding:6px 12px;color:#244237">${esc(x.a)}</td></tr>`).join('');
+  const utm = Object.entries(b.utm || {}).map(([k, v]) => `${k}=${v}`).join(', ');
+  const rows = [...FIELDS.filter(([k]) => b[k]).map(([k, l]) => [l, b[k]]), ...(utm ? [['UTM', utm]] : []), ['Checks', checkLine], ...(b.answers || []).map((x) => [x.q, x.a])];
   const notes = [b.area === 'immigration' && 'Immigration: refer only to an SRA, CILEx or IAA regulated adviser.', 'Introduce to one regulated firm only. The firm must tell the client about the referral fee in writing.'].filter(Boolean);
   return {
     to: (process.env.ENQUIRY_TO || 'aran@verticalbrands.co').split(','),
     reply_to: b.email,
     subject: `New enquiry: ${b.areaLabel}${b.matterLabel ? ` (${b.matterLabel})` : ''}, ${b.urgency}`.slice(0, 200),
-    html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">New Leaflegal enquiry</h2><table style="border-collapse:collapse">${rows}</table>`
-      + `<p style="color:#5a6f66;font-size:13px">${notes.join('<br>')}<br>This email contains special category or criminal offence data. Do not forward it beyond the firm you introduce.</p></div>`,
+    html: teamNotice({ heading: 'New Leaflegal enquiry', preheader: `${b.areaLabel}${b.matterLabel ? `, ${b.matterLabel}` : ''}. ${b.urgency}`, rows,
+      note: `${notes.map(esc).join('<br>')}<br>This email contains special category or criminal offence data. Do not forward it beyond the firm you introduce.` }),
   };
 }
 export function confirmEmail(b) {
   return {
     to: [b.email], reply_to: process.env.ENQUIRY_TO?.split(',')[0] || 'hello@leaflegal.co',
     subject: 'We’ve got your enquiry',
-    html: `<div style="font-family:Arial,sans-serif;color:#244237;max-width:560px"><p>Hi ${esc(b.firstName)},</p>`
-      + '<p>Thanks for your enquiry. We’re now looking for one regulated law firm that handles this kind of matter in your area. The firm will contact you, usually by phone, to see if they can help. They will explain their fees before you agree to anything.</p>'
-      + '<p>If you didn’t make this enquiry, or you’d like us to stop, just reply to this email.</p>'
-      + '<p>The Leaflegal team</p><p style="color:#5a6f66;font-size:12px">Leaflegal is a trading name of Vertical Brands Ltd. We are not a law firm and do not give legal advice.</p></div>',
+    html: shell({ title: 'We’ve got your enquiry', heading: 'We’ve got your enquiry', preheader: 'We’re now looking for one regulated law firm that handles this kind of matter in your area.',
+      body: para(`Hi ${esc(b.firstName)},`)
+        + para('Thanks for your enquiry. We’re now looking for one regulated law firm that handles this kind of matter in your area. The firm will contact you, usually by phone, to see if they can help. They will explain their fees before you agree to anything.')
+        + para('If you didn’t make this enquiry, or you’d like us to stop, just reply to this email.')
+        + para('The Leaflegal team', `margin:26px 0 0;font-weight:bold;color:${C.INK}`),
+      footer: 'Leaflegal is not a law firm and does not give legal advice.' }),
   };
 }
 
