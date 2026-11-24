@@ -452,7 +452,7 @@ NOTE = (f'{BRAND} is a trading name of Vertical Brands Ltd. We are not a law fir
         'We receive a fee from the firm we introduce you to, which does not change what the firm charges you, and the firm will tell you about it in writing. '
         'We do not give immigration advice or provide immigration services. Immigration enquiries are only passed to firms and advisers regulated to give immigration advice. '
         'We do not handle personal injury, clinical negligence, housing disrepair or financial claims.')
-COPY = f'© 2026 Vertical Brands Ltd. {BRAND} is a trading name of Vertical Brands Ltd, registered in England and Wales, company number 14254961. VAT number GB425344608. Registered office at 20–22 Wenlock Road, London, N1 7GU.'
+COPY = f'© 2026 Vertical Brands Ltd. {BRAND} is a trading name of Vertical Brands Ltd, registered in England and Wales, company number 14254961. VAT number GB425344608. Registered office at 20–22 Wenlock Road, London, N1 7GU. Registered with the ICO, number 00013339125.'
 
 
 def footer_html(strip=True, minimal=False):
@@ -905,7 +905,7 @@ about = f'''
 </div>""", flip=True, alt='A person at a wooden table'))}
 
 {section(f"""<div class="ll-section-title"><h2 class="heading-two">Company details</h2></div>
-<dl class="ll-company"><div><dt>Trading name of</dt><dd>Vertical Brands Ltd</dd></div><div><dt>Company number</dt><dd>14254961, registered in England and Wales</dd></div><div><dt>Registered office</dt><dd>20–22 Wenlock Road, London, N1 7GU</dd></div><div><dt>VAT number</dt><dd>GB425344608</dd></div><div><dt>Email</dt><dd><a href="mailto:{EMAIL}">{EMAIL}</a></dd></div><div><dt>Legal</dt><dd><a href="/terms-conditions">Terms of Service</a> · <a href="/privacy-policy">Privacy Policy</a></dd></div></dl>""")}
+<dl class="ll-company"><div><dt>Trading name of</dt><dd>Vertical Brands Ltd</dd></div><div><dt>Company number</dt><dd>14254961, registered in England and Wales</dd></div><div><dt>Registered office</dt><dd>20–22 Wenlock Road, London, N1 7GU</dd></div><div><dt>VAT number</dt><dd>GB425344608</dd></div><div><dt>Data protection</dt><dd>Registered with the ICO, number 00013339125</dd></div><div><dt>Email</dt><dd><a href="mailto:{EMAIL}">{EMAIL}</a></dd></div><div><dt>Legal</dt><dd><a href="/terms-conditions">Terms of Service</a> · <a href="/privacy-policy">Privacy Policy</a></dd></div></dl>""")}
 
 {cta('Ready to find the right solicitor?', 'Answer a few quick questions and we will do the matching.', '/apply', 'Get matched')}
 '''

@@ -56,7 +56,7 @@ ${heading ? `<h1 class="ll-h1" style="${F}margin:0 0 22px;font-size:26px;line-he
 </td></tr>
 ${above}
 <tr><td align="center" style="padding:24px 28px 8px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:470px"><tr><td align="center" style="${F}font-size:12px;line-height:1.65;color:${C.FAINT}">
-${footer ? `<p style="margin:0 0 12px">${footer}</p>` : ''}<p style="margin:0 0 12px">Leaflegal is a trading name of Vertical Brands Ltd, company number 14254961<br>20-22 Wenlock Road, London N1 7GU</p>
+${footer ? `<p style="margin:0 0 12px">${footer}</p>` : ''}<p style="margin:0 0 12px">Leaflegal is a trading name of Vertical Brands Ltd, company number 14254961<br>20-22 Wenlock Road, London N1 7GU<br>Registered with the ICO, number 00013339125</p>
 ${links || unsub ? `<p style="margin:0">${[links && `<a href="${SITE}" style="${small}">leaflegal.co</a>`, links && `<a href="${SITE}/privacy-policy" style="${small}">Privacy Policy</a>`, links && `<a href="${SITE}/terms-conditions" style="${small}">Terms</a>`, unsub && `<a href="${esc(unsub)}" style="${small}">Unsubscribe</a>`].filter(Boolean).join('&nbsp;&nbsp;&middot;&nbsp;&nbsp;')}</p>` : ''}
 </td></tr></table></td></tr>
 </table>
