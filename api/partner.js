@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { sealHandoff, db, metaEvent } from './_lib/platform.js';
+import { sealHandoff, db, metaEvent, configured as platformOn, allow, clientIp } from './_lib/platform.js';
 import { teamNotice } from './_lib/email-layout.js';
 import { capture, sourceFrom, describeSource, runFlows, REGISTER_URL } from './_lib/crm.js';
 
@@ -69,6 +69,8 @@ const page = (res, code, body) => { res.setHeader('Content-Type', 'text/html; ch
 
 async function booking(action, req, res, b) {
   // One-off setup: connect the Google Calendar and show the refresh token to paste into Vercel.
+  // Once the calendar is connected (GOOGLE_REFRESH_TOKEN set) these setup pages switch off, so nobody else can use them.
+  if ((action === 'google-auth' || action === 'google-callback') && genv('GOOGLE_REFRESH_TOKEN')) return page(res, 404, '<h1>The calendar is already connected.</h1>');
   if (action === 'google-auth') {
     if (!genv("GOOGLE_CLIENT_ID")) return page(res, 503, '<h1>Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Vercel first.</h1>');
     const q = new URLSearchParams({ client_id: genv("GOOGLE_CLIENT_ID"), redirect_uri: REDIRECT, response_type: 'code', access_type: 'offline', prompt: 'consent',
@@ -163,7 +165,10 @@ async function campaign(req, res, b) {
 
 export default async function handler(req, res) {
   const action = new URL(req.url, 'http://x').searchParams.get('action');
-  const b = req.method === 'POST' ? (typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}) : {};
+  let b = {};
+  try { b = req.method === 'POST' ? (typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}) : {}; } catch { return res.status(400).json({ error: 'Bad JSON' }); }
+  if (req.method === 'POST' && platformOn() && !(await allow(`partner:${action || 'apply'}:${clientIp(req)}`, 3600, 6)))
+    return res.status(429).json({ error: 'Too many attempts from this connection. Please try again later or email hello@leaflegal.co.' });
   if (action) return booking(action, req, res, b);
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   b.form = 'legal'; // every partner is a law firm

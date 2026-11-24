@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual, createPublicKey, verify as cryptoVerify, randomBytes } from 'node:crypto';
 import {
-  db, rpc, configured, secretKey, SUPABASE_URL, PUBLISHABLE_KEY, PACKS, PREVIEW, FULL, parseHubspot, postHubspot, parsePipedrive, postPipedrive,
+  db, rpc, configured, cronOk, secretKey, jwtClaims, adminMfaOk, MFA_NEEDED, SUPABASE_URL, PUBLISHABLE_KEY, PACKS, PREVIEW, FULL, parseHubspot, postHubspot, parsePipedrive, postPipedrive,
   deliver, sendEmail, notify, openHandoff, cleanProfile, scanSite, matchedPreviews, webhooksOf, lowCredits, esc, postWebhook, leadOut, quality, matches, fits, canTake, missGroups, regIds,
   suggestMode, SUGGEST, suggestDigest, missedDigest, missedSummary, excluded, rematchLead, linkedinSpend, STAGES, getPricing, mergePricing, DEFAULT_PRICING, gbp, price, priceParts, PRICE_EXAMPLES,
   CUSTOM, customPack, withMask, PREVIEW_SELECT, DISCOUNT, discountAt, salePrice, BULK_FROM, resendSlot, waivedIds, recentEnquiries, metaEvent, suppress, unsuppress, suppressedSet, leadAdCosts, weekOf,
@@ -80,7 +80,7 @@ async function verifyJwt(token) {
   if (!ok) return null;
   const claims = JSON.parse(Buffer.from(p64, 'base64url').toString());
   if (!claims.sub || !claims.exp || claims.exp * 1000 < Date.now() || claims.role !== 'authenticated') return null;
-  return { id: claims.sub, email: claims.email };
+  return { id: claims.sub, email: claims.email, aal: claims.aal };
 }
 
 // The signed-in Supabase user for this request, or null.
@@ -89,7 +89,7 @@ async function authUser(req) {
   if (!token) return null;
   try { const v = await verifyJwt(token); if (v !== undefined) return v; } catch { return null; }
   const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, { headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(5000) });
-  return r.ok ? r.json() : null;
+  return r.ok ? { ...(await r.json()), aal: jwtClaims(token).aal } : null; // Supabase accepted the token, so its payload can be read
 }
 
 // Team members: extra sign-ins on a broker account. Everyone can see and work leads; these permissions unlock the rest.
@@ -636,8 +636,9 @@ export default async function handler(req, res) {
       return page(res, 200, 'Unsubscribed', `<h1>You're unsubscribed</h1><p>We won't email you a daily list of leads auto-buy skipped any more. Auto-buy carries on as before.</p><p class="m">Changed your mind? Turn these emails back on under <a href="${PLATFORM_URL}/notifications">Notifications</a>.</p>`);
     }
 
-    // Daily job (vercel.json crons): adds credits for invoiced plans that are due. Idempotent, so it needs no secret.
+    // Daily job (vercel.json crons): adds credits for invoiced plans that are due, and sends the daily digests. Needs CRON_SECRET.
     if (action === 'cron-plans') {
+      if (!cronOk(req)) return fail(res, 401, 'Unauthorised');
       const due = await db(`brokers?plan->>next_at=lte.${new Date().toISOString()}&suspended_at=is.null&select=id,email,company,plan`);
       let n = 0; for (const b of due) n += (await grantPlan(b).catch((e) => (console.error('plan', b.id, e.message), { given: 0 }))).given;
       const digests = await suggestDigest().catch((e) => (console.error('digest', e.message), 0)); // daily summaries of leads outside criteria
@@ -938,6 +939,7 @@ export default async function handler(req, res) {
     const asId = new URL(req.url, 'http://x').searchParams.get('as');
     if (asId) {
       if (!me.is_admin) return fail(res, 403, 'Admins only');
+      if (!adminMfaOk(user.aal)) return res.status(403).json(MFA_NEEDED);
       if (!['profile', 'profile-logo', 'profile-preview', 'profile-scan', 'settings', 'team', 'team-invite', 'team-update', 'team-remove'].includes(action) || !isUuid(asId)) return fail(res, 400, 'Not allowed');
       const [target] = await db(`brokers?id=eq.${asId}&select=*`);
       if (!target) return fail(res, 404, 'Firm not found');
@@ -1464,6 +1466,7 @@ export default async function handler(req, res) {
     // ------------------------------------------------ admin console
     if (action.startsWith('admin')) {
       if (!me.is_admin) return fail(res, 403, 'Admins only');
+      if (!adminMfaOk(user.aal)) return res.status(403).json(MFA_NEEDED);
 
       if (action === 'admin') {
         let adStatus = null; // Meta spend lookup for cost per lead

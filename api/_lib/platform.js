@@ -33,6 +33,13 @@ export const linkSig = (kind, id, exp) => createHmac('sha256', key()).update(`${
 export const signedUrl = (kind, id, days) => { const exp = Date.now() + days * 864e5; return `${API_URL}?action=${kind}&id=${id}&exp=${exp}&sig=${linkSig(kind, id, exp)}`; };
 export const configured = () => !!key();
 
+// Admin two-step verification. Admin pages and actions need a session that passed an authenticator app code (Supabase
+// MFA, aal2). ADMIN_MFA=off in Vercel switches the check off in an emergency (lost phone), then switch it back on.
+// jwtClaims only reads a token's payload: call it after the token's signature has been checked.
+export const jwtClaims = (token) => { try { return JSON.parse(Buffer.from(String(token || '').split('.')[1] || '', 'base64url').toString()) || {}; } catch { return {}; } };
+export const adminMfaOk = (aal) => String(process.env.ADMIN_MFA || '').trim().toLowerCase() === 'off' || aal === 'aal2';
+export const MFA_NEEDED = { error: 'Admin pages need two-step verification. Enter the code from your authenticator app.', mfa: true };
+
 // PostgREST call with the server key. Throws on HTTP errors.
 // Supabase returns at most 1,000 rows per request. A GET asking for more (limit=N over 1,000) is fetched in pages of
 // 1,000 with offset, so lists like invites and CRM contacts never stop at 1,000.
@@ -60,6 +67,10 @@ async function dbOne(path, { method = 'GET', body, prefer } = {}) {
   if (!r.ok) throw new Error(`db ${method} ${path.split('?')[0]} ${r.status}: ${t.slice(0, 300)}`);
   return t ? JSON.parse(t) : null;
 }
+// The caller's IP. On Vercel x-real-ip is set by the platform; x-forwarded-for's first entry is the fallback.
+export const clientIp = (req) => String(req.headers['x-real-ip'] || String(req.headers['x-forwarded-for'] || '').split(',')[0] || '').trim() || 'unknown';
+// Vercel cron calls carry Authorization: Bearer <CRON_SECRET>. No secret set = refused, so the jobs can't be triggered by anyone.
+export const cronOk = (req) => { const s = String(process.env.CRON_SECRET || '').trim(); return s.length >= 16 && req.headers.authorization === `Bearer ${s}`; };
 export const allow = (key, windowSec, max) => rpc('hit_rate', { p_key: key, p_window: windowSec, p_max: max }).catch(() => true); // fail open if the limiter itself errors
 export const rpc = (fn, args) => db(`rpc/${fn}`, { method: 'POST', body: args });
 

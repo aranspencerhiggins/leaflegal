@@ -1,0 +1,48 @@
+# Free automated security checks on every push and pull request, and weekly on main.
+#  1. gitleaks: fails if a password, API key or token is committed (scans the full history).
+#  2. npm audit: fails on a known high or critical vulnerability in a dependency.
+#  3. Semgrep: static analysis for common web security bugs. Report only for now (see the job log).
+#  4. The platform and enquiry test suites, which include the admin two-step verification and cron secret checks.
+name: Security checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: gitleaks
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.21.2 git /repo --no-banner --redact --verbose
+  dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm audit --audit-level=high
+  semgrep:
+    runs-on: ubuntu-latest
+    container: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep scan --config p/javascript --config p/nodejsscan --config p/secrets --metrics=off api public/assets || true
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: node tools/test_flows.mjs
+      - run: node tools/test_platform.mjs
+      - run: node tools/test_crm.mjs
+      - run: node tools/test_enquiry.mjs
+      - run: node tools/test_forms.mjs

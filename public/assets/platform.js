@@ -160,6 +160,7 @@
     const d = await r.json().catch(() => null);
     if (!d) throw Object.assign(new Error(location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? 'This is the local preview, which has no server. Use https://platform.leaflegal.co instead.' : "Can't reach the platform right now. Please try again in a moment."), { status: r.status });
     if (r.status === 401) { saveSession(null); me = null; route(); throw new Error('Please sign in again'); }
+    if (r.status === 403 && d.mfa) { mfaView(); throw Object.assign(new Error(d.error), { mfa: true }); } // admin pages need an authenticator code
     if (!r.ok) throw Object.assign(new Error(d.error || 'Something went wrong'), { status: r.status });
     return d;
   }
@@ -273,6 +274,56 @@
       const btn = form.querySelector('button'); btn.disabled = true; btn.classList.add('busy');
       try { await auth('password', { email: v.email.trim(), password: v.password }); nav('dashboard'); }
       catch (ex) { err.textContent = ex.message === 'Invalid login credentials' ? 'Wrong email or password.' : ex.message; btn.disabled = false; btn.classList.remove('busy'); }
+    });
+  }
+
+  // ------------------------------------------------ admin two-step verification (Supabase MFA, TOTP)
+  // Admin pages need a session that passed an authenticator app code (aal2). First time: scan a QR code to set it up.
+  const gt = async (path, method = 'GET', body) => {
+    const r = await fetch(`${SB}/auth/v1/${path}`, { method, headers: { apikey: KEY, Authorization: `Bearer ${session?.access}`, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.msg || d.error_description || d.message || 'Something went wrong. Please try again.');
+    return d;
+  };
+  let mfaOpen = false;
+  async function mfaView() {
+    if (mfaOpen) return; mfaOpen = true;
+    app.className = 'pf-onb pf-signin';
+    const frame = (inner) => { app.innerHTML = `<header class="pf-onb-top"><a href="https://leaflegal.co" class="pf-onb-logo" aria-label="Leaflegal">${LOGO}</a>
+        <a href="${P}/dashboard" class="pf-onb-skip" data-mfa-back>Back to dashboard</a></header>
+      <main class="pf-onb-main"><div class="pf-onb-card pf-signin-card"><form class="pf-onb-form" novalidate>${inner}</form></div></main>`;
+      app.querySelector('[data-mfa-back]').addEventListener('click', () => { mfaOpen = false; }); };
+    frame('<h1>Two-step verification</h1><p class="pf-sub">Loading…</p>');
+    let factor;
+    try {
+      const u = await gt('user'), all = (u.factors || []).filter((f) => f.factor_type === 'totp');
+      factor = all.find((f) => f.status === 'verified');
+      if (!factor) {
+        for (const f of all) await gt(`factors/${f.id}`, 'DELETE').catch(() => {}); // an earlier set-up that wasn't finished
+        const n = await gt('factors', 'POST', { factor_type: 'totp', friendly_name: `Leaflegal admin ${new Date().toISOString().slice(0, 16)}`, issuer: 'Leaflegal' });
+        factor = { id: n.id, setup: n.totp };
+      }
+    } catch (ex) { frame(`<h1>Two-step verification</h1><p class="pf-err" role="alert">${h(ex.message)}</p>`); mfaOpen = false; return; }
+    frame(`<h1>${factor.setup ? 'Set up two-step verification' : 'Enter your code'}</h1>
+      ${factor.setup ? `<p class="pf-sub">Admin pages hold client and lead data, so they need a code from an authenticator app as well as your password. Scan this with Google Authenticator, Microsoft Authenticator, 1Password or similar.</p>
+        <p style="text-align:center"><img src="${h(factor.setup.qr_code)}" alt="QR code for your authenticator app" width="200" height="200" style="background:#fff;padding:8px;border-radius:12px"></p>
+        <p class="pf-hint">Can’t scan it? Enter this key in the app instead <b style="word-break:break-all">${h(factor.setup.secret)}</b></p>`
+      : '<p class="pf-sub">Open your authenticator app and enter the 6-digit code for Leaflegal.</p>'}
+      <label>6-digit code<input name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required autofocus></label>
+      <p class="pf-err" role="alert"></p>
+      <button class="pf-btn pf-btn-primary pf-btn-lg" type="submit">Verify${I.arrow}</button>`);
+    const form = app.querySelector('form'), err = form.querySelector('.pf-err');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); err.textContent = '';
+      const code = String(new FormData(form).get('code') || '').replace(/\s/g, '');
+      if (!/^\d{6}$/.test(code)) { err.textContent = 'Enter the 6 digits from your app.'; return; }
+      const btn = form.querySelector('button'); btn.disabled = true; btn.classList.add('busy');
+      try {
+        const c = await gt(`factors/${factor.id}/challenge`, 'POST', {});
+        const d = await gt(`factors/${factor.id}/verify`, 'POST', { challenge_id: c.id, code });
+        saveSession({ access: d.access_token, refresh: d.refresh_token });
+        mfaOpen = false; me = null; route();
+      } catch (ex) { err.textContent = /invalid|expired/i.test(ex.message) ? 'That code didn’t work. Check the time on your phone and try the newest code.' : ex.message; btn.disabled = false; btn.classList.remove('busy'); }
     });
   }
 
@@ -2879,6 +2930,7 @@
       if (TAB_NEED[tab] && !can(TAB_NEED[tab])) { nav('dashboard'); return; }
       await (firstRun ? onboarding : VIEWS[tab] || dashboard)();
     } catch (e) {
+      if (e.mfa) return; // the two-step verification screen is showing
       if (me) return toast(e.message, true);
       saveSession(null); authView('in');
       app.querySelector('.pf-err').textContent = e.status === 404 || e.message === 'Failed to fetch' || /Unexpected/.test(e.message)
