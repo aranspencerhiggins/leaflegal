@@ -5,6 +5,7 @@ import re
 EFFECTIVE = '4 November 2026'
 CO = ('<strong>Vertical Brands Ltd</strong>, registered in England and Wales, '
       'company number 14254961. Registered office at 20–22 Wenlock Road, London, N1 7GU, United Kingdom. '
+      'Registered with the Information Commissioner\'s Office (ICO), number 00013339125. '
       'Email <a href="mailto:hello@leaflegal.co">hello@leaflegal.co</a>.')
 
 PRIVACY = f'''
