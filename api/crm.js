@@ -1,5 +1,5 @@
 // Firm acquisition CRM API (admin only, except the unsubscribe link and the daily flow cron). UI: public/assets/crm.js.
-import { db, esc, configured, SUPABASE_URL, PUBLISHABLE_KEY, suppress, birdMsgKey } from './_lib/platform.js';
+import { cronOk, db, esc, configured, SUPABASE_URL, PUBLISHABLE_KEY, suppress, birdMsgKey, jwtClaims, adminMfaOk, MFA_NEEDED } from './_lib/platform.js';
 import { STAGES, STAGE_KEYS, SOURCES, LINKS, FLOW_DEFAULTS, capture, activity, setStage, sendCrmEmail, sendCrmSms, smsReady, getFlows, runFlows, renderEmail, merge,
   unsubOk, normEmail, e164, isMobile } from './_lib/crm.js';
 
@@ -14,7 +14,8 @@ async function admin(req) {
   if (!r?.ok) return { status: 401 };
   const u = await r.json();
   const [b] = await db(`brokers?id=eq.${u.id}&select=id,is_admin,email,company`);
-  return b?.is_admin ? b : { status: 403 };
+  if (!b?.is_admin) return { status: 403 };
+  return adminMfaOk(jwtClaims(token).aal) ? b : { status: 403, mfa: true }; // Supabase accepted the token above
 }
 
 const page = (res, title, msg) => res.status(200).setHeader('Content-Type', 'text/html; charset=utf-8').setHeader('X-Robots-Tag', 'noindex').send(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} | Leaflegal</title>
@@ -42,7 +43,7 @@ export default async function handler(req, res) {
     }
     // Daily (vercel.json crons). Each step is claimed in crm_flow_sends before sending, so reruns never double-send.
     if (action === 'cron') {
-      if (process.env.CRON_SECRET && req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) return fail(res, 401, 'Unauthorised');
+      if (!cronOk(req)) return fail(res, 401, 'Unauthorised');
       const day = new Date().getUTCDay();
       if (day === 0 || day === 6) return res.json({ ok: true, skipped: 'weekend' }); // flow emails go out on weekdays only
       return res.json({ ok: true, ...(await runFlows()) });
@@ -50,6 +51,7 @@ export default async function handler(req, res) {
 
     // ------------------------------------------------ admin
     const me = await admin(req);
+    if (me.mfa) return res.status(403).json(MFA_NEEDED);
     if (me.status) return fail(res, me.status, me.status === 401 ? 'Please sign in again' : 'Admins only');
     const id = Number(b.id || q.id);
     const one = async () => { const [c] = await db(`crm_contacts?id=eq.${id}&select=*`); if (!c) throw Object.assign(new Error('Contact not found'), { status: 404 }); return c; };

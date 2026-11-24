@@ -1,0 +1,26 @@
+# OWASP ZAP baseline scan of Leaflegal's own live sites. Passive only: it crawls the pages and reports missing headers,
+# cookie flags and similar issues without attacking anything. Runs monthly and on demand (Actions → ZAP baseline → Run).
+# The HTML report is attached to the run as an artifact. Report only, never fails the build.
+name: ZAP baseline
+on:
+  schedule:
+    - cron: '0 5 1 * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  zap:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ['https://leaflegal.co', 'https://platform.leaflegal.co']
+    steps:
+      - name: ZAP baseline
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: ${{ matrix.target }}
+          cmd_options: '-m 5'
+          allow_issue_writing: false
+          fail_action: false
+          artifact_name: zap-${{ strategy.job-index }}

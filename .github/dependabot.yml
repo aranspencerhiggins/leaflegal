@@ -1,0 +1,11 @@
+# Weekly pull requests to keep dependencies patched. Security fixes also arrive as soon as GitHub knows about them
+# once Dependabot alerts and security updates are switched on (Settings → Code security).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }

@@ -11,8 +11,8 @@ const kp = () => generateKeyPairSync('ec', { namedCurve: 'P-256' });
 const good = kp(), evil = kp();
 const jwk = { ...good.publicKey.export({ format: 'jwk' }), kid: 'k1', alg: 'ES256' };
 const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64url');
-const jwt = (sub, { key = good, exp = 3600, role = 'authenticated', kid = 'k1' } = {}) => {
-  const h = b64({ alg: 'ES256', kid, typ: 'JWT' }), p = b64({ sub, role, email: 'x@test', exp: Math.floor(Date.now() / 1000) + exp });
+const jwt = (sub, { key = good, exp = 3600, role = 'authenticated', kid = 'k1', aal = 'aal2' } = {}) => { // aal2 = passed two-step verification
+  const h = b64({ alg: 'ES256', kid, typ: 'JWT' }), p = b64({ sub, role, email: 'x@test', aal, exp: Math.floor(Date.now() / 1000) + exp });
   return `${h}.${p}.${sign('sha256', Buffer.from(`${h}.${p}`), { key: createPrivateKey(key.privateKey.export({ format: 'pem', type: 'pkcs8' })), dsaEncoding: 'ieee-p1363' }).toString('base64url')}`;
 };
 
@@ -973,9 +973,21 @@ await t('commission client with 0 monthly credits: flagged, nothing granted, no 
   assert.ok(!rpcCalls.some((x) => x.fn === 'add_credits'), 'no credits granted');
   assert.equal((await api('admin-plan', { method: 'POST', token: tok.admin, body: { broker: BROKER, name: 'X', credits: 0 } })).c, 400, 'non-commission plans still need credits');
 });
-await t('daily plan job runs without sign-in and only reads due plans', async () => {
-  const r = await api('cron-plans'); assert.equal(r.c, 200); assert.equal(r.b.ok, true);
+await t('daily plan job needs the cron secret and only reads due plans', async () => {
+  delete process.env.CRON_SECRET;
+  assert.equal((await api('cron-plans')).c, 401, 'no secret set: refused');
+  process.env.CRON_SECRET = 'cron-secret-for-tests-123';
+  assert.equal((await api('cron-plans', { headers: { authorization: 'Bearer wrong' } })).c, 401, 'wrong secret: refused');
+  const r = await api('cron-plans', { headers: { authorization: 'Bearer cron-secret-for-tests-123' } }); assert.equal(r.c, 200); assert.equal(r.b.ok, true);
   assert.ok(calls.some((c) => c.includes('brokers?plan->>next_at=lte.') && c.includes('suspended_at=is.null')));
+});
+await t('admin pages need two-step verification (aal2); ADMIN_MFA=off is the emergency switch', async () => {
+  const aal1 = jwt(ADMIN, { aal: 'aal1' });
+  const r = await api('admin', { token: aal1 }); assert.equal(r.c, 403); assert.equal(r.b.mfa, true);
+  assert.equal((await api('profile', { token: aal1, query: { as: BROKER } })).c, 403, 'editing a firm as admin needs it too');
+  assert.equal((await api('me', { token: aal1 })).c, 200, 'their own firm pages still work');
+  process.env.ADMIN_MFA = 'off'; try { assert.equal((await api('admin', { token: aal1 })).c, 200); } finally { delete process.env.ADMIN_MFA; }
+  assert.equal((await api('admin', { token: tok.admin })).c, 200);
 });
 await t('one-off credits can record an invoiced amount for Finance', async () => {
   assert.equal((await api('admin-broker', { method: 'POST', token: tok.admin, body: { id: BROKER, credits: '5000', reason: 'Package', invoiced: '4500' } })).c, 200);
