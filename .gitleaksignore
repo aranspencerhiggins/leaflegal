@@ -1,0 +1,13 @@
+# Reviewed 24 Nov 2026: not secrets. Each line is a gitleaks fingerprint (commit:file:rule:line).
+# Supabase publishable keys (public by design, the browser needs them; RLS denies them all table access)
+651e8ea41612b74fd20bd12afc5c0f0d5e1e4d87:public/assets/platform-demo.js:generic-api-key:534
+25188d6006df183ab8b90b77378ad4f4e26daa4f:public/assets/platform.js:generic-api-key:5
+bd8109315148d291a4542f38d67d879eab2c708c:api/_lib/platform.js:generic-api-key:8
+bd8109315148d291a4542f38d67d879eab2c708c:public/assets/platform.js:generic-api-key:4
+# localStorage key names for saved form progress
+904ca6126db55119ec9729af08589a83f028f0e1:public/assets/partner-enquiry.js:generic-api-key:6
+38555f45aeabfff7e4b85d28b295949a6b34d531:public/assets/partner-enquiry.js:generic-api-key:6
+bd8109315148d291a4542f38d67d879eab2c708c:public/assets/partner-enquiry.js:generic-api-key:8
+# Unsplash photo ids
+904ca6126db55119ec9729af08589a83f028f0e1:tools/photos.py:generic-api-key:11
+2863cc271983f5a955fb92d6ab6fc9ce03458abb:tools/photos.py:generic-api-key:11
