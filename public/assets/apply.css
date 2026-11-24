@@ -96,7 +96,7 @@
 .ap-summary dd{margin:2px 0 0;font-weight:700;color:var(--base-100)}
 .ap-steps-next{text-align:left;max-width:440px;margin:0 auto;padding:0;list-style:none;counter-reset:s}
 .ap-steps-next li{counter-increment:s;display:flex;gap:12px;padding:8px 0;color:var(--base-100)}
-.ap-steps-next li::before{content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;background:var(--primary-50);display:grid;place-items:center;font-size:13px;font-weight:700}
+.ap-steps-next li>svg{flex:none;box-sizing:border-box;width:28px;height:28px;padding:6px;border-radius:50%;background:var(--primary-50);color:var(--base-100)}
 
 @media (max-width:767px){
   .ap-head{padding:18px 20px 0}.ap-meta{margin-bottom:8px}.ap-back{padding:2px 0}

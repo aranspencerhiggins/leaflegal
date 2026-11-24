@@ -8,8 +8,7 @@
 .bc-model>p{margin:0;font-size:17px;line-height:1.6;color:var(--muted)}
 .bc-model ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
 .bc-model li{display:flex;gap:10px;align-items:flex-start;font-size:16px;line-height:1.5;color:var(--ink)}
-.bc-model .cfb-ok{flex:none;width:22px;height:22px;border-radius:50%;background:var(--or);color:var(--ink);display:grid;place-items:center;margin-top:1px}
-.bc-model .cfb-ok svg{width:13px;height:13px}
+.bc-model .cfb-ok{flex:none;margin-top:1px}
 .bc-model .bc-suits{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-weight:700;color:var(--green)}
 .bc-chans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .bc-chan{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:10px}
@@ -44,7 +43,6 @@
 [data-theme=partner] .bc-model li{color:var(--pd-text)}
 [data-theme=partner] .bc-model .bc-suits{border-top-color:var(--pd-line)}
 [data-theme=partner] .bc-ico{background:#1d3a2e;color:var(--pd-accent)}
-[data-theme=partner] .bc-model .cfb-ok{background:var(--pd-accent);color:#12271e}
 [data-theme=partner] .cfb-sec.bc-comp-sec{background:#1f4234!important}
 [data-theme=partner] .bc-comp-sec .cfb-head h2{color:#fff}
 [data-theme=partner] .bc-comp b{color:var(--pd-accent)}

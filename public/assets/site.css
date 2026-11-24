@@ -506,7 +506,6 @@ body:not(:has(.ap-lp)) .cfb-ok svg{color:#f5b65c;stroke:#f5b65c}
 /* no extra-bold (800) anywhere except the small PARTNERS logo tag: everything uses the /apply bold weight */
 body:not(:has(.ap-lp)) :is(h1,h2,h3,h4,.display-heading,.heading-one,.heading-two,.heading-three,.heading-four,.heading-one-icon,.legal-card-name,.award-title,.award-badge-title,
   .cfb-hero h1,.cfb-sec h2,.cfb-final h2,.cfb-real span,.cfb-real b,.cfb-amt,.cfb-price,.cfb-facts b,.cfb-range b,.cfb-crm-h b,.cfb-col h3,.cfb-mode h3,.cfb-limits dd,.cfb-steps span,.cfb-pp,.pf-lock){font-weight:700}
-body:not(:has(.ap-lp)) .cfb-points li::before{font-weight:700}
 /* warm amber primary buttons sitewide (not /apply, /business-finance) */
 body:not(:has(.ap-lp)) :is(.button:not(.bg-white):not(.bg-base-50),.cfb-btn:not(.line)){background-color:#ffb020;border-color:#ffb020;color:#132a22}
 body:not(:has(.ap-lp)) :is(.button:not(.bg-white):not(.bg-base-50),.cfb-btn:not(.line)):hover{background-color:#f0a010;border-color:#f0a010}
@@ -634,3 +633,14 @@ body .ll-hero.ll-hero-photo.ll-hero-photo::after{background:linear-gradient(180d
 }
 @media (min-width:561px) and (max-width:991px){.ll-hero-noform{--hp:340px}}
 @media (max-width:560px){.ll-borrow{padding:16px}.ll-borrow-go{font-size:15px;padding-left:12px;padding-right:12px}.ll-need-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ll-need-opts a{padding:0 8px;font-size:14px}.ll-need-opts a:last-child:nth-child(odd){grid-column:1/-1}}
+
+/* Step icons (Aran, 24 Nov): topic icons replace step numbers everywhere. Every icon colour is at least 4.5:1 on its circle. */
+.cs-num{color:#18302a}
+.cs-num svg,.cfb-steps span svg,.cfb-pi svg,.process-number-circle svg{width:24px;height:24px}
+.process-number-circle{color:var(--base-100,#244237)}
+.cs-ready li b svg{width:15px;height:15px}
+.cfb-pi{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:50%;background:var(--or,#c4f09f);color:var(--green,#244237);margin-bottom:8px}
+[data-theme=partner] .cfb-pi{background:var(--pd-accent);color:#0b1a14}
+[data-theme=partner] :is(.ll-docsec,.cfb-anat,.cfb-int,.cfb-fundsec,.cfb-faq) .cfb-pi{background:#c4f09f;color:#132a22}
+.ll-acc .ll-acc-ico{display:inline-grid;place-items:center;flex:none;width:36px;height:36px;border-radius:50%;background:var(--primary-100,#ffa630);color:#18302a;margin-right:14px;font-style:normal;vertical-align:middle}
+.ll-acc .ll-acc-ico svg{width:19px;height:19px}

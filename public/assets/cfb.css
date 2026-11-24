@@ -147,10 +147,9 @@
 .cfb-record dl>div:last-child{border:0}
 .cfb-record dt{font-size:14px;color:var(--muted)}
 .cfb-record dd{margin:0;font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.cfb-points{list-style:none;margin:0;padding:0;counter-reset:p;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.cfb-points{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
 .cfb-points li{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px 24px}
-.cfb-points li{counter-increment:p;display:flex;flex-direction:column;gap:10px}
-.cfb-points li::before{content:counter(p);margin-bottom:8px;width:44px;height:44px;border-radius:50%;background:var(--or);color:var(--ink);font-weight:800;display:grid;place-items:center;font-size:18px}
+.cfb-points li{display:flex;flex-direction:column;gap:10px}
 .cfb-points b{font-size:19px;color:var(--green)}
 .cfb-points p{margin:0;font-size:16px;line-height:1.6;color:var(--muted)}
 
