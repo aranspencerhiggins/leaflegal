@@ -990,7 +990,7 @@ CONTACT_ASIDE = f'''<aside class="ll-cf-aside">
 page(f'{PUB}/contact.html', f'Contact Us | {BRAND}', f'Contact {BRAND} about an enquiry, becoming a partner firm, press or anything else. We reply within one working day.',
      page_head('Contact us', 'Questions about an enquiry, becoming a partner firm or anything else? Send us a message.')
      + f'<section class="ll-docsec"><div class="ll-cf-wrap">{CONTACT_FORM}{CONTACT_ASIDE}</div></section>',
-     extra_js='<script src="/assets/contact.js?v=1"></script>')
+     extra_js='<script src="/assets/contact.js?v=2"></script>')
 
 page(f'{PUB}/404.html', f'Page Not Found | {BRAND}', 'The page you were looking for could not be found.',
      page_head('We can’t find that page', 'It may have moved, or the link may be out of date.')
