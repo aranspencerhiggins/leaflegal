@@ -3,6 +3,7 @@
 # delivery by email or CRM. No em dashes.
 
 APPLY = '/partners/apply'
+STEP_ICONS = ['calendar', 'sliders', 'pen', 'phonecall']  # book a call, agree criteria, sign, call clients. Icons, never numbers.
 
 
 def build(ICON, TICK, faq_html, faq_h2, LC, AREA_LEADS, hero_img):
@@ -23,7 +24,7 @@ def build(ICON, TICK, faq_html, faq_h2, LC, AREA_LEADS, hero_img):
 
     anatomy = f'''<section class="cfb-sec cfb-anat"><div class="cfb-wrap"><div class="cfb-head"><h2>The first call, answered before you dial</h2>
 <p>{LC.LEAD_CONTENTS_TEXT}</p></div>
-<div class="cfb-anat-grid"><ol class="cfb-points">{''.join(f'<li><b>{t}</b><p>{d}</p></li>' for _, t, d in LC.LEAD_CONTENTS)}</ol></div>{join}</div></section>'''
+<div class="cfb-anat-grid"><ol class="cfb-points">{''.join(f'<li><span class="cfb-pi">{ICON[ic]}</span><b>{t}</b><p>{d}</p></li>' for ic, t, d in LC.LEAD_CONTENTS)}</ol></div>{join}</div></section>'''
 
     x = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
     filt = f'''<section class="cfb-sec cfb-filter"><div class="cfb-wrap"><div class="cfb-head"><h2>Filtered before it reaches you</h2>
@@ -67,7 +68,7 @@ def build(ICON, TICK, faq_html, faq_h2, LC, AREA_LEADS, hero_img):
              ('Sign your agreement', 'Pricing, billing, delivery and invalid lead rules, all in writing before you start.'),
              ('Call your clients', 'Leads arrive by email or CRM the moment they are checked. Call while the enquiry is fresh.')]
     how = f'''<section class="cfb-sec cfb-how" id="how-it-works"><div class="cfb-wrap"><div class="cfb-head"><h2>From first call to first lead</h2><p>No platform to learn and no long contract to read alone. We set it up with you.</p></div>
-<ol class="cfb-steps">{''.join(f'<li><span>{i}</span><b>{t}</b><p>{d}</p></li>' for i, (t, d) in enumerate(steps, 1))}</ol>{join}</div></section>'''
+<ol class="cfb-steps">{''.join(f'<li><span>{ICON[ic]}</span><b>{t}</b><p>{d}</p></li>' for ic, (t, d) in zip(STEP_ICONS, steps))}</ol>{join}</div></section>'''
 
     faq = f'''<section class="cfb-sec cfb-faq" id="faq"><div class="cfb-wrap"><div class="cfb-head"><h2>{faq_h2}</h2>
 <p>Choose a topic to see the questions firms ask us most.</p></div>{faq_html}</div></section>'''
@@ -90,11 +91,11 @@ def parts(ICON, TICK, LC):
              ('phone', 'Verified', 'UK mobile and email checked'), ('doc', 'Consent recorded', 'Wording and time kept with every lead')]
     factbar = '<section class="cfb-facts"><div class="cfb-wrap"><ul>' + ''.join(f'<li><i>{ICON[ic]}</i><div><b>{a}</b><span>{b}</span></div></li>' for ic, a, b in facts) + '</ul></div></section>'
     anatomy = (f'<section class="cfb-sec cfb-anat"><div class="cfb-wrap"><div class="cfb-head"><h2>What every lead includes</h2><p>{LC.LEAD_CONTENTS_TEXT}</p></div>'
-               f'<div class="cfb-anat-grid"><ol class="cfb-points">' + ''.join(f'<li><b>{t}</b><p>{d}</p></li>' for _, t, d in LC.LEAD_CONTENTS) + '</ol></div></div></section>')
+               f'<div class="cfb-anat-grid"><ol class="cfb-points">' + ''.join(f'<li><span class="cfb-pi">{ICON[ic]}</span><b>{t}</b><p>{d}</p></li>' for ic, t, d in LC.LEAD_CONTENTS) + '</ol></div></div></section>')
     steps = [('Book a call', 'Leave your details and pick a time for a 30-minute call with our team.'),
              ('Agree your criteria', 'Practice areas, matter types, locations, monthly volume and your price per lead. See a sample lead first.'),
              ('Sign your agreement', 'Pricing, billing, delivery and invalid lead rules, all in writing before you start.'),
              ('Call your clients', 'Leads arrive by email or CRM the moment they are checked. Call while the enquiry is fresh.')]
     how = (f'<section class="cfb-sec cfb-how"><div class="cfb-wrap"><div class="cfb-head"><h2>From first call to first lead</h2><p>No platform to learn and no long contract to read alone. We set it up with you.</p></div>'
-           f'<ol class="cfb-steps">' + ''.join(f'<li><span>{i}</span><b>{t}</b><p>{d}</p></li>' for i, (t, d) in enumerate(steps, 1)) + f'</ol>{join}</div></section>')
+           f'<ol class="cfb-steps">' + ''.join(f'<li><span>{ICON[ic]}</span><b>{t}</b><p>{d}</p></li>' for ic, (t, d) in zip(STEP_ICONS, steps)) + f'</ol>{join}</div></section>')
     return {'factbar': factbar, 'anatomy': anatomy, 'how': how}

@@ -78,13 +78,14 @@ def cs_intro(h2, paras, rows, note=''):
 
 def cs_help(h_help, items, h_ready, ready, ready_note):
     cards_ = ''.join(f'<li><span class="cs-tick">{_CHECK}</span><span>{t}</span></li>' for t in items)
-    rl = ''.join(f'<li><b>{i}</b><span>{t}</span></li>' for i, t in enumerate(ready, 1))
+    rl = ''.join(f'<li><b>{ICON["doc"]}</b><span>{t}</span></li>' for t in ready)
     return section(f'<div class="cs-help"><div class="cs-help-main"><h2 class="cs-h2">{h_help}</h2><ul class="cs-helpgrid">{cards_}</ul></div>'
                    f'<div class="cs-ready"><h3>{h_ready}</h3><ol>{rl}</ol><p>{ready_note}</p></div></div>', cls='section cs-sec')
 
 
 def cs_steps(h2, steps, href, label='Get matched', lead=''):
-    li = ''.join(f'<li><span class="cs-num">{i}</span><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(steps, 1))
+    ics = STEP_ICONS + ['check'] * max(0, len(steps) - len(STEP_ICONS))
+    li = ''.join(f'<li><span class="cs-num">{ICON[ic]}</span><h3>{t}</h3><p>{d}</p></li>' for ic, (t, d) in zip(ics, steps))
     return (f'<section class="cs-steps" id="how"><div class="cs-steps-in"><div class="cs-steps-head"><h2>{h2}</h2>'
             + (f'<p>{lead}</p>' if lead else '') + f'</div><ol>{li}</ol><a href="{href}" class="button"><div>{label}</div></a></div></section>')
 

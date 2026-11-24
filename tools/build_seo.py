@@ -251,13 +251,13 @@ import cfb_legal as _cfb
 CFB = _cfb.parts(ICON, TICK, LC)
 
 
-P_WHY = ('<section class="cfb-sec cfb-anat"><div class="cfb-wrap"><div class="cfb-head"><h2>Why law firms work with Leaflegal</h2><p>Enquiries that are worth calling, on terms that suit your firm.</p></div><div class="cfb-anat-grid"><ol class="cfb-points">' + ''.join(f'<li><b>{t}</b><p>{d}</p></li>' for t, d in [
-    ('One firm per enquiry', 'Every enquiry goes to one firm only. You are never racing three other practices to the same phone number.'),
-    ('Clients who want paid help', 'We screen out people looking only for free advice or legal aid, so your fee earners spend time on work they can take on.'),
-    ('Your areas, your matters', 'Choose the practice areas, matter types and locations you want. Change them whenever your capacity changes.'),
-    ('Compliant introductions', 'Clients are told we are an introducer paid by the firms we work with, and you receive the consent wording with every lead.'),
-    ('Fast delivery', 'Leads reach your inbox or CRM as soon as they are checked, while the client is still expecting a call.'),
-    ('No long contracts', 'A monthly minimum of 10 leads and the freedom to pause. If leads do not work for you, you are not tied in.'),
+P_WHY = ('<section class="cfb-sec cfb-anat"><div class="cfb-wrap"><div class="cfb-head"><h2>Why law firms work with Leaflegal</h2><p>Enquiries that are worth calling, on terms that suit your firm.</p></div><div class="cfb-anat-grid"><ol class="cfb-points">' + ''.join(f'<li><span class="cfb-pi">{ICON[ic]}</span><b>{t}</b><p>{d}</p></li>' for ic, t, d in [
+    ('user', 'One firm per enquiry', 'Every enquiry goes to one firm only. You are never racing three other practices to the same phone number.'),
+    ('cash', 'Clients who want paid help', 'We screen out people looking only for free advice or legal aid, so your fee earners spend time on work they can take on.'),
+    ('target', 'Your areas, your matters', 'Choose the practice areas, matter types and locations you want. Change them whenever your capacity changes.'),
+    ('scale', 'Compliant introductions', 'Clients are told we are an introducer paid by the firms we work with, and you receive the consent wording with every lead.'),
+    ('bolt', 'Fast delivery', 'Leads reach your inbox or CRM as soon as they are checked, while the client is still expecting a call.'),
+    ('unlock', 'No long contracts', 'A monthly minimum of 10 leads and the freedom to pause. If leads do not work for you, you are not tied in.'),
 ]) + '</ol></div></div></section>')
 
 
@@ -294,7 +294,7 @@ def partner_page(url, d, side_title, side_links, crumbs, extra_top='', img=None,
             + cta(d['cta_h2'], 'Book a 30-minute call and see a sample lead.', '/partners/apply', 'Become a partner firm'))
     os.makedirs(os.path.dirname(f'{PUB}{url}.html'), exist_ok=True)
     page(f'{PUB}{url}.html', d['title'], d['description'], body,
-         '<link href="/assets/cfb.css?v=17" rel="stylesheet"/>' + f'<link rel="canonical" href="{SITE}{url}"/>' + ld(org_ld, svc_ld(d['h1'], url, d['description']), faq_ld(d['faqs']), crumb_ld(('Law firms', '/partners'), *crumbs, (d['h1'], url))),
+         '<link href="/assets/cfb.css?v=18" rel="stylesheet"/>' + f'<link rel="canonical" href="{SITE}{url}"/>' + ld(org_ld, svc_ld(d['h1'], url, d['description']), faq_ld(d['faqs']), crumb_ld(('Law firms', '/partners'), *crumbs, (d['h1'], url))),
          header='PARTNERS_HEADER', backup=False)
     _count['partner'] += 1
 
@@ -375,7 +375,7 @@ def _bc_page():
                  + f'<div class="bc-models">{models}</div>', 'bc-models-sec')
     chans = sec(head('What a campaign can include', 'We pick the channels that suit the work and the budget, rather than selling a fixed package.')
                 + '<div class="bc-chans">' + ''.join(f'<div class="bc-chan"><span class="bc-ico">{ICON[ic]}</span><b>{t}</b><p>{d}</p></div>' for ic, t, d in BC.CHANNELS) + '</div>')
-    how = f'<div id="how"></div>' + sec(head('How a bespoke campaign works') + '<ol class="cfb-points bc-steps">' + ''.join(f'<li><b>{t}</b><p>{d}</p></li>' for t, d in BC.STEPS) + '</ol>')
+    how = f'<div id="how"></div>' + sec(head('How a bespoke campaign works') + '<ol class="cfb-points bc-steps">' + ''.join(f'<li><span class="cfb-pi">{ICON[ic]}</span><b>{t}</b><p>{d}</p></li>' for ic, (t, d) in zip(['chat', 'tax', 'check', 'rocket', 'chart'], BC.STEPS)) + '</ol>')
     comp = sec(head('Built around the rules for regulated legal services', 'Marketing for law firms comes with rules that most agencies never think about. We plan around them from day one.')
                + '<div class="bc-comp">' + ''.join(f'<div><b>{t}</b><p>{d}</p></div>' for t, d in BC.COMPLIANCE) + '</div>', 'bc-comp-sec')
     x = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
@@ -416,7 +416,7 @@ def _bc_page():
             + cs_faqs('Questions about bespoke campaigns', [('How it works', [BC.FAQS[i] for i in (1, 5, 6, 7)]), ('Rules and compliance', [BC.FAQS[i] for i in (0, 3, 4, 9)]), ('Fees and terms', [BC.FAQS[i] for i in (2, 8)])], 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
             + '<section class="cfb-sec"><div class="cfb-wrap">' + P_DISC + '</div></section>')
     page(f'{PUB}{BC.URL}.html', BC.TITLE, BC.DESC, body,
-         '<link href="/assets/cfb.css?v=17" rel="stylesheet"/><link href="/assets/campaigns.css?v=2" rel="stylesheet"/>' + f'<link rel="canonical" href="{SITE}{BC.URL}"/>'
+         '<link href="/assets/cfb.css?v=18" rel="stylesheet"/><link href="/assets/campaigns.css?v=3" rel="stylesheet"/>' + f'<link rel="canonical" href="{SITE}{BC.URL}"/>'
          + ld(org_ld, svc_ld(BC.H1, BC.URL, BC.DESC), faq_ld(BC.FAQS), crumb_ld(('Law firms', '/partners'), (BC.NAV, BC.URL))),
          '<script src="/assets/tabs.js?v=2"></script><script src="/assets/campaign-enquiry.js?v=1"></script>', header='PARTNERS_HEADER', backup=False)
     _count['partner'] += 1

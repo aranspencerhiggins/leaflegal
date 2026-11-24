@@ -45,8 +45,20 @@ ICON = {
     'scale': I('<path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0z"/>'),
     'key': I('<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M14 9l2 2"/>'),
     'tag': I('<path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>'),
+    'chat': I('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/>'),
+    'calendar': I('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M8 14h2M14 14h2M8 17.5h2"/>'),
+    'sliders': I('<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>'),
+    'pen': I('<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="M13.5 6.5l4 4M14 20h6"/>'),
+    'phonecall': I('<path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/><path d="M15 3a6 6 0 0 1 6 6M15 7a2 2 0 0 1 2 2"/>'),
+    'rocket': I('<path d="M5 15c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a22 22 0 0 1 2-4A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/>'),
+    'check': I('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 10"/>'),
+    'bolt': I('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),
+    'unlock': I('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.7-1.5M12 15v2"/>'),
+    'form': I('<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/>'),
     'pin': I('<path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>'),
 }
+# Client how it works steps (tell us, one regulated firm, they contact you). Icons, never step numbers (Aran, 24 Nov).
+STEP_ICONS = ['form', 'shield', 'phonecall']
 TICK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>'
 CROSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>'
 ARROW = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'
@@ -78,9 +90,9 @@ def process(steps, cta_href, cta_label, title='How it works'):
     return f'''<section class="section"><div class="container---main"><div class="vertical-section-content reduced-gap">
 <h2 class="heading-two">{title}</h2>
 <div class="process-wrapper">
-<div class="process-step align-top-right"><div class="process-box step-1"><div class="process-number-circle"><div class="heading-four">1</div></div><div class="process-box-text"><div class="heading-four">{a}</div></div></div><img src="{arrow1}" alt="" class="process-arrow step-1"/></div>
-<div class="process-box large-box"><div class="process-number-circle"><div class="heading-four">2</div></div><div class="process-box-text"><div class="heading-four">{b}</div></div></div>
-<div class="process-step align-bottom-left"><img src="{arrow2}" alt="" class="process-arrow step-3"/><div class="process-box bg-base-100"><div class="process-number-circle"><div class="heading-four text-base-100">3</div></div><div class="process-box-text"><div class="heading-four">{c}</div></div></div></div>
+<div class="process-step align-top-right"><div class="process-box step-1"><div class="process-number-circle">{ICON["form"]}</div><div class="process-box-text"><div class="heading-four">{a}</div></div></div><img src="{arrow1}" alt="" class="process-arrow step-1"/></div>
+<div class="process-box large-box"><div class="process-number-circle">{ICON["shield"]}</div><div class="process-box-text"><div class="heading-four">{b}</div></div></div>
+<div class="process-step align-bottom-left"><img src="{arrow2}" alt="" class="process-arrow step-3"/><div class="process-box bg-base-100"><div class="process-number-circle">{ICON["phonecall"]}</div><div class="process-box-text"><div class="heading-four">{c}</div></div></div></div>
 </div><a href="{cta_href}" class="button w-inline-block"><div>{cta_label}</div></a></div></div></section>'''
 
 
@@ -142,9 +154,9 @@ def with_nav(h, page, header=None):
         h = h.replace('</head>', '<link href="/assets/masthead.css?v=26" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/masthead\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', '<script src="/assets/masthead.js?v=6"></script></body>', 1)
-    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=47', h)
+    h = re.sub(r'/assets/site\.css\?v=\d+', '/assets/site.css?v=48', h)
     if 'assets/site.css' not in h:
-        h = h.replace('</head>', '<link href="/assets/site.css?v=47" rel="stylesheet"/></head>', 1)
+        h = h.replace('</head>', '<link href="/assets/site.css?v=48" rel="stylesheet"/></head>', 1)
     h = re.sub(r'<script src="/assets/nav\.js[^"]*"></script>', '', h)
     h = h.replace('</body>', NAV_JS + '</body>', 1)
     return h
@@ -375,8 +387,9 @@ def tabs(uid, items, faq_panels=False):
     return f'<div class="ll-tabs" data-tabs><div class="ll-tablist" role="tablist">{tl}</div>{ps}</div>'
 
 
-def accordion(items, numbered=False):
-    rows = ''.join(f'<details class="ll-faq"><summary class="large-text bold-text"><span>{f"<b class=ll-acc-num>{i}</b>" if numbered else ""}{t}</span>{CHEV_D}</summary><div class="ll-faq-a">{d}</div></details>' for i, (t, d) in enumerate(items, 1))
+def accordion(items, icons=None):
+    """icons: optional list of ICON keys, one per item, shown in a circle before the title (Aran, 24 Nov: icons, never step numbers)."""
+    rows = ''.join(f'<details class="ll-faq"><summary class="large-text bold-text"><span>{f"<i class=ll-acc-ico>{ICON[icons[i]]}</i>" if icons else ""}{t}</span>{CHEV_D}</summary><div class="ll-faq-a">{d}</div></details>' for i, (t, d) in enumerate(items))
     return f'<div class="ll-acc">{rows}</div>'
 
 
@@ -513,8 +526,8 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
-APPLY_HEAD = '<link href="/assets/apply.css?v=64" rel="stylesheet"/><link href="/assets/enquire.css?v=4" rel="stylesheet"/>'
-APPLY_JS = '<script type="module" src="/assets/enquire.js?v=8"></script>'
+APPLY_HEAD = '<link href="/assets/apply.css?v=65" rel="stylesheet"/><link href="/assets/enquire.css?v=4" rel="stylesheet"/>'
+APPLY_JS = '<script type="module" src="/assets/enquire.js?v=9"></script>'
 
 
 def ENQ_URL(area, matter=None):
@@ -801,7 +814,7 @@ hiw = ''.join([
     TRUST_STRIP,
     '<div id="steps"></div>',
     process(tuple(t for t, _ in HIW_STEPS), '/apply', 'Get matched', title='Three simple steps'),
-    section(title_block('Each step in detail') + accordion(HIW_STEPS, numbered=True), cls='section ll-tight'),
+    section(title_block('Each step in detail') + accordion(HIW_STEPS, icons=STEP_ICONS), cls='section ll-tight'),
     section(title_block('What happens after you submit', 'A clear timeline, so you always know what comes next.') + cards([(ic, t, d, None) for ic, t, d in HIW_AFTER], 'four')),
     section(title_block(f'Who {BRAND} is for') + yes_no('We can help', ['People and businesses looking for paid legal help', 'Matters in England and Wales', 'Introductions to regulated immigration lawyers', 'Businesses recovering debts from other businesses', 'Trademark and IP matters across the UK'],
                                                       'We can’t help', ['Personal injury or clinical negligence claims', 'Housing disrepair claims', 'Financial mis-selling claims', 'Legal aid only matters'])),
@@ -847,7 +860,7 @@ L_FEATURES = section('<div class="section-title text-center"><h2 class="heading-
               ['Email, CRM or case management delivery', 'No shared or recycled leads'], ui_first=False))
 import cfb_legal
 page(f'{PUB}/partners.html', LC.TITLE, LC.DESC, cfb_legal.build(ICON, TICK, faq_tabs(LC.FAQ_GROUPS), LC.FAQ_H2, LC, PS.AREA_LEADS, PH.photo('partner-call')),
-     L_HEAD + '<link href="/assets/cfb.css?v=17" rel="stylesheet"/>', '<script src="/assets/tabs.js?v=2"></script>', header='PARTNERS_HEADER', backup=False)
+     L_HEAD + '<link href="/assets/cfb.css?v=18" rel="stylesheet"/>', '<script src="/assets/tabs.js?v=2"></script>', header='PARTNERS_HEADER', backup=False)
 
 os.makedirs(f'{PUB}/partners', exist_ok=True)
 # Law firm enquiry: details, then book a call with Aran (assets/partner-enquiry.js). The same flow opens as a pop-up from any

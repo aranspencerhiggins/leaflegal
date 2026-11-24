@@ -13,6 +13,12 @@ function init() {
   const body = root.querySelector('.ap-body'), bar = root.querySelector('.ap-bar'), count = root.querySelector('.ap-count'), backBtn = root.querySelector('.ap-back');
   const KEY = 'll-enquire-v3:' + (root.dataset.area || 'all') + ':' + (root.dataset.matter || new URLSearchParams(location.search).get('matter') || '');
   const I = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  // What happens next on the thank-you step: icons, never step numbers (24 Nov).
+  const NEXT_ICO = [
+    I('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
+    I('<path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>'),
+    I('<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M9 13h6M9 17h4"/>'),
+  ].map((svg) => svg.replace('<svg ', '<svg aria-hidden="true" '));
   const ICON = {
     home: I('<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>'),
     globe: I('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
@@ -461,7 +467,7 @@ function init() {
       <h2 class="ap-q" tabindex="-1">Thanks${p.firstName ? ', ' + esc(p.firstName) : ''}. We’ve got your enquiry.</h2>
       <p class="ap-done-lead">We’ll introduce you to one regulated ${who} that handles this kind of matter. We’ve sent a confirmation to your email.</p>
       <dl class="ap-summary">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
-      <ol class="ap-steps-next"><li>The ${who} reads your answers</li><li>They contact you, usually by phone, to see if they can help</li><li>They explain their fees before you agree to anything</li></ol></div>`;
+      <ul class="ap-steps-next"><li>${NEXT_ICO[0]}The ${who} reads your answers</li><li>${NEXT_ICO[1]}They contact you, usually by phone, to see if they can help</li><li>${NEXT_ICO[2]}They explain their fees before you agree to anything</li></ul></div>`;
   }
 
   function show(dir) {
