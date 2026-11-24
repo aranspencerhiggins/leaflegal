@@ -1,0 +1,53 @@
+/* /partners/bespoke-campaigns */
+.bc-intro{max-width:720px;margin:-24px auto 0;text-align:center;font-size:18px;line-height:1.6;color:var(--muted)}
+.bc-ico{width:48px;height:48px;border-radius:14px;background:var(--mint);color:var(--green);display:grid;place-items:center}
+.bc-ico svg{width:24px;height:24px}
+.bc-models{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1080px;margin:0 auto}
+.bc-model{background:#fff;border:1px solid var(--line);border-radius:24px;padding:36px;display:flex;flex-direction:column;gap:14px}
+.bc-model h3{margin:6px 0 0;font-size:26px;color:var(--green);font-weight:800}
+.bc-model>p{margin:0;font-size:17px;line-height:1.6;color:var(--muted)}
+.bc-model ul{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.bc-model li{display:flex;gap:10px;align-items:flex-start;font-size:16px;line-height:1.5;color:var(--ink)}
+.bc-model .cfb-ok{flex:none;width:22px;height:22px;border-radius:50%;background:var(--or);color:var(--ink);display:grid;place-items:center;margin-top:1px}
+.bc-model .cfb-ok svg{width:13px;height:13px}
+.bc-model .bc-suits{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-weight:700;color:var(--green)}
+.bc-chans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.bc-chan{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:10px}
+.bc-chan b{font-size:19px;color:var(--green)}
+.bc-chan p{margin:0;font-size:16px;line-height:1.6;color:var(--muted)}
+.bc-steps{grid-template-columns:repeat(5,1fr)}
+.bc-comp-sec{background:var(--green)!important}
+.bc-comp-sec .cfb-head h2{color:#fff}.bc-comp-sec .cfb-head p{color:#cfe3db}
+.bc-comp{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.bc-comp div{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:28px}
+.bc-comp b{display:block;font-size:19px;color:var(--or);margin-bottom:10px}
+.bc-comp p{margin:0;font-size:16px;line-height:1.6;color:#e4efe9}
+.bc-price-sec .ll-split{align-items:center}
+.bc-form-wrap{max-width:820px;margin:0 auto}
+.bc-form fieldset{border:0;margin:0 0 22px;padding:0}
+.bc-form legend{font-weight:700;font-size:15px;color:var(--base-100,#244237);margin-bottom:10px}
+.bc-choice{display:flex;flex-wrap:wrap;gap:10px}
+.bc-choice legend{width:100%}
+.bc-choice label{position:relative;cursor:pointer}
+.bc-choice input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.bc-choice span{display:inline-block;padding:11px 18px;border-radius:999px;border:1.5px solid rgba(36,66,55,.18);font-size:16px;color:#244237;background:#fff}
+.bc-choice input:checked+span{background:#244237;border-color:#244237;color:#fff}
+.bc-choice input:focus-visible+span{box-shadow:0 0 0 3px rgba(87,158,132,.35)}
+.bc-form .button{margin-top:22px}
+.ll-cf-msg.on{display:block}
+@media (max-width:991px){.bc-steps{grid-template-columns:1fr 1fr}.bc-comp,.bc-chans{grid-template-columns:1fr 1fr}}
+@media (max-width:767px){.bc-models,.bc-comp,.bc-chans,.bc-steps{grid-template-columns:1fr}.bc-model{padding:26px}}
+/* partner (dark) theme */
+[data-theme=partner] :is(.bc-model,.bc-chan){background:var(--pd-card);border-color:var(--pd-line)}
+[data-theme=partner] :is(.bc-model h3,.bc-chan b,.bc-model .bc-suits){color:var(--pd-head)}
+[data-theme=partner] :is(.bc-model>p,.bc-chan p,.bc-intro){color:var(--pd-muted)}
+[data-theme=partner] .bc-model li{color:var(--pd-text)}
+[data-theme=partner] .bc-model .bc-suits{border-top-color:var(--pd-line)}
+[data-theme=partner] .bc-ico{background:#1d3a2e;color:var(--pd-accent)}
+[data-theme=partner] .bc-model .cfb-ok{background:var(--pd-accent);color:#12271e}
+[data-theme=partner] .cfb-sec.bc-comp-sec{background:#1f4234!important}
+[data-theme=partner] .bc-comp-sec .cfb-head h2{color:#fff}
+[data-theme=partner] .bc-comp b{color:var(--pd-accent)}
+[data-theme=partner] .bc-enq-sec .cfb-head h2{color:var(--pd-head)}
+[data-theme=partner] .bc-price-sec .ll-split-p-text{color:var(--pd-text)}
+[data-theme=partner] .bc-price-sec .heading-two{color:var(--pd-head)}

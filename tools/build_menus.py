@@ -59,7 +59,7 @@ CLIENT_MENU = property_dd + family_dd + immig_dd + business_dd + near_dd + about
 # ---------------------------------------------------------------- law firm side
 PPAGES = {d['slug']: d for d in PS.PILLARS + PS.INFO + PS.GUIDES}
 _pp = lambda slugs: [(f'/partners/{s}', PPAGES[s]['nav'], 's') for s in slugs]
-P_START = ('Get started', [('/partners/apply', 'Book a call'), ('/partners/pricing', 'How pricing works'), ('/partners/faq', 'Questions and answers'), ('/contact', 'Contact the team')])
+P_START = ('Get started', [('/partners/apply', 'Book a call'), ('/partners/pricing', 'How pricing works'), ('/partners/bespoke-campaigns', 'Bespoke campaigns'), ('/partners/faq', 'Questions and answers'), ('/contact', 'Contact the team')])
 P_INFO = ['how-it-works', 'getting-started', 'lead-verification', 'lead-delivery', 'lead-quality', 'pricing']
 p_how = mega('How it works', _pp(P_INFO), {'s': P_START},
              _card('partner-call', 'Exclusive enquiries, sent while fresh', 'Each lead goes to one firm only, with every answer and the consent record.', '/partners/apply', 'Book a call'), foot=('/partners/apply', 'Book a call'))
@@ -69,8 +69,8 @@ p_leads = mega('Leads', [(f'/partners/{AL[a["slug"]]["slug"]}', AL[a['slug']]['k
                             'groups': [('By matter type', [(f'/partners/{AL[a["slug"]]["slug"]}/{m["slug"]}', f'{m["name"]} leads') for m in MAT[a['slug']]])]} for a in AC.AREAS},
                None, foot=('/partners/apply', 'Become a partner firm'))
 P_PILLARS = [d['slug'] for d in PS.PILLARS]
-p_gen = mega('Lead generation', _pp(P_PILLARS), {'s': ('By practice area', [(f'/partners/{AL[a["slug"]]["slug"]}', AL[a['slug']]['kw']) for a in AC.AREAS])},
-             _card('lawyer-desk', 'Built around SRA rules', 'Referral disclosure and recorded consent with every lead.', '/partners/sra-referral-rules', 'Referral rules'), foot=('/partners/apply', 'Become a partner firm'))
+p_gen = mega('Lead generation', _pp(P_PILLARS) + [('/partners/bespoke-campaigns', 'Bespoke campaigns', 's')], {'s': ('By practice area', [(f'/partners/{AL[a["slug"]]["slug"]}', AL[a['slug']]['kw']) for a in AC.AREAS])},
+             _card('campaign-plan', 'Want a campaign of your own?', 'Bespoke campaigns under your brand or run by us on your behalf.', '/partners/bespoke-campaigns', 'Bespoke campaigns'), foot=('/partners/apply', 'Become a partner firm'))
 P_GUIDES = [d['slug'] for d in PS.GUIDES]
 p_res = mega('Resources', [('/partners/guides', 'Guides for law firms', 'g')] + [(f'/partners/{s}', PPAGES[s]['nav'], 'g') for s in P_GUIDES] +
              [('/partners/sra-referral-rules', 'SRA referral rules', 'c'), ('/partners/data-protection', 'Data and consent', 'c'), ('/partners/faq', 'Questions and answers', 'c')],
