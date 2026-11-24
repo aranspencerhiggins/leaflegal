@@ -357,3 +357,66 @@ page(f'{PUB}/partners/faq.html', f'Questions and Answers for Law Firms | {BRAND}
      + cta('Still have a question?', 'Book a call with our team.', '/partners/apply', 'Book a call'),
      f'<link rel="canonical" href="{SITE}/partners/faq"/>' + ld(faq_ld(LC.FAQ)), '<script src="/assets/tabs.js?v=2"></script>', header='PARTNERS_HEADER', backup=False)
 print('seo pages', _count)
+
+# ---------------------------------------------------------------- bespoke campaigns for law firms (/partners/bespoke-campaigns)
+import campaigns_content as BC
+
+
+def _bc_page():
+    ok = f'<i class="cfb-ok">{TICK}</i>'
+    head = lambda h2, p='': f'<div class="cfb-head"><h2>{h2}</h2>' + (f'<p>{p}</p>' if p else '') + '</div>'
+    sec = lambda inner, cls='': f'<section class="cfb-sec {cls}"><div class="cfb-wrap">{inner}</div></section>'
+    btns = '<a href="#enquire" class="button"><div>Plan a campaign</div></a><a href="#how" class="ll-ghost-light">How it works</a>'
+    hero = hero_split(BC.H1, BC.LEAD, BC.TICKS, btns, PH.photo('campaign-plan'), alt='Two people planning a campaign with sticky notes on a glass wall')
+    intro = sec(head('Marketing built around your firm', BC.INTRO[0]) + f'<p class="bc-intro">{BC.INTRO[1]}</p>')
+    models = ''.join(f'<div class="bc-model"><span class="bc-ico">{ICON[ic]}</span><h3>{t}</h3><p>{d}</p><ul>{"".join(f"<li>{ok}{x}</li>" for x in ticks)}</ul><p class="bc-suits">{suits}</p></div>'
+                     for ic, t, d, ticks, suits in BC.MODELS)
+    models = sec(head('Two ways to work with us', 'Both models are built so your firm stays the regulated provider. The difference is whose name the client sees first.')
+                 + f'<div class="bc-models">{models}</div>', 'bc-models-sec')
+    chans = sec(head('What a campaign can include', 'We pick the channels that suit the work and the budget, rather than selling a fixed package.')
+                + '<div class="bc-chans">' + ''.join(f'<div class="bc-chan"><span class="bc-ico">{ICON[ic]}</span><b>{t}</b><p>{d}</p></div>' for ic, t, d in BC.CHANNELS) + '</div>')
+    how = f'<div id="how"></div>' + sec(head('How a bespoke campaign works') + '<ol class="cfb-points bc-steps">' + ''.join(f'<li><b>{t}</b><p>{d}</p></li>' for t, d in BC.STEPS) + '</ol>')
+    comp = sec(head('Built around the rules for regulated legal services', 'Marketing for law firms comes with rules that most agencies never think about. We plan around them from day one.')
+               + '<div class="bc-comp">' + ''.join(f'<div><b>{t}</b><p>{d}</p></div>' for t, d in BC.COMPLIANCE) + '</div>', 'bc-comp-sec')
+    x = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>'
+    scope = sec(head('Work we can and can’t promote', 'Some areas of law cannot be marketed this way at all, so we stay out of them.')
+                + f'<div class="cfb-split"><div class="cfb-col in"><h3>We can run campaigns for</h3><ul>{"".join(f"<li>{ok}{v}</li>" for v in BC.YES)}</ul></div>'
+                + f'<div class="cfb-col out"><h3>We don’t take on</h3><ul>{"".join(f"<li><i class=cfb-no>{x}</i>{v}</li>" for v in BC.NO)}</ul></div></div>')
+    price = sec(split(PH.photo('campaign-desk'), '<h2 class="heading-two">How pricing works</h2>' + ''.join(f'<p class="ll-split-p-text">{p}</p>' for p in BC.PRICING)
+                      + '<a href="#enquire" class="button" style="margin-top:24px"><div>Ask for a quote</div></a>', alt='A person sketching a marketing plan on paper'), 'bc-price-sec')
+    opts = lambda xs: ''.join(f'<option>{v}</option>' for v in xs)
+    form = f'''<form class="ll-cf bc-form" id="bc-form" novalidate>
+<fieldset class="bc-choice"><legend>How would you like the campaign run?</legend>{"".join(f'<label><input type="radio" name="model" value="{v}"{" required" if i == 0 else ""}><span>{v}</span></label>' for i, v in enumerate(BC.FORM_MODELS))}</fieldset>
+<fieldset class="bc-choice bc-areas"><legend>Practice areas</legend>{"".join(f'<label><input type="checkbox" name="areas" value="{v}"><span>{v}</span></label>' for v in BC.FORM_AREAS)}</fieldset>
+<div class="ll-cf-grid">
+<label><span>First name</span><input name="firstName" autocomplete="given-name" required></label>
+<label><span>Last name</span><input name="lastName" autocomplete="family-name" required></label>
+<label><span>Firm name</span><input name="company" autocomplete="organization" required></label>
+<label><span>Your role</span><input name="role" autocomplete="organization-title" placeholder="For example COLP or marketing manager"></label>
+<label><span>Work email</span><input name="email" type="email" autocomplete="email" required></label>
+<label><span>Phone</span><input name="phone" type="tel" autocomplete="tel" required></label>
+<label><span>Regulator</span><select name="regulator" required><option value="">Choose</option>{opts(BC.FORM_REGULATORS)}</select></label>
+<label><span>Regulator number <small>(optional)</small></span><input name="regulatorRef" inputmode="numeric"></label>
+<label><span>Website <small>(optional)</small></span><input name="site" type="url" autocomplete="url" placeholder="https://"></label>
+<label><span>Monthly budget including ad spend</span><select name="budget" required><option value="">Choose</option>{opts(BC.FORM_BUDGETS)}</select></label>
+<label class="full"><span>Where do you want clients from?</span><input name="coverage" placeholder="Towns, counties or national"></label>
+<label class="full"><span>What would you like the campaign to achieve?</span><textarea name="notes" rows="4" placeholder="For example more lease extension work in south London, or launching a new Leeds office"></textarea></label>
+</div>
+<div class="ap-hp" aria-hidden="true"><label>Leave blank<input name="hp" tabindex="-1" autocomplete="off"></label></div>
+<button type="submit" class="button">Send campaign enquiry</button>
+<p class="ll-cf-note">By sending this you agree we can contact you about a campaign. We use your details only for that. See our <a href="/privacy-policy">Privacy Policy</a>.</p>
+<div class="ll-cf-msg" role="alert"></div>
+</form>'''
+    enquire = f'<div id="enquire"></div>' + sec(head('Plan a campaign with us', 'Tell us a little about your firm and what you want to grow. We reply within one working day with next steps.')
+                                               + f'<div class="bc-form-wrap">{form}</div>', 'bc-enq-sec')
+    body = (hero + CFB['factbar'] + intro + models + chans + how + comp + scope + price + enquire
+            + cs_faqs('Questions about bespoke campaigns', [('How it works', [BC.FAQS[i] for i in (1, 4, 5, 6)]), ('Rules and compliance', [BC.FAQS[i] for i in (0, 3, 8)]), ('Fees and terms', [BC.FAQS[i] for i in (2, 7)])], 'Prefer to talk first?', 'Book a call with our team.', '/partners/apply', 'Book a call')
+            + '<section class="cfb-sec"><div class="cfb-wrap">' + P_DISC + '</div></section>')
+    page(f'{PUB}{BC.URL}.html', BC.TITLE, BC.DESC, body,
+         '<link href="/assets/cfb.css?v=17" rel="stylesheet"/><link href="/assets/campaigns.css?v=1" rel="stylesheet"/>' + f'<link rel="canonical" href="{SITE}{BC.URL}"/>'
+         + ld(org_ld, svc_ld(BC.H1, BC.URL, BC.DESC), faq_ld(BC.FAQS), crumb_ld(('Law firms', '/partners'), (BC.NAV, BC.URL))),
+         '<script src="/assets/tabs.js?v=2"></script><script src="/assets/campaign-enquiry.js?v=1"></script>', header='PARTNERS_HEADER', backup=False)
+    _count['partner'] += 1
+
+
+_bc_page()

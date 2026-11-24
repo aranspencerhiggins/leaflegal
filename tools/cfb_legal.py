@@ -76,7 +76,10 @@ def build(ICON, TICK, faq_html, faq_h2, LC, AREA_LEADS, hero_img):
 <p>Tell us what you do. Book a call and see a sample lead.</p></div>
 <div class="cfb-ctas"><a class="cfb-btn dark" href="{APPLY}">Become a partner firm{arrow}</a><a class="cfb-link" href="/partners/how-it-works">How it works</a></div></div></section>'''
 
-    return hero + factbar + anatomy + fund + filt + modes + cost + compliance + how + faq + final
+    bespoke = f'''<section class="cfb-sec"><div class="cfb-wrap"><div class="cfb-head"><h2>Want a campaign of your own?</h2>
+<p>Beyond exclusive leads, we plan and run bespoke campaigns for law firms. Under your brand, or run by us on your behalf, with a flat fee and the SRA rules built in.</p></div>
+<div class="cfb-ctas cfb-join"><a class="cfb-btn dark" href="/partners/bespoke-campaigns">Bespoke campaigns{arrow}</a></div></div></section>'''
+    return hero + factbar + anatomy + fund + filt + modes + cost + compliance + bespoke + how + faq + final
 
 
 def parts(ICON, TICK, LC):

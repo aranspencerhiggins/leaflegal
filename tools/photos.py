@@ -21,6 +21,8 @@ P = {
     'golden-street': '1549928489-41f8868d7750',        # city street at golden hour
     'partner-call': '1621255457330-7ef4e88ec27f',      # businessman on the phone with a client
     'partner-sunlit': '1791079380346-afdc7785b3cb',    # sunlit workspace
+    'campaign-plan': '1590402494587-44b71d7772f6',     # two people planning with sticky notes on a glass wall
+    'campaign-desk': '1620325867502-221cfb5faa5f',     # person sketching a marketing plan on paper
     'lawyer-desk': '1787532378729-fe4241197405',       # man writing at a desk in an office
 }
 

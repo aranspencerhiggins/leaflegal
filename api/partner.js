@@ -5,7 +5,7 @@ import { capture, sourceFrom, describeSource, runFlows, REGISTER_URL } from './_
 // POST /api/partner: emails a law firm partner enquiry (/partners/apply) to the team via Resend, adds the firm to the CRM
 // and returns a sign-up link that prefills platform.leaflegal.co/register. Same env as api/enquiry.js.
 const FIELDS = [
-  ['form', 'Type'], ['route', 'Route'], ['company', 'Firm'], ['budget', 'Monthly budget for leads'], ['areas', 'Practice areas'], ['regulator', 'Regulator'], ['coverage', 'Coverage'], ['regulatorRef', 'Regulator number'],
+  ['form', 'Type'], ['route', 'Route'], ['model', 'Campaign model'], ['company', 'Firm'], ['budget', 'Monthly budget for leads'], ['areas', 'Practice areas'], ['regulator', 'Regulator'], ['coverage', 'Coverage'], ['regulatorRef', 'Regulator number'],
   ['volume', 'Plan / leads per month'], ['delivery', 'Delivery'], ['start', 'Start'],
   ['firstName', 'First name'], ['lastName', 'Last name'], ['role', 'Role'], ['email', 'Email'], ['phone', 'Phone'], ['site', 'Website'], ['notes', 'Notes'],
   ['consentText', 'Consent wording'], ['page', 'Page'], ['referrer', 'Referrer'],
@@ -122,12 +122,47 @@ async function booking(action, req, res, b) {
   return res.status(404).json({ error: 'Not found' });
 }
 
+// Bespoke campaign enquiries from /partners/bespoke-campaigns. No consent tick box (notice under the button, wording sent as consentText).
+async function campaign(req, res, b) {
+  b.form = 'Bespoke campaign';
+  if (!b.firstName || !b.lastName || !b.company || !b.model || !b.budget || !b.regulator || !Array.isArray(b.areas) || !b.areas.length
+    || !/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(b.email || '') || !/^(?:0|\+?44)\d{9,10}$/.test(String(b.phone || '').replace(/[\s()-]/g, '')))
+    return res.status(400).json({ error: 'Missing or invalid fields' });
+  const flags = [];
+  if (b.hp) flags.push('honeypot filled');
+  if (Number(b._ms) < 2000) flags.push(`completed in ${b._ms}ms`);
+  const key = process.env.RESEND_API_KEY;
+  if (!key) return res.status(503).json({ error: 'Email not configured' });
+  const rows = FIELDS.filter(([k]) => b[k] && (!Array.isArray(b[k]) || b[k].length)).map(([k, l]) => `<tr><td style="padding:6px 12px;color:#579e84;vertical-align:top">${l}</td><td style="padding:6px 12px;font-weight:700;color:#244237;white-space:pre-wrap">${esc(b[k]) || '–'}</td></tr>`).join('')
+    + (flags.length ? `<tr><td style="padding:6px 12px;color:#c0392b">Check</td><td style="padding:6px 12px;color:#c0392b">${flags.join(', ')}</td></tr>` : '');
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST', headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      from: `Leaflegal <${process.env.ENQUIRY_FROM || 'hello@leaflegal.co'}>`,
+      to: (process.env.ENQUIRY_TO || 'hello@leaflegal.co').split(','), reply_to: b.email,
+      subject: `${flags.length ? '[Check] ' : ''}Bespoke campaign enquiry from ${b.company} (${b.model}, ${b.budget})`.slice(0, 200),
+      html: `<div style="font-family:Arial,sans-serif"><h2 style="color:#244237">New bespoke campaign enquiry</h2><table style="border-collapse:collapse">${rows}</table></div>`,
+    }),
+  });
+  if (!r.ok) { console.error('resend campaign', r.status, await r.text()); return res.status(502).json({ error: 'Send failed' }); }
+  if (!flags.length) {
+    try {
+      const src = b.source && typeof b.source === 'object' ? b.source : {};
+      await capture({ email: b.email, name: `${b.firstName} ${b.lastName}`.trim(), company: b.company, phone: b.phone, budget: b.budget, position: b.role, website: b.site,
+        source: sourceFrom(src), sourceDetail: describeSource(src), utm: Object.keys(src).length ? src : null, stage: 'new', tags: ['Law firm', 'Bespoke campaign'],
+        note: `Bespoke campaign enquiry on leaflegal.co · ${b.model} · ${[].concat(b.areas).join(', ')} · budget ${b.budget}` });
+    } catch (e) { console.error('crm capture campaign', e.message); }
+  }
+  return res.status(200).json({ ok: true });
+}
+
 export default async function handler(req, res) {
   const action = new URL(req.url, 'http://x').searchParams.get('action');
   const b = req.method === 'POST' ? (typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}) : {};
   if (action) return booking(action, req, res, b);
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   b.form = 'legal'; // every partner is a law firm
+  if (b.kind === 'campaign') return campaign(req, res, b);
   if (!b.firstName || !b.lastName || !b.company || b.consent !== true
     || !/^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(b.email || '') || !/^(?:0|\+?44)\d{9,10}$/.test(String(b.phone || '').replace(/[\s()-]/g, '')))
     return res.status(400).json({ error: 'Missing or invalid fields' });
