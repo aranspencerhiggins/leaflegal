@@ -526,7 +526,7 @@ _ok = '<span class="ll-ui-ok">' + TICK + '</span>'
 
 FORM = f'''<div class="ap-card" id="ap"><div class="ap-head"><div class="ap-meta"><button type="button" class="ap-back">&larr; Back</button><span class="ap-count" aria-live="polite"></span></div><div class="ap-bar" role="presentation"></div></div>
 <div class="ap-body"><noscript><p>Please enable JavaScript, or email <a href="mailto:{EMAIL}">{EMAIL}</a>.</p></noscript></div></div>'''
-APPLY_HEAD = '<link href="/assets/apply.css?v=65" rel="stylesheet"/><link href="/assets/enquire.css?v=5" rel="stylesheet"/>'
+APPLY_HEAD = '<link href="/assets/apply.css?v=65" rel="stylesheet"/><link href="/assets/enquire.css?v=6" rel="stylesheet"/>'
 APPLY_JS = '<script type="module" src="/assets/enquire.js?v=9"></script>'
 
 
